@@ -431,6 +431,27 @@ select.inp{appearance:none;background:var(--panel) url("data:image/svg+xml,%3Csv
 .modal{width:520px}
 body:has(.pubbar) .toast-w{bottom:calc(92px + env(safe-area-inset-bottom,0px))}
 @media (max-width:900px){.pubbar{left:50%;max-width:calc(100vw - 32px)}.mgrid{grid-template-columns:minmax(0,1fr)!important}.posgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.opbtn{display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 12px;border:1.5px solid var(--border);border-radius:12px;background:var(--panel);cursor:pointer;font-size:13.5px;font-weight:500;color:var(--ink);white-space:nowrap;max-width:100%}
+.opbtn span{overflow:hidden;text-overflow:ellipsis}.opbtn:hover{border-color:var(--ink)}
+.modal.op{width:480px}.op-list{max-height:min(46vh,420px);overflow-y:auto;border:1.5px solid var(--border);border-radius:14px;padding:4px}
+.op-reg{display:flex;gap:10px;align-items:center;padding:10px 12px 6px;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-50)}
+.op-reg label{flex:1;cursor:pointer}
+.op-row{display:flex;gap:10px;align-items:center;padding:9px 12px;border-radius:10px;cursor:pointer;font-size:14px;width:100%;background:none;border:0;color:inherit}
+.op-row:hover,.op-row.on{background:var(--sunken)}
+.pgcard{border:1.5px solid var(--border);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+.pg-top{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.pg-prices{display:flex;gap:10px;flex-wrap:wrap}
+.pg-p{display:flex;flex-direction:column;gap:3px;min-width:110px}
+.pg-in{display:flex;align-items:center;gap:4px;border:1.5px solid var(--border);border-radius:10px;padding:0 10px;height:38px;font-size:13px;color:var(--ink-50)}
+.pg-in input{border:0;outline:0;width:70px;font-size:14px;background:none;color:var(--ink)}.pg-in:focus-within{border-color:var(--ink)}
+.pgsum{font-size:13px;color:var(--ink-70);background:var(--sunken);border-radius:12px;padding:10px 12px}.pgsum b{font-weight:600}
+.tdot{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:7px;vertical-align:1px;flex-shrink:0}
+.sizes2{display:flex;flex-direction:column;gap:8px}.szrow{display:flex;gap:6px;align-items:center}.szrow .inp{max-width:240px;height:40px}
+.segp button[disabled]{opacity:.5;cursor:not-allowed}.segp button .tdot{margin-right:6px}
+.odd-reg{font-size:10.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#6a6a6a;padding:10px 14px 4px}
+.outlet-dd{max-height:min(60vh,420px);overflow-y:auto}
+.modal{max-height:calc(100vh - 32px);overflow-y:auto}
+
 /* overlays */
 .scrim{position:fixed;inset:0;background:rgba(17,17,17,.3);z-index:150}
 .drawer{position:fixed;top:0;right:0;bottom:0;width:480px;max-width:100%;background:var(--panel);z-index:160;display:flex;flex-direction:column;box-shadow:var(--e3);padding-top:env(safe-area-inset-top,0px)}
@@ -551,61 +572,77 @@ const I={
 
 const BRAND={name:'ROSSA Pizzeria',agent:'Allie',num:'+1 (312) 555-0147',user:{n:'ROSSA Pizzeria',e:'priya@rossapizza.com',ini:'RP'}};
 const OUTLETS=[
- {id:'wp',name:'ROSSA Wicker Park',short:'Wicker Park',pos:'Square',num:'+1 (312) 555-0147'},
- {id:'rn',name:'ROSSA River North',short:'River North',pos:'Square',num:'+1 (312) 555-0152'},
- {id:'lp',name:'ROSSA Loop',short:'Loop',pos:null,num:'+1 (312) 555-0163'}];
+ {id:'wp',name:'ROSSA Wicker Park',short:'Wicker Park',region:'Chicago',pos:'Square',num:'+1 (312) 555-0147'},
+ {id:'rn',name:'ROSSA River North',short:'River North',region:'Chicago',pos:'Square',num:'+1 (312) 555-0152'},
+ {id:'lp',name:'ROSSA Loop',short:'Loop',region:'Chicago',pos:null,num:'+1 (312) 555-0163'},
+ {id:'lk',name:'ROSSA Lincoln Park',short:'Lincoln Park',region:'Chicago',pos:'Square',num:'+1 (312) 555-0171'},
+ {id:'wl',name:'ROSSA West Loop',short:'West Loop',region:'Chicago',pos:'Square',num:'+1 (312) 555-0178'},
+ {id:'ls',name:'ROSSA Logan Square',short:'Logan Square',region:'Chicago',pos:null,num:'+1 (773) 555-0182'},
+ {id:'hp',name:'ROSSA Hyde Park',short:'Hyde Park',region:'Chicago',pos:null,num:'+1 (773) 555-0190'},
+ {id:'ev',name:'ROSSA Evanston',short:'Evanston',region:'Suburbs',pos:'Square',num:'+1 (847) 555-0112'},
+ {id:'op',name:'ROSSA Oak Park',short:'Oak Park',region:'Suburbs',pos:null,num:'+1 (708) 555-0124'},
+ {id:'nv',name:'ROSSA Naperville',short:'Naperville',region:'Suburbs',pos:'Square',num:'+1 (630) 555-0131'},
+ {id:'sb',name:'ROSSA Schaumburg',short:'Schaumburg',region:'Suburbs',pos:null,num:'+1 (847) 555-0145'},
+ {id:'oh',name:'ROSSA O’Hare T3',short:'O’Hare T3',region:'Airport',pos:null,num:'+1 (773) 555-0158'}];
 const ON=id=>OUTLETS.find(o=>o.id===id)||{};
 
 /* ── menu ──
-   Brand-level menu (All outlets), with per-outlet selling, stock and price overrides.
-   Fields kept for voice ordering: name, spoken names, description, sizes + prices (pickup / delivery / per outlet),
-   choice groups (required, min, max, option prices), dietary + allergens, outlets, channels, ordering hours, suggest-with, popular. */
-const ALL3={wp:true,rn:true,lp:true};
-const mkItem=(o)=>Object.assign({aka:[],pop:false,dp:false,ov:{},groups:[],diet:[],all:[],up:'',out:clone(ALL3),ch:{d:true,p:true},win:['w1'],stock:clone(ALL3),chk:null,desc:''},o);
-const pz=(id,n,b,desc,all,o)=>mkItem(Object.assign({id,cat:'pz',n,desc,all,v:[{n:'12"',p:b},{n:'14"',p:b+4},{n:'18"',p:b+8}],groups:['g1','g3']},o||{}));
-const one=(id,cat,n,p,desc,all,o)=>mkItem(Object.assign({id,cat,n,desc,all,v:[{n:'Regular',p}]},o||{}));
+   Brand menu (All outlets). Pricing & availability follows LimeTray's price groups:
+   each group = a set of outlets + a channel + a price per size. Outlets in no group don't sell the item.
+   Stock (out of stock right now) is separate, per outlet. Modifier options use the same model. */
+const OIDS=()=>OUTLETS.map(o=>o.id);
+const pgAll=(p,ex)=>[{outs:OIDS().filter(x=>!(ex||[]).includes(x)),ch:'both',p}];
+const mkItem=(o)=>Object.assign({type:'none',aka:[],pop:false,groups:[],diet:[],all:[],up:'',win:['w1'],oos:{},chk:null,desc:'',v:[{n:'Regular'}],pg:[]},o);
+const AIRPORT=['oh'];
+const pz=(id,n,b,desc,all,o)=>mkItem(Object.assign({id,cat:'pz',n,desc,all,type:'veg',v:[{n:'12"'},{n:'14"'},{n:'18"'}],groups:['g1','g3'],
+  pg:[{outs:OIDS().filter(x=>!AIRPORT.includes(x)),ch:'both',p:[b,b+4,b+8]},{outs:AIRPORT.slice(),ch:'p',p:[b+3,b+7,null]}]},o||{}));
+const one=(id,cat,n,p,desc,all,o)=>mkItem(Object.assign({id,cat,n,desc,all,pg:pgAll([p])},o||{}));
+const opt=(id,n,p,o)=>Object.assign({id,n,aka:[],type:'veg',all:[],pg:pgAll([p]),oos:{}},o||{});
 const MENU={
- cats:[{id:'pz',n:'Pizzas',d:'Hand-stretched, 72-hour dough'},{id:'pa',n:'Pasta',d:'Fresh pasta, made daily'},{id:'sa',n:'Salads',d:''},{id:'si',n:'Sides',d:''},{id:'de',n:'Desserts',d:''},{id:'dr',n:'Drinks',d:''}],
+ cats:[{id:'pz',n:'Pizzas',d:'Hand-stretched, 72-hour dough',type:'none',parent:''},{id:'pa',n:'Pasta',d:'Fresh pasta, made daily',type:'none',parent:''},{id:'sa',n:'Salads',d:'',type:'veg',parent:''},{id:'si',n:'Sides',d:'',type:'none',parent:''},{id:'de',n:'Desserts',d:'',type:'veg',parent:''},{id:'dr',n:'Drinks',d:'',type:'veg',parent:''}],
  items:[
-  pz('p1','Margherita',18,'San Marzano tomato, fior di latte, basil',['Gluten','Milk'],{diet:['Vegetarian'],up:'d1',pop:true,aka:['marg','cheese and basil']}),
-  pz('p2','Pepperoni',20,'Cup-and-char pepperoni, mozzarella, oregano',['Gluten','Milk'],{up:'d1',pop:true,aka:['pep','roni']}),
-  pz('p3','Diavola',22,'Spicy salami, Calabrian chili, hot honey',['Gluten','Milk'],{diet:['Spicy'],up:'d3',aka:['spicy salami']}),
-  pz('p4','Quattro Formaggi',21,'Mozzarella, gorgonzola, fontina, parmigiano',['Gluten','Milk'],{diet:['Vegetarian'],groups:['g1'],aka:['four cheese']}),
+  pz('p1','Margherita',18,'San Marzano tomato, fior di latte, basil',['Gluten','Milk'],{up:'d1',pop:true,aka:['marg','cheese and basil']}),
+  pz('p2','Pepperoni',20,'Cup-and-char pepperoni, mozzarella, oregano',['Gluten','Milk'],{type:'nv',up:'d1',pop:true,aka:['pep','roni']}),
+  pz('p3','Diavola',22,'Spicy salami, Calabrian chili, hot honey',['Gluten','Milk'],{type:'nv',diet:['Spicy'],up:'d3',aka:['spicy salami']}),
+  pz('p4','Quattro Formaggi',21,'Mozzarella, gorgonzola, fontina, parmigiano',['Gluten','Milk'],{groups:['g1'],aka:['four cheese']}),
   pz('p5','Funghi',19,'',[],{aka:['mushroom pizza']}),
-  pz('p6','Half & Half',20,'Any two house pizzas, split down the middle',['Gluten','Milk'],{groups:['g1','g2'],up:'d1',aka:['half and half','split pizza']}),
-  pz('p7','Veggie Supreme',20,'Peppers, onion, olives, mushroom, spinach',['Gluten','Milk'],{diet:['Vegetarian'],up:'s1'}),
-  one('a1','pa','Rigatoni alla Vodka',19,'Creamy tomato-vodka sauce, parmigiano',['Gluten','Milk'],{groups:['g5'],up:'d1',pop:true,aka:['vodka pasta','penne vodka']}),
-  one('a2','pa','Spaghetti Carbonara',18,'Guanciale, egg yolk, pecorino, black pepper',['Gluten','Egg','Milk'],{up:'s1'}),
-  one('a3','pa','Lasagna',21,'Beef ragù, béchamel, mozzarella',['Gluten','Milk','Egg']),
-  one('a4','pa','Gnocchi Pesto',18,'Potato gnocchi, basil pesto, pine nuts',['Tree nuts','Milk','Gluten'],{diet:['Vegetarian'],groups:['g5']}),
-  one('s1','sa','Caesar Salad',12,'Romaine, parmigiano, croutons, anchovy dressing',['Fish','Egg','Milk','Gluten'],{groups:['g5','g6']}),
-  one('s2','sa','Arugula & Parm',11,'Lemon, olive oil, shaved parmigiano',['Milk'],{diet:['Vegetarian'],groups:['g5']}),
-  one('s3','sa','Caprese',13,'Tomato, fior di latte, basil',['Milk'],{diet:['Vegetarian']}),
-  one('d1','si','Garlic Knots',6,'Six knots, garlic butter, marinara',['Gluten','Milk'],{diet:['Vegetarian'],pop:true,aka:['knots']}),
-  one('d2','si','Wings (8)',14,'Crispy wings, choice of sauce',['None'],{groups:['g4'],aka:['chicken wings']}),
-  one('d3','si','Burrata',14,'Burrata, tomato confit, grilled bread',['Milk','Gluten'],{diet:['Vegetarian'],stock:{wp:true,rn:false,lp:true}}),
-  one('d4','si','Meatballs',10,'Three beef & pork meatballs, marinara',['Gluten','Egg','Milk']),
-  one('e1','de','Tiramisu',9,'Mascarpone, espresso, cocoa',['Milk','Egg','Gluten'],{diet:['Vegetarian']}),
-  one('e2','de','Cannoli',7,'Two cannoli, ricotta, pistachio',['Milk','Gluten','Tree nuts'],{diet:['Vegetarian']}),
-  one('k1','dr','San Pellegrino',4,'500ml sparkling water',['None'],{aka:['sparkling water','pellegrino']}),
-  one('k2','dr','Coke',3,'Coca-Cola',['None'],{v:[{n:'Can',p:3},{n:'2 liter',p:5}],aka:['coca-cola','cola']}),
-  one('k3','dr','Lemonade',4,'House lemonade',['None']),
-  one('k4','dr','Peroni',7,'330ml lager. ID checked at pickup',['Gluten'],{ch:{d:false,p:true}})],
+  pz('p6','Half & Half',20,'Any two house pizzas, split down the middle',['Gluten','Milk'],{type:'nv',groups:['g1','g2'],up:'d1',aka:['half and half','split pizza']}),
+  pz('p7','Veggie Supreme',20,'Peppers, onion, olives, mushroom, spinach',['Gluten','Milk'],{diet:['Vegan option'],up:'s1'}),
+  one('a1','pa','Rigatoni alla Vodka',19,'Creamy tomato-vodka sauce, parmigiano',['Gluten','Milk'],{type:'veg',groups:['g5'],up:'d1',pop:true,aka:['vodka pasta','penne vodka']}),
+  one('a2','pa','Spaghetti Carbonara',18,'Guanciale, egg yolk, pecorino, black pepper',['Gluten','Egg','Milk'],{type:'nv',up:'s1'}),
+  one('a3','pa','Lasagna',21,'Beef ragù, béchamel, mozzarella',['Gluten','Milk','Egg'],{type:'nv'}),
+  one('a4','pa','Gnocchi Pesto',18,'Potato gnocchi, basil pesto, pine nuts',['Tree nuts','Milk','Gluten'],{type:'veg',groups:['g5']}),
+  one('s1','sa','Caesar Salad',12,'Romaine, parmigiano, croutons, anchovy dressing',['Fish','Egg','Milk','Gluten'],{type:'nv',groups:['g5','g6']}),
+  one('s2','sa','Arugula & Parm',11,'Lemon, olive oil, shaved parmigiano',['Milk'],{type:'veg',groups:['g5']}),
+  one('s3','sa','Caprese',13,'Tomato, fior di latte, basil',['Milk'],{type:'veg'}),
+  one('d1','si','Garlic Knots',6,'Six knots, garlic butter, marinara',['Gluten','Milk'],{type:'veg',pop:true,aka:['knots']}),
+  one('d2','si','Wings (8)',14,'Crispy wings, choice of sauce',['None'],{type:'nv',groups:['g4'],aka:['chicken wings']}),
+  one('d3','si','Burrata',14,'Burrata, tomato confit, grilled bread',['Milk','Gluten'],{type:'veg',oos:{rn:'Back at opening tomorrow'}}),
+  one('d4','si','Meatballs',10,'Three beef & pork meatballs, marinara',['Gluten','Egg','Milk'],{type:'nv'}),
+  one('e1','de','Tiramisu',9,'Mascarpone, espresso, cocoa',['Milk','Egg','Gluten'],{type:'veg'}),
+  one('e2','de','Cannoli',7,'Two cannoli, ricotta, pistachio',['Milk','Gluten','Tree nuts'],{type:'veg'}),
+  one('k1','dr','San Pellegrino',4,'500ml sparkling water',['None'],{type:'veg',aka:['sparkling water','pellegrino']}),
+  one('k2','dr','Coke',3,'Coca-Cola',['None'],{type:'veg',v:[{n:'Can'},{n:'2 liter'}],pg:pgAll([3,5]),aka:['coca-cola','cola']}),
+  one('k3','dr','Lemonade',4,'House lemonade',['None'],{type:'veg'}),
+  one('k4','dr','Peroni',7,'330ml lager. ID checked at pickup',['Gluten'],{type:'veg',diet:['Contains alcohol'],pg:[{outs:OIDS().filter(x=>!['ev','hp'].includes(x)),ch:'p',p:[7]}]})],
  groups:[
-  {id:'g1',n:'Crust',min:1,max:1,opts:[{n:'Classic',p:0,on:true},{n:'Thin',p:0,on:true},{n:'Gluten-free',p:3,on:true}]},
-  {id:'g2',n:'Halves',min:2,max:2,ask:'Which pizza on each half?',opts:[{n:'Margherita',p:0,on:true},{n:'Pepperoni',p:0,on:true},{n:'Diavola',p:2,on:true},{n:'Funghi',p:0,on:true},{n:'Veggie Supreme',p:0,on:true}]},
-  {id:'g3',n:'Extra toppings',min:0,max:5,opts:[{n:'Jalapeños',p:2,on:true},{n:'Olives',p:2,on:true},{n:'Mushroom',p:2,on:true},{n:'Sausage',p:3,on:true},{n:'Extra cheese',p:2,on:true}]},
-  {id:'g4',n:'Wing sauce',min:1,max:1,opts:[{n:'Buffalo',p:0,on:true},{n:'Garlic parm',p:0,on:true},{n:'Hot honey',p:0,on:true}]},
-  {id:'g5',n:'Add protein',min:0,max:1,opts:[{n:'Chicken',p:5,on:true},{n:'Shrimp',p:7,on:true}]},
-  {id:'g6',n:'Dressing',min:0,max:null,opts:[{n:'Caesar',p:0,on:true},{n:'Ranch',p:0,on:true},{n:'Balsamic',p:0,on:true}]}],
- wins:[{id:'w1',n:'All day',days:['Tue','Wed','Thu','Fri','Sat','Sun'],iv:[['11:00 AM','9:45 PM']],out:clone(ALL3),ch:{d:true,p:true}},
-       {id:'w2',n:'Lunch specials',days:['Tue','Wed','Thu','Fri'],iv:[['11:00 AM','3:00 PM']],out:{wp:false,rn:false,lp:true},ch:{d:true,p:true}}],
- taxes:[{id:'t1',type:'Tax',n:'Chicago restaurant tax',on:'Item',calc:'Additive',vt:'%',v:10.25,ch:{d:true,p:true},out:clone(ALL3)},
-        {id:'t2',type:'Charge',n:'Bag fee',on:'Order',calc:'Additive',vt:'flat',v:0.07,ch:{d:true,p:true},out:clone(ALL3)}]};
-const DIETS=['Vegetarian','Vegan','Gluten-free option','Spicy','Contains alcohol'];
+  {id:'g1',n:'Crust',min:1,max:1,ask:'',def:'o11',opts:[opt('o11','Classic',0,{aka:['regular','normal']}),opt('o12','Thin',0,{aka:['thin crust']}),opt('o13','Gluten-free',3,{aka:['gf','gluten free'],oos:{lk:'Back at opening tomorrow'}})]},
+  {id:'g2',n:'Halves',min:2,max:2,ask:'Which pizza on each half?',def:'',opts:[opt('o21','Margherita',0),opt('o22','Pepperoni',0,{type:'nv'}),opt('o23','Diavola',2,{type:'nv'}),opt('o24','Funghi',0),opt('o25','Veggie Supreme',0)]},
+  {id:'g3',n:'Extra toppings',min:0,max:5,ask:'',def:'',opts:[opt('o31','Jalapeños',2,{aka:['japs']}),opt('o32','Olives',2),opt('o33','Mushroom',2),opt('o34','Sausage',3,{type:'nv',all:['Milk']}),opt('o35','Extra cheese',2,{all:['Milk']})]},
+  {id:'g4',n:'Wing sauce',min:1,max:1,ask:'',def:'o41',opts:[opt('o41','Buffalo',0,{aka:['hot']}),opt('o42','Garlic parm',0,{all:['Milk']}),opt('o43','Hot honey',0)]},
+  {id:'g5',n:'Add protein',min:0,max:1,ask:'',def:'',opts:[opt('o51','Chicken',5,{type:'nv'}),opt('o52','Shrimp',7,{type:'nv',all:['Shellfish']})]},
+  {id:'g6',n:'Dressing',min:0,max:null,ask:'',def:'',opts:[opt('o61','Caesar',0,{type:'nv',all:['Fish','Egg']}),opt('o62','Ranch',0,{all:['Milk','Egg']}),opt('o63','Balsamic',0)]}],
+ wins:[{id:'w1',n:'All day',days:['Tue','Wed','Thu','Fri','Sat','Sun'],iv:[['11:00 AM','9:45 PM']],outs:OIDS(),ch:'both',scope:'all',cats:[],items:[]},
+       {id:'w2',n:'Lunch specials',days:['Tue','Wed','Thu','Fri'],iv:[['11:00 AM','3:00 PM']],outs:['lp','wl','rn'],ch:'both',scope:'cats',cats:['pa'],items:[]}],
+ taxes:[{id:'t1',type:'Tax',n:'Chicago restaurant tax',on:'Item',base:'Subtotal − discount',calc:'Additive',vt:'%',v:10.25,ch:'both',delfee:false,outs:OIDS().filter(x=>!['ev','op','nv','sb'].includes(x))},
+        {id:'t3',type:'Tax',n:'Suburban sales tax',on:'Item',base:'Subtotal − discount',calc:'Additive',vt:'%',v:8.75,ch:'both',delfee:false,outs:['ev','op','nv','sb']},
+        {id:'t2',type:'Charge',n:'Bag fee',on:'Order',base:'Subtotal',calc:'Additive',vt:'flat',v:0.07,ch:'both',delfee:false,outs:OIDS()}]};
+const DIETS=['Vegan option','Gluten-free option','Spicy','Contains alcohol'];
 const ALLERGENS=['Gluten','Milk','Egg','Peanuts','Tree nuts','Soy','Fish','Shellfish','Sesame'];
 const DAYS=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 const POS_LIST=['Toast','Square','Clover','SpotOn','SkyTab','Lightspeed','NCR Aloha','Revel','PAR Brink','Oracle Simphony','Heartland','TouchBistro'];
+const TYPES={veg:['Veg','var(--sage-500)'],nv:['Non-veg','var(--coral-500)'],none:['Not set','var(--ink-15)']};
+const CH={both:'Delivery + Pickup',d:'Delivery only',p:'Pickup only'};
 
 /* ── orders ──
    pay: before = card link on the call (Card / Apple Pay / Google Pay); after = pay at the store
@@ -676,13 +713,13 @@ const RES=[
 const SCEN={
  off:{t:'Ordering off',h:'Reservations and enquiries are live. Ordering hasn’t been set up, so every ordering screen shows its guided empty state.'},
  ready:{t:'Ready',h:'Ordering is set up and switched on, but no orders have come in yet today.'},
- live:{t:'Live',h:'A busy Monday night across three outlets.'}};
+ live:{t:'Live',h:'A busy Monday night across 12 outlets.'}};
 let DB;
 function loadScenario(k){
-  DB={k,orderingOn:k!=='off',menuState:k==='off'?'none':'live',menuSource:k==='off'?null:'Square',
+  DB={k,orderingOn:k!=='off',menuState:k==='off'?'none':'live',menuSource:k==='off'?null:'LimeTray menu',
    stripe:k==='off'?'none':'active',payBefore:true,payAfter:true,serviceSet:k!=='off',posSync:k!=='off',
-   autoAccept:{wp:false,rn:true,lp:true},orders:k==='live'?mkOrders():[],calls:mkCalls(k),res:clone(RES),
-   items:clone(MENU.items),cats:clone(MENU.cats),groups:clone(MENU.groups),wins:clone(MENU.wins),taxes:clone(MENU.taxes),pending:0,snap:null,zones:clone(ZONES),deliveryMode:{wp:'zones',rn:'radius',lp:'zones'},
+   autoAccept:Object.fromEntries(OUTLETS.map(o=>[o.id,o.id!=='wp'])),orders:k==='live'?mkOrders():[],calls:mkCalls(k),res:clone(RES),
+   items:clone(MENU.items),cats:clone(MENU.cats),groups:clone(MENU.groups),wins:clone(MENU.wins),taxes:clone(MENU.taxes),pending:0,snap:null,zones:Object.fromEntries(OUTLETS.map(o=>[o.id,ZONES[o.id]?clone(ZONES[o.id]):[{id:'A',n:'Radius 3 mi',c:'#4FC2B4',fee:3,min:15,eta:40,pts:[]}]])),deliveryMode:Object.fromEntries(OUTLETS.map(o=>[o.id,['wp','lp'].includes(o.id)?'zones':'radius'])),
    riders:[{n:'Marcus T.',on:true},{n:'Chris V.',on:true},{n:'Aaliyah R.',on:false}],partners:{dd:k!=='off',uber:false},
    caps:{enq:true,res:true,ord:k!=='off'}};
 }
@@ -723,7 +760,7 @@ function renderRail(){
   const pend=DB.orders.filter(x=>inScope(x)&&x.state==='PENDING').length;
   let h=`<div class="rail-top"><span class="logo">Tringg</span><span class="rail-k">K</span></div>
    <button class="outlet-btn" onclick="S.dd=!S.dd;renderRail()" aria-expanded="${S.dd}">${I.store}<span>${esc(o)}</span>${I.chev}</button>`;
-  if(S.dd)h+=`<div class="outlet-dd">${[{id:'all',name:'All Outlets'},...OUTLETS].map(x=>`<button class="odi ${S.outlet===x.id?'on':''}" onclick="pickOutlet('${x.id}')"><span class="d"></span>${esc(x.name)}</button>`).join('')}</div>`;
+  if(S.dd)h+=`<div class="outlet-dd"><button class="odi ${S.outlet==='all'?'on':''}" onclick="pickOutlet('all')"><span class="d"></span>All Outlets · ${OUTLETS.length}</button>${[...new Set(OUTLETS.map(o=>o.region))].map(r=>`<div class="odd-reg">${r}</div>`+OUTLETS.filter(o=>o.region===r).map(x=>`<button class="odi ${S.outlet===x.id?'on':''}" onclick="pickOutlet('${x.id}')"><span class="d"></span>${esc(x.name)}</button>`).join('')).join('')}</div>`;
   h+='<nav class="rail-nav" aria-label="Main">'+NAV.map(n=>{let b='';
     if(n[0]==='orders'){b=!DB.orderingOn?'<span class="bdg new">Set up</span>':pend?`<span class="bdg">${pend}</span>`:'';}
     if(n[0]==='reservations'){const p=DB.res.filter(r=>r.st==='pending'&&inScope(r)).length;b=p?`<span class="bdg">${p}</span>`:'';}
@@ -746,7 +783,7 @@ function renderTop(){
    <div class="top-t">${TITLE[S.route]()}</div>
    ${S.route==='overview'?`<div class="live"><span class="d"></span>${BRAND.agent} is live — try it<span class="ph">${BRAND.num}</span><button aria-label="Copy number" onclick="copyText('${BRAND.num}')">${I.copy}</button></div>`:''}
    <div class="top-r">
-    ${S.route==='orders'&&DB.orderingOn?(posOutlets.length?`<button class="pos-sw ${DB.posSync?'on':''}" onclick="togglePos()" aria-pressed="${DB.posSync}">POS sync <span class="sub">· Square${S.outlet==='all'?' · 2 of 3 outlets':''}</span><span class="tog ${DB.posSync?'on':''}" style="width:36px;height:22px" aria-hidden="true"></span></button>`:`<span class="pos-sw" style="cursor:default">No POS at ${esc(ON(S.outlet).short)} · manual statuses</span>`):''}
+    ${S.route==='orders'&&DB.orderingOn?(posOutlets.length?`<button class="pos-sw ${DB.posSync?'on':''}" onclick="togglePos()" aria-pressed="${DB.posSync}">POS sync <span class="sub">· Square${S.outlet==='all'?' · '+OUTLETS.filter(o=>o.pos).length+' of '+OUTLETS.length+' outlets':''}</span><span class="tog ${DB.posSync?'on':''}" style="width:36px;height:22px" aria-hidden="true"></span></button>`:`<span class="pos-sw" style="cursor:default">No POS at ${esc(ON(S.outlet).short)} · manual statuses</span>`):''}
     <label class="srch">${I.search}<input type="search" placeholder="Search…" aria-label="Search"><span class="kbd">⌘K</span></label>
     <button class="ibtn" aria-label="Notifications" onclick="toast('No new notifications')">${I.bell}${DB.orders.some(o=>o.state==='PENDING')?'<span class="dot"></span>':''}</button>
     <button class="ibtn ${S.spec?'on':''}" aria-label="Spec notes and Maple comparison" title="Spec notes · vs Maple" onclick="S.spec=!S.spec;renderOverlay();renderTop()">${I.doc}</button>
@@ -766,13 +803,13 @@ document.addEventListener('click',e=>{
   if(S.acct&&!e.target.closest('.acct')){S.acct=false;renderRail();}
   if(S.dd&&!e.target.closest('.outlet-btn')&&!e.target.closest('.outlet-dd')){S.dd=false;renderRail();}
 });
-document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;if(S.modal)S.modal=null;else if(S.spec){S.spec=false;renderTop();}else if(S.menu.drawer){closeDrawer();return;}else if(S.agentEdit)S.agentEdit=false;renderOverlay();});
+document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;if(S.op){S.op=null;renderOverlay();return;}if(S.modal)S.modal=null;else if(S.spec){S.spec=false;renderTop();}else if(S.menu.drawer){closeDrawer();return;}else if(S.agentEdit)S.agentEdit=false;renderOverlay();});
 
 /* ════════ OVERVIEW ════════ */
 const SC={all:1,wp:.41,rn:.34,lp:.25};
 function stat(ic,cls,v,l){return `<div class="stat"><div class="stat-ic ${cls}">${I[ic]}</div><div style="min-width:0"><div class="stat-v">${v}</div><div class="stat-l">${l}</div></div></div>`;}
 function vOverview(){
-  const f=SC[S.outlet],n=v=>Math.round(v*f);
+  const f=(SC[S.outlet]??0.06),n=v=>Math.round(v*f);
   const pendO=DB.orders.filter(o=>inScope(o)&&o.state==='PENDING');
   const pendR=DB.res.filter(r=>inScope(r)&&r.st==='pending');
   const live=DB.k==='live';
@@ -791,7 +828,7 @@ function vOverview(){
     <div class="card-b" style="padding-top:0;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:28px" class="ov2"><div><div class="fl" style="margin-bottom:12px">Top items</div><div class="bars">${[['Pepperoni',14],['Margherita',11],['Garlic Knots',10],['Half & Half',7],['Rigatoni alla Vodka',6]].map(r=>`<div class="bar"><span>${r[0]}</span><span class="tr"><i style="width:${r[1]/14*100}%"></i></span><span class="n">${n(r[1])}</span></div>`).join('')}</div></div>
     <div><div class="fl" style="margin-bottom:12px">Pickup vs delivery</div><div class="bars">${[['Pickup',22,'$748'],['Delivery',16,'$738']].map(r=>`<div class="bar" style="grid-template-columns:70px minmax(0,1fr) 90px"><span>${r[0]}</span><span class="tr"><i style="width:${r[1]/38*100}%;background:${r[0]==='Pickup'?'var(--mint-500)':'var(--dust-500)'}"></i></span><span class="n">${n(r[1])} · ${r[2]}</span></div>`).join('')}</div>
     <div class="xs muted" style="margin-top:14px">Delivery by DoorDash Drive at Wicker Park, own riders at River North and Loop.</div></div></div></div>`;}
-  h+=`</div><div class="col"><div class="card agent"><div class="agent-h"><div class="agent-av">A</div><div><div class="agent-n">${BRAND.agent}</div><div class="agent-s">${['Enquiries',DB.caps.res?'Reservation':null,DB.caps.ord?'Ordering':null].filter(Boolean).join(' · ')} · ${S.outlet==='all'?'3 outlets':'1 outlet'}</div></div><span class="lvp">${pill('p-green','Live')}</span></div>
+  h+=`</div><div class="col"><div class="card agent"><div class="agent-h"><div class="agent-av">A</div><div><div class="agent-n">${BRAND.agent}</div><div class="agent-s">${['Enquiries',DB.caps.res?'Reservation':null,DB.caps.ord?'Ordering':null].filter(Boolean).join(' · ')} · ${S.outlet==='all'?OUTLETS.length+' outlets':'1 outlet'}</div></div><span class="lvp">${pill('p-green','Live')}</span></div>
    <div class="agent-stats"><div><div class="v">${live?n(142):DB.calls.filter(inScope).length}</div><div class="l">Calls today</div></div><div><div class="v">${live?'2:34':'1:04'}</div><div class="l">Avg duration</div></div><div><div class="v">${live?'81%':'67%'}</div><div class="l">Capture rate</div></div></div></div>
    <div class="card"><div class="card-h"><div class="h3">Recent calls</div><button class="linkbtn r" onclick="go('calls')">View all ${I.arrow}</button></div><div class="card-b" style="padding-top:8px">`;
   const rc=DB.calls.filter(inScope).slice(0,5);
@@ -830,7 +867,7 @@ function vOrders(){
   if(!DB.orderingOn){const st=setupSteps();
     return `<div class="scroll"><div class="page" style="max-width:980px"><div class="card"><div class="empty"><div class="empty-i">${I.bagL}</div><div class="empty-t">Allie isn’t taking orders yet</div><div class="empty-s">Ordering is part of your subscription. Finish these and phone orders will appear here, ready to accept.</div>
      <div class="guide">${st.map((s,i)=>`<div class="gstep ${s.done?'done':''}"><span class="n">${s.done?I.check:i+1}</span><div style="min-width:0"><div class="t">${s.t}</div><div class="s">${s.s}</div></div><button class="btn ${s.done?'btn-ghost':'btn-line'} btn-sm" onclick="setupSteps()[${i}].go()">${s.done?'Edit':'Start'}</button></div>`).join('')}</div></div></div></div></div>`;}
-  const f=SC[S.outlet],n=v=>Math.round(v*f),live=DB.k==='live';
+  const f=(SC[S.outlet]??0.06),n=v=>Math.round(v*f),live=DB.k==='live';
   const tiles=`<div class="tiles"><div class="tile t-mint"><div class="v">${live?n(38):0}</div><div class="l">Orders today</div></div><div class="tile t-coral"><div class="v">${live?Math.max(1,n(3)):0}</div><div class="l">Cancelled, declined or expired</div></div><div class="tile t-cream"><div class="v">${live?'16 min':'—'}</div><div class="l">Avg time to ready</div></div><div class="tile t-white"><div class="v">${live?'$'+n(1486).toLocaleString():'$0'}</div><div class="l">GMV today</div></div></div>`;
   const fl={all:'All',delivery:'Delivery',pickup:'Pickup'},pl={all:'All',before:'On the call',after:'At the store'};
   return `<div class="work">${tiles}<div class="row-h"><div class="ptabs" id="o-tabs"></div><div class="r fchips">
@@ -960,26 +997,79 @@ function renderCalls(){
 }
 
 /* ════════ MENU ════════
-   All outlets view: build and edit the brand menu. Single outlet view: what this outlet sells, its stock and price overrides.
-   Imports land as a DRAFT inside the same editor, so every item can be fixed, deleted or added before publishing.
-   Edits to a live menu are staged until Publish (same pattern as LimeTray On / Off). */
+   All outlets view: build and edit the brand menu. Single outlet view: that outlet's prices, what it sells, and stock.
+   Imports land as a DRAFT inside the same editor. Live edits are staged until Publish (LimeTray On / Off pattern).
+   Multi-outlet changes always go through one shared component: the outlet picker. */
+
+/* ── Outlet picker: one component for every "which outlets?" question ── */
+const REGIONS=()=>[...new Set(OUTLETS.map(o=>o.region))];
+function opLabel(ids){ids=ids||[];const n=ids.length,N=OUTLETS.length;if(!n)return 'No outlets';if(n===N)return 'All '+N+' outlets';if(n===1)return ON(ids[0]).short;
+  for(const r of REGIONS()){const rs=OUTLETS.filter(o=>o.region===r).map(o=>o.id);if(rs.length===n&&rs.every(x=>ids.includes(x)))return 'All '+r+' ('+n+')';}return n+' of '+N+' outlets';}
+const icoS=(k,w)=>I[k].replace(/width="\d+" height="\d+"/,`width="${w}" height="${w}"`);
+function opBtn(ids,call,single){return `<button type="button" class="opbtn" onclick="${call}">${icoS('store',15)}<span>${esc(single?(ON(ids[0]).short||'Pick an outlet'):opLabel(ids))}</span>${icoS('chev',14)}</button>`;}
+let OPCB=null,OPNOTE=null;
+function openOP(o){S.op={title:o.title,sub:o.sub||'',sel:(o.sel||[]).slice(),mode:o.mode||'multi',q:''};OPCB=o.apply;OPNOTE=o.note||null;renderOverlay();setTimeout(()=>{const e=$('op-q');if(e)e.focus();},30);}
+function opOverlay(){const p=S.op;if(!p)return '';const q=p.q.toLowerCase(),multi=p.mode==='multi';
+  const vis=OUTLETS.filter(o=>!q||o.name.toLowerCase().includes(q)||o.region.toLowerCase().includes(q));
+  let rows='';REGIONS().forEach(r=>{const rs=vis.filter(o=>o.region===r);if(!rs.length)return;const allIn=rs.every(o=>p.sel.includes(o.id)),some=rs.some(o=>p.sel.includes(o.id));
+    rows+=`<div class="op-reg">${multi?`<input type="checkbox" id="opr-${r}" ${allIn?'checked':''} onchange="opRegion('${r}')" aria-label="All of ${r}">`:''}<label for="opr-${r}">${r}</label><span class="muted xs">${rs.length} outlet${rs.length>1?'s':''}${multi&&some&&!allIn?' · '+rs.filter(o=>p.sel.includes(o.id)).length+' selected':''}</span></div>`;
+    rs.forEach(o=>{const on=p.sel.includes(o.id),note=OPNOTE?OPNOTE(o.id):'';rows+=multi?`<label class="op-row ${on?'on':''}"><input type="checkbox" ${on?'checked':''} onchange="opToggle('${o.id}')"><span style="flex:1">${esc(o.name)}</span>${note?`<span class="xs muted">${note}</span>`:''}</label>`
+      :`<button class="op-row ${on?'on':''}" onclick="S.op.sel=['${o.id}'];opApply()"><span style="flex:1;text-align:left">${esc(o.name)}</span>${note?`<span class="xs muted">${note}</span>`:''}${on?I.check:''}</button>`;});});
+  return `<div class="modal-ov" style="z-index:260" onclick="if(event.target===this){S.op=null;renderOverlay()}"><div class="modal op" role="dialog" aria-modal="true"><div class="t">${esc(p.title)}</div>${p.sub?`<div class="b" style="margin-top:-8px">${p.sub}</div>`:''}
+   <label class="lsearch" style="margin:0">${I.search}<input id="op-q" type="search" placeholder="Search outlets or regions…" value="${esc(p.q)}" oninput="S.op.q=this.value;renderOverlay();setTimeout(()=>{const e=$('op-q');e.focus();e.setSelectionRange(99,99)})"></label>
+   ${multi?`<div style="display:flex;gap:10px;align-items:center;font-size:13px"><button class="u-link" onclick="S.op.sel=OIDS();renderOverlay()">Select all ${OUTLETS.length}</button><button class="u-link" onclick="S.op.sel=[];renderOverlay()">Clear</button><span class="muted" style="margin-left:auto">${p.sel.length} selected</span></div>`:''}
+   <div class="op-list">${rows||'<div class="soft-empty">No outlets match.</div>'}</div>
+   ${multi?`<div class="f"><button class="btn btn-ghost" onclick="S.op=null;renderOverlay()">Cancel</button><button class="btn btn-dark" onclick="opApply()">Apply to ${p.sel.length} outlet${p.sel.length===1?'':'s'}</button></div>`:''}</div></div>`;}
+function opToggle(id){chipTog(S.op.sel,id);renderOverlay();}
+function opRegion(r){const rs=OUTLETS.filter(o=>o.region===r).map(o=>o.id),all=rs.every(x=>S.op.sel.includes(x));S.op.sel=all?S.op.sel.filter(x=>!rs.includes(x)):[...new Set([...S.op.sel,...rs])];renderOverlay();}
+function opApply(){const s=S.op.sel.slice();S.op=null;const cb=OPCB;OPCB=null;if(cb)cb(s);renderOverlay();if(!S.menu.drawer&&!S.modal)render();}
+
+/* ── helpers ── */
 const MTABS=[['items','Items'],['mods','Modifiers'],['hours','Ordering hours'],['avail','Availability'],['tax','Taxes & charges'],['sources','Sources']];
 const catName=id=>(DB.cats.find(c=>c.id===id)||{n:'—'}).n;
 const gById=id=>DB.groups.find(g=>g.id===id);
 const itById=id=>DB.items.find(i=>i.id===id);
+const optById=id=>{for(const g of DB.groups){const o=g.opts.find(x=>x.id===id);if(o)return [g,o];}return [null,null];};
 const fromPOS=()=>DB.menuSource&&POS_LIST.includes(DB.menuSource);
 const isBrand=()=>S.outlet==='all';
-function priceTxt(it,o){return it.v.map(v=>{const ov=o&&it.ov[o]&&it.ov[o][it.v.indexOf(v)];const p=ov!=null&&ov!==''?+ov:v.p;return (it.v.length>1?v.n+' ':'')+(p?money(p):'—')+(ov!=null&&ov!==''?'*':'');}).join(' · ');}
-function askText(g){if(g.ask)return g.ask;if(!g.min)return 'Only if the caller brings it up';const o=g.opts.filter(x=>x.on).map(x=>x.n);const l=o.length>1?o.slice(0,-1).join(', ')+' or '+o[o.length-1]:o[0]||'';return (g.min>1?'Which '+g.min+': ':'Which '+g.n.toLowerCase()+': ')+l+'?';}
+const has=v=>v!=null&&v!=='';
+const chipTog=(arr,v)=>{const k=arr.indexOf(v);k<0?arr.push(v):arr.splice(k,1);};
+const tdot=t=>`<span class="tdot" style="background:${TYPES[t||'none'][1]}" title="${TYPES[t||'none'][0]}"></span>`;
+function soldAt(x){return [...new Set(x.pg.filter(g=>g.p.some(has)).flatMap(g=>g.outs))];}
+function groupAt(x,o){return x.pg.find(g=>g.outs.includes(o)&&(g.ch==='both'||g.ch==='p'))||x.pg.find(g=>g.outs.includes(o));}
+function priceTxt(x,sizes,o){const g=o?groupAt(x,o):x.pg[0];if(!g)return '<span class="muted">Not sold</span>';const ps=g.p.map((p,k)=>(sizes&&sizes.length>1?esc(sizes[k].n)+' ':'')+(has(p)?money(p):'—')).join(' · ');
+  return ps+(!o&&x.pg.length>1?`<div class="xs muted">${x.pg.length} price groups</div>`:'');}
+function optPrice(x,o){const g=o?groupAt(x,o):x.pg[0];if(!g)return 'Not sold';const p=g.p[0];return (has(p)&&+p?'+'+money(p):'Included')+(!o&&x.pg.length>1?' · '+x.pg.length+' price groups':'');}
+function stockTxt(x){const s=soldAt(x),out=s.filter(o=>x.oos[o]);return out.length?`<span style="color:var(--coral-700)">Out at ${out.length===1?esc(ON(out[0]).short):out.length+' outlets'}</span>`:'<span class="muted">In stock</span>';}
+function askText(g){if(g.ask)return g.ask;if(!g.min)return 'Only if the caller brings it up';const o=g.opts.map(x=>x.n);const l=o.length>1?o.slice(0,-1).join(', ')+' or '+o[o.length-1]:o[0]||'';return (g.min>1?'Which '+g.min+': ':'Which '+g.n.toLowerCase()+': ')+l+'?';}
 function ruleTxt(g){return (g.min?'Required':'Optional')+' · '+(g.max==null?'no limit set':g.min===g.max?'pick '+g.max:'up to '+g.max);}
-function issues(it){const r=[];if(it.chk)r.push(it.chk);if(!it.desc)r.push('No description');if(!it.all.length)r.push('Allergens not set');if(!it.v.length||it.v.some(v=>!v.p))r.push('Missing price');return r;}
 function sizeAsk(it){return it.v.length>1?'What size: '+it.v.map(v=>v.n).join(', ').replace(/, ([^,]*)$/,' or $1')+'?':null;}
-function stage(msg){if(DB.menuState==='live'){if(!DB.pending)DB.snap=clone({items:DB.items,groups:DB.groups,cats:DB.cats,wins:DB.wins,taxes:DB.taxes});DB.pending++;}toast(msg);}
+function issues(it){const r=[];if(it.chk)r.push(it.chk);if(!it.desc)r.push('No description');if(!it.all.length)r.push('Allergens not set');if(it.type==='none')r.push('Veg / non-veg not set');if(!soldAt(it).length)r.push('No price at any outlet');return r;}
+function pgConflicts(pg){const c=[];OUTLETS.forEach(o=>{const gs=pg.filter(g=>g.outs.includes(o.id));const d=gs.filter(g=>g.ch!=='p').length,p=gs.filter(g=>g.ch!=='d').length;if(d>1||p>1)c.push(o.short);});return c;}
+function stage(msg){if(DB.menuState==='live'){if(!DB.pending)DB.snap=clone({items:DB.items,groups:DB.groups,cats:DB.cats,wins:DB.wins,taxes:DB.taxes});DB.pending++;}if(msg)toast(msg);}
 function discardPending(){Object.assign(DB,clone(DB.snap));DB.pending=0;render();toast('Changes discarded');}
 function publishPending(){DB.pending=0;render();toast('Published · Allie uses the new menu from the next call');}
+const P=(path)=>Function('return '+path)();
 
+/* ── Pricing & availability editor (items and modifier options) ── */
+function pgEditor(path,sizes,lock,label){const pg=P(path),sold=soldAt({pg}),not=OUTLETS.filter(o=>!sold.includes(o.id)),conf=pgConflicts(pg);
+  let h=`<div class="fh" style="margin-top:-6px">Each price group is a set of outlets and a channel, with ${sizes.length>1?'a price per size':'one price'}. Outlets that aren’t in any group don’t sell it.${sizes.length>1?' Leave a price empty to skip that size there.':''}</div>`;
+  pg.forEach((g,k)=>{h+=`<div class="pgcard"><div class="pg-top">${lock?`<span class="opbtn" style="cursor:default">${icoS('store',15)}<span>${esc(opLabel(g.outs))}</span></span>`:opBtn(g.outs,`pgPick('${path}',${k})`)}
+    <select class="inp" style="height:38px;max-width:190px" ${lock?'disabled':''} aria-label="Channel" onchange="${path}[${k}].ch=this.value;renderOverlay()">${Object.entries(CH).map(([v,t])=>`<option value="${v}" ${g.ch===v?'selected':''}>${t}</option>`).join('')}</select>
+    ${!lock&&pg.length>1?`<button class="ib del" style="margin-left:auto" aria-label="Remove price group" onclick="${path}.splice(${k},1);renderOverlay()">${I.x}</button>`:''}</div>
+    <div class="pg-prices">${sizes.map((s,i)=>`<label class="pg-p"><span class="xs muted">${esc(label||s.n||'Size '+(i+1))}</span><span class="pg-in">$<input ${lock?'disabled':''} inputmode="decimal" value="${has(g.p[i])?g.p[i]:''}" placeholder="—" aria-label="${esc(label||s.n)} price" oninput="${path}[${k}].p[${i}]=this.value===''?null:+this.value"></span></label>`).join('')}</div></div>`;});
+  if(!lock)h+=`<button class="btn btn-soft btn-sm" style="align-self:flex-start" onclick="${path}.push({outs:[],ch:'both',p:${JSON.stringify(sizes.map(()=>null))}});pgPick('${path}',${pg.length})">${I.plus} Add price group</button>`;
+  h+=`<div class="pgsum">${sold.length?`Sold at <b>${esc(opLabel(sold))}</b>`:'<b style="color:var(--coral-700)">Not sold anywhere yet</b>'}${not.length&&sold.length?` · not at ${not.length>3?not.length+' outlets':not.map(o=>esc(o.short)).join(', ')}`:''}</div>`;
+  if(conf.length)h+=`<div class="banner b-amber" style="font-size:13px">${I.warn}<div>${conf.join(', ')} ${conf.length>1?'are':'is'} in two groups for the same channel. Remove it from one so Allie quotes one price.</div></div>`;
+  return h;}
+function pgPick(path,k){const g=P(path)[k];openOP({title:'Outlets in this price group',sub:'Pick every outlet that charges these prices.',sel:g.outs,apply:s=>{P(path)[k].outs=s;},note:id=>{const o=P(path).findIndex((x,j)=>j!==k&&x.outs.includes(id));return o>=0?'in group '+(o+1):'';}});}
+function stockBlock(path,what){const x=P(path),sold=soldAt(x),out=sold.filter(o=>x.oos[o]);
+  return `<div class="pgsum" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><span style="flex:1;min-width:200px">${out.length?`<b style="color:var(--coral-700)">Out of stock at ${esc(opLabel(out))}</b> · back at opening tomorrow`:`In stock at every outlet that sells ${what}`}</span><button class="btn btn-soft btn-sm" onclick="stockPick('${path}')">Change stock</button></div>`;}
+function stockPick(path){const x=P(path),sold=soldAt(x);openOP({title:'Out of stock at…',sub:'Select the outlets that have run out. Allie stops offering it there right away.',sel:Object.keys(x.oos).filter(o=>sold.includes(o)),apply:s=>{const y=P(path);y.oos={};s.forEach(o=>y.oos[o]='Back at opening tomorrow');},note:id=>sold.includes(id)?'':'not sold here'});}
+
+/* ── import sources ── */
 function srcCards(){return `<div class="src-grid">
- <button class="src" onclick="S.menu.flow='gbp';render()"><span class="ic ic-mint">${I.store.replace(/width="\d+" height="\d+"/,'width="22" height="22"')}</span><span><span class="t" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">Your Google profile menu ${pill('p-green','Quickest')}</span><span class="s" style="display:block">We found a menu on your Google Business Profile, which you already connected. One click to import it.</span><span class="tg2"><span class="tag">31 items found</span></span></span></button>
+ <button class="src" onclick="S.menu.flow='gbp';render()"><span class="ic ic-mint">${icoS('store',22)}</span><span><span class="t" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">Your Google profile menu ${pill('p-green','Quickest')}</span><span class="s" style="display:block">We found a menu on your Google Business Profile, which you already connected. One click to import it.</span><span class="tg2"><span class="tag">31 items found</span></span></span></button>
  <button class="src" onclick="openPos()"><span class="ic ic-mint">${I.pos}</span><span><span class="t" style="display:block">Connect your POS</span><span class="s" style="display:block">Items, choices, prices and sold-out status stay in sync, and order statuses flow back from the POS.</span><span class="tg2"><span class="tag">Toast</span><span class="tag">Square</span><span class="tag">Clover</span><span class="tag">SpotOn</span><span class="tag">+8 more</span></span></span></button>
  <button class="src" onclick="S.menu.flow='web';render()"><span class="ic ic-dust">${I.link}</span><span><span class="t" style="display:block">Your restaurant website</span><span class="s" style="display:block">Paste your menu page. We read it and build the menu.</span><span class="tg2"><span class="tag">rossapizza.com/menu</span></span></span></button>
  <button class="src" onclick="S.menu.flow='agg';render()"><span class="ic ic-coral">${I.bag}</span><span><span class="t" style="display:block">From a delivery app</span><span class="s" style="display:block">Already on DoorDash, Uber Eats or Grubhub? Save your store page as a PDF and drop it here.</span><span class="tg2"><span class="tag">DoorDash</span><span class="tag">Uber Eats</span><span class="tag">Grubhub</span></span></span></button>
@@ -987,24 +1077,22 @@ function srcCards(){return `<div class="src-grid">
  <button class="src" onclick="startScratch()"><span class="ic ic-grey">${I.pen}</span><span><span class="t" style="display:block">Start from scratch</span><span class="s" style="display:block">Add categories and items yourself. Good for a short menu.</span></span></button></div>`;}
 
 function vMenu(){
-  if(!isBrand()&&DB.menuState!=='live')return `<div class="scroll"><div class="page" style="max-width:900px"><div class="card"><div class="empty"><div class="empty-i">${I.menu}</div><div class="empty-t">The menu is built for all outlets</div><div class="empty-s">Create it once in the All outlets view, then choose what ${esc(ON(S.outlet).short)} sells and when.</div><button class="btn btn-line" style="margin-top:8px" onclick="pickOutlet('all')">Switch to All outlets</button></div></div></div></div>`;
+  if(!isBrand()&&DB.menuState!=='live')return `<div class="scroll"><div class="page" style="max-width:900px"><div class="card"><div class="empty"><div class="empty-i">${I.menu}</div><div class="empty-t">The menu is built for all outlets</div><div class="empty-s">Create it once in the All outlets view, then set what ${esc(ON(S.outlet).short)} sells, its prices and stock.</div><button class="btn btn-line" style="margin-top:8px" onclick="pickOutlet('all')">Switch to All outlets</button></div></div></div></div>`;
   if(DB.menuState==='none'||S.menu.flow)return `<div class="scroll"><div class="page" style="max-width:980px">${menuFlow()}</div></div>`;
   const tabs=isBrand()?MTABS:MTABS.filter(t=>['items','avail','hours'].includes(t[0]));
   if(!tabs.some(t=>t[0]===S.menu.tab))S.menu.tab='items';
   const body={items:mItems,mods:mMods,hours:mHours,avail:mAvail,tax:mTax,sources:mSources}[S.menu.tab]();
   const draft=DB.menuState==='draft';
-  const bar=draft?`<div class="pubbar"><span>${I.doc.replace('width="18" height="18"','width="16" height="16"')} Draft · ${DB.items.length} items · <b>${DB.items.filter(i=>i.chk).length} need a check</b></span><button class="btn btn-sm btn-ghost" style="color:#ddd" onclick="DB.menuState='none';DB.items=[];render()">Discard draft</button><button class="btn btn-sm btn-line" onclick="tryPublishDraft()">Publish menu</button></div>`
+  const bar=draft?`<div class="pubbar"><span>${icoS('doc',16)} Draft · ${DB.items.length} items · <b>${DB.items.filter(i=>i.chk).length} need a check</b></span><button class="btn btn-sm btn-ghost" style="color:#ddd" onclick="DB.menuState='none';DB.items=[];render()">Discard draft</button><button class="btn btn-sm btn-line" onclick="tryPublishDraft()">Publish menu</button></div>`
     :DB.pending?`<div class="pubbar"><span><b>${DB.pending} unpublished change${DB.pending>1?'s':''}</b> · Allie uses the published menu until you publish</span><button class="btn btn-sm btn-ghost" style="color:#ddd" onclick="discardPending()">Discard</button><button class="btn btn-sm btn-line" onclick="publishPending()">Publish</button></div>`:'';
-  return `<div class="scroll"><div class="page" style="padding-bottom:110px">
-   ${draft?draftBanner():''}
-   <div class="row-h"><div class="ptabs">${tabs.map(t=>`<button class="ptab ${S.menu.tab===t[0]?'on':''}" onclick="S.menu.tab='${t[0]}';render()">${t[1]}</button>`).join('')}</div>
-    <div class="r"><span class="small muted">${isBrand()?'Brand menu · all outlets':'Showing '+esc(ON(S.outlet).short)+' · menu edits happen in All outlets'}</span></div></div>${body}</div></div>${bar}`;
-}
+  return `<div class="scroll"><div class="page" style="padding-bottom:110px">${draft?draftBanner():''}
+   <div class="row-h"><div class="ptabs">${tabs.map(t=>`<button class="ptab ${S.menu.tab===t[0]?'on':''}" onclick="S.menu.tab='${t[0]}';S.menu.sel=[];render()">${t[1]}</button>`).join('')}</div>
+    <div class="r"><span class="small muted">${isBrand()?'Brand menu · '+OUTLETS.length+' outlets':'Showing '+esc(ON(S.outlet).short)+' · menu edits happen in All outlets'}</span></div></div>${body}</div></div>${bar}`;}
 function draftBanner(){const agg=/\(uploaded\)/.test(DB.menuSource||''),cut=S.menu.cut;
-  return `<div class="scard" style="background:var(--dust-50);box-shadow:none"><div class="scard-h"><div><div class="eyebrow" style="color:var(--dust-700)">Draft from ${esc(DB.menuSource)}</div><div class="h2" style="margin-top:4px">We found ${DB.items.length} items in ${DB.cats.length} categories. ${DB.items.filter(i=>i.chk).length} need a check.</div>
-   <div class="fh" style="color:var(--ink-70)">Edit, delete or add anything below, the same way you will after publishing. You can also publish now: items that still need a check stay hidden from Allie until you confirm them.</div></div></div>
+  return `<div class="scard" style="background:var(--dust-50);box-shadow:none"><div><div class="eyebrow" style="color:var(--dust-700)">Draft from ${esc(DB.menuSource)}</div><div class="h2" style="margin-top:4px">We found ${DB.items.length} items in ${DB.cats.length} categories. ${DB.items.filter(i=>i.chk).length} need a check.</div>
+   <div class="fh" style="color:var(--ink-70)">Edit, delete or add anything below, the same way you will after publishing. You can also publish now: items that still need a check stay hidden from Allie until you confirm them.</div></div>
    ${agg?`<div class="field"><span class="fl">Phone prices</span><span class="fh" style="margin-top:-6px">Delivery-app prices usually include a markup. Lower them for phone orders in one step.</span><div class="segp sm">${[0,10,15,20].map(x=>`<button class="${cut===x?'on':''}" onclick="applyCut(${x})">${x?'−'+x+'% on all items':'Keep app prices'}</button>`).join('')}</div></div>`:''}</div>`;}
-function applyCut(x){DB.items.forEach(it=>it.v.forEach(v=>{if(v.app)v.p=Math.round(v.app*(1-x/100)*4)/4;}));S.menu.cut=x;render();toast(x?'Phone prices set '+x+'% below app prices':'Kept app prices');}
+function applyCut(x){DB.items.forEach(it=>it.pg.forEach(g=>{if(g.app)g.p=g.app.map(v=>has(v)?Math.round(v*(1-x/100)*4)/4:v);}));S.menu.cut=x;render();toast(x?'Phone prices set '+x+'% below app prices':'Kept app prices');}
 function tryPublishDraft(){const n=DB.items.filter(i=>i.chk).length;if(n){S.modal={t:'mpub',n};renderOverlay();}else publishDraft();}
 function publishDraft(){DB.menuState='live';DB.pending=0;S.modal=null;S.menu.f='all';render();toast('Menu published · '+DB.items.filter(i=>!i.chk).length+' items on sale');}
 
@@ -1014,90 +1102,114 @@ function mItems(){
   const brand=isBrand(),o=S.outlet,draft=DB.menuState==='draft';
   if(!DB.cats.some(c=>c.id===S.menu.cat))S.menu.cat=(DB.cats[0]||{}).id;
   const q=S.menu.q.trim().toLowerCase(),F=S.menu.f;
-  const fl={all:()=>true,check:i=>!!i.chk,info:i=>!i.chk&&issues(i).length,pop:i=>i.pop};
-  const pool=DB.items.filter(i=>brand||i.out[o]);
+  const fl={all:()=>true,check:i=>!!i.chk,info:i=>!i.chk&&issues(i).length,pop:i=>i.pop,oos:i=>soldAt(i).some(x=>i.oos[x])};
+  const pool=DB.items.filter(i=>brand||soldAt(i).includes(o)||true);
   const searching=!!q||F!=='all';
   const list=pool.filter(i=>(searching||i.cat===S.menu.cat)&&fl[F](i)&&(!q||i.n.toLowerCase().includes(q)||i.aka.some(a=>a.includes(q))));
   const ready=pool.filter(i=>!issues(i).length).length;
   const sel=S.menu.sel.filter(id=>list.some(i=>i.id===id));
-  const src=DB.menuSource;
-  let h=`<div class="row-h"><div><div class="h1">Menu</div><div class="small muted" style="margin-top:2px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">${fromPOS()?pill('p-green','Synced from '+src+' · 4 min ago')+'<span>Names, sizes, prices and choices are edited in '+src+'</span>':src?'Source: '+esc(src):''}</div></div>
+  let h=`<div class="row-h"><div><div class="h1">Menu</div><div class="small muted" style="margin-top:2px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">${fromPOS()?pill('p-green','Synced from '+DB.menuSource+' · 4 min ago')+'<span>Names, sizes, prices and choices are edited in '+DB.menuSource+'</span>':'Source: '+esc(DB.menuSource||'Built in Tringg')}</div></div>
    ${brand?`<div class="r"><button class="btn btn-soft" onclick="openCat()">${I.plus} Category</button><button class="btn btn-dark" onclick="openItem()">${I.plus} Add item</button></div>`:''}</div>`;
-  if(!draft)h+=`<div class="card card-p" style="display:flex;gap:24px;align-items:center;flex-wrap:wrap;padding:18px 22px"><div><span class="stat-v" style="font-size:28px">${pool.length?Math.round(ready/pool.length*100):0}%</span> <span class="stat-l">ready for phone orders · ${ready} of ${pool.length} items</span></div><div class="small muted" style="flex:1;min-width:220px">Allie needs a price, a description and allergens to sell an item and answer questions about it.</div>${pool.length-ready?`<button class="btn btn-line btn-sm" onclick="S.menu.f='info';render()">Show ${pool.length-ready} to fix</button>`:''}</div>`;
-  h+=`<div class="fchips">${[['all','All '+pool.length],['check','Needs a check '+pool.filter(fl.check).length],['info','Missing info '+pool.filter(fl.info).length],['pop','Popular '+pool.filter(fl.pop).length]].filter(x=>x[0]!=='check'||draft||pool.some(fl.check)).map(x=>`<button class="fchip ${F===x[0]?'on':''}" onclick="S.menu.f='${x[0]}';render()">${x[1]}</button>`).join('')}
+  if(!draft)h+=`<div class="card card-p" style="display:flex;gap:24px;align-items:center;flex-wrap:wrap;padding:18px 22px"><div><span class="stat-v" style="font-size:28px">${pool.length?Math.round(ready/pool.length*100):0}%</span> <span class="stat-l">ready for phone orders · ${ready} of ${pool.length} items</span></div><div class="small muted" style="flex:1;min-width:220px">Allie needs veg / non-veg, a description, allergens and a price to sell an item and answer questions about it.</div>${pool.length-ready?`<button class="btn btn-line btn-sm" onclick="S.menu.f='info';render()">Show ${pool.length-ready} to fix</button>`:''}</div>`;
+  h+=`<div class="fchips">${[['all','All '+pool.length],['check','Needs a check '+pool.filter(fl.check).length],['info','Missing info '+pool.filter(fl.info).length],['oos','Out of stock somewhere '+pool.filter(fl.oos).length],['pop','Popular '+pool.filter(fl.pop).length]].filter(x=>x[0]!=='check'||draft||pool.some(fl.check)).map(x=>`<button class="fchip ${F===x[0]?'on':''}" onclick="S.menu.f='${x[0]}';render()">${x[1]}</button>`).join('')}
    <label class="lsearch" style="margin:0;height:34px;flex:1;min-width:180px;max-width:320px;border-radius:999px">${I.search}<input type="search" placeholder="Search items or spoken names…" value="${esc(S.menu.q)}" oninput="S.menu.q=this.value;clearTimeout(S.menu.qt);S.menu.qt=setTimeout(render,250)"></label></div>
   <div class="mgrid" style="display:grid;grid-template-columns:230px minmax(0,1fr);gap:20px;align-items:start">
-   <div class="card" style="padding:10px"><div class="cats">${DB.cats.map(c=>{const n=pool.filter(i=>i.cat===c.id).length;return `<div class="catrow ${!searching&&c.id===S.menu.cat?'on':''}"><button class="cat" onclick="S.menu.cat='${c.id}';S.menu.f='all';S.menu.q='';render()">${esc(c.n)}<span class="n">${n}</span></button>${brand?`<button class="ib" aria-label="Edit ${esc(c.n)}" onclick="openCat('${c.id}')">${I.pen.replace('width="22" height="22"','width="14" height="14"')}</button>`:''}</div>`;}).join('')}</div>
+   <div class="card" style="padding:10px"><div class="cats">${catTree().map(c=>{const n=pool.filter(i=>i.cat===c.id).length;return `<div class="catrow ${!searching&&c.id===S.menu.cat?'on':''}" style="${c.parent?'padding-left:14px':''}"><button class="cat" onclick="S.menu.cat='${c.id}';S.menu.f='all';S.menu.q='';render()">${tdot(c.type)} ${esc(c.n)}<span class="n">${n}</span></button>${brand?`<button class="ib" aria-label="Edit ${esc(c.n)}" onclick="openCat('${c.id}')">${icoS('pen',14)}</button>`:''}</div>`;}).join('')}</div>
     ${brand?`<button class="btn btn-ghost btn-sm" style="width:100%;margin-top:6px" onclick="openCat()">${I.plus} Add category</button>`:''}</div>
    <div class="card card-p" style="padding:16px 18px">
     <div class="lhead" style="margin-bottom:8px"><div class="h3">${searching?list.length+' matching item'+(list.length===1?'':'s'):esc(catName(S.menu.cat))}</div>
-     ${sel.length&&brand?`<div class="bulk">${sel.length} selected <select class="inp" style="height:34px;max-width:170px" onchange="bulkMove(this.value)" aria-label="Move to category"><option value="">Move to…</option>${DB.cats.map(c=>`<option value="${c.id}">${esc(c.n)}</option>`).join('')}</select>${draft?`<button class="btn btn-sm btn-soft" onclick="bulkOk()">Looks right</button>`:''}<button class="btn btn-sm btn-red" onclick="S.modal={t:'mdel',kind:'bulk'};renderOverlay()">Delete</button></div>`:''}</div>`;
+     ${sel.length&&brand?`<div class="bulk">${sel.length} selected <button class="btn btn-sm btn-line" onclick="openBulk()">Prices & outlets…</button><select class="inp" style="height:34px;max-width:150px" onchange="bulkMove(this.value)" aria-label="Move to category"><option value="">Move to…</option>${DB.cats.map(c=>`<option value="${c.id}">${esc(c.n)}</option>`).join('')}</select>${draft?`<button class="btn btn-sm btn-soft" onclick="bulkOk()">Looks right</button>`:''}<button class="btn btn-sm btn-red" onclick="S.modal={t:'mdel',kind:'bulk'};renderOverlay()">Delete</button></div>`:''}</div>`;
   if(!list.length)h+=`<div class="soft-empty">${searching?'Nothing matches.':'No items in this category yet.'} ${brand&&!searching?`<button class="u-link" onclick="openItem(null,'${S.menu.cat}')">Add the first item</button>`:''}</div>`;
-  else h+=`<div class="tblw"><table class="tbl mtbl"><thead><tr>${brand?`<th style="width:28px"><input type="checkbox" aria-label="Select all" ${sel.length===list.length?'checked':''} onchange="S.menu.sel=this.checked?[${list.map(i=>`'${i.id}'`).join(',')}]:[];render()"></th>`:''}<th>Item</th><th>${brand?'Sizes & prices':'Price here'}</th><th>Choices</th><th>Allergens</th>${draft&&brand?'':`<th>${brand?'Sold at':'Sold here'}</th>`}<th></th></tr></thead><tbody>
-   ${list.map(i=>{const is=issues(i);return `<tr class="${i.chk?'rchk':''}">${brand?`<td><input type="checkbox" aria-label="Select ${esc(i.n)}" ${sel.includes(i.id)?'checked':''} onchange="toggleSel('${i.id}')"></td>`:''}
-    <td style="min-width:200px"><button class="iname" onclick="openItem('${i.id}')">${esc(i.n)}</button> ${i.pop?pill('p-mint','Popular'):''}
+  else h+=`<div class="tblw"><table class="tbl mtbl"><thead><tr>${brand?`<th style="width:28px"><input type="checkbox" aria-label="Select all" ${sel.length===list.length?'checked':''} onchange="S.menu.sel=this.checked?[${list.map(i=>`'${i.id}'`).join(',')}]:[];render()"></th>`:''}<th>Item</th><th>${brand?'Price':'Price here'}</th><th>Choices</th>${draft?'':`<th>${brand?'Sold at':'Sold here'}</th><th>${brand?'Stock':'In stock'}</th>`}<th></th></tr></thead><tbody>
+   ${list.map(i=>{const is=issues(i),sold=soldAt(i);return `<tr class="${i.chk?'rchk':''}">${brand?`<td><input type="checkbox" aria-label="Select ${esc(i.n)}" ${sel.includes(i.id)?'checked':''} onchange="toggleSel('${i.id}')"></td>`:''}
+    <td style="min-width:210px">${tdot(i.type)}<button class="iname" onclick="openItem('${i.id}')">${esc(i.n)}</button> ${i.pop?pill('p-mint','Popular'):''}
      <div class="xs muted">${i.aka.length?'Also: '+i.aka.map(esc).join(', '):esc(i.desc)||''}</div>
-     ${i.chk?`<div class="xs" style="color:var(--cream-700);margin-top:3px">${I.warn.replace('width="17" height="17"','width="12" height="12"')} ${esc(i.chk)}</div>`:is.length?`<div class="xs" style="color:var(--cream-700);margin-top:3px">${is.join(' · ')}</div>`:''}</td>
-    <td class="small" style="white-space:nowrap">${priceTxt(i,brand?null:o)}${i.dp?'<div class="xs muted">Delivery price differs</div>':''}</td>
+     ${i.chk?`<div class="xs" style="color:var(--cream-700);margin-top:3px">${icoS('warn',12)} ${esc(i.chk)}</div>`:is.length?`<div class="xs" style="color:var(--cream-700);margin-top:3px">${is.join(' · ')}</div>`:''}</td>
+    <td class="small" style="white-space:nowrap">${priceTxt(i,i.v,brand?null:o)}</td>
     <td>${(i.v.length>1?'<span class="tag">Size</span> ':'')+i.groups.map(g=>`<span class="tag" style="margin:1px">${esc((gById(g)||{}).n||'?')}</span>`).join(' ')||'<span class="muted">—</span>'}</td>
-    <td class="small">${i.all.length?i.all.join(', '):'<span style="color:var(--cream-700)">Not set</span>'}</td>
-    ${draft&&brand?'':`<td class="small">${brand?Object.values(i.out).filter(Boolean).length+' of 3':`<button class="tog ${i.out[o]?'on':''}" aria-label="Sold here" onclick="togOut('${i.id}','${o}')"></button>`}</td>`}
+    ${draft?'':brand?`<td class="small">${esc(opLabel(sold))}</td><td class="small">${stockTxt(i)}</td>`:`<td><button class="tog ${sold.includes(o)?'on':''}" aria-label="Sold here" onclick="soldHere('${i.id}','${o}')"></button></td><td>${sold.includes(o)?`<button class="tog ${i.oos[o]?'':'on'}" aria-label="In stock" onclick="stockHere('${i.id}','${o}')"></button>`:'<span class="muted">—</span>'}</td>`}
     <td style="white-space:nowrap;text-align:right">${draft&&i.chk?`<button class="btn btn-sm btn-soft" title="Looks right" onclick="itById('${i.id}').chk=null;render();toast('Marked as checked')">${I.check} OK</button> `:''}
-     <button class="ib" aria-label="Edit ${esc(i.n)}" onclick="openItem('${i.id}')">${I.pen.replace('width="22" height="22"','width="15" height="15"')}</button>
-     ${brand?`<button class="ib" aria-label="Duplicate ${esc(i.n)}" onclick="dupItem('${i.id}')">${I.copy.replace('width="16" height="16"','width="15" height="15"')}</button><button class="ib del" aria-label="Delete ${esc(i.n)}" onclick="S.modal={t:'mdel',kind:'item',id:'${i.id}'};renderOverlay()">${I.x}</button>`:''}</td></tr>`;}).join('')}
+     <button class="ib" aria-label="Edit ${esc(i.n)}" onclick="openItem('${i.id}')">${icoS('pen',15)}</button>
+     ${brand?`<button class="ib" aria-label="Duplicate ${esc(i.n)}" onclick="dupItem('${i.id}')">${icoS('copy',15)}</button><button class="ib del" aria-label="Delete ${esc(i.n)}" onclick="S.modal={t:'mdel',kind:'item',id:'${i.id}'};renderOverlay()">${I.x}</button>`:''}</td></tr>`;}).join('')}
    </tbody></table></div>`;
   h+=`${brand&&!searching?`<button class="btn btn-ghost btn-sm" style="margin-top:8px" onclick="openItem(null,'${S.menu.cat}')">${I.plus} Add item to ${esc(catName(S.menu.cat))}</button>`:''}</div></div>`;
-  return h;
-}
-function toggleSel(id){const s=S.menu.sel;const k=s.indexOf(id);k<0?s.push(id):s.splice(k,1);render();}
+  return h;}
+function catTree(){const top=DB.cats.filter(c=>!c.parent),out=[];top.forEach(c=>{out.push(c);DB.cats.filter(x=>x.parent===c.id).forEach(x=>out.push(x));});DB.cats.filter(c=>c.parent&&!DB.cats.some(x=>x.id===c.parent)).forEach(c=>out.push(c));return out;}
+function toggleSel(id){chipTog(S.menu.sel,id);render();}
 function bulkMove(c){if(!c)return;S.menu.sel.forEach(id=>{itById(id).cat=c;});stage(S.menu.sel.length+' items moved to '+catName(c));S.menu.sel=[];render();}
 function bulkOk(){S.menu.sel.forEach(id=>{itById(id).chk=null;});toast(S.menu.sel.length+' items marked as checked');S.menu.sel=[];render();}
 function dupItem(id){const s=itById(id),c=clone(s);c.id='i'+Date.now();c.n=s.n+' (copy)';c.chk=null;DB.items.splice(DB.items.indexOf(s)+1,0,c);stage('Duplicated '+s.n);render();}
+function soldHere(id,o){const i=itById(id);if(soldAt(i).includes(o)){i.pg.forEach(g=>g.outs=g.outs.filter(x=>x!==o));stage(i.n+' removed from '+ON(o).short);}else{(i.pg[0]||(i.pg[0]={outs:[],ch:'both',p:i.v.map(()=>null)})).outs.push(o);stage(i.n+' added to '+ON(o).short);}render();}
+function stockHere(id,o){const i=itById(id);if(i.oos[o])delete i.oos[o];else i.oos[o]='Back at opening tomorrow';stage(i.n+(i.oos[o]?' out of stock':' back in stock')+' at '+ON(o).short);render();}
+function optStockHere(oid,o){const [g,x]=optById(oid);if(x.oos[o])delete x.oos[o];else x.oos[o]='Back at opening tomorrow';stage(x.n+(x.oos[o]?' out of stock':' back in stock')+' at '+ON(o).short);render();}
+
+/* ── bulk: prices & outlets for many items at once ── */
+function openBulk(ids){S.modal={t:'bulk',ids:(ids||S.menu.sel).slice(),act:'price',outs:OIDS(),ch:'both',mode:'%',val:-10};renderOverlay();}
+function applyBulk(){const m=S.modal,items=m.ids.map(itById).filter(Boolean),outs=m.outs;if(!outs.length){toast('Pick at least one outlet');return;}
+  items.forEach(i=>{
+   if(m.act==='sell'){const g=i.pg[0]||(i.pg[0]={outs:[],ch:'both',p:i.v.map(()=>null)});outs.forEach(o=>{if(!i.pg.some(x=>x.outs.includes(o)))g.outs.push(o);});}
+   if(m.act==='stop')i.pg.forEach(g=>g.outs=g.outs.filter(o=>!outs.includes(o)));
+   if(m.act==='oos')outs.forEach(o=>{if(soldAt(i).includes(o))i.oos[o]='Back at opening tomorrow';});
+   if(m.act==='back')outs.forEach(o=>delete i.oos[o]);
+   if(m.act==='price'){const adj=v=>has(v)?Math.max(0,Math.round((m.mode==='%'?v*(1+m.val/100):v+ +m.val)*4)/4):v;const add=[];
+     i.pg.forEach(g=>{if(m.ch!=='both'&&g.ch!=='both'&&g.ch!==m.ch)return;const inter=g.outs.filter(o=>outs.includes(o));if(!inter.length)return;
+       if(inter.length===g.outs.length&&(m.ch==='both'||g.ch===m.ch)){g.p=g.p.map(adj);return;}
+       g.outs=g.outs.filter(o=>!inter.includes(o));if(m.ch!=='both'&&g.ch==='both'){add.push({outs:inter,ch:m.ch,p:g.p.map(adj)});add.push({outs:inter.slice(),ch:m.ch==='d'?'p':'d',p:g.p.slice()});}else add.push({outs:inter,ch:g.ch,p:g.p.map(adj)});});
+     i.pg=i.pg.filter(g=>g.outs.length).concat(add);}});
+  const L={sell:'now sold at',stop:'no longer sold at',oos:'out of stock at',back:'back in stock at',price:'repriced at'}[m.act];
+  S.modal=null;S.menu.sel=[];renderOverlay();stage(items.length+' item'+(items.length>1?'s':'')+' '+L+' '+opLabel(outs));render();}
+function bulkModal(){const m=S.modal,acts=[['price','Change prices'],['sell','Start selling at outlets'],['stop','Stop selling at outlets'],['oos','Mark out of stock'],['back','Mark back in stock']];
+  return `<div class="t">${m.ids.length} item${m.ids.length>1?'s':''} · prices & outlets</div><div class="b" style="margin-top:-8px">${m.ids.map(id=>esc((itById(id)||{}).n)).slice(0,6).join(', ')}${m.ids.length>6?' and '+(m.ids.length-6)+' more':''}</div>
+   <div class="radios">${acts.map(a=>`<button class="radio ${m.act===a[0]?'on':''}" onclick="S.modal.act='${a[0]}';renderOverlay()"><span class="o"></span>${a[1]}</button>`).join('')}</div>
+   <div class="field"><span class="fl">At which outlets</span>${opBtn(m.outs,`openOP({title:'Apply at which outlets?',sel:S.modal.outs,apply:s=>{S.modal.outs=s}})`)}</div>
+   ${m.act==='price'?`<div class="frow"><div class="field"><span class="fl">Channel</span><select class="inp" style="height:40px" onchange="S.modal.ch=this.value">${Object.entries(CH).map(([v,t])=>`<option value="${v}" ${m.ch===v?'selected':''}>${t}</option>`).join('')}</select></div>
+    <div class="field"><span class="fl">Change by</span><div style="display:flex;gap:8px"><input class="inp sm" style="max-width:90px;height:40px" value="${m.val}" aria-label="Amount" oninput="S.modal.val=+this.value||0"><div class="segp sm"><button class="${m.mode==='%'?'on':''}" onclick="S.modal.mode='%';renderOverlay()">%</button><button class="${m.mode==='$'?'on':''}" onclick="S.modal.mode='$';renderOverlay()">$</button></div></div><span class="xs muted">Use a minus sign to lower prices.</span></div></div>`:''}
+   <div class="f"><button class="btn btn-ghost" onclick="S.modal=null;renderOverlay()">Cancel</button><button class="btn btn-dark" onclick="applyBulk()">Apply</button></div>`;}
 
 /* ── Modifiers tab ── */
-function mMods(){const g=gById(S.menu.gsel)||DB.groups[0];if(g)S.menu.gsel=g.id;
-  const used=g?DB.items.filter(i=>i.groups.includes(g.id)):[];
-  return `<div class="row-h"><div><div class="h1">Modifiers</div><p class="desc" style="margin-top:4px">Reusable choice groups. A required group is always asked; an optional one only comes up if the caller mentions it. Sizes are set on each item.</p></div><div class="r"><button class="btn btn-dark" onclick="openGroup()">${I.plus} New group</button></div></div>
-  <div class="mgrid" style="display:grid;grid-template-columns:260px minmax(0,1fr);gap:20px;align-items:start">
-   <div class="card" style="padding:10px"><div class="cats">${DB.groups.map(x=>`<button class="cat ${g&&x.id===g.id?'on':''}" style="flex-direction:column;align-items:flex-start" onclick="S.menu.gsel='${x.id}';render()"><span style="display:flex;width:100%">${esc(x.n)}<span class="n">${DB.items.filter(i=>i.groups.includes(x.id)).length}</span></span><span class="xs" style="opacity:.7">${ruleTxt(x)}</span></button>`).join('')}</div></div>
-   ${g?`<div class="scard"><div class="scard-h"><div><div class="h2">${esc(g.n)}</div><div style="margin-top:6px">${pill(g.min?'p-dust':'p-grey',ruleTxt(g))} ${g.max==null?pill('p-amber','Set a maximum'):''}</div></div><div class="r" style="display:flex;gap:8px">${fromPOS()?`<span class="tag">${I.lock} From ${DB.menuSource}</span>`:`<button class="btn btn-soft btn-sm" onclick="openGroup('${g.id}')">Edit</button><button class="btn btn-red btn-sm" onclick="S.modal={t:'mdel',kind:'group',id:'${g.id}'};renderOverlay()">Delete</button>`}</div></div>
-    <div class="ask"><b>What Allie says</b><br>“${esc(askText(g))}”</div>
-    <div class="tblw"><table class="tbl"><thead><tr><th>Option</th><th>Extra price</th><th>In stock</th></tr></thead><tbody>${g.opts.map((x,k)=>`<tr><td style="font-weight:500">${esc(x.n)}</td><td class="num">${x.p?'+'+money(x.p):'Included'}</td><td><button class="tog ${x.on?'on':''}" aria-label="${esc(x.n)} in stock" onclick="gById('${g.id}').opts[${k}].on=!gById('${g.id}').opts[${k}].on;stage('${esc(x.n).replace(/'/g,'')} '+(gById('${g.id}').opts[${k}].on?'back in stock':'sold out'));render()"></button></td></tr>`).join('')}</tbody></table></div>
-    <div class="field"><span class="fl">Used by ${used.length} item${used.length===1?'':'s'}</span><div class="dchips">${used.map(i=>`<button onclick="openItem('${i.id}')">${esc(i.n)}</button>`).join('')||'<span class="small muted">Not attached yet. Attach it from an item, or edit the group.</span>'}</div></div></div>`:`<div class="card"><div class="empty"><div class="empty-t">No choice groups yet</div><div class="empty-s">Create one for things like crust, sauce or add-ons.</div></div></div>`}</div>`;}
+function mMods(){const g=gById(S.menu.gsel)||DB.groups[0];if(g)S.menu.gsel=g.id;const used=g?DB.items.filter(i=>i.groups.includes(g.id)):[],lock=fromPOS(),def=g&&g.opts.find(o=>o.id===g.def);
+  return `<div class="row-h"><div><div class="h1">Modifiers</div><p class="desc" style="margin-top:4px">Choice groups and their options. A required group is always asked; an optional one only if the caller brings it up. Each option has its own price, outlets and stock, like an item.</p></div>${lock?'':`<div class="r"><button class="btn btn-dark" onclick="openGroup()">${I.plus} New group</button></div>`}</div>
+  <div class="mgrid" style="display:grid;grid-template-columns:250px minmax(0,1fr);gap:20px;align-items:start">
+   <div class="card" style="padding:10px"><div class="cats">${DB.groups.map(x=>`<button class="cat ${g&&x.id===g.id?'on':''}" style="flex-direction:column;align-items:flex-start" onclick="S.menu.gsel='${x.id}';render()"><span style="display:flex;width:100%">${esc(x.n)}<span class="n">${x.opts.length}</span></span><span class="xs" style="opacity:.7">${ruleTxt(x)}</span></button>`).join('')}</div>${lock?'':`<button class="btn btn-ghost btn-sm" style="width:100%;margin-top:6px" onclick="openGroup()">${I.plus} New group</button>`}</div>
+   ${g?`<div class="scard"><div class="scard-h"><div><div class="h2">${esc(g.n)}</div><div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap">${pill(g.min?'p-dust':'p-grey',ruleTxt(g))} ${g.max==null?pill('p-amber','Set a maximum'):''} ${def?pill('p-mint','Default: '+def.n):''}</div></div><div class="r" style="display:flex;gap:8px">${lock?`<span class="tag">${icoS('lock',12)} From ${DB.menuSource}</span>`:`<button class="btn btn-soft btn-sm" onclick="openGroup('${g.id}')">Edit group</button><button class="btn btn-red btn-sm" onclick="S.modal={t:'mdel',kind:'group',id:'${g.id}'};renderOverlay()">Delete</button>`}</div></div>
+    <div class="ask"><b>What Allie says</b><br>“${esc(askText(g))}”${def?`<br><span class="xs muted">If the caller doesn’t say, Allie suggests ${esc(def.n)}.</span>`:''}</div>
+    <div class="tblw"><table class="tbl mtbl"><thead><tr><th>Option</th><th>Extra price</th><th>Allergens</th><th>Sold at</th><th>Stock</th><th></th></tr></thead><tbody>${g.opts.map(x=>`<tr><td>${tdot(x.type)}<button class="iname" onclick="openOpt('${g.id}','${x.id}')">${esc(x.n)}</button>${x.aka.length?`<div class="xs muted">Also: ${x.aka.map(esc).join(', ')}</div>`:''}</td><td class="small" style="white-space:nowrap">${optPrice(x)}</td><td class="small">${x.all.join(', ')||'<span class="muted">—</span>'}</td><td class="small">${esc(opLabel(soldAt(x)))}</td><td class="small">${stockTxt(x)}</td>
+     <td style="white-space:nowrap;text-align:right"><button class="ib" aria-label="Edit ${esc(x.n)}" onclick="openOpt('${g.id}','${x.id}')">${icoS('pen',15)}</button>${lock?'':`<button class="ib del" aria-label="Delete ${esc(x.n)}" onclick="S.modal={t:'mdel',kind:'opt',id:'${x.id}'};renderOverlay()">${I.x}</button>`}</td></tr>`).join('')}</tbody></table></div>
+    ${lock?'':`<button class="btn btn-soft btn-sm" style="align-self:flex-start" onclick="openOpt('${g.id}')">${I.plus} Add option</button>`}
+    <div class="field"><span class="fl">Used by ${used.length} item${used.length===1?'':'s'}</span><div class="dchips">${used.map(i=>`<button onclick="openItem('${i.id}')">${esc(i.n)}</button>`).join('')||'<span class="small muted">Not attached yet. Attach it from an item, or in Edit group.</span>'}</div></div></div>`:`<div class="card"><div class="empty"><div class="empty-t">No choice groups yet</div><div class="empty-s">Create one for things like crust, sauce or add-ons.</div></div></div>`}</div>`;}
 
 /* ── Ordering hours tab ── */
-function mHours(){return `<div class="row-h"><div><div class="h1">Ordering hours</div><p class="desc" style="margin-top:4px">When Allie takes orders, and for which items. These can be shorter than opening hours. Outside them Allie still answers questions and books tables.</p></div>${isBrand()?`<div class="r"><button class="btn btn-dark" onclick="openWin()">${I.plus} New window</button></div>`:''}</div>
-  ${DB.wins.map(w=>{const n=DB.items.filter(i=>i.win.includes(w.id)).length;return `<div class="scard" style="gap:12px"><div class="scard-h"><div><div class="h3">${esc(w.n)}</div><div class="small muted">${w.days.join(', ')} · ${w.iv.map(x=>x[0]+' – '+x[1]).join(', ')}</div></div>${isBrand()?`<div class="r" style="display:flex;gap:8px"><button class="btn btn-soft btn-sm" onclick="openWin('${w.id}')">Edit</button><button class="btn btn-red btn-sm" onclick="S.modal={t:'mdel',kind:'win',id:'${w.id}'};renderOverlay()">Delete</button></div>`:''}</div>
-   <div class="kv" style="grid-template-columns:repeat(3,minmax(0,1fr))"><div><div class="k">Outlets</div><div class="v">${OUTLETS.filter(o=>w.out[o.id]).map(o=>o.short).join(', ')||'None'}</div></div><div><div class="k">Channels</div><div class="v">${[w.ch.d?'Delivery':null,w.ch.p?'Pickup':null].filter(Boolean).join(', ')}</div></div><div><div class="k">Items</div><div class="v">${n} item${n===1?'':'s'}</div></div></div></div>`;}).join('')}
+function winScope(w){return w.scope==='all'?'All items':w.scope==='cats'?w.cats.map(catName).join(', '):w.items.length+' item'+(w.items.length===1?'':'s');}
+function mHours(){const o=S.outlet,ws=DB.wins.filter(w=>isBrand()||w.outs.includes(o));return `<div class="row-h"><div><div class="h1">Ordering hours</div><p class="desc" style="margin-top:4px">When Allie takes orders, where, and for which items. These can be shorter than opening hours. Outside them Allie still answers questions and books tables.</p></div>${isBrand()?`<div class="r"><button class="btn btn-dark" onclick="openWin()">${I.plus} New window</button></div>`:''}</div>
+  ${ws.map(w=>`<div class="scard" style="gap:12px"><div class="scard-h"><div><div class="h3">${esc(w.n)}</div><div class="small muted">${w.days.join(', ')} · ${w.iv.map(x=>x[0]+' – '+x[1]).join(', ')}</div></div>${isBrand()?`<div class="r" style="display:flex;gap:8px"><button class="btn btn-soft btn-sm" onclick="openWin('${w.id}')">Edit</button><button class="btn btn-red btn-sm" onclick="S.modal={t:'mdel',kind:'win',id:'${w.id}'};renderOverlay()">Delete</button></div>`:''}</div>
+   <div class="kv" style="grid-template-columns:repeat(3,minmax(0,1fr))"><div><div class="k">Outlets</div><div class="v">${esc(opLabel(w.outs))}</div></div><div><div class="k">Channel</div><div class="v">${CH[w.ch]}</div></div><div><div class="k">Items</div><div class="v">${esc(winScope(w))}</div></div></div></div>`).join('')||'<div class="soft-empty">No ordering windows at this outlet.</div>'}
   <div class="small muted">Last orders 15 min before a window closes. A caller at 9:50 PM hears: “We’ve stopped taking orders for tonight. We open at 11 tomorrow.”</div>`;}
 
-/* ── Availability tab (stock, per outlet) ── */
+/* ── Availability tab: stock at one outlet, bulk across many ── */
 function mAvail(){const o=isBrand()?S.menu.ao:S.outlet,q=S.menu.aq.toLowerCase(),F=S.menu.af;
-  const rows=DB.items.filter(i=>i.out[o]&&(!q||i.n.toLowerCase().includes(q))&&(F==='all'||(F==='off'?!i.stock[o]:i.stock[o])));
-  const off=DB.items.filter(i=>i.out[o]&&!i.stock[o]);
-  return `<div class="row-h"><div><div class="h1">Availability</div><p class="desc" style="margin-top:4px">Turn items off when you run out. Allie stops offering them right away and suggests something similar.${DB.posSync&&ON(o).pos?' At this outlet, sold-out status also comes from '+ON(o).pos+'.':''}</p></div>
-   <div class="r">${isBrand()?`<div class="segp sm">${OUTLETS.map(x=>`<button class="${o===x.id?'on':''}" onclick="S.menu.ao='${x.id}';render()">${x.short}</button>`).join('')}</div>`:''}</div></div>
-  ${off.length?`<div class="banner b-amber">${I.warn}<div><b>${off.length} off at ${esc(ON(o).short)}:</b> ${off.map(i=>esc(i.n)).join(', ')}.</div></div>`:''}
-  <div class="fchips">${[['all','All'],['on','On'],['off','Off']].map(x=>`<button class="fchip ${F===x[0]?'on':''}" onclick="S.menu.af='${x[0]}';render()">${x[1]}</button>`).join('')}<label class="lsearch" style="margin:0;height:34px;flex:1;min-width:160px;max-width:300px;border-radius:999px">${I.search}<input type="search" placeholder="Search…" value="${esc(S.menu.aq)}" oninput="S.menu.aq=this.value;clearTimeout(S.menu.qt);S.menu.qt=setTimeout(render,250)"></label>
-   <button class="btn btn-sm btn-soft" onclick="setAll('${o}',true)">All on</button><button class="btn btn-sm btn-soft" onclick="setAll('${o}',false)">All off</button></div>
-  <div class="card card-p">${DB.cats.map(c=>{const rs=rows.filter(i=>i.cat===c.id);if(!rs.length)return '';return `<div class="eyebrow" style="font-size:12px;margin:14px 0 6px">${esc(c.n)}</div>${rs.map(i=>`<div class="avrow"><span style="flex:1;min-width:0;font-weight:500">${esc(i.n)}</span>${!i.stock[o]?`<select class="inp" style="height:34px;max-width:190px" aria-label="Back on"><option>Back at opening tomorrow</option><option>Back in 2 hours</option><option>Until I turn it on</option></select>`:''}<button class="tog ${i.stock[o]?'on':''}" aria-label="${esc(i.n)} in stock" onclick="togStock('${i.id}','${o}')"></button></div>`).join('')}`;}).join('')||'<div class="soft-empty">Nothing matches.</div>'}
-   <div class="eyebrow" style="font-size:12px;margin:18px 0 6px">Modifier options</div>${DB.groups.map(g=>g.opts.map((x,k)=>`<div class="avrow"><span style="flex:1"><b style="font-weight:500">${esc(x.n)}</b> <span class="xs muted">${esc(g.n)}</span></span><button class="tog ${x.on?'on':''}" aria-label="${esc(x.n)}" onclick="gById('${g.id}').opts[${k}].on=!gById('${g.id}').opts[${k}].on;stage('Option updated');render()"></button></div>`).join('')).join('')}</div>`;}
-function setAll(o,v){DB.items.forEach(i=>{if(i.out[o])i.stock[o]=v;});stage('All items '+(v?'on':'off')+' at '+ON(o).short);render();}
+  const rows=DB.items.filter(i=>soldAt(i).includes(o)&&(!q||i.n.toLowerCase().includes(q))&&(F==='all'||(F==='off'?i.oos[o]:!i.oos[o])));
+  const off=DB.items.filter(i=>soldAt(i).includes(o)&&i.oos[o]),sel=S.menu.sel.filter(id=>rows.some(i=>i.id===id));
+  return `<div class="row-h"><div><div class="h1">Availability</div><p class="desc" style="margin-top:4px">Turn items off when an outlet runs out. Allie stops offering them there right away and suggests something similar.</p></div></div>
+  <div class="scard" style="flex-direction:row;align-items:center;gap:14px;flex-wrap:wrap;padding:16px 20px"><span class="fl">Outlet</span>${isBrand()?opBtn([o],`openOP({title:'Show stock for…',mode:'single',sel:['${o}'],apply:s=>{S.menu.ao=s[0];S.menu.sel=[]},note:id=>{const n=DB.items.filter(i=>soldAt(i).includes(id)&&i.oos[id]).length;return n?n+' off':''}})`,true):`<b>${esc(ON(o).name)}</b>`}
+   <span class="small muted" style="flex:1">${rows.length} items sold here${off.length?` · <b style="color:var(--coral-700)">${off.length} off</b>`:''}${DB.posSync&&ON(o).pos?' · sold-out status also syncs from '+ON(o).pos:''}</span>
+   ${isBrand()?`<button class="btn btn-soft btn-sm" onclick="openBulk(DB.items.filter(i=>i.oos['${o}']).map(i=>i.id));S.modal.act='back';S.modal.outs=['${o}'];renderOverlay()" ${off.length?'':'disabled'}>Turn all back on</button>`:''}</div>
+  <div class="fchips">${[['all','All'],['on','In stock'],['off','Out of stock']].map(x=>`<button class="fchip ${F===x[0]?'on':''}" onclick="S.menu.af='${x[0]}';render()">${x[1]}</button>`).join('')}<label class="lsearch" style="margin:0;height:34px;flex:1;min-width:160px;max-width:300px;border-radius:999px">${I.search}<input type="search" placeholder="Search…" value="${esc(S.menu.aq)}" oninput="S.menu.aq=this.value;clearTimeout(S.menu.qt);S.menu.qt=setTimeout(render,250)"></label>
+   ${sel.length&&isBrand()?`<div class="bulk">${sel.length} selected <button class="btn btn-sm btn-line" onclick="openBulk();S.modal.act='oos';S.modal.outs=['${o}'];renderOverlay()">Out of stock at…</button><button class="btn btn-sm btn-soft" onclick="openBulk();S.modal.act='back';S.modal.outs=['${o}'];renderOverlay()">Back in stock at…</button></div>`:''}</div>
+  <div class="card card-p">${DB.cats.map(c=>{const rs=rows.filter(i=>i.cat===c.id);if(!rs.length)return '';return `<div class="eyebrow" style="font-size:12px;margin:14px 0 6px">${esc(c.n)}</div>${rs.map(i=>`<div class="avrow">${isBrand()?`<input type="checkbox" aria-label="Select ${esc(i.n)}" ${sel.includes(i.id)?'checked':''} onchange="toggleSel('${i.id}')">`:''}<span style="flex:1;min-width:0">${tdot(i.type)}<b style="font-weight:500">${esc(i.n)}</b>${i.oos[o]?'':` <span class="xs muted">${soldAt(i).filter(x=>i.oos[x]).length?'· out at '+soldAt(i).filter(x=>i.oos[x]).length+' other outlet(s)':''}</span>`}</span>${i.oos[o]?`<select class="inp" style="height:34px;max-width:200px" aria-label="Back on" onchange="itById('${i.id}').oos['${o}']=this.value"><option>Back at opening tomorrow</option><option>Back in 2 hours</option><option>Until I turn it on</option></select>`:''}<button class="tog ${i.oos[o]?'':'on'}" aria-label="${esc(i.n)} in stock" onclick="stockHere('${i.id}','${o}')"></button></div>`).join('')}`;}).join('')||'<div class="soft-empty">Nothing matches.</div>'}
+   <div class="eyebrow" style="font-size:12px;margin:18px 0 6px">Modifier options</div>${DB.groups.map(g=>g.opts.filter(x=>soldAt(x).includes(o)).map(x=>`<div class="avrow"><span style="flex:1">${tdot(x.type)}<b style="font-weight:500">${esc(x.n)}</b> <span class="xs muted">${esc(g.n)}</span></span><button class="tog ${x.oos[o]?'':'on'}" aria-label="${esc(x.n)} in stock" onclick="optStockHere('${x.id}','${o}')"></button></div>`).join('')).join('')}</div>`;}
 
-/* ── Taxes tab ── */
+/* ── Taxes & sources ── */
 function mTax(){return `<div class="row-h"><div><div class="h1">Taxes & charges</div><p class="desc" style="margin-top:4px">Included in the total Allie reads back. Delivery fees are set per zone in Settings › Delivery & pickup.</p></div><div class="r"><button class="btn btn-dark" onclick="openTax()">${I.plus} Add tax or charge</button></div></div>
-  <div class="card card-p"><div class="tblw"><table class="tbl"><thead><tr><th>Name</th><th>Type</th><th>Applied on</th><th>Value</th><th>Channels</th><th>Outlets</th><th></th></tr></thead><tbody>${DB.taxes.map(t=>`<tr><td style="font-weight:600">${esc(t.n)}</td><td>${pill(t.type==='Tax'?'p-grey':'p-amber',t.type)}</td><td class="small">${t.on} · ${t.calc.toLowerCase()}</td><td class="num">${t.vt==='%'?t.v+'%':money(t.v)}</td><td class="small">${[t.ch.d?'Delivery':null,t.ch.p?'Pickup':null].filter(Boolean).join(', ')}</td><td class="small">${Object.values(t.out).filter(Boolean).length} of 3</td><td style="text-align:right;white-space:nowrap"><button class="ib" aria-label="Edit" onclick="openTax('${t.id}')">${I.pen.replace('width="22" height="22"','width="15" height="15"')}</button><button class="ib del" aria-label="Delete" onclick="S.modal={t:'mdel',kind:'tax',id:'${t.id}'};renderOverlay()">${I.x}</button></td></tr>`).join('')}</tbody></table></div></div>`;}
+  <div class="card card-p"><div class="tblw"><table class="tbl"><thead><tr><th>Name</th><th>Type</th><th>Applied on</th><th>Value</th><th>Channel</th><th>Outlets</th><th></th></tr></thead><tbody>${DB.taxes.map(t=>`<tr><td style="font-weight:600">${esc(t.n)}</td><td>${pill(t.type==='Tax'?'p-grey':'p-amber',t.type)}</td><td class="small">${t.on} · ${esc(t.base)} · ${t.calc.toLowerCase()}${t.delfee?' · incl. delivery fee':''}</td><td class="num">${t.vt==='%'?t.v+'%':money(t.v)}</td><td class="small">${CH[t.ch]}</td><td class="small">${esc(opLabel(t.outs))}</td><td style="text-align:right;white-space:nowrap"><button class="ib" aria-label="Edit" onclick="openTax('${t.id}')">${icoS('pen',15)}</button><button class="ib del" aria-label="Delete" onclick="S.modal={t:'mdel',kind:'tax',id:'${t.id}'};renderOverlay()">${I.x}</button></td></tr>`).join('')}</tbody></table></div></div>`;}
 function mSources(){return `<div><div class="h1">Sources</div><p class="desc" style="margin-top:4px">With a POS connected, it’s the source of truth for names, sizes, prices, choices and sold-out status.</p></div>
-  <div class="scard"><div class="scard-h"><span class="stat-ic ic-mint" style="width:44px;height:44px">${I.pos}</span><div><div class="h3">${fromPOS()?esc(DB.menuSource)+' · Wicker Park, River North':'Current source · '+esc(DB.menuSource||'Built in Tringg')}</div><div class="fh">${fromPOS()?'Last sync 4 min ago · '+DB.items.length+' items · '+DB.groups.length+' choice groups':'Edit items directly in Tringg'}</div></div>${fromPOS()?`<div class="r"><button class="btn btn-soft btn-sm" onclick="toast('Syncing…')">Sync now</button></div>`:''}</div></div>
-  <div class="eyebrow">Import more or replace the menu</div>${srcCards()}
-  <div class="small muted">Importing into a live menu creates a draft. You’ll see what’s new, changed or missing before anything is replaced.</div>`;}
+  <div class="scard"><div class="scard-h"><span class="stat-ic ic-mint" style="width:44px;height:44px">${I.pos}</span><div><div class="h3">${esc(DB.menuSource||'Built in Tringg')}</div><div class="fh">${fromPOS()?'Last sync 4 min ago · ':''}${DB.items.length} items · ${DB.groups.length} choice groups · ${OUTLETS.length} outlets</div></div>${fromPOS()?`<div class="r"><button class="btn btn-soft btn-sm" onclick="toast('Syncing…')">Sync now</button></div>`:''}</div></div>
+  <div class="eyebrow">Import more or replace the menu</div>${srcCards()}<div class="small muted">Importing into a live menu creates a draft. You’ll see what’s new, changed or missing before anything is replaced.</div>`;}
 
 /* ── import flows ── */
 function menuFlow(){const f=S.menu.flow,back=`<button class="btn btn-ghost btn-sm" style="align-self:flex-start;margin-left:-10px" onclick="S.menu.flow=null;render()">${I.back} All options</button>`;
-  if(!f)return `<div><div class="eyebrow">Menu · all outlets</div><div class="h1-lg" style="margin-top:4px">How would you like to add your menu?</div><p class="desc" style="margin-top:6px">You build the menu once for all outlets, then choose what each outlet sells. Whatever we import lands as a draft you can edit before it goes live.</p></div>${srcCards()}`;
+  if(!f)return `<div><div class="eyebrow">Menu · all outlets</div><div class="h1-lg" style="margin-top:4px">How would you like to add your menu?</div><p class="desc" style="margin-top:6px">You build the menu once for all outlets, then set each outlet’s prices, what it sells and its stock. Whatever we import lands as a draft you can edit before it goes live.</p></div>${srcCards()}`;
   if(f==='gbp')return back+gbpFlow();
-  if(f==='web')return back+`<div><div class="h1">Import from your website</div><p class="desc" style="margin-top:6px">We read your menu page and build the menu from it.</p></div>
-   <div class="scard"><div class="field"><label class="fl" for="web">Menu page</label><input class="inp" id="web" style="max-width:600px" value="https://rossapizza.com/menu"></div><button class="btn btn-dark" style="align-self:flex-start" onclick="startExtract('Your website')">Read my menu page</button></div>`;
+  if(f==='web')return back+`<div><div class="h1">Import from your website</div><p class="desc" style="margin-top:6px">We read your menu page and build the menu from it.</p></div><div class="scard"><div class="field"><label class="fl" for="web">Menu page</label><input class="inp" id="web" style="max-width:600px" value="https://rossapizza.com/menu"></div><button class="btn btn-dark" style="align-self:flex-start" onclick="startExtract('Your website')">Read my menu page</button></div>`;
   if(f==='agg')return back+aggFlow();
   if(f==='upload')return back+`<div><div class="h1">Upload photos or a PDF</div><p class="desc" style="margin-top:6px">Photograph each page flat and in good light.</p></div>
    <label class="drop" for="mfiles"><span class="stat-ic ic-cream">${I.cam}</span><b style="font-weight:600">Drop menu photos here, or click to choose</b><span class="small muted">JPG, PNG or PDF · up to 10 pages</span><input type="file" id="mfiles" multiple accept="image/*,.pdf" style="position:absolute;opacity:0;width:1px;height:1px" onchange="S.menu.files=[...this.files].map(f=>f.name);render()"></label>
@@ -1110,27 +1222,22 @@ function startExtract(src){S.menu.files=[];S.menu.src=src;S.menu.flow='extractin
 function buildDraft(src){
   const pos=POS_LIST.includes(src),agg=/\(uploaded\)/.test(src);
   DB.cats=clone(MENU.cats);DB.groups=clone(MENU.groups);DB.wins=clone(MENU.wins);DB.items=clone(MENU.items);DB.menuSource=src;DB.menuState='draft';DB.pending=0;S.menu.tab='items';S.menu.f='check';S.menu.sel=[];S.menu.cut=0;
+  if(!pos)DB.items.forEach(i=>{i.pg=[{outs:OIDS(),ch:'both',p:i.pg[0].p.slice()}];});
   const flag=(id,r)=>{const i=itById(id);if(i)i.chk=r;};
   if(pos){flag('p5','No description or allergens in '+src+'. Add them so Allie can answer questions.');flag('a4','Pesto usually has pine nuts. We added Tree nuts. Confirm.');}
-  else{
-   flag('p3','Price partly unreadable. Enter the 12" price.');itById('p3').v[0].p=0;
+  else{flag('p3','Price partly unreadable. Enter the 12" price.');itById('p3').pg[0].p[0]=null;
    flag('p6','We built a “Halves” choice (pick 2). Check the options.');
    flag('a4','Pesto usually has pine nuts. We added Tree nuts. Confirm.');
-   DB.items.splice(DB.items.findIndex(i=>i.id==='d1')+1,0,mkItem({id:'dx',cat:'si',n:'Garlic Knot',desc:'Garlic butter, marinara',all:['Gluten'],v:[{n:'Regular',p:6}],chk:'Possible duplicate of “Garlic Knots”. Delete one.'}));
+   DB.items.splice(DB.items.findIndex(i=>i.id==='d1')+1,0,mkItem({id:'dx',cat:'si',n:'Garlic Knot',type:'veg',desc:'Garlic butter, marinara',all:['Gluten'],pg:pgAll([6]),chk:'Possible duplicate of “Garlic Knots”. Delete one.'}));
    flag('d2','“Choice of sauce” but no sauces were listed. Check the Wing sauce group.');
-   flag('k4','Alcohol. Choose the channels and outlets where it can be sold.');
-   if(src==='Google Business Profile'){DB.items.forEach(i=>{if(i.cat==='pz')i.chk=i.chk||'Google had one price. We added 12", 14" and 18" sizes. Check the prices.';});}
-   if(agg)DB.items.forEach(i=>i.v.forEach(v=>{v.app=Math.round(v.p*1.15*4)/4;v.p=v.app;}));
-  }
-}
-function startScratch(){DB.items=[];DB.cats=[];DB.groups=[];DB.wins=clone(MENU.wins);DB.menuState='live';DB.menuSource='Tringg';S.menu.flow=null;S.menu.tab='items';render();}
+   flag('k4','Alcohol. Choose the outlets and channel where it can be sold.');
+   if(src==='Google Business Profile')DB.items.forEach(i=>{if(i.cat==='pz')i.chk=i.chk||'Google had one price. We added 12", 14" and 18" sizes. Check the prices.';});
+   if(agg)DB.items.forEach(i=>i.pg.forEach(g=>{g.app=g.p.map(v=>has(v)?Math.round(v*1.15*4)/4:v);g.p=g.app.slice();}));}}
+function startScratch(){DB.items=[];DB.cats=[];DB.groups=[];DB.wins=clone(MENU.wins);DB.menuState='live';DB.menuSource='Built in Tringg';S.menu.flow=null;S.menu.tab='items';render();}
 function gbpFlow(){return `<div><div class="h1">Import from your Google profile</div><p class="desc" style="margin-top:6px">Pulled through Google’s official Business Profile API, using the Google connection from onboarding. Nothing changes on Google.</p></div>
-  <div class="scard"><div class="scard-h"><span class="stat-ic ic-mint" style="width:44px;height:44px">${I.store}</span><div><div class="h3">ROSSA Pizzeria · Google Business Profile</div><div class="fh">Connected by Priya Sharma during onboarding</div></div><div class="r">${pill('p-green','Connected')}</div></div>
-   <div class="tblw"><table class="tbl"><thead><tr><th>Outlet</th><th>Menu on Google</th><th>Items</th><th>Last updated</th></tr></thead><tbody>
-    <tr><td style="font-weight:600">Wicker Park</td><td>${pill('p-green','Found')}</td><td class="num">31</td><td class="small muted">Aug 2026</td></tr>
-    <tr><td style="font-weight:600">River North</td><td>${pill('p-green','Same as Wicker Park')}</td><td class="num">31</td><td class="small muted">Aug 2026</td></tr>
-    <tr><td style="font-weight:600">Loop</td><td>${pill('p-grey','Menu link only')}</td><td class="num">—</td><td class="small muted">Links to rossapizza.com/menu</td></tr></tbody></table></div>
-   <div class="banner b-grey" style="font-size:13px">${I.warn}<div>Google menus have items, prices and dietary labels, but rarely sizes or add-ons. We suggest those, and flag them for you to check.</div></div>
+  <div class="scard"><div class="scard-h"><span class="stat-ic ic-mint" style="width:44px;height:44px">${I.store}</span><div><div class="h3">ROSSA Pizzeria · Google Business Profile</div><div class="fh">Connected by Priya Sharma during onboarding · ${OUTLETS.length} locations</div></div><div class="r">${pill('p-green','Connected')}</div></div>
+   <div class="kv" style="grid-template-columns:repeat(3,minmax(0,1fr))"><div><div class="k">Locations with a menu</div><div class="v">10 of ${OUTLETS.length}</div></div><div><div class="k">Items found</div><div class="v">31</div></div><div><div class="k">Menu link only</div><div class="v">Loop, O’Hare T3</div></div></div>
+   <div class="banner b-grey" style="font-size:13px">${I.warn}<div>Google menus have items, prices and dietary labels, but rarely sizes or add-ons. We suggest those and flag them for you to check. The menu is imported once for all outlets.</div></div>
    <button class="btn btn-dark" style="align-self:flex-start" onclick="startExtract('Google Business Profile')">Import from Google</button></div>`;}
 function aggFlow(){const a=S.menu.agg||'DoorDash',portal={DoorDash:'Merchant Portal › Menu',"Uber Eats":'Uber Eats Manager › Menu',Grubhub:'Grubhub for Restaurants › Menu'}[a];
   return `<div><div class="h1">Bring your menu from a delivery app</div><p class="desc" style="margin-top:6px">Delivery apps don’t allow other companies to read their pages, so Tringg doesn’t. Save your own store page and drop it here. It takes about a minute.</p></div>
@@ -1143,140 +1250,181 @@ function aggFlow(){const a=S.menu.agg||'DoorDash',portal={DoorDash:'Merchant Por
   ${S.menu.files.length?`<div class="thumbs">${S.menu.files.map(n=>`<div class="thumb"><div class="img"></div><div class="c">${esc(n)}</div></div>`).join('')}</div>`:''}
   <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn btn-dark" ${S.menu.files.length?'':'disabled'} onclick="startExtract('${a} (uploaded)')">Read files</button><button class="btn btn-soft" onclick="S.menu.files=['${a.toLowerCase().replace(' ','-')}-store-page.pdf'];render()">Use a sample PDF</button></div>`;}
 function openPos(){S.modal={t:'pos',step:1,pick:null,q:''};renderOverlay();}
-
-/* ── drawers: item, group, category, window, tax ── */
-function openItem(id,cat){if(id){S.menu.w=clone(itById(id));S.menu.w._new=false;}else{S.menu.w=mkItem({id:'i'+Date.now(),cat:cat||S.menu.cat||(DB.cats[0]||{}).id,n:'',v:[{n:'Regular',p:0}]});S.menu.w._new=true;}S.menu.drawer='item';renderOverlay();}
-function openGroup(id){S.menu.gw=id?clone(gById(id)):{id:'g'+Date.now(),n:'',min:0,max:1,opts:[{n:'',p:0,on:true}],_new:true};S.menu.gw.items=id?DB.items.filter(i=>i.groups.includes(id)).map(i=>i.id):(S.menu.drawer==='item'?[S.menu.w.id]:[]);if(S.menu.drawer==='item')S.menu.ret=true;S.menu.drawer='group';renderOverlay();}
-function openCat(id){S.menu.cw=id?clone(DB.cats.find(c=>c.id===id)):{id:'c'+Date.now(),n:'',d:'',_new:true};S.menu.drawer='cat';renderOverlay();}
-function openWin(id){S.menu.ww=id?clone(DB.wins.find(w=>w.id===id)):{id:'w'+Date.now(),n:'',days:['Mon','Tue','Wed','Thu','Fri'],iv:[['11:00 AM','3:00 PM']],out:clone(ALL3),ch:{d:true,p:true},_new:true};S.menu.drawer='win';renderOverlay();}
-function openTax(id){S.menu.tw=id?clone(DB.taxes.find(t=>t.id===id)):{id:'t'+Date.now(),type:'Tax',n:'',on:'Item',calc:'Additive',vt:'%',v:0,ch:{d:true,p:true},out:clone(ALL3),_new:true};S.menu.drawer='tax';renderOverlay();}
-const chipTog=(arr,v)=>{const k=arr.indexOf(v);k<0?arr.push(v):arr.splice(k,1);};
+/* ── drawers ── */
 function drawerShell(eyebrow,title,body,foot){return `<div class="scrim" onclick="closeDrawer()"></div><aside class="drawer wide" aria-label="${esc(title)}"><div class="drawer-h"><div><div class="eyebrow">${eyebrow}</div><div class="h2" style="margin-top:4px">${title}</div></div><button class="x" aria-label="Close" onclick="closeDrawer()">${I.x}</button></div><div class="drawer-b">${body}</div><div class="drawer-f">${foot}</div></aside>`;}
-function closeDrawer(){if(S.menu.drawer==='group'&&S.menu.ret){S.menu.ret=false;S.menu.drawer='item';}else S.menu.drawer=null;renderOverlay();}
-function itemDrawer(){const w=S.menu.w,brand=isBrand(),o=S.outlet,lock=fromPOS()&&!w._new,dis=lock||!brand?'disabled':'';
-  const sec=(t,d,b)=>`<section class="dsec2"><div class="fl">${t}</div>${d?`<div class="fh" style="margin-top:-6px">${d}</div>`:''}${b}</section>`;
-  let b='';
+function closeDrawer(){if(S.menu.back){const b=S.menu.back;S.menu.back=null;S.menu.drawer=b;}else S.menu.drawer=null;renderOverlay();}
+const sec=(t,d,b)=>`<section class="dsec2"><div class="fl">${t}</div>${d?`<div class="fh" style="margin-top:-6px">${d}</div>`:''}${b}</section>`;
+const typeSeg=(path,v,dis)=>`<div class="segp sm">${[['veg','Veg'],['nv','Non-veg'],['none','Not set']].map(([k,t])=>`<button ${dis?'disabled':''} class="${v===k?'on':''}" onclick="${path}='${k}';renderOverlay()">${k!=='none'?tdot(k):''}${t}</button>`).join('')}</div>`;
+const akaInput=(path,list,id)=>`<div class="chipin">${list.map((a,k)=>`<span class="tag">${esc(a)}<button aria-label="Remove ${esc(a)}" onclick="${path}.splice(${k},1);renderOverlay()">×</button></span>`).join('')}<input id="${id}" placeholder="Type and press Enter" onkeydown="if(event.key==='Enter'&&this.value.trim()){${path}.push(this.value.trim().toLowerCase());renderOverlay();setTimeout(()=>$('${id}').focus())}"></div>`;
+function openItem(id,cat){if(id){S.menu.w=clone(itById(id));S.menu.w._new=false;}else{S.menu.w=mkItem({id:'i'+Date.now(),cat:cat||S.menu.cat||(DB.cats[0]||{}).id,n:'',pg:[{outs:OIDS(),ch:'both',p:[null]}]});S.menu.w._new=true;}S.menu.drawer='item';S.menu.back=null;renderOverlay();}
+function itemDrawer(){const w=S.menu.w,brand=isBrand(),o=S.outlet,lock=fromPOS()&&!w._new,dis=lock?'disabled':'';let b='';
   if(w.chk)b+=`<div class="banner b-amber">${I.warn}<div><b>Needs a check:</b> ${esc(w.chk)}<br><span class="small">Saving marks it as checked.</span></div></div>`;
-  if(lock)b+=`<div class="banner b-grey" style="font-size:13px">${I.lock}<div>Name, sizes, prices and choices come from ${DB.menuSource}. Change them there. Everything else is Tringg-only and editable here.</div></div>`;
-  if(!brand)b+=`<div class="banner b-grey" style="font-size:13px">${I.store}<div>You’re editing <b>${esc(ON(o).short)}</b>: price overrides and whether it’s sold here. Everything else is set in All outlets.</div></div>`;
+  if(lock)b+=`<div class="banner b-grey" style="font-size:13px">${icoS('lock',16)}<div>Name, sizes, prices and choices come from ${DB.menuSource}. Change them there. Everything else is editable here.</div></div>`;
+  if(!brand){const g=groupAt(w,o),sold=soldAt(w).includes(o),own=g&&g.outs.length===1,gi=w.pg.indexOf(g);
+    b+=`<div class="banner b-grey" style="font-size:13px">${icoS('store',16)}<div>You’re editing <b>${esc(ON(o).name)}</b>: whether it’s sold here, its price here and its stock. Everything else is set in All outlets.</div></div>`;
+    b+=sec('Sold at '+esc(ON(o).short),'',`<div class="tg"><span class="tx small">${sold?'Sold here':'Not sold here'}</span><button class="tog ${sold?'on':''}" aria-label="Sold here" onclick="soldHereW('${o}')"></button></div>`);
+    if(sold){b+=sec('Price at '+esc(ON(o).short),own?'This outlet has its own price group.':'Shared with '+(g.outs.length-1)+' other outlet'+(g.outs.length>2?'s':'')+' ('+CH[g.ch].toLowerCase()+').',
+      `<div class="pg-prices">${w.v.map((s,i)=>`<label class="pg-p"><span class="xs muted">${esc(s.n)}</span><span class="pg-in">$<input ${own&&!lock?'':'disabled'} value="${has(g.p[i])?g.p[i]:''}" placeholder="—" aria-label="${esc(s.n)} price" oninput="S.menu.w.pg[${gi}].p[${i}]=this.value===''?null:+this.value"></span></label>`).join('')}</div>
+       ${own||lock?'':`<button class="btn btn-soft btn-sm" style="align-self:flex-start" onclick="splitOutlet('${o}')">Set a different price at ${esc(ON(o).short)}</button>`}`);
+      b+=sec('Stock at '+esc(ON(o).short),'',`<div class="tg"><span class="tx small">${w.oos[o]?'<b style="color:var(--coral-700)">Out of stock</b> · '+esc(w.oos[o]):'In stock'}</span><button class="tog ${w.oos[o]?'':'on'}" aria-label="In stock" onclick="if(S.menu.w.oos['${o}'])delete S.menu.w.oos['${o}'];else S.menu.w.oos['${o}']='Back at opening tomorrow';renderOverlay()"></button></div>`);}
+    return drawerShell(esc(catName(w.cat)),esc(w.n),b,`<button class="btn btn-ghost" onclick="closeDrawer()">Cancel</button><button class="btn btn-dark" onclick="saveItemW()">Save</button>`);}
   b+=sec('Basics','',`<div class="frow"><div class="field"><label class="fl" for="iw-n">Name <span style="color:var(--coral-700)">*</span></label><input class="inp" id="iw-n" ${dis} value="${esc(w.n)}" oninput="S.menu.w.n=this.value" placeholder="e.g. Pepperoni"></div>
-    <div class="field"><label class="fl" for="iw-c">Category</label><select class="inp" id="iw-c" ${brand?'':'disabled'} onchange="S.menu.w.cat=this.value">${DB.cats.map(c=>`<option value="${c.id}" ${c.id===w.cat?'selected':''}>${esc(c.n)}</option>`).join('')}</select></div></div>
-   <div class="field"><label class="fl" for="iw-d">Description</label><textarea class="inp" id="iw-d" ${brand?'':'disabled'} oninput="S.menu.w.desc=this.value" placeholder="What’s on it? Allie reads this when callers ask.">${esc(w.desc)}</textarea></div>
-   <div class="field"><label class="fl" for="iw-a">Also called</label><span class="fh" style="margin-top:-6px">How callers actually say it. Helps Allie match “a large pep” to Pepperoni.</span><div class="chipin">${w.aka.map((a,k)=>`<span class="tag">${esc(a)}${brand?`<button aria-label="Remove ${esc(a)}" onclick="S.menu.w.aka.splice(${k},1);renderOverlay()">×</button>`:''}</span>`).join('')}${brand?`<input id="iw-a" placeholder="Type and press Enter" onkeydown="if(event.key==='Enter'&&this.value.trim()){S.menu.w.aka.push(this.value.trim().toLowerCase());renderOverlay();setTimeout(()=>$('iw-a').focus())}">`:''}</div></div>
-   <div class="tg"><div class="tx"><div class="small" style="font-weight:600">Popular</div><div class="xs muted">Allie recommends it when a caller asks what’s good.</div></div><button class="tog ${w.pop?'on':''}" ${brand?'':'disabled'} aria-label="Popular" onclick="S.menu.w.pop=!S.menu.w.pop;renderOverlay()"></button></div>`);
-  b+=sec('Sizes & prices',w.v.length>1?'Allie asks “'+sizeAsk(w)+'”':'One size. Add sizes if the item comes in more than one.',`
-   <div class="tblw"><table class="tbl sizes"><thead><tr><th>Size</th><th>${w.dp?'Pickup price':'Price'}</th>${w.dp?'<th>Delivery price</th>':''}${!brand?'<th>Price at '+esc(ON(o).short)+'</th>':''}<th></th></tr></thead><tbody>${w.v.map((v,k)=>`<tr><td><input class="inp" ${dis} aria-label="Size name" value="${esc(v.n)}" oninput="S.menu.w.v[${k}].n=this.value"></td><td><input class="inp" ${dis} aria-label="Price" value="${v.p||''}" placeholder="0.00" oninput="S.menu.w.v[${k}].p=+this.value||0"></td>${w.dp?`<td><input class="inp" ${dis} aria-label="Delivery price" value="${v.pd||''}" placeholder="${v.p||''}" oninput="S.menu.w.v[${k}].pd=+this.value||0"></td>`:''}${!brand?`<td><input class="inp" aria-label="Outlet price" placeholder="${v.p}" value="${(w.ov[o]||[])[k]??''}" oninput="(S.menu.w.ov['${o}']=S.menu.w.ov['${o}']||[])[${k}]=this.value"></td>`:''}<td>${brand&&!lock&&w.v.length>1?`<button class="ib del" aria-label="Remove size" onclick="S.menu.w.v.splice(${k},1);renderOverlay()">${I.x}</button>`:''}</td></tr>`).join('')}</tbody></table></div>
-   ${brand&&!lock?`<div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn btn-soft btn-sm" onclick="S.menu.w.v.push({n:'',p:0});renderOverlay()">${I.plus} Add size</button><button class="btn btn-ghost btn-sm" onclick="S.menu.w.dp=!S.menu.w.dp;renderOverlay()">${w.dp?'Same price for delivery':'Different price for delivery'}</button></div>`:''}
-   ${brand?`<div class="xs muted">Price overrides for a single outlet are set in that outlet’s view.${Object.keys(w.ov).length?' Overrides at: '+Object.keys(w.ov).map(k=>ON(k).short).join(', ')+'.':''}</div>`:''}`);
-  if(brand){const att=w.groups.map(gById).filter(Boolean),free=DB.groups.filter(g=>!w.groups.includes(g.id));
-  b+=sec('Choices','Choice groups Allie works through for this item.',`${w.v.length>1?`<div class="choice"><div style="flex:1"><b style="font-weight:600">Size</b> <span class="xs muted">Required · from sizes above</span><div class="xs muted">“${esc(sizeAsk(w))}”</div></div></div>`:''}
-   ${att.map(g=>`<div class="choice"><div style="flex:1;min-width:0"><b style="font-weight:600">${esc(g.n)}</b> <span class="xs muted">${ruleTxt(g)} · ${g.opts.length} options</span><div class="xs muted">“${esc(askText(g))}”</div></div>${lock?'':`<button class="ib" aria-label="Move up" onclick="mvGroup('${g.id}',-1)">↑</button><button class="ib del" aria-label="Detach ${esc(g.n)}" onclick="chipTog(S.menu.w.groups,'${g.id}');renderOverlay()">${I.x}</button>`}</div>`).join('')||(w.v.length>1?'':'<div class="small muted">No choices. Allie only confirms the quantity.</div>')}
-   ${lock?'':`<div style="display:flex;gap:10px;flex-wrap:wrap"><select class="inp" style="max-width:260px;height:38px" aria-label="Attach a choice group" onchange="if(this.value){S.menu.w.groups.push(this.value);renderOverlay()}"><option value="">Attach a choice group…</option>${free.map(g=>`<option value="${g.id}">${esc(g.n)} (${ruleTxt(g)})</option>`).join('')}</select><button class="btn btn-ghost btn-sm" onclick="openGroup()">${I.plus} New group</button></div>`}`);
-  b+=sec('Dietary & allergens','Allie uses these to answer “is it vegetarian?” or “does it have nuts?”',`<div class="dchips">${DIETS.map(d=>`<button class="${w.diet.includes(d)?'on':''}" onclick="chipTog(S.menu.w.diet,'${d}');renderOverlay()">${d}</button>`).join('')}</div>
+    <div class="field"><label class="fl" for="iw-c">Category</label><select class="inp" id="iw-c" onchange="S.menu.w.cat=this.value">${catTree().map(c=>`<option value="${c.id}" ${c.id===w.cat?'selected':''}>${c.parent?'— ':''}${esc(c.n)}</option>`).join('')}</select></div></div>
+   <div class="field"><span class="fl">Type <span style="color:var(--coral-700)">*</span></span><span class="fh" style="margin-top:-6px">Allie tells callers whether it’s veg or non-veg, and filters suggestions for veg callers.</span>${typeSeg('S.menu.w.type',w.type)}</div>
+   <div class="field"><label class="fl" for="iw-d">Description</label><textarea class="inp" id="iw-d" oninput="S.menu.w.desc=this.value" placeholder="What’s on it? Allie reads this when callers ask.">${esc(w.desc)}</textarea></div>
+   <div class="field"><span class="fl">Also called</span><span class="fh" style="margin-top:-6px">How callers actually say it. Helps Allie match “a large pep” to Pepperoni.</span>${akaInput('S.menu.w.aka',w.aka,'iw-a')}</div>
+   <div class="tg"><div class="tx"><div class="small" style="font-weight:600">Popular</div><div class="xs muted">Allie recommends it when a caller asks what’s good.</div></div><button class="tog ${w.pop?'on':''}" aria-label="Popular" onclick="S.menu.w.pop=!S.menu.w.pop;renderOverlay()"></button></div>`);
+  b+=sec('Sizes',w.v.length>1?'Allie asks “'+esc(sizeAsk(w))+'”':'One size, so Allie doesn’t ask. Add sizes if it comes in more than one.',`<div class="sizes2">${w.v.map((v,k)=>`<div class="szrow"><input class="inp" ${dis} aria-label="Size ${k+1} name" value="${esc(v.n)}" placeholder="e.g. 14&quot;" oninput="S.menu.w.v[${k}].n=this.value">${!lock&&w.v.length>1?`<button class="ib" aria-label="Move up" onclick="mvSize(${k},-1)">↑</button><button class="ib del" aria-label="Remove size" onclick="rmSize(${k})">${I.x}</button>`:''}</div>`).join('')}</div>
+   ${lock?'':`<button class="btn btn-soft btn-sm" style="align-self:flex-start" onclick="S.menu.w.v.push({n:''});S.menu.w.pg.forEach(g=>g.p.push(null));renderOverlay();setTimeout(()=>{const x=document.querySelectorAll('.szrow input');x[x.length-1].focus()})">${I.plus} Add size</button>`}`);
+  b+=sec('Pricing & availability','',pgEditor('S.menu.w.pg',w.v,lock));
+  b+=sec('Stock right now','',stockBlock('S.menu.w','it'));
+  const att=w.groups.map(gById).filter(Boolean),free=DB.groups.filter(g=>!w.groups.includes(g.id));
+  b+=sec('Choices','Choice groups Allie works through, in this order.',`${w.v.length>1?`<div class="choice"><div style="flex:1"><b style="font-weight:600">Size</b> <span class="xs muted">Required · from sizes above</span><div class="xs muted">“${esc(sizeAsk(w))}”</div></div></div>`:''}
+   ${att.map(g=>`<div class="choice"><div style="flex:1;min-width:0"><b style="font-weight:600">${esc(g.n)}</b> <span class="xs muted">${ruleTxt(g)} · ${g.opts.length} options</span><div class="xs muted">“${esc(askText(g))}”</div></div>${lock?'':`<button class="ib" aria-label="Move up" onclick="mvGroup('${g.id}',-1)">↑</button><button class="ib" aria-label="Edit ${esc(g.n)}" onclick="S.menu.back='item';openGroup('${g.id}',true)">${icoS('pen',14)}</button><button class="ib del" aria-label="Detach ${esc(g.n)}" onclick="chipTog(S.menu.w.groups,'${g.id}');renderOverlay()">${I.x}</button>`}</div>`).join('')||(w.v.length>1?'':'<div class="small muted">No choices. Allie only confirms the quantity.</div>')}
+   ${lock?'':`<div style="display:flex;gap:10px;flex-wrap:wrap"><select class="inp" style="max-width:280px;height:40px" aria-label="Attach a choice group" onchange="if(this.value){S.menu.w.groups.push(this.value);renderOverlay()}"><option value="">Attach a choice group…</option>${free.map(g=>`<option value="${g.id}">${esc(g.n)} (${ruleTxt(g)})</option>`).join('')}</select><button class="btn btn-ghost btn-sm" onclick="S.menu.back='item';openGroup(null,true)">${I.plus} New group</button></div>`}`);
+  b+=sec('Dietary & allergens','Allie uses these to answer “is it vegan?” or “does it have nuts?”',`<div class="dchips">${DIETS.map(d=>`<button class="${w.diet.includes(d)?'on':''}" onclick="chipTog(S.menu.w.diet,'${d}');renderOverlay()">${d}</button>`).join('')}</div>
    <div class="fl" style="font-size:13px">Allergens</div><div class="dchips">${ALLERGENS.map(a=>`<button class="${w.all.includes(a)?'on':''}" onclick="S.menu.w.all=S.menu.w.all.filter(x=>x!=='None');chipTog(S.menu.w.all,'${a}');renderOverlay()">${a}</button>`).join('')}<button class="${w.all.includes('None')?'on':''}" onclick="S.menu.w.all=S.menu.w.all.includes('None')?[]:['None'];renderOverlay()">No allergens</button></div>`);
-  b+=sec('Where & when it’s sold','',`<div class="kv" style="grid-template-columns:repeat(3,minmax(0,1fr))">${OUTLETS.map(x=>`<div class="tg"><span class="tx small">${x.short}</span><button class="tog ${w.out[x.id]?'on':''}" aria-label="Sold at ${x.short}" onclick="S.menu.w.out['${x.id}']=!S.menu.w.out['${x.id}'];renderOverlay()"></button></div>`).join('')}</div>
-   <div class="fl" style="font-size:13px">Channels</div><div class="dchips"><button class="${w.ch.p?'on':''}" onclick="S.menu.w.ch.p=!S.menu.w.ch.p;renderOverlay()">Pickup</button><button class="${w.ch.d?'on':''}" onclick="S.menu.w.ch.d=!S.menu.w.ch.d;renderOverlay()">Delivery</button></div>
-   <div class="fl" style="font-size:13px">Ordering hours</div><div class="dchips">${DB.wins.map(x=>`<button class="${w.win.includes(x.id)?'on':''}" onclick="chipTog(S.menu.w.win,'${x.id}');renderOverlay()">${esc(x.n)}</button>`).join('')}</div>`);
+  b+=sec('Ordering hours','Windows when this item can be ordered.',`<div class="dchips">${DB.wins.map(x=>`<button class="${w.win.includes(x.id)?'on':''}" onclick="chipTog(S.menu.w.win,'${x.id}');renderOverlay()">${esc(x.n)} <span class="xs" style="opacity:.7">${esc(x.iv[0][0])}–${esc(x.iv[0][1])}</span></button>`).join('')}</div>`);
   b+=sec('Suggest with this item','Allie offers at most one suggestion per order.',`<select class="inp" style="max-width:320px" aria-label="Suggest with" onchange="S.menu.w.up=this.value"><option value="">No suggestion</option>${DB.items.filter(i=>i.id!==w.id).map(i=>`<option value="${i.id}" ${w.up===i.id?'selected':''}>${esc(i.n)}</option>`).join('')}</select>`);
-  const g1=w.groups.map(gById).filter(g=>g&&g.min)[0];
-  b+=`<div class="ask"><b>How Allie offers it</b><br>“${esc(w.n||'This item')}${w.desc?', '+esc(w.desc.split(',')[0].toLowerCase()):''}. ${w.v[0]&&w.v[0].p?'It’s '+money(w.v[0].p)+(w.v.length>1?' for a '+esc(w.v[0].n):''):'(no price yet)'}.${w.v.length>1?' '+esc(sizeAsk(w)):''}${g1?' '+esc(askText(g1)):''}”</div>`;}
-  else{b+=sec('Sold here','',`<div class="tg"><span class="tx small">${esc(ON(o).short)} sells this item</span><button class="tog ${w.out[o]?'on':''}" aria-label="Sold here" onclick="S.menu.w.out['${o}']=!S.menu.w.out['${o}'];renderOverlay()"></button></div>`);}
-  const foot=`${brand&&!w._new?`<button class="btn btn-red" style="margin-right:auto" onclick="S.modal={t:'mdel',kind:'item',id:'${w.id}'};renderOverlay()">Delete</button>`:''}<button class="btn btn-ghost" onclick="closeDrawer()">Cancel</button><button class="btn btn-dark" onclick="saveItemW()">${w._new?'Add item':'Save'}</button>`;
+  const g1=w.groups.map(gById).filter(g=>g&&g.min)[0],p0=(w.pg[0]||{p:[]}).p[0];
+  b+=`<div class="ask"><b>How Allie offers it</b><br>“${esc(w.n||'This item')}${w.desc?', '+esc(w.desc.split(',')[0].toLowerCase()):''}. ${w.type!=='none'?'It’s '+(w.type==='veg'?'vegetarian':'not vegetarian')+'. ':''}${has(p0)?'It’s '+money(p0)+(w.v.length>1?' for a '+esc(w.v[0].n):''):'(no price yet)'}.${w.v.length>1?' '+esc(sizeAsk(w)):''}${g1?' '+esc(askText(g1)):''}”</div>`;
+  const foot=`${!w._new?`<button class="btn btn-red" style="margin-right:auto" onclick="S.modal={t:'mdel',kind:'item',id:'${w.id}'};renderOverlay()">Delete</button>`:''}<button class="btn btn-ghost" onclick="closeDrawer()">Cancel</button><button class="btn btn-dark" onclick="saveItemW()">${w._new?'Add item':'Save'}</button>`;
   return drawerShell(esc(catName(w.cat))+(w._new?' · new item':''),w._new?'Add item':esc(w.n),b,foot);}
+function mvSize(k,d){const w=S.menu.w;if(k+d<0)return;[w.v[k],w.v[k+d]]=[w.v[k+d],w.v[k]];w.pg.forEach(g=>{[g.p[k],g.p[k+d]]=[g.p[k+d],g.p[k]];});renderOverlay();}
+function rmSize(k){const w=S.menu.w;w.v.splice(k,1);w.pg.forEach(g=>g.p.splice(k,1));renderOverlay();}
 function mvGroup(id,d){const a=S.menu.w.groups,k=a.indexOf(id);if(k+d<0)return;a.splice(k,1);a.splice(k+d,0,id);renderOverlay();}
-function saveItemW(){const w=S.menu.w;if(!w.n.trim()){toast('Add a name');return;}if(!w.v.length||w.v.some(v=>!v.n.trim()&&w.v.length>1)){toast('Name every size');return;}if(w.v.some(v=>!v.p)){toast('Add a price for every size');return;}
+function soldHereW(o){const w=S.menu.w;if(soldAt(w).includes(o))w.pg.forEach(g=>g.outs=g.outs.filter(x=>x!==o));else (w.pg[0]||(w.pg[0]={outs:[],ch:'both',p:w.v.map(()=>null)})).outs.push(o);renderOverlay();}
+function splitOutlet(o){const w=S.menu.w,add=[];w.pg.forEach(g=>{if(g.outs.includes(o)){g.outs=g.outs.filter(x=>x!==o);add.push({outs:[o],ch:g.ch,p:g.p.slice()});}});w.pg=w.pg.filter(g=>g.outs.length).concat(add);renderOverlay();toast('Now editing prices for '+ON(o).short+' only');}
+function saveItemW(){const w=S.menu.w;if(!w.n.trim()){toast('Add a name');return;}if(w.v.length>1&&w.v.some(v=>!v.n.trim())){toast('Name every size');return;}
+  w.pg=w.pg.filter(g=>g.outs.length);if(!soldAt(w).length&&isBrand()){toast('Add a price group with outlets and a price');return;}if(pgConflicts(w.pg).length){toast('An outlet is in two price groups for the same channel');return;}
   const isNew=w._new;delete w._new;w.chk=null;const k=DB.items.findIndex(i=>i.id===w.id);if(k<0)DB.items.push(w);else DB.items[k]=w;
-  S.menu.cat=w.cat;S.menu.drawer=null;renderOverlay();stage((isNew?'Added ':'Saved ')+w.n);render();}
-function groupDrawer(){const g=S.menu.gw;
-  const b=`<div class="field"><label class="fl" for="gw-n">Group name <span style="color:var(--coral-700)">*</span></label><input class="inp" id="gw-n" value="${esc(g.n)}" placeholder="e.g. Crust" oninput="S.menu.gw.n=this.value"></div>
+  S.menu.cat=w.cat;S.menu.drawer=null;S.menu.back=null;renderOverlay();stage((isNew?'Added ':'Saved ')+w.n);render();}
+
+function openOpt(gid,oid){const g=gById(gid);S.menu.ow=oid?clone(g.opts.find(x=>x.id===oid)):{id:'o'+Date.now(),n:'',aka:[],type:'veg',all:[],pg:[{outs:OIDS(),ch:'both',p:[0]}],oos:{},_new:true};S.menu.ow._g=gid;S.menu.ow._def=g.def===S.menu.ow.id;S.menu.drawer='opt';renderOverlay();}
+function optDrawer(){const w=S.menu.ow,g=gById(w._g),lock=fromPOS()&&!w._new;
+  let b=lock?`<div class="banner b-grey" style="font-size:13px">${icoS('lock',16)}<div>Name and prices come from ${DB.menuSource}. Type, spoken names, allergens and stock are editable here.</div></div>`:'';
+  b+=sec('Option','',`<div class="field"><label class="fl" for="ow-n">Name <span style="color:var(--coral-700)">*</span></label><input class="inp" id="ow-n" ${lock?'disabled':''} value="${esc(w.n)}" placeholder="e.g. Thin" oninput="S.menu.ow.n=this.value"></div>
+   <div class="field"><span class="fl">Type</span>${typeSeg('S.menu.ow.type',w.type)}</div>
+   <div class="field"><span class="fl">Also called</span><span class="fh" style="margin-top:-6px">e.g. “gf” for Gluten-free, “japs” for Jalapeños.</span>${akaInput('S.menu.ow.aka',w.aka,'ow-a')}</div>
+   <div class="tg"><div class="tx"><div class="small" style="font-weight:600">Default choice</div><div class="xs muted">If the caller doesn’t say, Allie suggests this one first.</div></div><button class="tog ${w._def?'on':''}" aria-label="Default choice" onclick="S.menu.ow._def=!S.menu.ow._def;renderOverlay()"></button></div>`);
+  b+=sec('Allergens it adds','Added to the item’s allergens when a caller picks it.',`<div class="dchips">${ALLERGENS.map(a=>`<button class="${w.all.includes(a)?'on':''}" onclick="chipTog(S.menu.ow.all,'${a}');renderOverlay()">${a}</button>`).join('')}</div>`);
+  b+=sec('Pricing & availability','',pgEditor('S.menu.ow.pg',[{n:'Extra price'}],lock,'Extra price'));
+  b+=sec('Stock right now','',stockBlock('S.menu.ow','this option'));
+  const foot=`${!w._new&&!lock?`<button class="btn btn-red" style="margin-right:auto" onclick="S.modal={t:'mdel',kind:'opt',id:'${w.id}'};renderOverlay()">Delete</button>`:''}<button class="btn btn-ghost" onclick="closeDrawer()">Cancel</button><button class="btn btn-dark" onclick="saveOptW()">${w._new?'Add option':'Save'}</button>`;
+  return drawerShell(esc(g.n)+' · option',w._new?'New option':esc(w.n),b,foot);}
+function saveOptW(){const w=S.menu.ow,g=gById(w._g);if(!w.n.trim()){toast('Add a name');return;}w.pg=w.pg.filter(x=>x.outs.length);if(!w.pg.length){toast('Add a price group with outlets');return;}
+  if(w._def)g.def=w.id;else if(g.def===w.id)g.def='';const isNew=w._new;['_g','_def','_new'].forEach(k=>delete w[k]);const k=g.opts.findIndex(x=>x.id===w.id);if(k<0)g.opts.push(w);else g.opts[k]=w;
+  S.menu.drawer=null;renderOverlay();stage((isNew?'Added ':'Saved ')+w.n);render();}
+
+function openGroup(id,fromItem){const src=id?gById(id):null;S.menu.gw=src?clone(src):{id:'g'+Date.now(),n:'',min:0,max:1,ask:'',def:'',opts:[],_new:true};
+  S.menu.gw.items=src?DB.items.filter(i=>i.groups.includes(id)).map(i=>i.id):(fromItem&&S.menu.w?[S.menu.w.id]:[]);S.menu.gw._fromItem=!!fromItem;S.menu.gq='';S.menu.qn='';S.menu.qp='';if(!fromItem)S.menu.back=null;S.menu.drawer='group';renderOverlay();}
+function groupDrawer(){const g=S.menu.gw,q=(S.menu.gq||'').toLowerCase();
+  let b=sec('Group','',`<div class="field"><label class="fl" for="gw-n">Name <span style="color:var(--coral-700)">*</span></label><input class="inp" id="gw-n" value="${esc(g.n)}" placeholder="e.g. Crust" oninput="S.menu.gw.n=this.value"></div>
    <div class="tg"><div class="tx"><div class="small" style="font-weight:600">Caller must choose</div><div class="xs muted">Required groups are always asked. Optional ones only if the caller brings them up.</div></div><button class="tog ${g.min?'on':''}" aria-label="Required" onclick="S.menu.gw.min=S.menu.gw.min?0:1;if(S.menu.gw.max!=null&&S.menu.gw.max<S.menu.gw.min)S.menu.gw.max=S.menu.gw.min;renderOverlay()"></button></div>
    <div class="frow"><div class="field"><label class="fl" for="gw-mn">Min choices</label><input class="inp sm" id="gw-mn" value="${g.min}" oninput="S.menu.gw.min=+this.value||0"></div><div class="field"><label class="fl" for="gw-mx">Max choices</label><input class="inp sm" id="gw-mx" value="${g.max??''}" placeholder="Required" oninput="S.menu.gw.max=this.value===''?null:+this.value"></div></div>
-   ${g.max==null?`<div class="banner b-amber" style="font-size:13px">${I.warn}<div>Set a maximum, or callers can keep adding options.</div></div>`:''}
-   <div class="fl">Options</div><div class="tblw"><table class="tbl sizes"><thead><tr><th>Option</th><th>Extra price</th><th></th></tr></thead><tbody>${g.opts.map((x,k)=>`<tr><td><input class="inp" aria-label="Option name" value="${esc(x.n)}" oninput="S.menu.gw.opts[${k}].n=this.value"></td><td><input class="inp" aria-label="Extra price" value="${x.p||''}" placeholder="0.00" oninput="S.menu.gw.opts[${k}].p=+this.value||0"></td><td>${g.opts.length>1?`<button class="ib del" aria-label="Remove option" onclick="S.menu.gw.opts.splice(${k},1);renderOverlay()">${I.x}</button>`:''}</td></tr>`).join('')}</tbody></table></div>
-   <button class="btn btn-soft btn-sm" style="align-self:flex-start" onclick="S.menu.gw.opts.push({n:'',p:0,on:true});renderOverlay()">${I.plus} Add option</button>
-   <div class="ask"><b>What Allie says</b><br>“${esc(askText(Object.assign({},g,{n:g.n||'option'})))}”</div>
-   <div class="fl">Attach to items</div><div class="dchips">${DB.items.map(i=>`<button class="${g.items.includes(i.id)?'on':''}" onclick="chipTog(S.menu.gw.items,'${i.id}');renderOverlay()">${esc(i.n)}</button>`).join('')}</div>`;
+   ${g.max==null?`<div class="banner b-amber" style="font-size:13px">${I.warn}<div>Set a maximum, or callers can keep adding options.</div></div>`:''}`);
+  b+=sec('How Allie asks','Leave empty to use the automatic question.',`<textarea class="inp" style="min-height:60px" aria-label="Custom question" placeholder="${esc(askText(Object.assign({},g,{ask:'',n:g.n||'option'})))}" oninput="S.menu.gw.ask=this.value">${esc(g.ask)}</textarea>
+   <div class="field"><label class="fl" for="gw-def" style="font-size:13px">Default choice</label><select class="inp" id="gw-def" style="max-width:280px" onchange="S.menu.gw.def=this.value"><option value="">None</option>${g.opts.map(o=>`<option value="${o.id}" ${g.def===o.id?'selected':''}>${esc(o.n)}</option>`).join('')}</select></div>`);
+  b+=sec('Options','Order here is the order Allie lists them. Open an option in Modifiers to set its outlets, prices and stock.',`${g.opts.map((o,k)=>`<div class="choice"><div style="flex:1">${tdot(o.type)}<b style="font-weight:500">${esc(o.n)}</b> <span class="xs muted">${optPrice(o)} · ${esc(opLabel(soldAt(o)))}</span></div><button class="ib" aria-label="Move up" onclick="if(${k}>0){const a=S.menu.gw.opts;[a[${k}-1],a[${k}]]=[a[${k}],a[${k}-1]];renderOverlay()}">↑</button><button class="ib del" aria-label="Remove ${esc(o.n)}" onclick="S.menu.gw.opts.splice(${k},1);renderOverlay()">${I.x}</button></div>`).join('')||'<div class="small muted">No options yet.</div>'}
+   <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><input class="inp" style="max-width:200px;height:40px" id="gw-qn" placeholder="New option name" aria-label="New option name"><span class="muted">+$</span><input class="inp sm" style="max-width:90px;height:40px" id="gw-qp" placeholder="0.00" aria-label="Extra price"><button class="btn btn-soft btn-sm" onclick="quickOpt()">${I.plus} Add</button></div>
+   <div class="xs muted">Quick-added options are sold at all ${OUTLETS.length} outlets at that price. Change that per option later.</div>`);
+  const items=DB.items.filter(i=>!q||i.n.toLowerCase().includes(q));
+  b+=sec('Attach to items',g.items.length+' selected',`<label class="lsearch" style="margin:0;height:40px">${I.search}<input id="gw-q" type="search" placeholder="Search items…" value="${esc(S.menu.gq||'')}" oninput="S.menu.gq=this.value;renderOverlay();setTimeout(()=>{const e=$('gw-q');e.focus();e.setSelectionRange(99,99)})"></label>
+   ${DB.cats.map(c=>{const is=items.filter(i=>i.cat===c.id);if(!is.length)return '';const all=is.every(i=>g.items.includes(i.id));return `<div class="xs muted" style="display:flex;gap:8px;align-items:center;margin-top:4px"><b style="font-weight:600;color:var(--ink-70)">${esc(c.n)}</b><button class="u-link" onclick="attachCat('${c.id}',${!all})">${all?'Clear':'Select all'}</button></div><div class="dchips">${is.map(i=>`<button class="${g.items.includes(i.id)?'on':''}" onclick="chipTog(S.menu.gw.items,'${i.id}');renderOverlay()">${esc(i.n)}</button>`).join('')}</div>`;}).join('')}`);
   const foot=`${!g._new?`<button class="btn btn-red" style="margin-right:auto" onclick="S.modal={t:'mdel',kind:'group',id:'${g.id}'};renderOverlay()">Delete</button>`:''}<button class="btn btn-ghost" onclick="closeDrawer()">Cancel</button><button class="btn btn-dark" onclick="saveGroupW()">${g._new?'Create group':'Save'}</button>`;
   return drawerShell('Choice group',g._new?'New choice group':esc(g.n),b,foot);}
-function saveGroupW(){const g=S.menu.gw;if(!g.n.trim()){toast('Add a group name');return;}g.opts=g.opts.filter(o=>o.n.trim());if(!g.opts.length){toast('Add at least one option');return;}
-  const items=g.items;delete g.items;const isNew=g._new;delete g._new;const k=DB.groups.findIndex(x=>x.id===g.id);if(k<0)DB.groups.push(g);else DB.groups[k]=g;
-  DB.items.forEach(i=>{const has=i.groups.includes(g.id),want=items.includes(i.id);if(has&&!want)i.groups=i.groups.filter(x=>x!==g.id);if(!has&&want)i.groups.push(g.id);});
-  if(S.menu.ret){S.menu.ret=false;if(!S.menu.w.groups.includes(g.id))S.menu.w.groups.push(g.id);S.menu.drawer='item';}else{S.menu.drawer=null;S.menu.gsel=g.id;}
-  stage((isNew?'Created ':'Saved ')+g.n);renderOverlay();render();}
+function quickOpt(){const n=$('gw-qn').value.trim(),p=+$('gw-qp').value||0;if(!n){toast('Type an option name');return;}S.menu.gw.opts.push(opt('o'+Date.now(),n,p));renderOverlay();setTimeout(()=>$('gw-qn').focus());}
+function attachCat(c,on){const ids=DB.items.filter(i=>i.cat===c).map(i=>i.id),g=S.menu.gw;g.items=on?[...new Set([...g.items,...ids])]:g.items.filter(x=>!ids.includes(x));renderOverlay();}
+function saveGroupW(){const g=S.menu.gw;if(!g.n.trim()){toast('Add a group name');return;}if(!g.opts.length){toast('Add at least one option');return;}
+  const items=g.items,fromItem=g._fromItem;delete g.items;delete g._fromItem;const isNew=g._new;delete g._new;const k=DB.groups.findIndex(x=>x.id===g.id);if(k<0)DB.groups.push(g);else DB.groups[k]=g;
+  DB.items.forEach(i=>{const hs=i.groups.includes(g.id),want=items.includes(i.id);if(hs&&!want)i.groups=i.groups.filter(x=>x!==g.id);if(!hs&&want)i.groups.push(g.id);});
+  if(fromItem&&S.menu.w){if(items.includes(S.menu.w.id)&&!S.menu.w.groups.includes(g.id))S.menu.w.groups.push(g.id);if(!items.includes(S.menu.w.id))S.menu.w.groups=S.menu.w.groups.filter(x=>x!==g.id);}
+  S.menu.gsel=g.id;S.menu.drawer=S.menu.back||null;S.menu.back=null;stage((isNew?'Created ':'Saved ')+g.n);renderOverlay();render();}
+
+function openCat(id){S.menu.cw=id?clone(DB.cats.find(c=>c.id===id)):{id:'c'+Date.now(),n:'',d:'',type:'none',parent:'',_new:true};S.menu.drawer='cat';renderOverlay();}
 function catDrawer(){const c=S.menu.cw,n=DB.items.filter(i=>i.cat===c.id).length;
   const b=`<div class="field"><label class="fl" for="cw-n">Category name <span style="color:var(--coral-700)">*</span></label><input class="inp" id="cw-n" value="${esc(c.n)}" placeholder="e.g. Pizzas" oninput="S.menu.cw.n=this.value"></div>
+   <div class="field"><span class="fl">Category type</span><span class="fh" style="margin-top:-6px">Helps Allie answer “what veg options do you have?”. Items keep their own type.</span>${typeSeg('S.menu.cw.type',c.type)}</div>
+   <div class="field"><label class="fl" for="cw-p">Parent category</label><select class="inp" id="cw-p" onchange="S.menu.cw.parent=this.value"><option value="">None (top level)</option>${DB.cats.filter(x=>!x.parent&&x.id!==c.id).map(x=>`<option value="${x.id}" ${c.parent===x.id?'selected':''}>${esc(x.n)}</option>`).join('')}</select></div>
    <div class="field"><label class="fl" for="cw-d">Description</label><textarea class="inp" id="cw-d" placeholder="Optional. Allie can use it when callers ask what a section has." oninput="S.menu.cw.d=this.value">${esc(c.d)}</textarea></div>
-   ${!c._new?`<div class="small muted">${n} item${n===1?'':'s'} in this category. Order in the list is the order Allie mentions them.</div><div style="display:flex;gap:8px"><button class="btn btn-soft btn-sm" onclick="mvCat('${c.id}',-1)">Move up</button><button class="btn btn-soft btn-sm" onclick="mvCat('${c.id}',1)">Move down</button></div>`:''}`;
+   ${!c._new?`<div class="small muted">${n} item${n===1?'':'s'}. List order is the order Allie mentions categories.</div><div style="display:flex;gap:8px"><button class="btn btn-soft btn-sm" onclick="mvCat('${c.id}',-1)">Move up</button><button class="btn btn-soft btn-sm" onclick="mvCat('${c.id}',1)">Move down</button></div>`:''}`;
   const foot=`${!c._new?`<button class="btn btn-red" style="margin-right:auto" onclick="S.modal={t:'mdel',kind:'cat',id:'${c.id}'};renderOverlay()">Delete</button>`:''}<button class="btn btn-ghost" onclick="closeDrawer()">Cancel</button><button class="btn btn-dark" onclick="saveCatW()">${c._new?'Add category':'Save'}</button>`;
-  return drawerShell('Category',c._new?'New category':esc(c.n),b,foot);}
+  return drawerShell('Category · all outlets',c._new?'New category':esc(c.n),b,foot);}
 function mvCat(id,d){const a=DB.cats,k=a.findIndex(c=>c.id===id);if(k+d<0||k+d>=a.length)return;const [x]=a.splice(k,1);a.splice(k+d,0,x);stage('Category moved');render();}
 function saveCatW(){const c=S.menu.cw;if(!c.n.trim()){toast('Add a name');return;}const isNew=c._new;delete c._new;const k=DB.cats.findIndex(x=>x.id===c.id);if(k<0)DB.cats.push(c);else DB.cats[k]=c;S.menu.cat=c.id;S.menu.drawer=null;stage((isNew?'Added ':'Saved ')+c.n);renderOverlay();render();}
+
+function openWin(id){S.menu.ww=id?clone(DB.wins.find(w=>w.id===id)):{id:'w'+Date.now(),n:'',days:['Mon','Tue','Wed','Thu','Fri'],iv:[['11:00 AM','3:00 PM']],outs:OIDS(),ch:'both',scope:'all',cats:[],items:[],_new:true};S.menu.drawer='win';renderOverlay();}
 function winDrawer(){const w=S.menu.ww;
   const b=`<div class="field"><label class="fl" for="ww-n">Name <span style="color:var(--coral-700)">*</span></label><input class="inp" id="ww-n" value="${esc(w.n)}" placeholder="e.g. Lunch specials" oninput="S.menu.ww.n=this.value"></div>
    <div class="fl">Days</div><div class="dchips">${DAYS.map(d=>`<button class="${w.days.includes(d)?'on':''}" onclick="chipTog(S.menu.ww.days,'${d}');renderOverlay()">${d}</button>`).join('')}</div>
    <div class="fl">Times</div>${w.iv.map((x,k)=>`<div style="display:flex;gap:10px;align-items:center"><input class="inp sm" style="max-width:140px" aria-label="Start" value="${x[0]}" oninput="S.menu.ww.iv[${k}][0]=this.value"><span class="muted">to</span><input class="inp sm" style="max-width:140px" aria-label="End" value="${x[1]}" oninput="S.menu.ww.iv[${k}][1]=this.value">${w.iv.length>1?`<button class="ib del" aria-label="Remove" onclick="S.menu.ww.iv.splice(${k},1);renderOverlay()">${I.x}</button>`:''}</div>`).join('')}
    <button class="btn btn-soft btn-sm" style="align-self:flex-start" onclick="S.menu.ww.iv.push(['5:00 PM','9:00 PM']);renderOverlay()">${I.plus} Add a time range</button>
-   <div class="fl">Outlets</div><div class="kv" style="grid-template-columns:repeat(3,minmax(0,1fr))">${OUTLETS.map(x=>`<div class="tg"><span class="tx small">${x.short}</span><button class="tog ${w.out[x.id]?'on':''}" aria-label="${x.short}" onclick="S.menu.ww.out['${x.id}']=!S.menu.ww.out['${x.id}'];renderOverlay()"></button></div>`).join('')}</div>
-   <div class="fl">Channels</div><div class="dchips"><button class="${w.ch.p?'on':''}" onclick="S.menu.ww.ch.p=!S.menu.ww.ch.p;renderOverlay()">Pickup</button><button class="${w.ch.d?'on':''}" onclick="S.menu.ww.ch.d=!S.menu.ww.ch.d;renderOverlay()">Delivery</button></div>
-   <div class="small muted">Choose which items belong to this window from each item’s “Where & when it’s sold”.</div>`;
+   <div class="frow"><div class="field"><span class="fl">Outlets</span>${opBtn(w.outs,`openOP({title:'Where this window applies',sel:S.menu.ww.outs,apply:s=>{S.menu.ww.outs=s}})`)}</div><div class="field"><span class="fl">Channel</span><select class="inp" style="height:40px" onchange="S.menu.ww.ch=this.value">${Object.entries(CH).map(([v,t])=>`<option value="${v}" ${w.ch===v?'selected':''}>${t}</option>`).join('')}</select></div></div>
+   <div class="fl">Applies to</div><div class="segp sm">${[['all','All items'],['cats','Categories'],['items','Specific items']].map(([k,t])=>`<button class="${w.scope===k?'on':''}" onclick="S.menu.ww.scope='${k}';renderOverlay()">${t}</button>`).join('')}</div>
+   ${w.scope==='cats'?`<div class="dchips">${DB.cats.map(c=>`<button class="${w.cats.includes(c.id)?'on':''}" onclick="chipTog(S.menu.ww.cats,'${c.id}');renderOverlay()">${esc(c.n)}</button>`).join('')}</div>`:''}
+   ${w.scope==='items'?`<div class="dchips">${DB.items.map(i=>`<button class="${w.items.includes(i.id)?'on':''}" onclick="chipTog(S.menu.ww.items,'${i.id}');renderOverlay()">${esc(i.n)}</button>`).join('')}</div>`:''}`;
   const foot=`${!w._new?`<button class="btn btn-red" style="margin-right:auto" onclick="S.modal={t:'mdel',kind:'win',id:'${w.id}'};renderOverlay()">Delete</button>`:''}<button class="btn btn-ghost" onclick="closeDrawer()">Cancel</button><button class="btn btn-dark" onclick="saveWinW()">${w._new?'Create window':'Save'}</button>`;
   return drawerShell('Ordering hours',w._new?'New window':esc(w.n),b,foot);}
-function saveWinW(){const w=S.menu.ww;if(!w.n.trim()||!w.days.length){toast('Add a name and at least one day');return;}const isNew=w._new;delete w._new;const k=DB.wins.findIndex(x=>x.id===w.id);if(k<0)DB.wins.push(w);else DB.wins[k]=w;S.menu.drawer=null;stage((isNew?'Created ':'Saved ')+w.n);renderOverlay();render();}
+function saveWinW(){const w=S.menu.ww;if(!w.n.trim()||!w.days.length||!w.outs.length){toast('Add a name, at least one day and outlets');return;}const isNew=w._new;delete w._new;const k=DB.wins.findIndex(x=>x.id===w.id);if(k<0)DB.wins.push(w);else DB.wins[k]=w;S.menu.drawer=null;stage((isNew?'Created ':'Saved ')+w.n);renderOverlay();render();}
+
+function openTax(id){S.menu.tw=id?clone(DB.taxes.find(t=>t.id===id)):{id:'t'+Date.now(),type:'Tax',n:'',on:'Item',base:'Subtotal − discount',calc:'Additive',vt:'%',v:0,ch:'both',delfee:false,outs:OIDS(),_new:true};S.menu.drawer='tax';renderOverlay();}
 function taxDrawer(){const t=S.menu.tw,seg=(k,opts)=>`<div class="segp sm">${opts.map(v=>`<button class="${t[k]===v[0]?'on':''}" onclick="S.menu.tw.${k}='${v[0]}';renderOverlay()">${v[1]}</button>`).join('')}</div>`;
   const b=`<div class="field"><span class="fl">Type</span>${seg('type',[['Tax','Tax the guest pays'],['Charge','Charge you add']])}</div>
    <div class="field"><label class="fl" for="tw-n">Name <span style="color:var(--coral-700)">*</span></label><input class="inp" id="tw-n" value="${esc(t.n)}" placeholder="e.g. Chicago restaurant tax" oninput="S.menu.tw.n=this.value"></div>
-   <div class="frow"><div class="field"><span class="fl">Applied on</span>${seg('on',[['Item','Each item'],['Order','Whole order']])}</div><div class="field"><span class="fl">Calculation</span>${seg('calc',[['Additive','On top of price'],['Inclusive','Already in price']])}</div></div>
+   <div class="frow"><div class="field"><span class="fl">Applied on</span>${seg('on',[['Item','Each item'],['Order','Whole order']])}</div><div class="field"><label class="fl" for="tw-b">Calculated on</label><select class="inp" id="tw-b" style="height:40px" onchange="S.menu.tw.base=this.value">${['Subtotal','Subtotal − discount'].map(x=>`<option ${t.base===x?'selected':''}>${x}</option>`).join('')}</select></div></div>
+   <div class="field"><span class="fl">Calculation</span>${seg('calc',[['Additive','Added on top of the price'],['Inclusive','Already in the price']])}</div>
    <div class="frow"><div class="field"><span class="fl">Value</span>${seg('vt',[['%','Percentage'],['flat','Flat amount']])}</div><div class="field"><label class="fl" for="tw-v">${t.vt==='%'?'Percent':'Amount ($)'}</label><input class="inp sm" id="tw-v" value="${t.v||''}" oninput="S.menu.tw.v=+this.value||0"></div></div>
-   <div class="fl">Channels</div><div class="dchips"><button class="${t.ch.p?'on':''}" onclick="S.menu.tw.ch.p=!S.menu.tw.ch.p;renderOverlay()">Pickup</button><button class="${t.ch.d?'on':''}" onclick="S.menu.tw.ch.d=!S.menu.tw.ch.d;renderOverlay()">Delivery</button></div>
-   <div class="fl">Outlets</div><div class="kv" style="grid-template-columns:repeat(3,minmax(0,1fr))">${OUTLETS.map(x=>`<div class="tg"><span class="tx small">${x.short}</span><button class="tog ${t.out[x.id]?'on':''}" aria-label="${x.short}" onclick="S.menu.tw.out['${x.id}']=!S.menu.tw.out['${x.id}'];renderOverlay()"></button></div>`).join('')}</div>`;
+   <div class="tg"><div class="tx"><div class="small" style="font-weight:600">Also charge on the delivery fee</div></div><button class="tog ${t.delfee?'on':''}" aria-label="Charge on delivery fee" onclick="S.menu.tw.delfee=!S.menu.tw.delfee;renderOverlay()"></button></div>
+   <div class="frow"><div class="field"><span class="fl">Outlets</span>${opBtn(t.outs,`openOP({title:'Where this applies',sel:S.menu.tw.outs,apply:s=>{S.menu.tw.outs=s}})`)}</div><div class="field"><span class="fl">Channel</span><select class="inp" style="height:40px" onchange="S.menu.tw.ch=this.value">${Object.entries(CH).map(([v,x])=>`<option value="${v}" ${t.ch===v?'selected':''}>${x}</option>`).join('')}</select></div></div>`;
   const foot=`${!t._new?`<button class="btn btn-red" style="margin-right:auto" onclick="S.modal={t:'mdel',kind:'tax',id:'${t.id}'};renderOverlay()">Delete</button>`:''}<button class="btn btn-ghost" onclick="closeDrawer()">Cancel</button><button class="btn btn-dark" onclick="saveTaxW()">${t._new?'Add':'Save'}</button>`;
   return drawerShell('Taxes & charges',t._new?'New tax or charge':esc(t.n),b,foot);}
-function saveTaxW(){const t=S.menu.tw;if(!t.n.trim()){toast('Add a name');return;}const isNew=t._new;delete t._new;const k=DB.taxes.findIndex(x=>x.id===t.id);if(k<0)DB.taxes.push(t);else DB.taxes[k]=t;S.menu.drawer=null;stage((isNew?'Added ':'Saved ')+t.n);renderOverlay();render();}
+function saveTaxW(){const t=S.menu.tw;if(!t.n.trim()||!t.outs.length){toast('Add a name and outlets');return;}const isNew=t._new;delete t._new;const k=DB.taxes.findIndex(x=>x.id===t.id);if(k<0)DB.taxes.push(t);else DB.taxes[k]=t;S.menu.drawer=null;stage((isNew?'Added ':'Saved ')+t.n);renderOverlay();render();}
 
-/* ── menu modals: delete, publish draft, connect POS ── */
+/* ── menu overlay: drawers, dialogs, outlet picker ── */
 function menuOverlay(){let h='';
-  if(S.menu.drawer){h+={item:itemDrawer,group:groupDrawer,cat:catDrawer,win:winDrawer,tax:taxDrawer}[S.menu.drawer]();}
-  const m=S.modal;if(!m)return h;
-  const ov=(inner)=>`<div class="modal-ov" onclick="if(event.target===this){S.modal=null;renderOverlay()}"><div class="modal" role="dialog" aria-modal="true">${inner}</div></div>`;
-  if(m.t==='mdel'){let t='',b='',extra='';
-    if(m.kind==='item'){const i=itById(m.id)||S.menu.w;t='Delete '+esc(i.n)+'?';b='It’s removed from every outlet and Allie stops selling it. Orders already placed keep it.';}
-    if(m.kind==='bulk'){t='Delete '+S.menu.sel.length+' items?';b='They’re removed from every outlet.';}
+  if(S.menu.drawer)h+={item:itemDrawer,opt:optDrawer,group:groupDrawer,cat:catDrawer,win:winDrawer,tax:taxDrawer}[S.menu.drawer]();
+  const m=S.modal,ov=inner=>`<div class="modal-ov" onclick="if(event.target===this){S.modal=null;renderOverlay()}"><div class="modal" role="dialog" aria-modal="true">${inner}</div></div>`;
+  if(m&&m.t==='mdel'){let t='',b='',extra='';
+    if(m.kind==='item'){const i=itById(m.id)||S.menu.w;t='Delete '+esc(i.n)+'?';b='It’s removed from all '+OUTLETS.length+' outlets and Allie stops selling it. Orders already placed keep it.';}
+    if(m.kind==='bulk'){t='Delete '+S.menu.sel.length+' items?';b='They’re removed from all '+OUTLETS.length+' outlets.';}
     if(m.kind==='group'){const g=gById(m.id)||S.menu.gw,n=DB.items.filter(i=>i.groups.includes(m.id)).length;t='Delete '+esc(g.n)+'?';b=n?'It’s attached to '+n+' item'+(n>1?'s':'')+'. Allie will stop asking this question for them.':'It isn’t attached to any item.';}
+    if(m.kind==='opt'){const [g,x]=optById(m.id);t='Delete '+esc((x||S.menu.ow).n)+'?';b='It’s removed from '+esc(g?g.n:'the group')+' at every outlet.';}
     if(m.kind==='cat'){const c=DB.cats.find(x=>x.id===m.id),n=DB.items.filter(i=>i.cat===m.id).length,others=DB.cats.filter(x=>x.id!==m.id);t='Delete '+esc(c.n)+'?';b=n?'It has '+n+' item'+(n>1?'s':'')+'. Move them first, or delete them with the category.':'The category is empty.';
       if(n&&others.length)extra=`<select class="inp" id="mv-to" aria-label="Move items to">${others.map(x=>`<option value="${x.id}">Move items to ${esc(x.n)}</option>`).join('')}<option value="">Delete the items too</option></select>`;}
     if(m.kind==='win'){const w=DB.wins.find(x=>x.id===m.id);t='Delete '+esc(w.n)+'?';b='Items only sold in this window won’t be sold until you add them to another.';}
     if(m.kind==='tax'){const x=DB.taxes.find(y=>y.id===m.id);t='Delete '+esc(x.n)+'?';b='It stops being added to new orders.';}
     h+=ov(`<div class="t">${t}</div><div class="b">${b}</div>${extra}<div class="f"><button class="btn btn-ghost" onclick="S.modal=null;renderOverlay()">Cancel</button><button class="btn btn-red" onclick="doDelete()">Delete</button></div>`);}
-  if(m.t==='mpub')h+=ov(`<div class="t">Publish with ${m.n} unchecked item${m.n>1?'s':''}?</div><div class="b">Everything else goes live now. The ${m.n} item${m.n>1?'s':''} that still need a check stay hidden from Allie until you confirm ${m.n>1?'them':'it'} in Menu.</div><div class="f"><button class="btn btn-ghost" onclick="S.modal=null;S.menu.f='check';renderOverlay();render()">Review them first</button><button class="btn btn-dark" onclick="publishDraft()">Publish</button></div>`);
-  if(m.t==='pos'){const q=(m.q||'').toLowerCase();
-    if(m.step===1)h+=ov(`<div class="t">Connect your POS</div><div class="b">Pick your POS. You’ll sign in to it to approve the connection.</div><label class="lsearch" style="margin:0">${I.search}<input type="search" placeholder="Search POS…" value="${esc(m.q||'')}" oninput="S.modal.q=this.value;renderOverlay();setTimeout(()=>{const e=document.querySelector('.modal input');if(e){e.focus();e.setSelectionRange(99,99)}})"></label>
-     <div class="posgrid">${POS_LIST.filter(p=>p.toLowerCase().includes(q)).map(p=>`<button class="${m.pick===p?'on':''}" onclick="S.modal.pick='${p}';renderOverlay()">${I.pos.replace('width="22" height="22"','width="18" height="18"')}${p}</button>`).join('')}<button onclick="toast('We’ll email you when your POS is supported')">Other POS…</button></div>
+  if(m&&m.t==='mpub')h+=ov(`<div class="t">Publish with ${m.n} unchecked item${m.n>1?'s':''}?</div><div class="b">Everything else goes live now. The ${m.n} item${m.n>1?'s':''} that still need a check stay hidden from Allie until you confirm ${m.n>1?'them':'it'} in Menu.</div><div class="f"><button class="btn btn-ghost" onclick="S.modal=null;S.menu.f='check';renderOverlay();render()">Review them first</button><button class="btn btn-dark" onclick="publishDraft()">Publish</button></div>`);
+  if(m&&m.t==='bulk')h+=ov(bulkModal());
+  if(m&&m.t==='pos'){const q=(m.q||'').toLowerCase();
+    if(m.step===1)h+=ov(`<div class="t">Connect your POS</div><div class="b">Pick your POS. You’ll sign in to it to approve the connection.</div><label class="lsearch" style="margin:0">${I.search}<input id="pos-q" type="search" placeholder="Search POS…" value="${esc(m.q||'')}" oninput="S.modal.q=this.value;renderOverlay();setTimeout(()=>{const e=$('pos-q');e.focus();e.setSelectionRange(99,99)})"></label>
+     <div class="posgrid">${POS_LIST.filter(p=>p.toLowerCase().includes(q)).map(p=>`<button class="${m.pick===p?'on':''}" onclick="S.modal.pick='${p}';renderOverlay()">${icoS('pos',18)}${p}</button>`).join('')}<button onclick="toast('We’ll email you when your POS is supported')">Other POS…</button></div>
      <div class="f"><button class="btn btn-ghost" onclick="S.modal=null;renderOverlay()">Cancel</button><button class="btn btn-dark" ${m.pick?'':'disabled'} onclick="S.modal.step=2;renderOverlay()">Continue</button></div>`);
     if(m.step===2)h+=ov(`<div class="t">Approve access in ${m.pick}</div><div class="b">A secure ${m.pick} sign-in window opens. Approve Tringg’s access there, then come back here.</div>
-     <div class="rules"><div class="rule"><span class="ic">${I.check}</span><div>Read your menu, sizes, choices, prices and sold-out status</div></div><div class="rule"><span class="ic">${I.check}</span><div>Send phone orders to your kitchen and receive their status</div></div><div class="rule"><span class="ic">${I.lock}</span><div>No access to payments, payroll or staff</div></div></div>
+     <div class="rules"><div class="rule"><span class="ic">${I.check}</span><div>Read your menu, sizes, choices, prices and sold-out status</div></div><div class="rule"><span class="ic">${I.check}</span><div>Send phone orders to your kitchen and receive their status</div></div><div class="rule"><span class="ic">${icoS('lock',15)}</span><div>No access to payments, payroll or staff</div></div></div>
      <div class="xs muted">The connection is handled by our integration partner Stream.</div>
      <div class="f"><button class="btn btn-ghost" onclick="S.modal.step=1;renderOverlay()">Back</button><button class="btn btn-dark" onclick="S.modal.step=3;renderOverlay();setTimeout(()=>{if(S.modal&&S.modal.t==='pos'){S.modal.step=4;renderOverlay()}},1400)">Sign in to ${m.pick}</button></div>`);
     if(m.step===3)h+=ov(`<div class="t">Connecting to ${m.pick}…</div><div class="prog"><i style="width:70%"></i></div><div class="b">Waiting for approval in the ${m.pick} window.</div>`);
-    if(m.step===4)h+=ov(`<div class="t">${m.pick} connected ${pill('p-green','Approved')}</div><div class="b">Match each outlet to its ${m.pick} location. We matched them by address.</div>
-     <div class="tblw"><table class="tbl"><tbody>${OUTLETS.map((o,k)=>`<tr><td style="font-weight:600">${o.short}</td><td><select class="inp" style="height:38px" aria-label="${m.pick} location for ${o.short}"><option>${m.pick} · ${['1640 N Damen Ave','401 N Wabash Ave','120 S LaSalle St'][k]}</option><option>Not on ${m.pick}</option></select></td></tr>`).join('')}</tbody></table></div>
+    if(m.step===4)h+=ov(`<div class="t">${m.pick} connected ${pill('p-green','Approved')}</div><div class="b">We matched ${OUTLETS.length-1} of your ${OUTLETS.length} outlets to ${m.pick} locations by address. Check the one we couldn’t match.</div>
+     <div class="tblw op-list" style="max-height:300px"><table class="tbl"><tbody>${OUTLETS.map((o,k)=>`<tr><td style="font-weight:500">${esc(o.short)}</td><td><select class="inp" style="height:36px" aria-label="${m.pick} location for ${esc(o.short)}">${o.id==='oh'?`<option>Not matched · pick a location</option><option>${m.pick} · O’Hare Terminal 3</option>`:`<option>${m.pick} · ${esc(o.short)}</option><option>Not on ${m.pick}</option>`}</select></td></tr>`).join('')}</tbody></table></div>
      <div class="f"><button class="btn btn-ghost" onclick="S.modal=null;renderOverlay()">Later</button><button class="btn btn-dark" onclick="const p=S.modal.pick;S.modal=null;renderOverlay();if(S.route!=='menu')go('menu');startExtract(p)">Import menu</button></div>`);}
+  h+=opOverlay();
   return h;}
 function doDelete(){const m=S.modal;
   if(m.kind==='item'){DB.items=DB.items.filter(i=>i.id!==m.id);DB.items.forEach(i=>{if(i.up===m.id)i.up='';});S.menu.drawer=null;stage('Item deleted');}
   if(m.kind==='bulk'){const n=S.menu.sel.length;DB.items=DB.items.filter(i=>!S.menu.sel.includes(i.id));S.menu.sel=[];stage(n+' items deleted');}
-  if(m.kind==='group'){DB.groups=DB.groups.filter(g=>g.id!==m.id);DB.items.forEach(i=>i.groups=i.groups.filter(g=>g!==m.id));if(S.menu.drawer==='group')S.menu.drawer=null;S.menu.gsel=null;stage('Choice group deleted');}
-  if(m.kind==='cat'){const sel=$('mv-to'),to=sel?sel.value:'';if(to)DB.items.forEach(i=>{if(i.cat===m.id)i.cat=to;});else DB.items=DB.items.filter(i=>i.cat!==m.id);DB.cats=DB.cats.filter(c=>c.id!==m.id);S.menu.drawer=null;S.menu.cat=to||(DB.cats[0]||{}).id;stage('Category deleted');}
+  if(m.kind==='group'){DB.groups=DB.groups.filter(g=>g.id!==m.id);DB.items.forEach(i=>i.groups=i.groups.filter(g=>g!==m.id));if(S.menu.w)S.menu.w.groups=S.menu.w.groups.filter(g=>g!==m.id);S.menu.drawer=S.menu.back||null;S.menu.back=null;S.menu.gsel=null;stage('Choice group deleted');}
+  if(m.kind==='opt'){DB.groups.forEach(g=>{g.opts=g.opts.filter(o=>o.id!==m.id);if(g.def===m.id)g.def='';});S.menu.drawer=null;stage('Option deleted');}
+  if(m.kind==='cat'){const sel=$('mv-to'),to=sel?sel.value:'';if(to)DB.items.forEach(i=>{if(i.cat===m.id)i.cat=to;});else DB.items=DB.items.filter(i=>i.cat!==m.id);DB.cats=DB.cats.filter(c=>c.id!==m.id);DB.cats.forEach(c=>{if(c.parent===m.id)c.parent='';});S.menu.drawer=null;S.menu.cat=to||(DB.cats[0]||{}).id;stage('Category deleted');}
   if(m.kind==='win'){DB.wins=DB.wins.filter(w=>w.id!==m.id);DB.items.forEach(i=>i.win=i.win.filter(w=>w!==m.id));S.menu.drawer=null;stage('Window deleted');}
   if(m.kind==='tax'){DB.taxes=DB.taxes.filter(t=>t.id!==m.id);S.menu.drawer=null;stage('Deleted');}
   S.modal=null;renderOverlay();render();}
 
-function togOut(id,o){const i=itById(id);i.out[o]=!i.out[o];stage(i.n+(i.out[o]?' added to ':' removed from ')+ON(o).short);render();}
-function togStock(id,o){const i=itById(id);i.stock[o]=!i.stock[o];stage(i.n+(i.stock[o]?' back on':' off')+' at '+ON(o).short);render();}
 /* ════════ AGENTS ════════ */
 function vAgents(){const caps=[['Enquiries',true],['Reservations',DB.caps.res],['Ordering',DB.caps.ord]];
   return `<div class="scroll"><div class="page"><div class="row-h"><div><div class="eyebrow">Voice</div><div class="h1" style="margin-top:2px">Agents</div><p class="desc" style="margin-top:4px">Create and assign voice agents for each outlet. Choose what each agent handles. Pause an agent to stop AI answers; calls still forward.</p></div><div class="r"><button class="btn btn-dark" onclick="toast('New agent')">${I.plus} New Agent</button></div></div>
   <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:20px"><div class="card" style="overflow:hidden"><div class="agent"><div class="agent-h"><div class="agent-av dust">A</div><div><div class="agent-n" style="display:flex;gap:10px;align-items:center">${BRAND.agent} ${pill('p-green','Live')}</div><div class="agent-s">AI Agent · ${caps.filter(c=>c[1]).map(c=>c[0]==='Reservations'?'Reservation':c[0]).join(' · ')}</div></div></div>
-   <div class="agent-stats"><div><div class="v">3</div><div class="l">Outlets</div></div><div><div class="v">${DB.k==='live'?142:DB.calls.length}</div><div class="l">Calls</div></div><div><div class="v">${DB.k==='live'?'81%':'67%'}</div><div class="l">Capture</div></div></div>
+   <div class="agent-stats"><div><div class="v">${OUTLETS.length}</div><div class="l">Outlets</div></div><div><div class="v">${DB.k==='live'?142:DB.calls.length}</div><div class="l">Calls</div></div><div><div class="v">${DB.k==='live'?'81%':'67%'}</div><div class="l">Capture</div></div></div>
    <div class="sep" style="margin:18px 0"></div><div class="eyebrow" style="font-size:12px;margin-bottom:8px">Capabilities</div><div class="dchips">${caps.map(c=>`<span class="tag" style="${c[1]?'background:var(--mint-50);color:var(--mint-700);border-color:transparent':'color:var(--ink-30)'}">${c[1]?'✓':'—'} ${c[0]}</span>`).join('')}</div>
    ${!DB.caps.ord?`<div class="banner b-grey" style="margin-top:14px;font-size:13px">${I.bag}<div>Ordering is off. Turn it on in Edit once your menu and payments are ready.</div></div>`:''}
    <div class="eyebrow" style="font-size:12px;margin:16px 0 8px">Assigned outlets</div><div class="dchips">${OUTLETS.map(o=>`<span class="tag">${o.name}</span>`).join('')}</div></div>
@@ -1347,7 +1495,7 @@ const SET={
   <div class="scard"><div class="scard-h"><div><div class="h2">Payouts · Stripe Connect</div><div class="fh">Card money goes to your own Stripe account, then to your bank.</div></div><div class="r">${DB.stripe==='active'?pill('p-green','Connected'):DB.stripe==='pending'?pill('p-dust','Verifying'):pill('p-grey','Not connected')}</div></div>${st}</div>`;},
  'ord-delivery':()=>{const o=S.zoneOutlet,mode=DB.deliveryMode[o],z=DB.zones[o];
   return sH('Delivery & pickup','Where each outlet delivers, what it costs, and who takes it.','all')+`
-  <div class="segp">${OUTLETS.map(x=>`<button class="${o===x.id?'on':''}" onclick="S.zoneOutlet='${x.id}';S.zoneSel=DB.zones['${x.id}'][0].id;S.test=null;render()">${x.short}</button>`).join('')}</div>
+  <div class="scard" style="flex-direction:row;align-items:center;gap:14px;flex-wrap:wrap;padding:16px 20px"><span class="fl">Outlet</span>${opBtn([o],`openOP({title:'Delivery & pickup for…',mode:'single',sel:['${o}'],apply:s=>{S.zoneOutlet=s[0];S.zoneSel=DB.zones[s[0]][0].id;S.test=null},note:id=>DB.deliveryMode[id]==='zones'?DB.zones[id].length+' zone'+(DB.zones[id].length>1?'s':''):'radius'})`,true)}<span class="small muted" style="flex:1">Each outlet has its own delivery area. Pick one to edit.</span></div>
   <div class="scard"><div class="h2">Services</div><div class="tg"><div class="tx"><div class="fl">Delivery</div><div class="fh">When off, Allie offers pickup only.</div></div><button class="tog on" aria-label="Delivery" onclick="this.classList.toggle('on')"></button></div><div class="sep"></div>
    <div class="tg"><div class="tx"><div class="fl">Pickup</div><div class="fh">Allie quotes the prep time from the moment the order is accepted.</div></div><input class="inp sm" aria-label="Prep minutes" value="20 min" style="max-width:100px"><button class="tog on" aria-label="Pickup" onclick="this.classList.toggle('on')"></button></div></div>
   <div class="scard"><div class="scard-h"><div><div class="h2">Delivery area</div><div class="fh">Zones follow real boundaries like the river and the expressway, which a radius can’t. Allie checks every address against them during the call.</div></div><div class="r segp sm"><button class="${mode==='radius'?'on':''}" onclick="DB.deliveryMode['${o}']='radius';S.test=null;render()">Radius</button><button class="${mode==='zones'?'on':''}" onclick="setZones('${o}')">Zones</button></div></div>
@@ -1416,15 +1564,16 @@ const SPEC={
   ['open','Cancel after accept','Out of scope. Merchants refund in Stripe for rare kitchen failures. Revisit if it happens often.']],
   [['Charge','Before kitchen (pay by link)','Hold on call, charge on accept'],['Decline','—','Hold released, no refund'],['Status sync','POS partners','POS webhooks + manual for no-POS']]],
  calls:['Unchanged layout from production, with an Orders tab and a link from each order call to its order.',[['parity','Order ↔ call link','Open the order from the call and the call from the order.']]],
- menu:['The menu is built once for all outlets. Each outlet then decides what it sells, its stock and any price overrides. Every import lands as a draft inside the same editor.',[
-  ['decision','Brand menu, outlet availability','All outlets view: create and edit items, sizes, choices, hours and taxes. Single outlet view: sold here or not, in stock, price overrides. Same model as LimeTray’s brand menu with store pickers.'],
-  ['decision','Imports become an editable draft','No separate review screen. Low-confidence items are flagged; edit, delete or add before publishing, or publish and fix later. Unchecked items stay hidden from Allie.'],
-  ['decision','Staged publishing','Changes to a live menu queue up until Publish (LimeTray On / Off pattern), so a half-finished edit never reaches a caller.'],
-  ['beats','Fields tuned for voice','Kept from LimeTray: names, description, category, sizes and prices per channel and outlet, choice groups with min/max, dietary, allergens, outlets, channels, hours, suggest-with, taxes, stock. Added: spoken names, Popular, “what Allie says” previews, a readiness check. Dropped: nutrition, additives, recipe, goods/services, images.'],
-  ['parity','What Maple reads','Items, categories, modifier groups and items, prices, sold-out status and menu hours. A POS minimum of 1 becomes a required question.'],
-  ['decision','One “Connect your POS”','Merchants pick their POS and approve it in the POS sign-in. The connection runs through Stream behind the scenes; the UI doesn’t split direct and Stream.'],
-  ['decision','No scraping of delivery apps','The merchant saves their own store page as a PDF; the PDF reader handles it. No aggregator photos.']],
-  [['Menu source','POS or manual','Google, POS, website, PDF/photos, manual'],['Review','Test calls','Draft editor with flags + readiness'],['Spoken names','—','“Also called” per item']]],
+ menu:['Built once for all outlets. Pricing & availability uses LimeTray’s price groups (outlets + channel + price per size), so 12 or 120 outlets are managed the same way. Every multi-outlet choice goes through one outlet picker with search and regions.',[
+  ['decision','Price groups, not per-outlet toggles','Each group is a set of outlets and a channel with a price per size. Outlets in no group don’t sell the item. A single outlet view can split itself into its own group to change its price.'],
+  ['decision','One outlet picker everywhere','Search, regions with select-all, select all / clear, and a per-outlet note (for example “in group 2”, “3 off”). Used in price groups, stock, bulk changes, ordering windows, taxes, Availability and Delivery settings.'],
+  ['decision','Bulk prices & outlets','Select items, then change prices (% or $, by channel), start or stop selling, or mark out of stock / back in stock at any set of outlets.'],
+  ['decision','Veg / non-veg is required','Item and option type (Veg, Non-veg) plus category type. Allie states it and uses it to filter suggestions for veg callers. Vegan and gluten-free stay as dietary tags.'],
+  ['decision','Modifiers are first-class','Options have one name, a type, spoken names, the allergens they add, their own price groups and per-outlet stock, and can be the default choice. Groups have a rule, a custom question, option order and attached items. Internal / display names, images and descriptions are dropped.'],
+  ['parity','Maple modifiers','Maple reads modifier groups and modifier items with prices and sold-out status from the POS; a POS minimum of 1 becomes a required question.'],
+  ['beats','Voice-specific fields','Spoken names on items and options, default choices, custom questions, “What Allie says” previews, readiness check.'],
+  ['decision','Imports become an editable draft','Flags on low-confidence items; publish now or after fixing. Unchecked items stay hidden from Allie.']],
+  [['Outlets','Per-location menus','Price groups + outlet picker'],['Modifier stock','86 from POS','Per option, per outlet'],['Spoken names','—','Items and options']]],
  agents:['Agents keep their production layout. Capabilities replace per-module pricing.',[['decision','Capabilities','Enquiries always on. Reservations and Ordering switch per agent. Ordering can’t be turned on until a menu exists.'],['decision','Test mode removed','Not in this phase.']]],
  settings:['Ordering settings live in the All outlets view with per-outlet rows or tabs. The single-outlet view keeps phone, info, hours and FAQ, plus a read-only summary of that outlet’s ordering.',[
   ['decision','Stripe Connect, direct charges','Each brand connects its own Stripe account (Express). The merchant is merchant of record; Stripe takes 2.9% + 30¢; payouts go daily to their bank. Optional: one account per outlet.'],
