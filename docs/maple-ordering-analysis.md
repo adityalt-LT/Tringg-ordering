@@ -161,3 +161,16 @@ The structure matters. Maple sells *answering* as the base, and *ordering* is th
 - Press: [SpotOn](https://finance.yahoo.com/technology/ai/articles/maple-spoton-partner-modernize-restaurant-154600669.html) · [Quantic](https://www.businesswire.com/news/home/20260424097043/en/Maple-and-Quantic-Partner-to-Bring-AI-Phone-Ordering-to-Thousands-of-Restaurants) · [Chowbus](https://www.01net.it/chowbus-and-maple-announce-strategic-partnership-to-bring-multilingual-voice-ai-ordering-to-restaurants/) · [OrderCounter](https://www.01net.it/ordercounter-and-maple-launch-strategic-partnership-to-enable-ai-phone-ordering-built-for-hybrid-pos/)
 - Competitor-authored (biased): [Loman on Maple](https://loman.ai/blog/maple-reviews-pricing-alternatives) · [Kea comparison](https://kea.ai/blog/restaurant-voice-ai-comparison-2026-kea-ai-vs-maple-revmo-loman)
 - Internal Confluence: [Ordering](https://limetray.atlassian.net/wiki/spaces/Tringg/pages/4558618640) · [Order Module](https://limetray.atlassian.net/wiki/spaces/Tringg/pages/4558651460) · [Settings for ordering](https://limetray.atlassian.net/wiki/spaces/Tringg/pages/4558782492) · [Overview PRD](https://limetray.atlassian.net/wiki/spaces/Tringg/pages/4558651428) · [Competitor Pulse 09-14](https://limetray.atlassian.net/wiki/spaces/Tringg/pages/4753195009) · [Competitor Pulse 09-21](https://limetray.atlassian.net/wiki/spaces/Tringg/pages/4760502291)
+
+## Addendum (2026-09-29): who gets the money on a pickup order
+
+- **Maple takes no cut of orders.** It charges a flat subscription: Voice $85/mo, Pro $220/mo (billed yearly). Ordering is on Pro. There's no per-order or per-minute fee.
+- **Pickup has two payment modes.**
+  - **Pay by Link:** Maple texts a payment link during the call, and the kitchen gets the order only after it's paid.
+  - **Pay in Store:** the order goes straight to the kitchen, and the customer pays at the counter through the restaurant's own POS. Maple never touches this money.
+- **Where Pay in Store is available.** Supported on Toast, Clover, NCR Aloha, NCR Voyix, Quantic, Tray and Chowbus. Square, SkyTab, Smile and SpotOn require card payment up front.
+- **Delivery.** Always paid by card up front.
+- **Card money.** It goes through processing Maple says is "included" in the plan, after KYC (2–3 business days). On SpotOn and SkyTab it runs through the POS processor. Maple's revenue is the subscription, not the order value.
+- **Tringg is the same.** Pay after (at the store) goes 100% to the outlet. Pay before is a direct charge on the merchant's own Stripe account, so the only deduction is Stripe's fee. Tringg's revenue is the one subscription.
+
+Sources: [Maple pricing](https://maple.inc/pricing/) · [Orders Module overview](https://docs.maple.inc/orders/overview) · [Orders FAQ](https://docs.maple.inc/orders/faq)
