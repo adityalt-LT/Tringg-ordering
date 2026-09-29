@@ -654,30 +654,30 @@ const CH={both:'Delivery + Pickup',d:'Delivery only',p:'Pickup only'};
    Delivery orders are always paid on the call. */
 function ev(c,m,w){return {c,t:clock(m),w};}
 function mkOrders(){const T=Date.now();return [
- {id:'#2047',name:'Chris Donovan',ini:'CD',av:'cream',outlet:'wp',phone:'+1 (312) 555-0191',state:'PENDING',ful:'pickup',pay:'after',payState:'due',placed:4,exp:T+(7*60+40)*1000,quote:'8:55 PM',lang:'EN',call:'C-5531',label:'Pepperoni 18" thin + garlic knots, pickup',
+ {id:'#2047',name:'Chris Donovan',ini:'CD',av:'cream',outlet:'lp',phone:'+1 (312) 555-0191',state:'PENDING',ful:'pickup',pay:'after',payState:'due',placed:4,exp:T+(7*60+40)*1000,quote:'8:55 PM',lang:'EN',call:'C-5531',label:'Pepperoni 18" thin + garlic knots, pickup',
   items:[{n:'Pepperoni',q:1,p:28,m:'18" · Thin crust · + Jalapeños'},{n:'Garlic Knots',q:1,p:6,up:true},{n:'San Pellegrino',q:2,p:4}],del:0,tax:3.60,tip:0,addr:null,special:'Extra napkins, please.',
   ev:[ev('PENDING',4,'Allie · read back and confirmed')],pevt:[]},
- {id:'#2046',name:'Lisa Kowalski',ini:'LK',av:'',outlet:'rn',phone:'+1 (312) 555-0144',state:'PENDING',ful:'pickup',pay:'after',payState:'due',placed:7,exp:T+(3*60+10)*1000,quote:'8:50 PM',lang:'EN',call:'C-5530',label:'Half & half 14" + Caesar, pickup',
+ {id:'#2046',name:'Lisa Kowalski',ini:'LK',av:'',outlet:'ls',phone:'+1 (312) 555-0144',state:'PENDING',ful:'pickup',pay:'after',payState:'due',placed:7,exp:T+(3*60+10)*1000,quote:'8:50 PM',lang:'EN',call:'C-5530',label:'Half & half 14" + Caesar, pickup',
   items:[{n:'Half & Half',q:1,p:24,m:'14" · Classic · L: Margherita / R: Funghi'},{n:'Caesar Salad',q:1,p:12,m:'Dressing on the side'}],del:0,tax:3.24,tip:0,addr:null,special:'',
   ev:[ev('PENDING',7,'Allie · half & half read back')],pevt:[]},
  {id:'#2045',name:'James Whitfield',ini:'JW',av:'mint',outlet:'wp',phone:'+1 (312) 555-0142',state:'PREPARING',ful:'delivery',pay:'before',payState:'charged',placed:24,quote:'8:40 PM',lang:'EN',call:'C-5519',label:'Diavola + wings + tiramisu, delivery',
-  items:[{n:'Diavola',q:1,p:26,m:'14" · Classic'},{n:'Wings (8)',q:1,p:14,m:'Buffalo'},{n:'Tiramisu',q:1,p:9,up:true}],del:4,tax:4.41,tip:6,addr:'840 N Milwaukee Ave, Chicago 60642',zone:'Zone B · 2.1 mi',special:'Severe peanut allergy. Please flag to the kitchen.',courier:{via:'dd',st:'wait',t:'DoorDash Drive',s:'Courier is requested automatically when Square marks it ready'},
+  items:[{n:'Diavola',q:1,p:26,m:'14" · Classic'},{n:'Wings (8)',q:1,p:14,m:'Buffalo'},{n:'Tiramisu',q:1,p:9,up:true}],del:4,tax:4.41,tip:6,addr:'840 N Milwaukee Ave, Chicago 60642',zone:'Zone B · 2.1 mi',special:'Severe peanut allergy. Please flag to the kitchen.',
   ev:[ev('PENDING',24,'Allie'),ev('ACCEPTED',24,'Paid on the call'),ev('PREPARING',22,'Square')],pevt:[['Paid $63.41 on the call','Card · 8:06 PM · order went straight to the kitchen']]},
  {id:'#2044',name:'Sarah Connelly',ini:'SC',av:'coral',outlet:'rn',phone:'+1 (312) 555-0187',state:'ACCEPTED',ful:'pickup',pay:'before',payState:'charged',placed:12,quote:'8:45 PM',lang:'EN',call:'C-5525',label:'Margherita 12" + lemonades, pickup',
   items:[{n:'Margherita',q:1,p:18,m:'12" · Classic'},{n:'Meatballs',q:1,p:10},{n:'Lemonade',q:2,p:4}],del:0,tax:3.69,tip:3,addr:null,special:'',
   ev:[ev('PENDING',12,'Allie'),ev('ACCEPTED',12,'Paid on the call')],pevt:[['Paid $42.69 on the call','Google Pay · 8:18 PM']]},
  {id:'#2043',name:'Derek Okafor',ini:'DO',av:'',outlet:'wp',phone:'+1 (312) 555-0163',state:'DISPATCHED',ful:'delivery',pay:'before',payState:'charged',placed:41,quote:'8:25 PM',lang:'EN',call:'C-5514',label:'Margherita 14" + Caesar + cannoli, delivery',
-  items:[{n:'Margherita',q:1,p:22,m:'14" · Classic'},{n:'Caesar Salad',q:1,p:12},{n:'Cannoli',q:1,p:7}],del:4,tax:3.69,tip:5,addr:'1945 W Division St, Chicago 60622',zone:'Zone A · 0.9 mi',special:'',courier:{via:'dd',st:'live',t:'Dasher Kevin M. · on the way',s:'Picked up 8:16 PM · drop-off by 8:34 PM'},
-  ev:[ev('PENDING',41,'Allie'),ev('ACCEPTED',41,'Paid on the call'),ev('PREPARING',39,'Square'),ev('PREPARED',22,'Square'),ev('DISPATCHED',14,'DoorDash Drive')],pevt:[['Paid $53.69 on the call','Card · 7:49 PM']]},
+  items:[{n:'Margherita',q:1,p:22,m:'14" · Classic'},{n:'Caesar Salad',q:1,p:12},{n:'Cannoli',q:1,p:7}],del:4,tax:3.69,tip:5,addr:'1945 W Division St, Chicago 60622',zone:'Zone A · 0.9 mi',special:'',
+  ev:[ev('PENDING',41,'Allie'),ev('ACCEPTED',41,'Paid on the call'),ev('PREPARING',39,'Square'),ev('PREPARED',22,'Square'),ev('DISPATCHED',14,'Square')],pevt:[['Paid $53.69 on the call','Card · 7:49 PM']]},
  {id:'#2042',name:'Amanda Torres',ini:'AT',av:'coral',outlet:'lp',phone:'+1 (312) 555-0174',state:'PREPARED',ful:'pickup',pay:'after',payState:'due',placed:28,quote:'8:25 PM',lang:'ES',call:'C-5528',label:'Rigatoni vodka + chicken, pickup (Spanish)',
   items:[{n:'Rigatoni alla Vodka',q:1,p:24,m:'+ Chicken'},{n:'Garlic Knots',q:1,p:6,up:true},{n:'Coke',q:1,p:3}],del:0,tax:2.97,tip:0,addr:null,special:'Sin queso extra (no extra cheese).',
   ev:[ev('PENDING',28,'Allie · in Spanish'),ev('ACCEPTED',28,'Auto-accept'),ev('PREPARING',27,'Staff · dashboard'),ev('PREPARED',6,'Staff · dashboard')],pevt:[]},
  {id:'#2041',name:'Dan Harper',ini:'DH',av:'cream',outlet:'lp',phone:'+1 (312) 555-0120',state:'PREPARING',ful:'delivery',pay:'before',payState:'charged',placed:15,quote:'8:50 PM',lang:'EN',call:'C-5524',label:'2× Quattro Formaggi + arugula, delivery',
-  items:[{n:'Quattro Formaggi',q:2,p:25,m:'14" · Thin'},{n:'Arugula & Parm',q:1,p:11,up:true}],del:5.5,tax:5.49,tip:4,addr:'233 S Wacker Dr, Chicago 60606',zone:'Zone C · 1.6 mi',special:'',courier:{via:'own',st:'none',t:'Own rider',s:'Assign a rider when it’s ready'},
+  items:[{n:'Quattro Formaggi',q:2,p:25,m:'14" · Thin'},{n:'Arugula & Parm',q:1,p:11,up:true}],del:5.5,tax:5.49,tip:4,addr:'233 S Wacker Dr, Chicago 60606',zone:'Zone C · 1.6 mi',special:'',
   ev:[ev('PENDING',15,'Allie'),ev('ACCEPTED',15,'Paid on the call'),ev('PREPARING',13,'Staff · dashboard')],pevt:[['Paid $75.99 on the call','Apple Pay · 8:15 PM']]},
  {id:'#2040',name:'Robert Flanagan',ini:'RF',av:'mint',outlet:'rn',phone:'+1 (312) 555-0129',state:'DELIVERED',ful:'delivery',pay:'before',payState:'charged',placed:95,quote:'7:25 PM',lang:'EN',call:'C-5498',label:'2× Lasagna + Caprese, delivery',
-  items:[{n:'Lasagna',q:2,p:21},{n:'Caprese',q:1,p:13}],del:4,tax:5.13,tip:8,addr:'55 W Wacker Dr, Chicago 60601',zone:'Zone A · 1.4 mi',special:'',courier:{via:'own',st:'done',t:'Marcus T. · own rider',s:'Delivered 7:38 PM'},
-  ev:[ev('PENDING',95,'Allie'),ev('ACCEPTED',95,'Paid on the call'),ev('PREPARING',93,'Square'),ev('PREPARED',70,'Square'),ev('DISPATCHED',66,'Staff · Marcus T.'),ev('DELIVERED',52,'Staff')],pevt:[['Paid $72.13 on the call','Card · 6:55 PM']]},
+  items:[{n:'Lasagna',q:2,p:21},{n:'Caprese',q:1,p:13}],del:4,tax:5.13,tip:8,addr:'55 W Wacker Dr, Chicago 60601',zone:'Zone A · 1.4 mi',special:'',
+  ev:[ev('PENDING',95,'Allie'),ev('ACCEPTED',95,'Paid on the call'),ev('PREPARING',93,'Square'),ev('PREPARED',70,'Square'),ev('DISPATCHED',66,'Square'),ev('DELIVERED',52,'Square')],pevt:[['Paid $72.13 on the call','Card · 6:55 PM']]},
  {id:'#2039',name:'Nicole Park',ini:'NP',av:'',outlet:'wp',phone:'+1 (312) 555-0166',state:'PICKED_UP',ful:'pickup',pay:'after',payState:'paid',placed:80,quote:'7:30 PM',lang:'EN',call:'C-5501',label:'Veggie Supreme GF + 2 Peroni, pickup',
   items:[{n:'Veggie Supreme',q:1,p:24,m:'14" · Gluten-free'},{n:'Peroni',q:2,p:7}],del:0,tax:3.42,tip:0,addr:null,special:'',
   ev:[ev('PENDING',80,'Allie'),ev('ACCEPTED',80,'Auto-accept'),ev('PREPARING',79,'Square'),ev('PREPARED',62,'Square'),ev('PICKED_UP',55,'Square · paid at counter')],pevt:[['Paid $41.42 at the counter','Square · 7:35 PM']]},
@@ -686,7 +686,7 @@ function mkOrders(){const T=Date.now();return [
   ev:[ev('PENDING',62,'Allie'),ev('ACCEPTED',62,'Paid on the call'),ev('CANCELLED',58,'Staff · oven down · refunded')],pevt:[['Paid $30.52 on the call','Card · 7:28 PM'],['Refunded $30.52 in full','Staff · oven down · 7:32 PM']]},
  {id:'#2037',name:'Tom Okafor',ini:'TO',av:'mint',outlet:'rn',phone:'+1 (312) 555-0177',state:'DECLINED',ful:'pickup',pay:'after',payState:'due',placed:70,quote:'—',lang:'EN',call:'C-5503',reason:'Kitchen too busy',label:'2× Burrata + Diavola 12", pickup',
   items:[{n:'Burrata',q:2,p:14},{n:'Diavola',q:1,p:22,m:'12" · Classic'}],del:0,tax:4.50,tip:0,addr:null,special:'',
-  ev:[ev('PENDING',70,'Allie'),ev('DECLINED',66,'Staff · kitchen too busy')],pevt:[]},
+  ev:[ev('PENDING',70,'Allie'),ev('DECLINED',66,'Square POS · kitchen too busy')],pevt:[]},
  {id:'#2036',name:'Priya Mehta',ini:'PM',av:'cream',outlet:'wp',phone:'+1 (312) 555-0110',state:'EXPIRED',ful:'pickup',pay:'after',payState:'due',placed:110,quote:'—',lang:'EN',call:'C-5490',label:'Carbonara + tiramisu, pickup',
   items:[{n:'Spaghetti Carbonara',q:1,p:18},{n:'Tiramisu',q:1,p:9}],del:0,tax:2.43,tip:0,addr:null,special:'',
   ev:[ev('PENDING',110,'Allie'),ev('EXPIRED',100,'Nobody accepted within 10 min')],pevt:[]}
@@ -723,11 +723,10 @@ let DB;
 function loadScenario(k){
   DB={k,orderingOn:k!=='off',menuState:k==='off'?'none':'live',menuSource:k==='off'?null:'LimeTray menu',
    stripe:k==='off'?'none':'active',payPick:{call:true,store:true},serviceSet:k!=='off',posSync:k!=='off',
-   autoAccept:Object.fromEntries(OUTLETS.map(o=>[o.id,o.id!=='wp'])),orders:k==='live'?mkOrders():[],calls:mkCalls(k),res:clone(RES),
+   autoAccept:Object.fromEntries(OUTLETS.map(o=>[o.id,!['lp','ls'].includes(o.id)])),orders:k==='live'?mkOrders():[],calls:mkCalls(k),res:clone(RES),
    items:clone(MENU.items),cats:clone(MENU.cats),groups:clone(MENU.groups),wins:clone(MENU.wins),taxes:clone(MENU.taxes),pending:0,snap:null,zones:Object.fromEntries(OUTLETS.map(o=>[o.id,o.isNew?[]:ZONES[o.id]?clone(ZONES[o.id]):[]])),deliveryMode:Object.fromEntries(OUTLETS.map(o=>[o.id,o.isNew?null:['wp','lp'].includes(o.id)?'zones':'radius'])),
    svc:Object.fromEntries(OUTLETS.map(o=>[o.id,o.isNew?{set:false,del:false,pick:false,prep:null,rad:null}:{set:true,del:o.id!=='oh',pick:true,prep:o.id==='oh'?12:20,rad:{mi:3,fee:3,min:15}}])),
-   riders:[{n:'Marcus T.',on:true},{n:'Chris V.',on:true},{n:'Aaliyah R.',on:false}],partners:{dd:k!=='off',uber:false},
-   caps:{enq:true,res:true,ord:k!=='off'}};
+      caps:{enq:true,res:true,ord:k!=='off'}};
 }
 /* delivery zones (polygon coordinates in map units, map is 600×380, outlet at its centre) */
 const ZONES={
@@ -789,13 +788,13 @@ function renderTop(){
    <div class="top-t">${TITLE[S.route]()}</div>
    ${S.route==='overview'?`<div class="live"><span class="d"></span>${BRAND.agent} is live — try it<span class="ph">${BRAND.num}</span><button aria-label="Copy number" onclick="copyText('${BRAND.num}')">${I.copy}</button></div>`:''}
    <div class="top-r">
-    ${S.route==='orders'&&DB.orderingOn?(posOutlets.length?`<button class="pos-sw ${DB.posSync?'on':''}" onclick="togglePos()" aria-pressed="${DB.posSync}">POS sync <span class="sub">· Square${S.outlet==='all'?' · '+OUTLETS.filter(o=>o.pos).length+' of '+OUTLETS.length+' outlets':''}</span><span class="tog ${DB.posSync?'on':''}" style="width:36px;height:22px" aria-hidden="true"></span></button>`:`<span class="pos-sw" style="cursor:default">No POS at ${esc(ON(S.outlet).short)} · manual statuses</span>`):''}
+    ${S.route==='orders'&&DB.orderingOn?(posOutlets.length?`<button class="pos-sw ${DB.posSync?'on':''}" onclick="togglePos()" aria-pressed="${DB.posSync}">POS sync <span class="sub">${S.outlet==='all'?'· '+OUTLETS.filter(o=>o.pos).length+' of '+OUTLETS.length+' outlets':'· '+esc(ON(S.outlet).pos)}</span><span class="tog ${DB.posSync?'on':''}" style="width:36px;height:22px" aria-hidden="true"></span></button>`:`<span class="pos-sw" style="cursor:default">No POS at ${esc(ON(S.outlet).short)} · orders handled here</span>`):''}
     <label class="srch">${I.search}<input type="search" placeholder="Search…" aria-label="Search"><span class="kbd">⌘K</span></label>
     <button class="ibtn" aria-label="Notifications" onclick="toast('No new notifications')">${I.bell}${DB.orders.some(o=>o.state==='PENDING')?'<span class="dot"></span>':''}</button>
     <button class="ibtn ${S.spec?'on':''}" aria-label="Spec notes and Maple comparison" title="Spec notes · vs Maple" onclick="S.spec=!S.spec;renderOverlay();renderTop()">${I.doc}</button>
    </div>`;
 }
-function togglePos(){DB.posSync=!DB.posSync;render();toast(DB.posSync?'POS sync on · statuses now follow Square':'POS sync off · update statuses from this dashboard');}
+function togglePos(){DB.posSync=!DB.posSync;render();toast(DB.posSync?'POS sync on · orders go straight to the POS':'POS sync off · accept and update orders here');}
 function render(){
   $('shell').classList.toggle('nav-open',S.nav);
   renderRail();renderTop();$('view').innerHTML=(VIEWS[S.route]||VIEWS.overview)();
@@ -833,7 +832,7 @@ function vOverview(){
   if(live){h+=`<div class="card"><div class="card-h"><div class="h2">Ordering today</div></div><div class="card-b"><div class="kv" style="grid-template-columns:repeat(3,minmax(0,1fr))"><div><div class="k">Avg order value</div><div class="v" style="font-size:20px;font-weight:600">$39.10</div></div><div><div class="k">Upsell attach</div><div class="v" style="font-size:20px;font-weight:600">31%</div></div><div><div class="k">Order calls finished by Allie</div><div class="v" style="font-size:20px;font-weight:600">88%</div></div></div></div>
     <div class="card-b" style="padding-top:0;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:28px" class="ov2"><div><div class="fl" style="margin-bottom:12px">Top items</div><div class="bars">${[['Pepperoni',14],['Margherita',11],['Garlic Knots',10],['Half & Half',7],['Rigatoni alla Vodka',6]].map(r=>`<div class="bar"><span>${r[0]}</span><span class="tr"><i style="width:${r[1]/14*100}%"></i></span><span class="n">${n(r[1])}</span></div>`).join('')}</div></div>
     <div><div class="fl" style="margin-bottom:12px">Pickup vs delivery</div><div class="bars">${[['Pickup',22,'$748'],['Delivery',16,'$738']].map(r=>`<div class="bar" style="grid-template-columns:70px minmax(0,1fr) 90px"><span>${r[0]}</span><span class="tr"><i style="width:${r[1]/38*100}%;background:${r[0]==='Pickup'?'var(--mint-500)':'var(--dust-500)'}"></i></span><span class="n">${n(r[1])} · ${r[2]}</span></div>`).join('')}</div>
-    <div class="xs muted" style="margin-top:14px">Delivery by DoorDash Drive at Wicker Park, own riders at River North and Loop.</div></div></div></div>`;}
+</div></div></div>`;}
   h+=`</div><div class="col"><div class="card agent"><div class="agent-h"><div class="agent-av">A</div><div><div class="agent-n">${BRAND.agent}</div><div class="agent-s">${['Enquiries',DB.caps.res?'Reservation':null,DB.caps.ord?'Ordering':null].filter(Boolean).join(' · ')} · ${S.outlet==='all'?OUTLETS.length+' outlets':'1 outlet'}</div></div><span class="lvp">${pill('p-green','Live')}</span></div>
    <div class="agent-stats"><div><div class="v">${live?n(142):DB.calls.filter(inScope).length}</div><div class="l">Calls today</div></div><div><div class="v">${live?'2:34':'1:04'}</div><div class="l">Avg duration</div></div><div><div class="v">${live?'81%':'67%'}</div><div class="l">Capture rate</div></div></div></div>
    <div class="card"><div class="card-h"><div class="h3">Recent calls</div><button class="linkbtn r" onclick="go('calls')">View all ${I.arrow}</button></div><div class="card-b" style="padding-top:8px">`;
@@ -915,7 +914,7 @@ function renderOrderDetail(){
   if(pend)acts=`<button class="btn btn-line" onclick="accept('${o.id}')">Accept order</button><button class="btn btn-red" onclick="S.modal={t:'decline',id:'${o.id}'};renderOverlay()">Decline</button>`;
   else if(ACTIVE.includes(o.state)){
     const rf=o.pay==='before'&&o.payState==='charged'?`<button class="btn btn-line btn-sm" onclick="S.modal={t:'refund',id:'${o.id}',mode:'full',sel:[],r:'Item unavailable'};renderOverlay()">Refund</button>`:'';
-    if(pos)acts=`<span class="tag">${I.pos.replace('width="22" height="22"','width="15" height="15"')} Status updates from Square</span><button class="btn btn-proto btn-sm" onclick="advance('${o.id}','Square')">Simulate Square update</button>`;
+    if(pos)acts=`<span class="tag">${I.pos.replace('width="22" height="22"','width="15" height="15"')} Handled in ${esc(ON(o.outlet).pos)}</span>`;
     else{const nx=nextStep(o);if(nx)acts=nx;}
     acts+=rf;
   }
@@ -931,26 +930,25 @@ function renderOrderDetail(){
     <div class="meta"><div class="v mono">${money(totT(o))}</div><div class="l">${o.pay==='before'?(o.payState==='refunded'?'Refunded':'Paid on call'):'Pay at pickup'}</div></div></div>
    <div class="ailabel"><div class="k">${I.spark} AI CALL LABEL</div><div class="v">${esc(o.label)}</div></div>`;
   if(pend)h+=`<div class="banner b-amber">${I.clock.replace('width="22" height="22"','width="17" height="17"')}<div>Accept within <b class="mono" data-exp="${o.exp}">${countdown(r)}</b> or the order expires. It’s paid at pickup, so declining or expiring costs nothing and needs no refund.</div></div>`;
+  if(pos&&!CLOSED.includes(o.state))h+=`<div class="banner b-grey" style="font-size:13px">${I.pos.replace('width="22" height="22"','width="16" height="16"')}<div>Sent straight to <b>${esc(ON(o.outlet).pos)}</b>. The kitchen accepts it and moves it on the POS; this page follows automatically.</div></div>`;
   if(ACTIVE.includes(o.state)||DONE.includes(o.state))h+=`<div class="lock">${I.lock}<div>Accepted orders are locked. The caller and Allie can no longer change or cancel it.${o.pay==='before'?' If the kitchen can’t make something, use Refund: the whole order or single items.':''}</div></div>`;
   h+=`</div><div class="dsec"><div class="dsec-l">Items</div><table class="lines"><tbody>${o.items.map(i=>`<tr class="${i.ref?'refd':''}"><td>${i.q}× ${esc(i.n)} ${i.up?pill('p-dust','Suggested'):''}${i.ref?pill('p-grey','Refunded'):''}${i.m?`<div class="m">${esc(i.m)}</div>`:''}</td><td>${money(i.p*i.q)}</td></tr>`).join('')}</tbody></table>
    <div class="sum"><div><span>Subtotal</span><span>${money(subT(o))}</span></div>${o.del?`<div><span>Delivery</span><span>${money(o.del)}</span></div>`:''}<div><span>Tax</span><span>${money(o.tax)}</span></div>${o.tip?`<div><span>Tip</span><span>${money(o.tip)}</span></div>`:''}<div class="g"><span>Total</span><span>${money(totT(o))}</span></div></div>${o.special?`<div class="special">${esc(o.special)}</div>`:''}</div>
    <div class="dsec"><div class="dsec-l">Payment</div><div class="courier"><div class="ic">${I.card}</div><div style="min-width:0;flex:1"><div class="t">${pl[0]}</div><div class="s">${pl[1]}</div></div>${o.pay==='after'&&o.payState==='due'&&!CLOSED.includes(o.state)&&!pend&&!pos?`<button class="btn btn-line btn-sm" onclick="markPaid('${o.id}')">Mark paid</button>`:''}</div>
     ${o.pevt.length?`<div class="tl" style="margin-top:-4px">${o.pevt.map(p=>`<div class="tl-i" style="padding:8px 0"><div><div class="small" style="font-weight:500">${esc(p[0])}</div><div class="xs muted">${esc(p[1])}</div></div></div>`).join('')}</div>`:''}</div>`;
-  if(o.ful==='delivery'&&o.courier){const c=o.courier;h+=`<div class="dsec"><div class="dsec-l">Delivery <span class="r xs muted">${esc(o.addr)}</span></div><div class="courier"><div class="ic">${I.scooter}</div><div style="min-width:0;flex:1"><div class="t">${esc(c.t)}</div><div class="s">${esc(c.s)}</div></div>${c.via==='own'&&o.state==='PREPARED'&&!c.rider?`<button class="btn btn-line btn-sm" onclick="S.modal={t:'rider',id:'${o.id}'};renderOverlay()">Assign rider</button>`:''}</div></div>`;}
+  if(o.ful==='delivery'&&o.addr)h+=`<div class="dsec"><div class="dsec-l">Deliver to</div><div class="small">${esc(o.addr)}</div></div>`;
   h+=`<div class="dsec"><div class="dsec-l">Status timeline <span class="r code">LimeTray state</span></div><div class="tl">${lcSteps.map(s=>{const e=o.ev.find(x=>x.c===s);const bad=['DECLINED','EXPIRED','CANCELLED'].includes(s);const isCur=s===cur&&!pend;
     return `<div class="tl-i ${e?'':'pending'}"><span class="tl-c ${e?(bad?'bad':'done'):isCur?'cur':''}">${e?(bad?I.x:I.check):''}</span><div style="flex:1"><div class="tl-t">${LCL[s]} <span class="code">${s}</span></div><div class="tl-s">${e?e.t+' · '+esc(e.w):'Pending'}</div></div></div>`;}).join('')}</div></div>
    <div class="dsec"><div class="dsec-l">Call</div><button class="mini" onclick="S.calls.sel='${o.call}';go('calls')" style="padding:0"><span class="av mint" style="width:36px;height:36px">${I.phone}</span><span class="m"><span class="t" style="display:block">${o.call} · recording and transcript</span><span class="s" style="display:block">${clock(o.placed)}</span></span>${I.arrow}</button></div></div>`;
   el.innerHTML=h;
 }
 function nextStep(o){
-  const own=o.ful==='delivery'&&o.courier&&o.courier.via==='own',dd=o.ful==='delivery'&&o.courier&&o.courier.via==='dd';
   switch(o.state){
    case 'ACCEPTED':return `<button class="btn btn-line" onclick="advance('${o.id}')">Start preparing</button>`;
    case 'PREPARING':return `<button class="btn btn-line" onclick="advance('${o.id}')">Mark ready</button>`;
    case 'PREPARED':if(o.ful==='pickup')return `<button class="btn btn-line" onclick="advance('${o.id}')">Mark picked up</button>${o.payState==='due'?`<span class="small muted">Collect ${money(totT(o))}</span>`:''}`;
-     if(own)return o.courier.rider?`<button class="btn btn-line" onclick="advance('${o.id}')">Mark out for delivery</button>`:`<button class="btn btn-line" onclick="S.modal={t:'rider',id:'${o.id}'};renderOverlay()">Assign rider</button>`;
-     return `<span class="tag">DoorDash courier requested</span><button class="btn btn-proto btn-sm" onclick="advance('${o.id}','DoorDash Drive')">Simulate courier pickup</button>`;
-   case 'DISPATCHED':return dd?`<span class="tag">Tracking from DoorDash</span><button class="btn btn-proto btn-sm" onclick="advance('${o.id}','DoorDash Drive')">Simulate drop-off</button>`:`<button class="btn btn-line" onclick="advance('${o.id}')">Mark delivered</button>`;
+     return `<button class="btn btn-line" onclick="advance('${o.id}')">Mark out for delivery</button>`;
+   case 'DISPATCHED':return `<button class="btn btn-line" onclick="advance('${o.id}')">Mark delivered</button>`;
   }return '';
 }
 function logEv(o,c,w){o.ev.push({c,t:realClock(),w});}
@@ -958,11 +956,7 @@ function accept(id){const o=DB.orders.find(x=>x.id===id);o.state='ACCEPTED';logE
   S.orders.tab='active';toast('Accepted · '+o.id+' is in the kitchen');renderOrders();}
 function advance(id,src){const o=DB.orders.find(x=>x.id===id);const steps=LC[o.ful];const nx=steps[steps.indexOf(o.state)+1];if(!nx)return;o.state=nx;
   logEv(o,nx,src||'Staff · dashboard');
-  if(nx==='PREPARED'&&o.courier&&o.courier.via==='dd')o.courier={via:'dd',st:'req',t:'DoorDash Drive · courier requested',s:'Dasher arriving in about 6 min'};
-  if(nx==='DISPATCHED'&&o.courier&&o.courier.via==='dd')o.courier={via:'dd',st:'live',t:'Dasher on the way',s:'Picked up '+realClock()};
-  if(nx==='DISPATCHED'&&o.courier&&o.courier.via==='own')o.courier.s='Left the restaurant '+realClock();
   if(DONE.includes(nx)&&o.pay==='after'&&o.payState==='due'){o.payState='paid';o.pevt.push(['Paid '+money(totT(o))+' at the store',realClock()]);}
-  if(DONE.includes(nx)&&o.courier)o.courier.s='Delivered '+realClock();
   toast(o.id+' · '+LCL[nx].toLowerCase()+(src?' (from '+src+')':''));renderOrders();}
 function markPaid(id){const o=DB.orders.find(x=>x.id===id);o.payState='paid';o.pevt.push(['Paid '+money(totT(o))+' at the store',realClock()]);toast('Marked paid');renderOrders();}
 setInterval(()=>{document.querySelectorAll('[data-exp]').forEach(el=>{const r=+el.dataset.exp-Date.now();el.textContent=countdown(r);if(r<180000)el.classList.add(el.classList.contains('cd')?'urgent':'warn');});
@@ -1471,8 +1465,8 @@ const SET={
   <div class="scard"><div class="scard-h"><div><div class="h2">Special dates & closures</div><div class="fh">Override hours for holidays, events, or one-off closures.</div></div><div class="r"><button class="btn btn-line" onclick="toast('Add special date')">${I.plus} Add special date</button></div></div></div>`,
  faq:()=>sH('FAQ / Knowledge','Answers Allie can use on calls.')+`<div class="scard">${[['Do you have gluten-free crust?','Yes, 12" for $3 extra. It’s made in a shared kitchen.'],['Is there parking?','Street parking on Damen after 6 PM.'],['Do you cater?','Yes. Allie transfers catering calls to the team.']].map(q=>`<div><div class="fl">${q[0]}</div><div class="fh">${q[1]}</div></div>`).join('<div class="sep"></div>')}</div>`,
  'ord-controls':()=>sH('Ordering controls','How orders are accepted, and what happens after.','all')+`
-  <div class="scard"><div><div class="h2">Auto-accept · pay-at-pickup orders</div><div class="fh">Orders paid on the call always go straight to the kitchen; the payment is the confirmation. This only decides pay-at-pickup orders. On: straight into Active. Off: someone accepts each one in Orders › Needs approval.</div></div>
-   <div class="tblw"><table class="tbl"><thead><tr><th>Outlet</th><th>Auto-accept</th><th>Statuses come from</th></tr></thead><tbody>${OUTLETS.map(o=>`<tr><td style="font-weight:600">${o.name}</td><td><button class="tog ${DB.autoAccept[o.id]?'on':''}" aria-label="Auto-accept ${o.short}" onclick="DB.autoAccept['${o.id}']=!DB.autoAccept['${o.id}'];render()"></button></td><td class="small">${o.pos&&DB.posSync?'Square (POS sync)':'This dashboard'}</td></tr>`).join('')}</tbody></table></div>
+  <div class="scard"><div><div class="h2">How orders reach the kitchen</div><div class="fh"><b>POS connected:</b> every order goes straight to the POS, and the kitchen accepts or declines it there. <b>No POS:</b> orders paid on the call go straight into Active; pay-at-pickup orders follow auto-accept. On: straight into Active. Off: someone accepts each one in Orders › Needs approval.</div></div>
+   <div class="tblw"><table class="tbl"><thead><tr><th>Outlet</th><th>Auto-accept</th><th>Statuses come from</th></tr></thead><tbody>${OUTLETS.map(o=>`<tr><td style="font-weight:600">${o.name}</td><td>${o.pos&&DB.posSync?'<span class="small muted">Not needed · goes to the POS</span>':`<button class="tog ${DB.autoAccept[o.id]?'on':''}" aria-label="Auto-accept ${o.short}" onclick="DB.autoAccept['${o.id}']=!DB.autoAccept['${o.id}'];render()"></button>`}</td><td class="small">${o.pos&&DB.posSync?esc(o.pos)+' · accept, decline and statuses on the POS':'This dashboard'}</td></tr>`).join('')}</tbody></table></div>
    <div class="sep"></div><div class="field"><span class="fl">Time to accept</span><span class="fh" style="margin-top:-6px">The caller has already hung up expecting food, so keep it short. If nobody accepts, the order expires. It’s pay at pickup, so there’s nothing to refund.</span><div class="segp sm">${['5 min','10 min','15 min'].map((x,i)=>`<button class="${i===1?'on':''}" onclick="this.parentNode.querySelectorAll('button').forEach(b=>b.classList.remove('on'));this.classList.add('on')">${x}</button>`).join('')}</div></div></div>
   <div class="scard"><div class="h2">After an order is accepted</div><div class="rules">
    <div class="rule"><span class="ic">${I.lock}</span><div><b style="font-weight:600">It’s locked.</b> The caller can’t change or cancel it, and Allie tells them so if they call back. Before acceptance, Allie can still change or cancel it.</div></div>
@@ -1532,7 +1526,7 @@ const SET={
    <div class="small muted">ROSSA Loop has no POS, so its orders are always updated from the dashboard. The switch is also at the top right of Orders.</div></div>
   <div class="scard"><div class="scard-h"><div><div class="h3">Connect another POS</div><div class="fh">Toast, Square, Clover, SpotOn, SkyTab, Lightspeed, NCR Aloha and more. You sign in to your POS to approve it.</div></div><div class="r"><button class="btn btn-line" onclick="openPos()">Connect POS</button></div></div></div>`,
  msg:()=>sH('Messaging agent','Your existing messaging agent settings. Unchanged by ordering.','all')+`<div class="scard"><div class="soft-empty">Existing page · not part of this prototype</div></div>`,
- team:()=>sH('Users & roles','Who can see and act on orders.','all')+`<div class="scard"><div class="tblw"><table class="tbl"><thead><tr><th>Permission</th><th>Owner</th><th>Manager</th><th>Staff</th></tr></thead><tbody>${[['View orders, reservations and calls',1,1,1],['Accept, decline and advance orders',1,1,1],['Turn menu items on or off',1,1,1],['Delivery zones and riders',1,1,0],['Payments, payouts and Stripe',1,0,0],['Billing and team',1,0,0]].map(r=>`<tr><td>${r[0]}</td>${[1,2,3].map(i=>`<td>${r[i]?'<span style="color:var(--sage-700)">'+I.check+'</span>':'<span class="muted">—</span>'}</td>`).join('')}</tr>`).join('')}</tbody></table></div></div>`,
+ team:()=>sH('Users & roles','Who can see and act on orders.','all')+`<div class="scard"><div class="tblw"><table class="tbl"><thead><tr><th>Permission</th><th>Owner</th><th>Manager</th><th>Staff</th></tr></thead><tbody>${[['View orders, reservations and calls',1,1,1],['Accept, decline and advance orders',1,1,1],['Turn menu items on or off',1,1,1],['Delivery zones and prep times',1,1,0],['Payments, payouts and Stripe',1,0,0],['Billing and team',1,0,0]].map(r=>`<tr><td>${r[0]}</td>${[1,2,3].map(i=>`<td>${r[i]?'<span style="color:var(--sage-700)">'+I.check+'</span>':'<span class="muted">—</span>'}</td>`).join('')}</tr>`).join('')}</tbody></table></div></div>`,
  billing:()=>sH('Billing','One subscription covers everything.','all')+`<div class="scard"><div class="scard-h"><div><div class="eyebrow">Tringg subscription</div><div class="h1" style="margin-top:4px">$350 <span class="small muted" style="font-weight:400">/ outlet / month</span></div></div><div class="r">${pill('p-green','Active')}</div></div>
    <div class="dchips">${['Enquiries','Reservations','Ordering'].map(x=>`<span class="tag" style="background:var(--mint-50);color:var(--mint-700);border-color:transparent">✓ ${x}</span>`).join('')}</div>
    <div class="small muted">Nothing is sold per module. Don’t want reservations or ordering? Switch that capability off for the agent in <button class="u-link" onclick="S.agentEdit=true;go('agents')">Agents › Edit</button>.</div></div>`
@@ -1582,12 +1576,12 @@ const SPEC={
  overview:['Today at a glance for reservations and ordering together. The ordering card only appears once ordering is on; before that, a single nudge points to setup.',[
   ['decision','One subscription, capabilities per agent','Enquiry, reservation and ordering are all included. No module is sold or locked; a merchant turns a capability off per agent.'],
   ['decision','No ordering onboarding yet','Onboarding stays enquiry + reservation. Ordering setup is a 4-step guide inside Orders until onboarding is redesigned.']]],
- orders:['Every phone order. States follow LimeTray. The POS sync switch sits top right because it decides who moves an order after acceptance.',[
-  ['decision','POS sync switch in the header','On: statuses after Accepted arrive by POS webhook (Square). Off: staff move orders here. Loop has no POS, so it’s always manual.'],
+ orders:['Every phone order. States follow LimeTray. The POS sync switch sits top right because it decides where orders are accepted and moved: on the POS, or here.',[
+  ['decision','Two ways an order is handled','POS connected (sync on): the order goes straight to the POS; accept, decline and statuses happen there and show here read-only. No POS: accept or decline here (or auto-accept), then move it Preparing → Ready → Picked up / Out for delivery → Delivered here.'],
   ['parity','Paid orders go straight to the kitchen','Same as Maple’s pay-by-link: the card is charged when the caller pays, and the order skips approval. No card holds. Only pay-at-pickup orders wait for Accept, and those cost nothing to decline.'],
   ['decision','Delivery is always paid on the call','There’s no counter to pay at. Pickup can offer on the call, at pickup, or both. Cash on delivery is left out for now.'],
   ['beats','Changes allowed before acceptance','Allie can still edit or cancel a PENDING order when the caller calls back. Maple makes the caller cancel and re-order.'],
-  ['decision','No call buttons','No “call rider” or “call customer” actions. Riders are assigned; couriers are tracked.'],
+  ['decision','No rider or courier handling this phase','No rider assignment, courier tracking, simulate buttons or call buttons. Delivery is marked out and delivered by staff, or by the POS.'],
   ['decision','Refund from the order','For the rare paid order the kitchen can’t make: refund the whole order (it moves to Cancelled) or single items. Stripe keeps its fee on refunds.']],
   [['Charge','Before kitchen (pay by link)','Charged on the call, straight to the kitchen'],['Decline','—','Only pay-at-pickup orders; nothing to refund'],['Refund','—','Whole order or items, from the order'],['Status sync','POS partners','POS webhooks + manual for no-POS']]],
  calls:['Unchanged layout from production, with an Orders tab and a link from each order call to its order.',[['parity','Order ↔ call link','Open the order from the call and the call from the order.']]],
@@ -1638,7 +1632,6 @@ function renderOverlay(){const _db=document.querySelector('#overlay .drawer-b'),
     ${m.mode==='items'?`<div class="radios">${left.map(([it,k])=>`<button class="radio chk ${m.sel.includes(k)?'on':''}" onclick="const a=S.modal.sel,i=a.indexOf(${k});i<0?a.push(${k}):a.splice(i,1);renderOverlay()"><span class="o"></span>${it.q}× ${esc(it.n)} <span class="muted" style="margin-left:auto">${money(it.p*it.q)}</span></button>`).join('')}</div>`:`<div class="small">The order moves to Cancelled and the full <b>${money(amt)}</b> is refunded.</div>`}
     <div class="field"><span class="fl">Reason</span><div class="dchips">${['Item unavailable','Kitchen issue','Customer request','Other'].map(r=>`<button class="${m.r===r?'on':''}" onclick="S.modal.r='${r}';renderOverlay()">${r}</button>`).join('')}</div></div>
     <div class="f"><button class="btn btn-ghost" onclick="S.modal=null;renderOverlay()">Cancel</button><button class="btn btn-red" ${amt>0?'':'disabled'} onclick="doRefund()">Refund ${money(amt)}</button></div></div></div>`;}
-   if(m.t==='rider'){const on=DB.riders.filter(r=>r.on);h+=`<div class="modal-ov" onclick="if(event.target===this){S.modal=null;renderOverlay()}"><div class="modal" role="dialog" aria-modal="true"><div class="t">Assign a rider</div><div class="b">Riders on shift at ${esc(ON(DB.orders.find(x=>x.id===m.id).outlet).short)}.</div><div class="radios">${on.map((r,i)=>`<button class="radio ${(m.r||on[0].n)===r.n?'on':''}" onclick="S.modal.r='${r.n}';renderOverlay()"><span class="o"></span>${r.n}</button>`).join('')}</div><div class="f"><button class="btn btn-ghost" onclick="S.modal=null;renderOverlay()">Cancel</button><button class="btn btn-dark" onclick="assignRider()">Assign</button></div></div></div>`;}
    if(m.t==='stripe')h+=`<div class="modal-ov" onclick="if(event.target===this){S.modal=null;renderOverlay()}"><div class="modal" role="dialog" aria-modal="true"><div class="t">Connect with Stripe</div><div class="b">You’ll finish on Stripe’s secure page, then come back here. Have your EIN, the owner’s ID and your bank details ready. Takes about 10 minutes; Stripe verifies in 1–3 business days.</div>
     <div class="guide" style="margin:0"><div class="gstep"><span class="n">1</span><div><div class="t">Business details</div></div></div><div class="gstep"><span class="n">2</span><div><div class="t">Identity check (KYC)</div></div></div><div class="gstep"><span class="n">3</span><div><div class="t">Bank account for payouts</div></div></div></div>
     <div class="f"><button class="btn btn-ghost" onclick="S.modal=null;renderOverlay()">Cancel</button><button class="btn btn-dark" onclick="S.modal=null;DB.stripe='pending';render();toast('Details sent to Stripe for verification')">Continue to Stripe</button></div></div></div>`;}
@@ -1648,7 +1641,6 @@ function doRefund(){const m=S.modal,o=DB.orders.find(x=>x.id===m.id);
   if(m.mode==='full'){const a=totT(o)-(o.refd||0);o.state='CANCELLED';o.reason=m.r;o.payState='refunded';logEv(o,'CANCELLED','Staff · '+m.r.toLowerCase()+' · refunded');o.pevt.push(['Refunded '+money(a)+' in full','Staff · '+m.r.toLowerCase()+' · '+realClock()]);toast(o.id+' cancelled · '+money(a)+' refunded');}
   else{const a=m.sel.reduce((t,k)=>t+o.items[k].p*o.items[k].q*1.0875,0),names=m.sel.map(k=>o.items[k].q+'× '+o.items[k].n).join(', ');m.sel.forEach(k=>o.items[k].ref=true);o.refd=(o.refd||0)+a;o.pevt.push(['Refunded '+money(a)+' · '+names,'Staff · '+m.r.toLowerCase()+' · '+realClock()]);toast(money(a)+' refunded on '+o.id);}
   S.modal=null;renderOverlay();renderOrders();}
-function assignRider(){const o=DB.orders.find(x=>x.id===S.modal.id),n=S.modal.r||DB.riders.find(r=>r.on).n;o.courier={via:'own',rider:n,t:n+' · own rider',s:'Assigned '+realClock()};S.modal=null;renderOverlay();toast(n+' assigned to '+o.id);renderOrders();}
 
 const VIEWS={overview:vOverview,reservations:vReservations,orders:vOrders,calls:vCalls,menu:vMenu,agents:vAgents,settings:vSettings};
 render();
