@@ -174,3 +174,10 @@ The structure matters. Maple sells *answering* as the base, and *ordering* is th
 - **Tringg is the same.** Pay after (at the store) goes 100% to the outlet. Pay before is a direct charge on the merchant's own Stripe account, so the only deduction is Stripe's fee. Tringg's revenue is the one subscription.
 
 Sources: [Maple pricing](https://maple.inc/pricing/) · [Orders Module overview](https://docs.maple.inc/orders/overview) · [Orders FAQ](https://docs.maple.inc/orders/faq)
+
+## Decision (2026-09-29): payment by order type, no card holds
+
+- **Pickup:** paid on the call (text link) or at pickup. The merchant keeps at least one on, and Allie asks which the caller prefers.
+- **Delivery:** always paid on the call, because there's no counter to pay at. Delivery can't be turned on until Stripe is connected. Cash on delivery is out for now; revisit it for India and the Middle East.
+- **No card holds.** The card is charged when the caller pays the link, and **paid orders go straight to the kitchen** (Accepted). Accept / decline and auto-accept only apply to pay-at-pickup orders, which cost nothing to decline.
+- **Refund from the order,** for the rare paid order the kitchen can't make: the whole order (it moves to Cancelled) or single items. Stripe keeps its fee on refunds. This matches Maple's pay-by-link, where the kitchen gets the order once it's paid.
