@@ -20,9 +20,9 @@ The current flow is a **form wizard with an AI feature inside it**. An AI-native
 ## 2. Design principles applied
 
 1. **One question per screen.** One big input, one decision. (The ChatGPT Ads onboarding works this way: one task, generous space.)
-2. **Show the work.** The right-hand "live briefing" starts empty and fills in as the AI learns: restaurant, location, hours, answers, rules, voice. The user sees the host being built.
+2. **Minimal surface, intelligent behaviour.** White space, hairlines and type only: no sidebar, cards, gradients or dark panels. The AI feel comes from behaviour. The agent speaks its headings (typed out in first person), shows a quiet log of what it is reading, and the user can type any question into the test call.
 3. **Pre-fill, then confirm.** Everything inferable is filled (cuisine, description, hours, FAQs). The user edits only what's wrong.
-4. **Prove it, don't claim it.** The Review step is a live test call with scripted scenarios computed from the user's own rules ("Table for 12" gets a different answer under Selective vs Easygoing).
+4. **Prove it, don't claim it.** The Review step is a chat with the agent. Free-text questions are answered from the user's own setup (hours, FAQs, booking rules), and unknown questions get the honest fallback "I'll take your number and have the team call back".
 5. **Say why something is disabled.** Every disabled primary button has a reason beside it.
 6. **Presets before parameters.** Reservation rules start as three styles, with steppers underneath and a plain-English readback of what callers will hear.
 
@@ -30,14 +30,14 @@ The current flow is a **form wizard with an AI feature inside it**. An AI-native
 
 | Today | Proposed |
 |---|---|
-| Sign up form | Sign up beside a looping demo call (the product sells itself while the user types) |
+| Sign up form | One headline, Google or email |
 | Name Search / Web URL tabs, "Can't find it?" | One field. A pasted URL is auto-detected. Manual entry stays as a quiet link. |
-| Generic progress card | Live research feed whose findings stream into the briefing panel |
-| Separate brand form + outlet picker + outlet detail (3 screens) | One **Verify** screen with four cards: Restaurant, Location, Hours, Answers. Inline edit. |
-| Black sidebar with 6 steps | Slim 6-segment progress bar, same six step names |
+| Generic progress card | Quiet research log: each finding appears as the agent completes it |
+| Separate brand form + outlet picker + outlet detail (3 screens) | One **Verify** screen as settings-style rows: Restaurant, Location, Hours, Answers. Inline edit. |
+| Black sidebar with 6 steps | 2px progress line and "Step 2 of 6 · Verify", same six step names |
 | Reservation rules form | Three presets + three steppers + spoken readback |
 | "Meet your agent" | Tap-to-hear voices, name, languages, editable greeting |
-| Review checklist | Live test call + readiness chips that jump back to edit |
+| Review checklist | Chat with the agent (typed or suggested questions) |
 | Go live | Number + copy, "when should she answer" (missed calls vs every call), dial code, confirm checkbox, celebration + next steps |
 
 ## 4. Not in the prototype (recommendations)
