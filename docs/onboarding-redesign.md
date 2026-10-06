@@ -48,3 +48,9 @@ The current flow is a **form wizard with an AI feature inside it**. An AI-native
 - Verification of call forwarding by placing a real test call, instead of a self-reported checkbox.
 - Ordering setup after Go live (see `docs/maple-ordering-analysis.md`): "Add your menu" on the final screen is the entry point.
 - Measure: time to first test call, drop-off per step, and % of users who edit pre-filled data (the signal for how good the research is).
+
+## 5. Visual language (matches production Tringg)
+
+Warm canvas `#F2F1ED`, white 20px cards with hairline border, Poppins, the chunky mint Tringg wordmark, black 12px buttons with a chevron, `01 · DISCOVER` step chip, uppercase tracked field labels, mint tags, and selected cards use a black border with an offset black shadow (as in the production outlet picker). Back / Continue sit in a floating white bar.
+
+**Research step.** Avatar with radar rings and an orbiting dot, a continuous progress bar, source pills (Google Maps, website, reviews) that go active then done, a monospace "now reading" ticker that types the real snippet being read, a checklist whose ticks draw in with the finding fading in underneath, and summary tags on completion. The heading re-types itself when it finishes.
