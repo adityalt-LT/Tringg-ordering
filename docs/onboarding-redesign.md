@@ -54,3 +54,18 @@ The current flow is a **form wizard with an AI feature inside it**. An AI-native
 Warm canvas `#F2F1ED`, white 20px cards with hairline border, Poppins, the chunky mint Tringg wordmark, black 12px buttons with a chevron, `01 · DISCOVER` step chip, uppercase tracked field labels, mint tags, and selected cards use a black border with an offset black shadow (as in the production outlet picker). Back / Continue sit in a floating white bar.
 
 **Research step.** Avatar with radar rings and an orbiting dot, a continuous progress bar, source pills (Google Maps, website, reviews) that go active then done, a monospace "now reading" ticker that types the real snippet being read, a checklist whose ticks draw in with the finding fading in underneath, and summary tags on completion. The heading re-types itself when it finishes.
+
+## 6. Final flow (matches the production steps)
+
+Sign-up is not part of this flow. Seven views, six named steps:
+
+| Step | Screen |
+|---|---|
+| 01 Discover | One field; name or URL. Then the animated "Teaching your host" research. |
+| 02 Verify | Settings-style rows: Restaurant, Location (draggable pin), Hours, Answers. Inline edit. |
+| 03 Reservation | The real six rules: max reservations/day, advance window, min/max party, duration, minimum notice. |
+| 04 Meet your agent | Name, voice dropdown + play, greeting, and the seven capability toggles. |
+| 05 Review | Chat with the agent (answers follow the rules and toggles set above), then the summary tables with Edit links, trial note, Go live. |
+| 06 Go live | Tringg number, forwarding choice and dial code, Open dashboard. |
+
+Removed for minimalism: READY / FROM GOOGLE / count tags, the "Step x of 6" header text, result-row icons, the rules readback box, and the forwarding confirm checkbox (forwarding can be finished later from Settings).
