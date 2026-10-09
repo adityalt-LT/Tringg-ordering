@@ -472,6 +472,13 @@ body:has(.pubbar) .toast-w{bottom:calc(92px + env(safe-area-inset-bottom,0px))}
 .chk-i.done .chk-n{background:#fff;color:#111;border-color:#fff}
 .chk-n svg{width:11px;height:11px}
 
+/* roles */
+.role-manager .own,.role-staff .own{display:none!important}
+.role-staff .mgr{display:none!important}
+.staff-only{display:none}.role-staff .staff-only{display:inline}
+.role-staff .spage input,.role-staff .spage select,.role-staff .spage button.tog,.role-staff .spage .btn,.role-staff .spage .segp button,.role-staff .spage .dchips button,.role-staff .spage .zone-li,.role-staff .spage .map{pointer-events:none;opacity:.55}
+.role-chip{margin:0 12px 10px;border:1px dashed #333;border-radius:12px;padding:10px}
+.role-chip .proto-l{margin-bottom:6px}
 /* overlays */
 .scrim{position:fixed;inset:0;background:rgba(17,17,17,.3);z-index:150}
 .drawer{position:fixed;top:0;right:0;bottom:0;width:480px;max-width:100%;background:var(--panel);z-index:160;display:flex;flex-direction:column;box-shadow:var(--e3);padding-top:env(safe-area-inset-top,0px)}
@@ -594,7 +601,7 @@ const I={
 };
 
 const BRAND={name:'ROSSA Pizzeria',agent:'Allie',num:'+1 (312) 555-0147',user:{n:'ROSSA Pizzeria',e:'priya@rossapizza.com',ini:'RP'}};
-const OUTLETS=[
+const OUTLETS_ALL=[
  {id:'wp',name:'ROSSA Wicker Park',short:'Wicker Park',region:'Chicago',pos:'Square',num:'+1 (312) 555-0147'},
  {id:'rn',name:'ROSSA River North',short:'River North',region:'Chicago',pos:'Square',num:'+1 (312) 555-0152'},
  {id:'lp',name:'ROSSA Loop',short:'Loop',region:'Chicago',pos:null,num:'+1 (312) 555-0163'},
@@ -608,7 +615,17 @@ const OUTLETS=[
  {id:'sb',name:'ROSSA Schaumburg',short:'Schaumburg',region:'Suburbs',pos:null,num:'+1 (847) 555-0145'},
  {id:'oh',name:'ROSSA O’Hare T3',short:'O’Hare T3',region:'Airport',pos:null,num:'+1 (773) 555-0158'},
  {id:'wh',name:'ROSSA Wheaton',short:'Wheaton',region:'Suburbs',pos:null,num:'+1 (630) 555-0166',isNew:true}];
-const ON=id=>OUTLETS.find(o=>o.id===id)||{};
+const OUTLETS=[...OUTLETS_ALL];
+/* ── roles (prototype): Owner sees everything; Manager and Staff only their assigned outlets ── */
+const ROLE_OUT={owner:null,manager:['lp','wl','rn'],staff:['lp']};
+const ROLE_N={owner:'Owner',manager:'Manager',staff:'Staff'};
+const R=()=>(typeof S!=='undefined'&&S.role)||'owner';
+const isOwner=()=>R()==='owner',isMgr=()=>R()==='manager',notStaff=()=>R()!=='staff';
+function applyRole(all){const a=all?null:ROLE_OUT[R()];OUTLETS.length=0;OUTLETS.push(...OUTLETS_ALL.filter(o=>!a||a.includes(o.id)));}
+function setRole(r){S.role=r;applyRole();S.outlet=OUTLETS.length>1?'all':OUTLETS[0].id;S.dd=false;S.orders.sel=null;S.calls.sel=null;if(S.route==='agents'&&r==='staff')S.route='overview';toast('Viewing as '+ROLE_N[r]+(r==='owner'?' · all outlets':' · '+OUTLETS.length+' outlet'+(OUTLETS.length>1?'s':'')));render();}
+const setAllowed=k=>{const r=R();if(r==='owner')return true;if(!k.startsWith('ord-'))return true;if(r==='manager')return !['ord-pay','ord-pos'].includes(k);return ['ord-delivery','ord-hours','ord-pre'].includes(k);};
+const roleNav=n=>n.map(g=>[g[0],g[1].filter(i=>setAllowed(i[0]))]).filter(g=>g[1].length);
+const ON=id=>OUTLETS_ALL.find(o=>o.id===id)||{};
 
 /* ── menu ──
    Brand menu (All outlets). Pricing & availability follows LimeTray's price groups:
@@ -791,7 +808,7 @@ let scen='live';try{const k=localStorage.getItem('tringg-proto-v2');if(k&&SCEN[k
 loadScenario(scen);
 const hash=location.hash.slice(1);if(['overview','reservations','orders','calls','menu','agents','settings'].includes(hash))S.route=hash;
 
-const inScope=o=>S.outlet==='all'||o.outlet===S.outlet;
+const inScope=o=>S.outlet==='all'?(!ROLE_OUT[R()]||ROLE_OUT[R()].includes(o.outlet)):o.outlet===S.outlet;
 const subT=o=>o.items.reduce((a,i)=>a+i.p*i.q,0);
 const totT=o=>subT(o)+o.del+o.tax+(o.tip||0);
 const ACTIVE=['ACCEPTED','PREPARED','DISPATCHED'],DONE=['DELIVERED','PICKED_UP'],CLOSED=['CANCELLED','DECLINED','EXPIRED'];
@@ -816,17 +833,18 @@ function renderChk(){const st=setupSteps(),req=st.filter(x=>!x.opt);if(req.every
 /* ── shell ── */
 const NAV=[['overview','Overview','grid'],['reservations','Reservations','res'],['orders','Orders','bag'],['calls','Calls','phone'],['menu','Menu','menu'],['agents','Agents','agent']];
 function renderRail(){
-  const o=S.outlet==='all'?'All Outlets':ON(S.outlet).name;
+  const o=S.outlet==='all'?(isOwner()?'All Outlets':'My outlets · '+OUTLETS.length):ON(S.outlet).name;
   const pend=DB.orders.filter(x=>inScope(x)&&x.state==='PLACED').length;
   let h=`<div class="rail-top"><span class="logo">Tringg</span><span class="rail-k">K</span></div>
    <button class="outlet-btn" onclick="S.dd=!S.dd;renderRail()" aria-expanded="${S.dd}">${I.store}<span>${esc(o)}</span>${I.chev}</button>`;
-  if(S.dd)h+=`<div class="outlet-dd"><button class="odi ${S.outlet==='all'?'on':''}" onclick="pickOutlet('all')"><span class="d"></span>All Outlets · ${OUTLETS.length}</button>${[...new Set(OUTLETS.map(o=>o.region))].map(r=>`<div class="odd-reg">${r}</div>`+OUTLETS.filter(o=>o.region===r).map(x=>`<button class="odi ${S.outlet===x.id?'on':''}" onclick="pickOutlet('${x.id}')"><span class="d"></span>${esc(x.name)}${DB.svc[x.id].set!==true?'<span class="odd-new">New</span>':''}</button>`).join('')).join('')}</div>`;
-  h+='<nav class="rail-nav" aria-label="Main">'+NAV.map(n=>{let b='';
+  if(S.dd)h+=`<div class="outlet-dd">${OUTLETS.length>1?`<button class="odi ${S.outlet==='all'?'on':''}" onclick="pickOutlet('all')"><span class="d"></span>${isOwner()?'All Outlets':'My outlets'} · ${OUTLETS.length}</button>`:''}${[...new Set(OUTLETS.map(o=>o.region))].map(r=>`<div class="odd-reg">${r}</div>`+OUTLETS.filter(o=>o.region===r).map(x=>`<button class="odi ${S.outlet===x.id?'on':''}" onclick="pickOutlet('${x.id}')"><span class="d"></span>${esc(x.name)}${DB.svc[x.id].set!==true?'<span class="odd-new">New</span>':''}</button>`).join('')).join('')}</div>`;
+  h+='<nav class="rail-nav" aria-label="Main">'+NAV.filter(n=>!(n[0]==='agents'&&R()==='staff')).map(n=>{let b='';
     if(n[0]==='orders'){b=!DB.orderingOn?'<span class="bdg new">Set up</span>':pend?`<span class="bdg">${pend}</span>`:'';}
     if(n[0]==='reservations'){const p=DB.res.filter(r=>r.st==='pending'&&inScope(r)).length;b=p?`<span class="bdg">${p}</span>`:'';}
     return `<button class="nav ${S.route===n[0]?'on':''}" onclick="go('${n[0]}')">${I[n[2]]}${n[1]}${b}</button>`;}).join('')+'</nav>';
   h+=renderChk();
-  h+=`<div class="proto"><div class="proto-l">Prototype state</div><div class="proto-seg">${Object.keys(SCEN).map(k=>`<button class="${DB.k===k?'on':''}" onclick="setScen('${k}')">${SCEN[k].t}</button>`).join('')}</div><div class="proto-h">${SCEN[DB.k].h}</div></div>
+  h+=`<div class="role-chip"><div class="proto-l">View as</div><div class="proto-seg">${['owner','manager','staff'].map(k=>`<button class="${R()===k?'on':''}" onclick="setRole('${k}')">${ROLE_N[k]}</button>`).join('')}</div><div class="proto-h">${R()==='owner'?'Everything, at every outlet.':R()==='manager'?'Runs 3 outlets: Loop, West Loop, River North. No payments, POS or taxes.':'Works orders at Loop. No settings, money, agent or recordings.'}</div></div>
+   <div class="proto"><div class="proto-l">Prototype state</div><div class="proto-seg">${Object.keys(SCEN).map(k=>`<button class="${DB.k===k?'on':''}" onclick="setScen('${k}')">${SCEN[k].t}</button>`).join('')}</div><div class="proto-h">${SCEN[DB.k].h}</div></div>
    <button class="acct" onclick="S.acct=!S.acct;renderRail()" aria-expanded="${S.acct}"><span class="acct-av">${BRAND.user.ini}</span><span style="min-width:0;flex:1"><span class="acct-n" style="display:block">${BRAND.user.n}</span><span class="acct-e" style="display:block">${BRAND.user.e}</span></span><span style="color:#888">${I.updown}</span>
    ${S.acct?`<span class="acct-menu" onclick="event.stopPropagation()"><button onclick="S.acct=false;go('settings')">${I.gear} Settings</button><button onclick="S.acct=false;renderRail();toast('Signed out (prototype)')">${I.back} Sign out</button></span>`:''}</button>`;
   $('rail').innerHTML=h;
@@ -834,7 +852,7 @@ function renderRail(){
 function pickOutlet(id){S.outlet=id;S.dd=false;S.orders.sel=null;S.calls.sel=null;
   if(S.route==='settings'){const all=id==='all';const inAll=SETNAV_ALL.flatMap(g=>g[1]).some(i=>i[0]===S.set);if(all&&!inAll)S.set='ord-controls';if(!all&&inAll&&!SETNAV_ONE.flatMap(g=>g[1]).some(i=>i[0]===S.set))S.set='phone';}
   render();}
-function setScen(k){try{localStorage.setItem('tringg-proto-v2',k);}catch(e){}loadScenario(k);S.orders.sel=null;S.calls.sel=null;S.menu.flow=null;S.orders.tab='pending';render();toast('Prototype: '+SCEN[k].t);}
+function setScen(k){try{localStorage.setItem('tringg-proto-v2',k);}catch(e){}applyRole(true);loadScenario(k);applyRole();S.orders.sel=null;S.calls.sel=null;S.menu.flow=null;S.orders.tab='pending';render();toast('Prototype: '+SCEN[k].t);}
 function go(r){S.route=r;S.nav=false;S.acct=false;try{history.replaceState(null,'','#'+r);}catch(e){}render();}
 function goSet(k){S.set=k;if(['phone','info','hours','faq'].includes(k)&&S.outlet==='all')S.outlet='wp';if(k.startsWith('ord-')&&!['ord-delivery','ord-hours'].includes(k))S.outlet='all';go('settings');}
 const TITLE={overview:()=>'Today · Mon 28 Sept',reservations:()=>'Reservations · '+DB.res.filter(inScope).length+' total',orders:()=>'Orders',calls:()=>'Calls',menu:()=>'Menu',agents:()=>'Agents',settings:()=>'Settings'};
@@ -844,7 +862,7 @@ function renderTop(){
    <div class="top-t">${TITLE[S.route]()}</div>
    ${S.route==='overview'?`<div class="live"><span class="d"></span>${BRAND.agent} is live — try it<span class="ph">${BRAND.num}</span><button aria-label="Copy number" onclick="copyText('${BRAND.num}')">${I.copy}</button></div>`:''}
    <div class="top-r">
-    ${S.route==='orders'&&DB.orderingOn?(posOutlets.length?`<button class="pos-sw ${DB.posSync?'on':''}" onclick="togglePos()" aria-pressed="${DB.posSync}">POS sync <span class="sub">${S.outlet==='all'?'· '+OUTLETS.filter(o=>o.pos).length+' of '+OUTLETS.length+' outlets':'· '+esc(ON(S.outlet).pos)}</span><span class="tog ${DB.posSync?'on':''}" style="width:36px;height:22px" aria-hidden="true"></span></button>`:''):''}
+    ${S.route==='orders'&&DB.orderingOn?(posOutlets.length?`<button class="pos-sw own ${DB.posSync?'on':''}" onclick="togglePos()" aria-pressed="${DB.posSync}">POS sync <span class="sub">${S.outlet==='all'?'· '+OUTLETS.filter(o=>o.pos).length+' of '+OUTLETS.length+' outlets':'· '+esc(ON(S.outlet).pos)}</span><span class="tog ${DB.posSync?'on':''}" style="width:36px;height:22px" aria-hidden="true"></span></button>`:''):''}
     ${S.route==='orders'&&DB.orderingOn&&S.outlet!=='all'&&!(ON(S.outlet).pos&&DB.posSync)?`<button class="pos-sw ${DB.autoAccept[S.outlet]?'on':''}" onclick="DB.autoAccept[S.outlet]=!DB.autoAccept[S.outlet];render();toast(DB.autoAccept[S.outlet]?'Auto-accept on at '+ON(S.outlet).short:'Auto-accept off at '+ON(S.outlet).short+' · accept orders in Needs approval')" aria-pressed="${!!DB.autoAccept[S.outlet]}">Auto-accept <span class="sub">· ${esc(ON(S.outlet).short)}</span><span class="tog ${DB.autoAccept[S.outlet]?'on':''}" style="width:36px;height:22px" aria-hidden="true"></span></button>`:''}
     <label class="srch">${I.search}<input type="search" placeholder="Search…" aria-label="Search"><span class="kbd">⌘K</span></label>
     <button class="ibtn" aria-label="Notifications" onclick="toast('No new notifications')">${I.bell}${DB.orders.some(o=>o.state==='PLACED')?'<span class="dot"></span>':''}</button>
@@ -853,7 +871,7 @@ function renderTop(){
 }
 function togglePos(){DB.posSync=!DB.posSync;if(!DB.posSync)OUTLETS.filter(o=>o.pos).forEach(o=>{DB.autoAccept[o.id]=false;});render();toast(DB.posSync?'POS sync on · orders go straight to the POS':'POS disconnected · auto-accept is off, so orders wait for you. Switch it on again to accept them automatically');}
 function render(){
-  $('shell').classList.toggle('nav-open',S.nav);
+  $('shell').classList.toggle('nav-open',S.nav);['owner','manager','staff'].forEach(r=>$('shell').classList.toggle('role-'+r,R()===r));if(S.route==='agents'&&R()==='staff')S.route='overview';
   renderRail();renderTop();$('view').innerHTML=(VIEWS[S.route]||VIEWS.overview)();
   if(S.route==='orders'&&DB.orderingOn)renderOrders();
   if(S.route==='calls')renderCalls();
@@ -877,7 +895,7 @@ function vOverview(){
   const live=DB.k==='live';
   let h=`<div class="scroll"><div class="page"><div class="lbl">${S.outlet==='all'?'All outlets':esc(ON(S.outlet).name)}</div><div class="stats">`;
   if(!DB.orderingOn)h+=stat('cal','ic-mint',n(6),'Today’s bookings')+stat('clock','ic-coral',pendR.length,'Pending now')+stat('phoneL','ic-cream',DB.calls.filter(inScope).length,'Calls today')+stat('trend','ic-grey','0%','No-show rate');
-  else h+=stat('bagL','ic-mint',live?n(38):0,'Orders today')+stat('dollar','ic-cream',live?'$'+n(1486).toLocaleString():'$0','Order revenue')+stat('clock','ic-coral',pendO.length+pendR.length,'Pending now')+stat('phoneL','ic-grey',live?n(142):DB.calls.filter(inScope).length,'Calls today');
+  else h+=stat('bagL','ic-mint',live?n(38):0,'Orders today')+(notStaff()?stat('dollar','ic-cream',live?'$'+n(1486).toLocaleString():'$0','Order revenue'):'')+stat('clock','ic-coral',pendO.length+pendR.length,'Pending now')+stat('phoneL','ic-grey',live?n(142):DB.calls.filter(inScope).length,'Calls today');
   h+='</div>';
   if(!DB.orderingOn){const st=setupSteps().filter(x=>!x.opt);const d=st.filter(x=>x.done).length;
     h+=`<div class="nudge"><div><div class="eyebrow" style="color:var(--mint-500)">Included in your plan</div><div class="h2" style="margin-top:6px">Let Allie take phone orders too</div><p>Callers who want pizza, not a table, get their order taken, read back and paid for on the call. A few steps, and none of them change your reservations.</p></div><button class="btn btn-line" onclick="go('orders')">Set up ordering · ${d}/${st.length}</button></div>`;}
@@ -887,7 +905,7 @@ function vOverview(){
   pendR.forEach(r=>{h+=`<div class="req"><span class="av">${r.ini}</span><div class="m"><div class="t">${esc(r.name)} ${pill('p-dust','Reservation')}</div><div class="s">${r.day} ${r.when} · ${r.party} guests${S.outlet==='all'?' · '+ON(r.outlet).short:''}</div></div><button class="btn btn-line btn-sm" onclick="S.res.sel='${r.id}';S.res.tab='inbox';go('reservations')">Review</button></div>`;});
   DB.calls.filter(c=>c.kind==='callback'&&!c.cbDone&&inScope(c)).forEach(c=>{h+=`<button class="req" style="border:0;cursor:pointer;text-align:left;width:100%" onclick="S.calls.sel='${c.id}';S.calls.tab='cb';go('calls')"><span class="av">${c.ini}</span><div class="m"><div class="t">${esc(c.name)} ${pill('p-dust','Callback')}</div><div class="s">${c.phone} · asked to be called back${S.outlet==='all'?' · '+ON(c.outlet).short:''}</div></div>${I.arrow}</button>`;});
   h+='</div></div>';
-  if(live){h+=`<div class="card"><div class="card-h"><div class="h2">Ordering today</div></div><div class="card-b"><div class="kv" style="grid-template-columns:repeat(3,minmax(0,1fr))"><div><div class="k">Avg order value</div><div class="v" style="font-size:20px;font-weight:600">$39.10</div></div><div><div class="k">Upsell attach</div><div class="v" style="font-size:20px;font-weight:600">31%</div></div><div><div class="k">Order calls finished by Allie</div><div class="v" style="font-size:20px;font-weight:600">88%</div></div></div></div>
+  if(live&&notStaff()){h+=`<div class="card"><div class="card-h"><div class="h2">Ordering today</div></div><div class="card-b"><div class="kv" style="grid-template-columns:repeat(3,minmax(0,1fr))"><div><div class="k">Avg order value</div><div class="v" style="font-size:20px;font-weight:600">$39.10</div></div><div><div class="k">Upsell attach</div><div class="v" style="font-size:20px;font-weight:600">31%</div></div><div><div class="k">Order calls finished by Allie</div><div class="v" style="font-size:20px;font-weight:600">88%</div></div></div></div>
     <div class="card-b" style="padding-top:0;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:28px" class="ov2"><div><div class="fl" style="margin-bottom:12px">Top items</div><div class="bars">${[['Pepperoni',14],['Margherita',11],['Garlic Knots',10],['Half & Half',7],['Rigatoni alla Vodka',6]].map(r=>`<div class="bar"><span>${r[0]}</span><span class="tr"><i style="width:${r[1]/14*100}%"></i></span><span class="n">${n(r[1])}</span></div>`).join('')}</div></div>
     <div><div class="fl" style="margin-bottom:12px">Pickup vs delivery</div><div class="bars">${[['Pickup',22,'$748'],['Delivery',16,'$738']].map(r=>`<div class="bar" style="grid-template-columns:70px minmax(0,1fr) 90px"><span>${r[0]}</span><span class="tr"><i style="width:${r[1]/38*100}%;background:${r[0]==='Pickup'?'var(--mint-500)':'var(--dust-500)'}"></i></span><span class="n">${n(r[1])} · ${r[2]}</span></div>`).join('')}</div>
 </div></div></div>`;}
@@ -974,12 +992,12 @@ function renderOrderDetail(){
   let acts='';
   if(pend)acts=`<button class="btn btn-line" onclick="accept('${o.id}')">Accept order</button><button class="btn btn-red" onclick="S.modal={t:'decline',id:'${o.id}'};renderOverlay()">Decline</button>`;
   else if(ACTIVE.includes(o.state)){
-    const rf=o.pay==='before'&&o.payState==='charged'?`<button class="btn btn-line btn-sm" onclick="S.modal={t:'refund',id:'${o.id}',mode:'full',sel:[],r:'Item unavailable'};renderOverlay()">Refund</button>`:'';
+    const rf=o.pay==='before'&&o.payState==='charged'?`<button class="btn btn-line btn-sm mgr" onclick="S.modal={t:'refund',id:'${o.id}',mode:'full',sel:[],r:'Item unavailable'};renderOverlay()">Refund</button><span class="xs muted staff-only">Ask a Manager to refund or cancel</span>`:'';
     if(pos)acts=`<span class="tag">${I.pos.replace('width="22" height="22"','width="15" height="15"')} Handled in ${esc(ON(o.outlet).pos)}</span>`;
     else{const nx=nextStep(o);if(nx)acts=nx;}
     acts+=rf;
   }
-  else if(DONE.includes(o.state)&&o.pay==='before'&&o.payState==='charged')acts=`<button class="btn btn-line btn-sm" onclick="S.modal={t:'refund',id:'${o.id}',mode:'items',sel:[],r:'Item unavailable'};renderOverlay()">Refund</button>`;
+  else if(DONE.includes(o.state)&&o.pay==='before'&&o.payState==='charged')acts=`<button class="btn btn-line btn-sm mgr" onclick="S.modal={t:'refund',id:'${o.id}',mode:'items',sel:[],r:'Item unavailable'};renderOverlay()">Refund</button><span class="xs muted staff-only">Ask a Manager to refund</span>`;
   const hasAw=o.ev.some(e=>e.c==='AWAITING'),hasPl=o.ev.some(e=>e.c==='PLACED'),base=[...(hasAw?['AWAITING']:[]),...(hasPl||!CLOSED.includes(o.state)?['PLACED']:[])];const lcSteps=CLOSED.includes(o.state)?[...base,o.state]:[...base,...LC[o.ful]];
   const reached=o.ev.map(e=>e.c);
   const cur=lcSteps.find(s=>!reached.includes(s));
@@ -1068,6 +1086,7 @@ function renderCalls(){
   h+=`</div><div class="dsec"><div class="dsec-l">Transcript <span class="r xs muted">${(c.tr||[]).length||3} turns</span></div><div class="player"><button class="play" aria-label="Play recording" onclick="toast('Playing recording')">${I.play}</button><div class="wave">${Array.from({length:40},(_,i)=>`<i style="height:${25+Math.round(Math.abs(Math.sin(i*1.9))*70)}%"></i>`).join('')}</div><span class="mono xs muted">${c.dur}</span></div>
    ${c.tr?`<div class="turns">${c.tr.map(t=>`<div class="turn ${t[0]}"><span class="w">${t[0]==='ai'?BRAND.agent:'Caller'}</span>${esc(t[1])}</div>`).join('')}</div>`:''}</div>
    <div class="dsec"><div class="dsec-l">Meta</div><div class="metaline">tringg-livekit-${c.id.toLowerCase()}_${c.phone.replace(/\D/g,'')}</div></div></div>`;
+  if(R()==='staff')h=h.replace(/<div class="dsec"><div class="dsec-l">Transcript[\s\S]*?<div class="dsec"><div class="dsec-l">Meta/,'<div class="dsec"><div class="dsec-l">Recording and transcript</div><div class="banner b-dust" style="margin:0">'+I.lock+'<div>Recordings and transcripts are available to Managers and Owners.</div></div></div><div class="dsec"><div class="dsec-l">Meta');
   el.innerHTML=h;
 }
 
@@ -1154,7 +1173,7 @@ function srcCards(){return `<div class="src-grid">
 function vMenu(){
   if(!isBrand()&&DB.menuState!=='live')return `<div class="scroll"><div class="page" style="max-width:900px"><div class="card"><div class="empty"><div class="empty-i">${I.menu}</div><div class="empty-t">The menu is built for all outlets</div><div class="empty-s">Create it once in the All outlets view, then set what ${esc(ON(S.outlet).short)} sells, its prices and stock.</div><button class="btn btn-line" style="margin-top:8px" onclick="pickOutlet('all')">Switch to All outlets</button></div></div></div></div>`;
   if(DB.menuState==='none'||S.menu.flow)return `<div class="scroll"><div class="page" style="max-width:980px">${menuFlow()}</div></div>`;
-  const tabs=isBrand()?MTABS:MTABS.filter(t=>['items','avail'].includes(t[0]));
+  const tabs=(isBrand()?MTABS:MTABS.filter(t=>['items','avail'].includes(t[0]))).filter(t=>t[0]!=='tax'||isOwner());
   if(!tabs.some(t=>t[0]===S.menu.tab))S.menu.tab='items';
   const body={items:mItems,mods:mMods,avail:mAvail,tax:mTax,sources:mSources}[S.menu.tab]();
   const draft=DB.menuState==='draft';
@@ -1551,13 +1570,13 @@ function preSvc(id,k){const q=DB.pre[id];q[k]=q[k]===false?true:false;if(q.pk===
 function mlOf(id){DB.ml=DB.ml||{};if(!DB.ml[id]){const o=OUTLETS.find(x=>x.id===id);DB.ml[id]={url:o&&o.isNew?'':'https://order.rossapizza.com/'+id,ch:'sms'};}return DB.ml[id];}
 function mlSet(id,k,v){mlOf(id)[k]=v;render();}
 function vSettings(){
-  const nav=S.outlet==='all'?SETNAV_ALL:SETNAV_ONE;
+  const nav=roleNav(S.outlet==='all'?SETNAV_ALL:SETNAV_ONE);
   if(!nav.flatMap(g=>g[1]).some(i=>i[0]===S.set))S.set=nav[0][1][0][0];
   const badge=k=>k==='ord-pay'&&!DB.payOk&&DB.stripe!=='active'?'<span class="b">Set up</span>':k==='ord-delivery'&&(S.outlet==='all'?OUTLETS.some(o=>DB.svc[o.id].set!==true):DB.svc[S.outlet].set!==true)?'<span class="b">Set up</span>':'';
   const ic=k=>(I[SETIC[k]]||'').replace(/width="\d+" height="\d+"/,'width="18" height="18"');
   return `<div class="sset"><nav class="snav" aria-label="Settings">${nav.map(g=>`<div class="sn-sec">${g[0]}</div>`+g[1].map(i=>`<button class="sn ${S.set===i[0]?'on':''}" onclick="S.set='${i[0]}';render()">${ic(i[0])}${i[1]}${badge(i[0])}</button>`).join('')).join('')}
    <div class="scope-note">${S.outlet==='all'?'<b>All outlets view.</b> Ordering settings live here, with a row or tab per outlet. Pick one outlet in the sidebar for its phone, hours and FAQ.':'<b>'+esc(ON(S.outlet).short)+' view.</b> Location settings plus this outlet’s delivery & pickup. Everything else for ordering is set once in All outlets.'}</div></nav>
-   <div class="scroll"><div class="spage">${(SET[S.set]||SET['ord-controls'])()}</div></div></div>`;
+   <div class="scroll"><div class="spage">${R()==='staff'?`<div class="banner b-dust" style="pointer-events:auto;opacity:1">${I.lock}<div><b>View only.</b> Staff can see how the outlet is set up. A Manager or Owner changes settings.</div></div>`:''}${(SET[S.set]||SET['ord-controls'])()}</div></div></div>`;
 }
 const sH=(t,d,scope)=>`<div class="spage-h"><div><div class="h1-lg">${t}</div>${d?`<p class="desc" style="margin-top:6px">${d}</p>`:''}</div><div class="scope">${scope==='all'?'All outlets':'Outlet · '+esc(ON(S.outlet).name)}</div></div>`;
 const CARRIERS={'AT&T':['*21*13125550147#','#21#'],'Verizon':['*72 3125550147','*73'],'T-Mobile':['**21*13125550147#','##21#']};
@@ -1664,7 +1683,7 @@ const SET={
    if(unset.length)h+=`<div class="banner b-amber">${I.warn}<div><b>${unset.length} outlet${unset.length>1?'s aren’t':' isn’t'} taking phone orders yet:</b> ${unset.map(x=>esc(x.short)).join(', ')}. Allie answers questions there and tells ordering callers that ordering isn’t available at this outlet, then offers to connect them to the restaurant.</div>${unset[0].id!==o?`<button class="btn btn-line btn-sm" onclick="S.zoneOutlet='${unset[0].id}';S.test=null;render()">Set up ${esc(unset[0].short)}</button>`:''}</div>`;
    h+=`<div class="scard" style="flex-direction:row;align-items:center;gap:14px;flex-wrap:wrap;padding:16px 20px"><span class="fl">Outlet</span>${opBtn([o],`openOP({title:'Delivery & pickup for…',mode:'single',sel:['${o}'],apply:s=>{S.zoneOutlet=s[0];S.zoneSel=(DB.zones[s[0]][0]||{}).id;S.test=null},note:svcNote})`,true)}<span class="small muted" style="flex:1">Each outlet has its own services and delivery area. Pick one to edit.</span></div>`;}
   if(v.set===false)return h+`<div class="scard"><div class="empty" style="padding:36px 20px"><div class="empty-i">${I.scooter}</div><div class="empty-t">${esc(on.short)} isn’t taking phone orders yet</div><div class="empty-s">Turn on pickup, delivery or both. Until then Allie answers questions for ${esc(on.short)} and tells callers who want to order that ordering isn’t available here yet.</div>
-   <div style="display:flex;gap:10px;margin-top:8px;flex-wrap:wrap;justify-content:center"><button class="btn btn-dark" onclick="startSvc('${o}')">${I.plus} Set up delivery & pickup</button><button class="btn btn-soft" onclick="openOP({title:'Copy settings from…',sub:'Copies services, prep time and delivery area. You can change them after.',mode:'single',sel:[],apply:s=>{if(s[0])copySvc(s[0],'${o}')},note:svcNote})">Copy from another outlet</button></div></div></div>`+svcShared(one);
+   <div style="display:flex;gap:10px;margin-top:8px;flex-wrap:wrap;justify-content:center"><button class="btn btn-dark" onclick="startSvc('${o}')">${I.plus} Set up delivery & pickup</button><button class="btn btn-soft own" onclick="openOP({title:'Copy settings from…',sub:'Copies services, prep time and delivery area. You can change them after.',mode:'single',sel:[],apply:s=>{if(s[0])copySvc(s[0],'${o}')},note:svcNote})">Copy from another outlet</button></div></div></div>`+svcShared(one);
   if(v.set==='draft')h+=`<div class="banner b-dust">${I.clock.replace('width="22" height="22"','width="17" height="17"')}<div><b>Setting up ${esc(on.short)}.</b> Fill in what applies, then start taking orders. Nothing reaches callers until then.</div></div>`;
   h+=`<div class="scard"><div class="h2">Services</div>
    <div class="tg"><div class="tx"><div class="fl">Pickup</div><div class="fh">Allie quotes the prep time from the moment the order is accepted.</div></div><div class="inp-suf" style="width:130px"><input class="inp sm" type="number" min="1" aria-label="Pickup prep minutes" placeholder="—" value="${v.prep??''}" oninput="DB.svc['${o}'].prep=this.value?+this.value:null"><span>min</span></div><button class="tog ${v.pick?'on':''}" aria-label="Pickup" onclick="DB.svc['${o}'].pick=!DB.svc['${o}'].pick;render()"></button></div><div class="sep"></div>
@@ -1681,7 +1700,7 @@ const SET={
        <div class="frow"><div class="field"><label class="fl" for="rfee">Fee ($)</label><div class="inp-suf"><input class="inp" id="rfee" type="number" min="0" step="0.5" placeholder="—" value="${r.fee??''}" oninput="DB.svc['${o}'].rad.fee=this.value===''?null:+this.value"></div></div><div class="field"><label class="fl" for="rmin">Minimum ($)</label><div class="inp-suf"><input class="inp" id="rmin" type="number" min="0" placeholder="—" value="${r.min??''}" oninput="DB.svc['${o}'].rad.min=this.value===''?null:+this.value"></div></div><div class="field"><label class="fl" for="reta">Delivery time</label><div class="inp-suf"><input class="inp" id="reta" type="number" min="5" step="5" placeholder="optional" value="${r.eta??''}" oninput="DB.svc['${o}'].rad.eta=this.value===''?null:+this.value"><span>min</span></div></div></div>
        <div class="xs muted">${r.eta?'Allie quotes about '+r.eta+' minutes for delivery.':'No delivery time set, so Allie gives none and never makes one up.'}</div>`}
      <div class="sep"></div><label class="fl" for="tst">Check an address</label><select class="inp" id="tst" onchange="testAddr(this.value)"><option value="">Pick a sample address…</option>${TESTS.map((t,i)=>`<option value="${i}" ${S.test&&S.test.i===i?'selected':''}>${t[0]}</option>`).join('')}</select><div id="tres">${testResult()}</div></div></div></div>`;}}
-  if(v.set==='draft')h+=`<div class="scard" style="flex-direction:row;align-items:center;gap:12px;flex-wrap:wrap"><div style="flex:1;min-width:220px"><div class="h3">Ready to go live?</div><div class="fh">${esc(on.short)} starts taking phone orders as soon as you confirm.</div></div><button class="btn btn-ghost" onclick="DB.svc['${o}']={set:false,del:false,pick:false,prep:null,rad:null};DB.deliveryMode['${o}']=null;DB.zones['${o}']=[];render()">Cancel setup</button><button class="btn btn-dark" onclick="finishSvc('${o}')">Start taking orders</button></div>`;
+  if(v.set==='draft')h+=`<div class="scard mgr" style="flex-direction:row;align-items:center;gap:12px;flex-wrap:wrap"><div style="flex:1;min-width:220px"><div class="h3">Ready to go live?</div><div class="fh">${esc(on.short)} starts taking phone orders as soon as you confirm.</div></div><button class="btn btn-ghost" onclick="DB.svc['${o}']={set:false,del:false,pick:false,prep:null,rad:null};DB.deliveryMode['${o}']=null;DB.zones['${o}']=[];render()">Cancel setup</button><button class="btn btn-dark" onclick="finishSvc('${o}')">Start taking orders</button></div>`;
   return h+svcShared(one);},
  'ord-pos':()=>sH('POS connection','Connect the POS each outlet already uses. When it’s connected, the POS is the source of truth: statuses after hand-off come from it, and staff move orders there, not here. Outlets without a POS run fully from this dashboard.','all')+`
   <div class="scard"><div class="scard-h"><span class="stat-ic ic-mint" style="width:44px;height:44px">${I.pos}</span><div><div class="h3">Square · Wicker Park, River North</div><div class="fh">Menu synced 4 min ago · 31 orders sent today · status webhooks on</div></div><div class="r"><button class="tog ${DB.posSync?'on':''}" aria-label="POS sync" onclick="togglePos()"></button></div></div>
@@ -1740,7 +1759,7 @@ function bindMap(){const svg=$('map');if(!svg)return;let drag=null;
 function payOpts(o){const v=DB.svc[o],c=DB.stripe==='active';const pk=[DB.payPick.call&&c?'online':null,DB.payPick.store||!c?'at pickup':null].filter(Boolean);
   return [v.pick?'Pickup: '+pk.join(' or '):null,v.del?'Delivery: '+delPayTxt():null].filter(Boolean).join(' · ')||'No services on';}
 function svcNote(id){const v=DB.svc[id],m=DB.deliveryMode[id];if(v.set===false)return 'Not set up';if(v.set==='draft')return 'Setup in progress';const p=v.pick?'Pickup':'';const d=!v.del?'':m==='zones'?DB.zones[id].length+' zone'+(DB.zones[id].length>1?'s':''):m==='radius'&&v.rad&&v.rad.mi?v.rad.mi+' mi radius':'no area';return [p,d&&'Delivery · '+d].filter(Boolean).join(' · ')||'Off';}
-function svcShared(one){if(!one)return '';return `<div class="scard"><div class="scard-h"><div><div class="h3">Set once for all outlets</div><div class="fh">These apply here too. Change them in the All outlets view.</div></div></div><div class="kv"><div><div class="k">Auto-accept</div><div class="v">${DB.autoAccept[S.outlet]?'On':'Off · 10 min to accept'}</div></div><div><div class="k">Callers pay</div><div class="v">${payOpts(S.outlet)}</div></div><div><div class="k">POS</div><div class="v">${ON(S.outlet).pos?ON(S.outlet).pos+(DB.posSync?' · sync on':' · sync off'):'None · statuses from the dashboard'}</div></div></div><button class="btn btn-line btn-sm" style="align-self:flex-start" onclick="pickOutlet('all');S.set='ord-controls';render()">Open All outlets settings ${I.arrow}</button></div>`;}
+function svcShared(one){if(!one)return '';return `<div class="scard own"><div class="scard-h"><div><div class="h3">Set once for all outlets</div><div class="fh">These apply here too. Change them in the All outlets view.</div></div></div><div class="kv"><div><div class="k">Auto-accept</div><div class="v">${DB.autoAccept[S.outlet]?'On':'Off · 10 min to accept'}</div></div><div><div class="k">Callers pay</div><div class="v">${payOpts(S.outlet)}</div></div><div><div class="k">POS</div><div class="v">${ON(S.outlet).pos?ON(S.outlet).pos+(DB.posSync?' · sync on':' · sync off'):'None · statuses from the dashboard'}</div></div></div><button class="btn btn-line btn-sm" style="align-self:flex-start" onclick="pickOutlet('all');S.set='ord-controls';render()">Open All outlets settings ${I.arrow}</button></div>`;}
 function startSvc(o){DB.svc[o]={set:'draft',del:false,pick:false,prep:null,rad:null};S.test=null;render();}
 function copySvc(from,o){const f=DB.svc[from];DB.svc[o]=Object.assign(clone(f),{set:'draft'});DB.deliveryMode[o]=DB.deliveryMode[from];DB.zones[o]=clone(DB.zones[from]);S.zoneSel=(DB.zones[o][0]||{}).id;S.test=null;render();toast('Copied from '+ON(from).short+' · check it, then start taking orders');}
 function finishSvc(o){const v=DB.svc[o],m=DB.deliveryMode[o];
@@ -1799,7 +1818,7 @@ function renderOverlay(){const _db=document.querySelector('#overlay .drawer-b'),
    <div class="fl">Capabilities</div>
    <div class="cap-row"><div class="tx"><div class="t">Enquiries</div><div class="s">Hours, location, menu questions, FAQ. Always on.</div></div><button class="tog on" disabled aria-label="Enquiries"></button></div>
    <div class="cap-row"><div class="tx"><div class="t">Reservations</div><div class="s">Books, changes and cancels tables.</div></div><button class="tog ${DB.caps.res?'on':''}" aria-label="Reservations" onclick="DB.caps.res=!DB.caps.res;render()"></button></div>
-   <div class="cap-row"><div class="tx"><div class="t">Ordering</div><div class="s">${noMenu?'Publish a menu first. Allie can’t sell without one.':'Takes pickup, delivery and pre-orders, and texts a payment link for online payments.'}</div></div><button class="tog ${DB.caps.ord?'on':''}" ${noMenu?'disabled':''} aria-label="Ordering" onclick="DB.caps.ord=!DB.caps.ord;DB.orderingOn=DB.caps.ord;render();toast(DB.caps.ord?'Ordering on · Allie takes orders from her next call':'Ordering off')"></button></div>
+   <div class="cap-row"><div class="tx"><div class="t">Ordering</div><div class="s">${noMenu?'Publish a menu first. Allie can’t sell without one.':'Takes pickup, delivery and pre-orders, and texts a payment link for online payments.'}${isOwner()?'':' Only the Owner can switch this.'}</div></div><button class="tog ${DB.caps.ord?'on':''}" ${noMenu||!isOwner()?'disabled':''} title="${isOwner()?'':'Only the Owner can switch Ordering on or off'}" aria-label="Ordering" onclick="DB.caps.ord=!DB.caps.ord;DB.orderingOn=DB.caps.ord;render();toast(DB.caps.ord?'Ordering on · Allie takes orders from her next call':'Ordering off')"></button></div>
    ${noMenu?`<button class="btn btn-line btn-sm" style="align-self:flex-start" onclick="S.agentEdit=false;go('menu')">Open Menu</button>`:''}
    ${noMenu?'':(DB.caps.ord?ordPanel():ordPreview())}
    <div class="sep"></div><div class="field"><label class="fl" for="vc">Voice</label><select class="inp" id="vc"><option>Allie · warm, US</option><option>Marco</option><option>June</option></select></div>
