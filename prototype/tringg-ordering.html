@@ -535,8 +535,8 @@ body:has(.pubbar) .toast-w{bottom:calc(92px + env(safe-area-inset-bottom,0px))}
 <div class="toast-w"><div class="toast" id="toast"></div></div>
 <script>
 /* Tringg Ordering prototype v2 — matches the production Tringg app.
-   Order states follow LimeTray: PENDING → ACCEPTED → PREPARING → PREPARED → DISPATCHED → DELIVERED (pickup: PICKED_UP)
-   Exits: CANCELLED · DECLINED · EXPIRED. Money: nothing is charged until an order is accepted. */
+   Order states follow LimeTray: AWAITING PAYMENT (online only) → PLACED → ACCEPTED → PREPARED → DISPATCHED → DELIVERED (pickup: PICKED_UP)
+   Exits: CANCELLED · DECLINED · EXPIRED. Refunded is a payment tag, not a status. Online orders are held until paid; delivery is hidden until then. */
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const money=n=>'$'+Number(n).toFixed(2);
@@ -671,59 +671,59 @@ const CH={both:'Delivery + Pickup',d:'Delivery only',p:'Pickup only'};
    Delivery orders are always paid on the call. */
 function ev(c,m,w){return {c,t:clock(m),w};}
 function mkOrders(){const T=Date.now();return [
- {id:'#2047',name:'Chris Donovan',ini:'CD',av:'cream',outlet:'ls',phone:'+1 (312) 555-0191',state:'PENDING',ful:'pickup',pay:'after',payState:'due',placed:4,exp:T+(7*60+40)*1000,quote:'8:55 PM',lang:'EN',call:'C-5531',label:'Pepperoni 18" thin + garlic knots, pickup',
+ {id:'#2047',name:'Chris Donovan',ini:'CD',av:'cream',outlet:'ls',phone:'+1 (312) 555-0191',state:'PLACED',ful:'pickup',pay:'after',payState:'due',placed:4,exp:T+(7*60+40)*1000,quote:'8:55 PM',lang:'EN',call:'C-5531',label:'Pepperoni 18" thin + garlic knots, pickup',
   items:[{n:'Pepperoni',q:1,p:28,m:'18" · Thin crust · + Jalapeños'},{n:'Garlic Knots',q:1,p:6,up:true},{n:'San Pellegrino',q:2,p:4}],del:0,tax:3.60,tip:0,addr:null,special:'Extra napkins, please.',
-  ev:[ev('PENDING',4,'Allie · read back and confirmed')],pevt:[]},
- {id:'#2046',name:'Lisa Kowalski',ini:'LK',av:'',outlet:'ls',phone:'+1 (312) 555-0144',state:'PENDING',ful:'pickup',pay:'after',payState:'due',placed:7,exp:T+(3*60+10)*1000,quote:'8:50 PM',lang:'EN',call:'C-5530',label:'Half & half 14" + Caesar, pickup',
+  ev:[ev('PLACED',4,'Allie · read back and confirmed')],pevt:[]},
+ {id:'#2046',name:'Lisa Kowalski',ini:'LK',av:'',outlet:'ls',phone:'+1 (312) 555-0144',state:'PLACED',ful:'pickup',pay:'after',payState:'due',placed:7,exp:T+(3*60+10)*1000,quote:'8:50 PM',lang:'EN',call:'C-5530',label:'Half & half 14" + Caesar, pickup',
   items:[{n:'Half & Half',q:1,p:24,m:'14" · Classic · L: Margherita / R: Funghi'},{n:'Caesar Salad',q:1,p:12,m:'Dressing on the side'}],del:0,tax:3.24,tip:0,addr:null,special:'',
-  ev:[ev('PENDING',7,'Allie · half & half read back')],pevt:[]},
- {id:'#2045',name:'James Whitfield',ini:'JW',av:'mint',outlet:'wp',phone:'+1 (312) 555-0142',state:'PREPARING',ful:'delivery',pay:'before',payState:'charged',placed:24,quote:'8:40 PM',lang:'EN',call:'C-5519',label:'Diavola + wings + tiramisu, delivery',
+  ev:[ev('PLACED',7,'Allie · half & half read back')],pevt:[]},
+ {id:'#2045',name:'James Whitfield',ini:'JW',av:'mint',outlet:'wp',phone:'+1 (312) 555-0142',state:'ACCEPTED',ful:'delivery',pay:'before',payState:'charged',placed:24,quote:'8:40 PM',lang:'EN',call:'C-5519',label:'Diavola + wings + tiramisu, delivery',
   items:[{n:'Diavola',q:1,p:26,m:'14" · Classic'},{n:'Wings (8)',q:1,p:14,m:'Buffalo'},{n:'Tiramisu',q:1,p:9,up:true}],del:4,tax:4.41,tip:6,addr:'840 N Milwaukee Ave, Chicago 60642',zone:'Zone B · 2.1 mi',special:'Severe peanut allergy. Please flag to the kitchen.',
-  ev:[ev('PENDING',24,'Allie'),ev('ACCEPTED',24,'Paid on the call'),ev('PREPARING',22,'Square')],pevt:[['Paid $63.41 on the call','Card · 8:06 PM · order went straight to the kitchen']]},
+  ev:[ev('PLACED',24,'Allie'),ev('ACCEPTED',24,'Paid on the call')],pevt:[['Paid $63.41 on the call','Card · 8:06 PM · order went straight to the kitchen']]},
  {id:'#2044',name:'Sarah Connelly',ini:'SC',av:'coral',outlet:'rn',phone:'+1 (312) 555-0187',state:'ACCEPTED',ful:'pickup',pay:'before',payState:'charged',placed:12,quote:'8:45 PM',lang:'EN',call:'C-5525',label:'Margherita 12" + lemonades, pickup',
   items:[{n:'Margherita',q:1,p:18,m:'12" · Classic'},{n:'Meatballs',q:1,p:10},{n:'Lemonade',q:2,p:4}],del:0,tax:3.69,tip:3,addr:null,special:'',
-  ev:[ev('PENDING',12,'Allie'),ev('ACCEPTED',12,'Paid on the call')],pevt:[['Paid $42.69 on the call','Google Pay · 8:18 PM']]},
+  ev:[ev('PLACED',12,'Allie'),ev('ACCEPTED',12,'Paid on the call')],pevt:[['Paid $42.69 on the call','Google Pay · 8:18 PM']]},
  {id:'#2043',name:'Derek Okafor',ini:'DO',av:'',outlet:'wp',phone:'+1 (312) 555-0163',state:'DISPATCHED',ful:'delivery',pay:'before',payState:'charged',placed:41,quote:'8:25 PM',lang:'EN',call:'C-5514',label:'Margherita 14" + Caesar + cannoli, delivery',
   items:[{n:'Margherita',q:1,p:22,m:'14" · Classic'},{n:'Caesar Salad',q:1,p:12},{n:'Cannoli',q:1,p:7}],del:4,tax:3.69,tip:5,addr:'1945 W Division St, Chicago 60622',zone:'Zone A · 0.9 mi',special:'',
-  ev:[ev('PENDING',41,'Allie'),ev('ACCEPTED',41,'Paid on the call'),ev('PREPARING',39,'Square'),ev('PREPARED',22,'Square'),ev('DISPATCHED',14,'Square')],pevt:[['Paid $53.69 on the call','Card · 7:49 PM']]},
+  ev:[ev('PLACED',41,'Allie'),ev('ACCEPTED',41,'Paid on the call'),ev('PREPARED',22,'Square'),ev('DISPATCHED',14,'Square')],pevt:[['Paid $53.69 on the call','Card · 7:49 PM']]},
  {id:'#2042',name:'Amanda Torres',ini:'AT',av:'coral',outlet:'lp',phone:'+1 (312) 555-0174',state:'PREPARED',ful:'pickup',pay:'after',payState:'due',placed:28,quote:'8:25 PM',lang:'ES',call:'C-5528',label:'Rigatoni vodka + chicken, pickup (Spanish)',
   items:[{n:'Rigatoni alla Vodka',q:1,p:24,m:'+ Chicken'},{n:'Garlic Knots',q:1,p:6,up:true},{n:'Coke',q:1,p:3}],del:0,tax:2.97,tip:0,addr:null,special:'Sin queso extra (no extra cheese).',
-  ev:[ev('PENDING',28,'Allie · in Spanish'),ev('ACCEPTED',28,'Auto-accept'),ev('PREPARING',27,'Staff · dashboard'),ev('PREPARED',6,'Staff · dashboard')],pevt:[]},
- {id:'#2041',name:'Dan Harper',ini:'DH',av:'cream',outlet:'lp',phone:'+1 (312) 555-0120',state:'PREPARING',ful:'delivery',pay:'before',payState:'charged',placed:15,quote:'8:50 PM',lang:'EN',call:'C-5524',label:'2× Quattro Formaggi + arugula, delivery',
+  ev:[ev('PLACED',28,'Allie · in Spanish'),ev('ACCEPTED',28,'Auto-accept'),ev('PREPARED',6,'Staff · dashboard')],pevt:[]},
+ {id:'#2041',name:'Dan Harper',ini:'DH',av:'cream',outlet:'lp',phone:'+1 (312) 555-0120',state:'ACCEPTED',ful:'delivery',pay:'before',payState:'charged',placed:15,quote:'8:50 PM',lang:'EN',call:'C-5524',label:'2× Quattro Formaggi + arugula, delivery',
   items:[{n:'Quattro Formaggi',q:2,p:25,m:'14" · Thin'},{n:'Arugula & Parm',q:1,p:11,up:true}],del:5.5,tax:5.49,tip:4,addr:'233 S Wacker Dr, Chicago 60606',zone:'Zone C · 1.6 mi',special:'',
-  ev:[ev('PENDING',15,'Allie'),ev('ACCEPTED',15,'Paid on the call'),ev('PREPARING',13,'Staff · dashboard')],pevt:[['Paid $75.99 on the call','Apple Pay · 8:15 PM']]},
+  ev:[ev('PLACED',15,'Allie'),ev('ACCEPTED',15,'Paid on the call')],pevt:[['Paid $75.99 on the call','Apple Pay · 8:15 PM']]},
  {id:'#2040',name:'Robert Flanagan',ini:'RF',av:'mint',outlet:'rn',phone:'+1 (312) 555-0129',state:'DELIVERED',ful:'delivery',pay:'before',payState:'charged',placed:95,quote:'7:25 PM',lang:'EN',call:'C-5498',label:'2× Lasagna + Caprese, delivery',
   items:[{n:'Lasagna',q:2,p:21},{n:'Caprese',q:1,p:13}],del:4,tax:5.13,tip:8,addr:'55 W Wacker Dr, Chicago 60601',zone:'Zone A · 1.4 mi',special:'',
-  ev:[ev('PENDING',95,'Allie'),ev('ACCEPTED',95,'Paid on the call'),ev('PREPARING',93,'Square'),ev('PREPARED',70,'Square'),ev('DISPATCHED',66,'Square'),ev('DELIVERED',52,'Square')],pevt:[['Paid $72.13 on the call','Card · 6:55 PM']]},
+  ev:[ev('PLACED',95,'Allie'),ev('ACCEPTED',95,'Paid on the call'),ev('PREPARED',70,'Square'),ev('DISPATCHED',66,'Square'),ev('DELIVERED',52,'Square')],pevt:[['Paid $72.13 on the call','Card · 6:55 PM']]},
  {id:'#2039',name:'Nicole Park',ini:'NP',av:'',outlet:'wp',phone:'+1 (312) 555-0166',state:'PICKED_UP',ful:'pickup',pay:'after',payState:'paid',placed:80,quote:'7:30 PM',lang:'EN',call:'C-5501',label:'Veggie Supreme GF + 2 Peroni, pickup',
   items:[{n:'Veggie Supreme',q:1,p:24,m:'14" · Gluten-free'},{n:'Peroni',q:2,p:7}],del:0,tax:3.42,tip:0,addr:null,special:'',
-  ev:[ev('PENDING',80,'Allie'),ev('ACCEPTED',80,'Auto-accept'),ev('PREPARING',79,'Square'),ev('PREPARED',62,'Square'),ev('PICKED_UP',55,'Square · paid at counter')],pevt:[['Paid $41.42 at the counter','Square · 7:35 PM']]},
+  ev:[ev('PLACED',80,'Allie'),ev('ACCEPTED',80,'Auto-accept'),ev('PREPARED',62,'Square'),ev('PICKED_UP',55,'Square · paid at counter')],pevt:[['Paid $41.42 at the counter','Square · 7:35 PM']]},
  {id:'#2038',name:'Tyler Brennan',ini:'TB',av:'coral',outlet:'lp',phone:'+1 (312) 555-0133',state:'CANCELLED',ful:'delivery',pay:'before',payState:'refunded',placed:62,quote:'—',lang:'EN',call:'C-5507',reason:'Oven down',label:'Build your own 14", delivery',
   items:[{n:'Build Your Own',q:1,p:24,m:'14" · + Sausage · + Olives'}],del:4,tax:2.52,tip:0,addr:'120 S LaSalle St, Chicago 60603',zone:'Zone C · 0.6 mi',special:'',
-  ev:[ev('PENDING',62,'Allie'),ev('ACCEPTED',62,'Paid on the call'),ev('CANCELLED',58,'Staff · oven down · refunded')],pevt:[['Paid $30.52 on the call','Card · 7:28 PM'],['Refunded $30.52 in full','Staff · oven down · 7:32 PM']]},
+  ev:[ev('PLACED',62,'Allie'),ev('ACCEPTED',62,'Paid on the call'),ev('CANCELLED',58,'Staff · oven down · refunded')],pevt:[['Paid $30.52 on the call','Card · 7:28 PM'],['Refunded $30.52 in full','Staff · oven down · 7:32 PM']]},
  {id:'#2037',name:'Tom Okafor',ini:'TO',av:'mint',outlet:'rn',phone:'+1 (312) 555-0177',state:'DECLINED',ful:'pickup',pay:'after',payState:'due',placed:70,quote:'—',lang:'EN',call:'C-5503',reason:'Kitchen too busy',label:'2× Burrata + Diavola 12", pickup',
   items:[{n:'Burrata',q:2,p:14},{n:'Diavola',q:1,p:22,m:'12" · Classic'}],del:0,tax:4.50,tip:0,addr:null,special:'',
-  ev:[ev('PENDING',70,'Allie'),ev('DECLINED',66,'Square POS · kitchen too busy')],pevt:[]},
+  ev:[ev('PLACED',70,'Allie'),ev('DECLINED',66,'Square POS · kitchen too busy')],pevt:[]},
  {id:'#2036',name:'Priya Mehta',ini:'PM',av:'cream',outlet:'wp',phone:'+1 (312) 555-0110',state:'EXPIRED',ful:'pickup',pay:'after',payState:'due',placed:110,quote:'—',lang:'EN',call:'C-5490',label:'Carbonara + tiramisu, pickup',
   items:[{n:'Spaghetti Carbonara',q:1,p:18},{n:'Tiramisu',q:1,p:9}],del:0,tax:2.43,tip:0,addr:null,special:'',
-  ev:[ev('PENDING',110,'Allie'),ev('EXPIRED',100,'Nobody accepted within 10 min')],pevt:[]},
- {id:'#2048',name:'Hannah Reyes',ini:'HR',av:'mint',outlet:'ls',phone:'+1 (773) 555-0102',state:'PENDING',ful:'pickup',pay:'before',payState:'charged',placed:2,exp:T+(8*60)*1000,quote:'9:05 PM',lang:'EN',call:'C-5534',label:'Margherita 12" + lemonade, pickup, paid by link',
+  ev:[ev('PLACED',110,'Allie'),ev('EXPIRED',100,'Nobody accepted within 10 min')],pevt:[]},
+ {id:'#2048',name:'Hannah Reyes',ini:'HR',av:'mint',outlet:'ls',phone:'+1 (773) 555-0102',state:'PLACED',ful:'pickup',pay:'before',payState:'charged',placed:2,exp:T+(8*60)*1000,quote:'9:05 PM',lang:'EN',call:'C-5534',label:'Margherita 12" + lemonade, pickup, paid by link',
   items:[{n:'Margherita',q:1,p:18,m:'12" · Classic'},{n:'Lemonade',q:1,p:4}],del:0,tax:1.93,tip:0,addr:null,special:'',
-  ev:[ev('PENDING',2,'Allie · paid by link')],pevt:[['Paid $23.93 by text link','Card · 8:28 PM · waiting for staff to accept']]},
- {id:'#2049',name:'Ben Carter',ini:'BC',av:'cream',outlet:'lp',phone:'+1 (312) 555-0188',state:'ACCEPTED',ful:'pickup',pay:'before',payState:'pending',lexp:T+(7*60+30)*1000,placed:3,quote:'8:55 PM',lang:'EN',call:'C-5532',label:'Pepperoni 14" + garlic knots, pickup, paying by link',
+  ev:[ev('PLACED',2,'Allie · paid by link')],pevt:[['Paid $23.93 by text link','Card · 8:28 PM · waiting for staff to accept']]},
+ {id:'#2049',name:'Ben Carter',ini:'BC',av:'cream',outlet:'lp',phone:'+1 (312) 555-0188',state:'AWAITING',ful:'pickup',pay:'before',payState:'pending',lexp:T+(11*60+30)*1000,placed:3,quote:'8:55 PM',lang:'EN',call:'C-5532',label:'Pepperoni 14" + garlic knots, pickup, paying by link',
   items:[{n:'Pepperoni',q:1,p:22,m:'14" · Classic'},{n:'Garlic Knots',q:1,p:6}],del:0,tax:2.45,tip:0,addr:null,special:'',
-  ev:[ev('PENDING',3,'Allie · link texted'),ev('ACCEPTED',3,'Auto-accept')],pevt:[['Payment link sent to (312) 555-0188','Waiting for the caller to pay']]},
+  ev:[ev('AWAITING',3,'Allie · link texted')],pevt:[['Payment link sent to (312) 555-0188','Waiting for the caller to pay · expires in 15 min']]},
  {id:'#2050',name:'Marcus Webb',ini:'MW',av:'coral',outlet:'rn',phone:'+1 (312) 555-0171',state:'ACCEPTED',ful:'delivery',pay:'after',payState:'due',placed:9,quote:'8:55 PM',lang:'EN',call:'C-5527',cod:'Repeat customer · 4th order',label:'Margherita 12" + meatballs, delivery, cash',
   items:[{n:'Margherita',q:1,p:18,m:'12" · Classic'},{n:'Meatballs',q:1,p:10}],del:3,tax:2.48,tip:0,addr:'310 W Illinois St, Chicago 60654',zone:'Zone A · 0.7 mi',special:'',
-  ev:[ev('PENDING',9,'Allie · cash on delivery allowed'),ev('ACCEPTED',9,'Auto-accept')],pevt:[]},
+  ev:[ev('PLACED',9,'Allie · cash on delivery allowed'),ev('ACCEPTED',9,'Auto-accept')],pevt:[]},
  {id:'#2051',name:'Elena Petrova',ini:'EP',av:'',outlet:'rn',phone:'+1 (312) 555-0136',state:'ACCEPTED',ful:'pickup',pay:'before',payState:'charged',placed:35,quote:'9:15 PM',pre:'9:15 PM',lang:'EN',call:'C-5516',label:'Pre-order for 9:15 PM · 2× Diavola 14", pickup',
   items:[{n:'Diavola',q:2,p:26,m:'14" · Classic'}],del:0,tax:4.55,tip:0,addr:null,special:'Please have it ready exactly at 9:15.',
-  ev:[ev('PENDING',35,'Allie · pre-order for 9:15 PM'),ev('ACCEPTED',35,'Auto-accept · paid by link')],pevt:[['Paid $56.55 by text link','Card · 7:55 PM']]}
+  ev:[ev('PLACED',35,'Allie · pre-order for 9:15 PM'),ev('ACCEPTED',35,'Auto-accept · paid by link')],pevt:[['Paid $56.55 by text link','Card · 7:55 PM']]}
 ];}
 function mkHeld(){const T=Date.now();return [
- {id:'#2052',name:'Maria Lopez',ini:'ML',av:'mint',outlet:'lp',phone:'+1 (312) 555-0155',state:'PENDING',ful:'delivery',pay:'before',payState:'pending',placed:3,exp:0,lexp:T+(6*60+20)*1000,quote:'9:10 PM',lang:'EN',call:'C-5533',label:'Margherita 14" + wings, delivery, paying by link',
+ {id:'#2052',name:'Maria Lopez',ini:'ML',av:'mint',outlet:'lp',phone:'+1 (312) 555-0155',state:'AWAITING',ful:'delivery',pay:'before',payState:'pending',placed:3,exp:0,lexp:T+(11*60+40)*1000,quote:'9:10 PM',lang:'EN',call:'C-5533',label:'Margherita 14" + wings, delivery, paying by link',
   items:[{n:'Margherita',q:1,p:22,m:'14" · Classic'},{n:'Wings (8)',q:1,p:14,m:'Buffalo'}],del:5.5,tax:3.14,tip:0,addr:'411 S Wells St, Chicago 60607',zone:'Zone C · 0.9 mi',special:'',
-  ev:[ev('PENDING',3,'Allie · link texted')],pevt:[]}];}
+  ev:[ev('AWAITING',3,'Allie · link texted')],pevt:[]}];}
 /* ── calls ── */
 function mkCalls(k){const res=[
  {id:'C-5533',name:'Hannah Brooks',ini:'HB',av:'',outlet:'wp',phone:'+1 (312) 555-0118',kind:'res',st:'done',min:2,dur:'1:44',topic:'Reservation',sum:'Booked a table for four tonight at 7:30 PM, patio if possible. Confirmed by staff.',tags:['Reservation']},
@@ -786,9 +786,9 @@ const hash=location.hash.slice(1);if(['overview','reservations','orders','calls'
 const inScope=o=>S.outlet==='all'||o.outlet===S.outlet;
 const subT=o=>o.items.reduce((a,i)=>a+i.p*i.q,0);
 const totT=o=>subT(o)+o.del+o.tax+(o.tip||0);
-const ACTIVE=['ACCEPTED','PREPARING','PREPARED','DISPATCHED'],DONE=['DELIVERED','PICKED_UP'],CLOSED=['CANCELLED','DECLINED','EXPIRED'];
-const ST={PENDING:['p-amber p-blink','Needs approval'],ACCEPTED:['p-mint','Accepted'],PREPARING:['p-dust','Preparing'],PREPARED:['p-mint','Ready'],DISPATCHED:['p-mint','Out for delivery'],DELIVERED:['p-green','Delivered'],PICKED_UP:['p-green','Picked up'],CANCELLED:['p-grey','Cancelled'],DECLINED:['p-red','Declined'],EXPIRED:['p-red','Expired']};
-const payTag=o=>o.pay==='before'?(o.payState==='refunded'?'Refunded':o.payState==='unpaid'?'Unpaid · cancelled':o.payState==='pending'?'Payment pending':'Paid online'):(o.ful==='delivery'?'Cash on delivery':'Pay at pickup');
+const ACTIVE=['ACCEPTED','PREPARED','DISPATCHED'],DONE=['DELIVERED','PICKED_UP'],CLOSED=['CANCELLED','DECLINED','EXPIRED'];
+const ST={AWAITING:['p-amber','Awaiting payment'],PAYFAILED:['p-red','Payment failed'],PLACED:['p-amber p-blink','Placed'],ACCEPTED:['p-mint','Accepted'],PREPARED:['p-mint','Ready'],DISPATCHED:['p-mint','Out for delivery'],DELIVERED:['p-green','Delivered'],PICKED_UP:['p-green','Picked up'],CANCELLED:['p-grey','Cancelled'],DECLINED:['p-red','Declined'],EXPIRED:['p-red','Expired']};
+const payTag=o=>o.pay==='before'?(o.payState==='refunded'?'Refunded':o.refd?'Partially refunded':o.payState==='unpaid'?'Unpaid · cancelled':o.state==='PAYFAILED'?'Payment failed':o.payState==='pending'?'Awaiting payment':'Paid online'):(o.ful==='delivery'?'Cash on delivery':'Pay at pickup');
 const pill=(cls,t)=>`<span class="pill ${cls}"><span class="d"></span>${esc(t)}</span>`;
 const spill=s=>pill(ST[s][0],ST[s][1]);
 const posFor=o=>DB.posSync&&ON(o.outlet).pos;
@@ -809,7 +809,7 @@ function renderChk(){const st=setupSteps(),req=st.filter(x=>!x.opt);if(req.every
 const NAV=[['overview','Overview','grid'],['reservations','Reservations','res'],['orders','Orders','bag'],['calls','Calls','phone'],['menu','Menu','menu'],['agents','Agents','agent']];
 function renderRail(){
   const o=S.outlet==='all'?'All Outlets':ON(S.outlet).name;
-  const pend=DB.orders.filter(x=>inScope(x)&&x.state==='PENDING').length;
+  const pend=DB.orders.filter(x=>inScope(x)&&x.state==='PLACED').length;
   let h=`<div class="rail-top"><span class="logo">Tringg</span><span class="rail-k">K</span></div>
    <button class="outlet-btn" onclick="S.dd=!S.dd;renderRail()" aria-expanded="${S.dd}">${I.store}<span>${esc(o)}</span>${I.chev}</button>`;
   if(S.dd)h+=`<div class="outlet-dd"><button class="odi ${S.outlet==='all'?'on':''}" onclick="pickOutlet('all')"><span class="d"></span>All Outlets · ${OUTLETS.length}</button>${[...new Set(OUTLETS.map(o=>o.region))].map(r=>`<div class="odd-reg">${r}</div>`+OUTLETS.filter(o=>o.region===r).map(x=>`<button class="odi ${S.outlet===x.id?'on':''}" onclick="pickOutlet('${x.id}')"><span class="d"></span>${esc(x.name)}${DB.svc[x.id].set!==true?'<span class="odd-new">New</span>':''}</button>`).join('')).join('')}</div>`;
@@ -839,7 +839,7 @@ function renderTop(){
     ${S.route==='orders'&&DB.orderingOn?(posOutlets.length?`<button class="pos-sw ${DB.posSync?'on':''}" onclick="togglePos()" aria-pressed="${DB.posSync}">POS sync <span class="sub">${S.outlet==='all'?'· '+OUTLETS.filter(o=>o.pos).length+' of '+OUTLETS.length+' outlets':'· '+esc(ON(S.outlet).pos)}</span><span class="tog ${DB.posSync?'on':''}" style="width:36px;height:22px" aria-hidden="true"></span></button>`:''):''}
     ${S.route==='orders'&&DB.orderingOn&&S.outlet!=='all'&&!(ON(S.outlet).pos&&DB.posSync)?`<button class="pos-sw ${DB.autoAccept[S.outlet]?'on':''}" onclick="DB.autoAccept[S.outlet]=!DB.autoAccept[S.outlet];render();toast(DB.autoAccept[S.outlet]?'Auto-accept on at '+ON(S.outlet).short:'Auto-accept off at '+ON(S.outlet).short+' · accept orders in Needs approval')" aria-pressed="${!!DB.autoAccept[S.outlet]}">Auto-accept <span class="sub">· ${esc(ON(S.outlet).short)}</span><span class="tog ${DB.autoAccept[S.outlet]?'on':''}" style="width:36px;height:22px" aria-hidden="true"></span></button>`:''}
     <label class="srch">${I.search}<input type="search" placeholder="Search…" aria-label="Search"><span class="kbd">⌘K</span></label>
-    <button class="ibtn" aria-label="Notifications" onclick="toast('No new notifications')">${I.bell}${DB.orders.some(o=>o.state==='PENDING')?'<span class="dot"></span>':''}</button>
+    <button class="ibtn" aria-label="Notifications" onclick="toast('No new notifications')">${I.bell}${DB.orders.some(o=>o.state==='PLACED')?'<span class="dot"></span>':''}</button>
     <button class="ibtn ${S.spec?'on':''}" aria-label="Spec notes and Maple comparison" title="Spec notes · vs Maple" onclick="S.spec=!S.spec;renderOverlay();renderTop()">${I.doc}</button>
    </div>`;
 }
@@ -864,7 +864,7 @@ const SC={all:1,wp:.41,rn:.34,lp:.25};
 function stat(ic,cls,v,l){return `<div class="stat"><div class="stat-ic ${cls}">${I[ic]}</div><div style="min-width:0"><div class="stat-v">${v}</div><div class="stat-l">${l}</div></div></div>`;}
 function vOverview(){
   const f=(SC[S.outlet]??0.06),n=v=>Math.round(v*f);
-  const pendO=DB.orders.filter(o=>inScope(o)&&o.state==='PENDING');
+  const pendO=DB.orders.filter(o=>inScope(o)&&o.state==='PLACED');
   const pendR=DB.res.filter(r=>inScope(r)&&r.st==='pending');
   const live=DB.k==='live';
   let h=`<div class="scroll"><div class="page"><div class="lbl">${S.outlet==='all'?'All outlets':esc(ON(S.outlet).name)}</div><div class="stats">`;
@@ -916,7 +916,7 @@ function vReservations(){
 function resSet(id,st){const r=DB.res.find(x=>x.id===id);r.st=st;toast('Reservation '+st);render();}
 
 /* ════════ ORDERS ════════ */
-const OTABS=[['pending','Needs approval',o=>o.state==='PENDING'],['active','Active',o=>ACTIVE.includes(o.state)],['done','Completed',o=>DONE.includes(o.state)],['closed','Cancelled',o=>CLOSED.includes(o.state)],['all','All',()=>true]];
+const OTABS=[['pending','Needs approval',o=>o.state==='PLACED'],['await','Awaiting payment',o=>['AWAITING','PAYFAILED'].includes(o.state)],['active','Active',o=>ACTIVE.includes(o.state)],['done','Completed',o=>DONE.includes(o.state)],['closed','Cancelled',o=>CLOSED.includes(o.state)],['all','All',()=>true]];
 function vOrders(){
   if(!DB.orderingOn){const st=setupSteps();
     return `<div class="scroll"><div class="page" style="max-width:980px"><div class="card"><div class="empty"><div class="empty-i">${I.bagL}</div><div class="empty-t">Allie isn’t taking orders yet</div><div class="empty-s">Ordering is part of your subscription. Finish these and phone orders will appear here, ready to accept.</div>
@@ -933,7 +933,7 @@ function vOrders(){
 }
 function renderOrders(){
   const sc=DB.orders.filter(inScope);
-  if(S.orders.tab==='pending'&&!sc.some(o=>o.state==='PENDING')&&sc.length)S.orders.tab='active';
+  if(S.orders.tab==='pending'&&!sc.some(o=>o.state==='PLACED')&&sc.length)S.orders.tab='active';
   $('o-tabs').innerHTML=OTABS.map(t=>{const c=sc.filter(t[2]).length;return `<button class="ptab ${S.orders.tab===t[0]?'on':''}" onclick="S.orders.tab='${t[0]}';renderOrders()">${t[1]} <span class="n">${c}</span></button>`;}).join('');
   const q=S.orders.q.trim().toLowerCase(),fn=OTABS.find(t=>t[0]===S.orders.tab)[2];
   const rows=sc.filter(o=>fn(o)&&(S.orders.ful==='all'||o.ful===S.orders.ful)&&(S.orders.pay==='all'||o.pay===S.orders.pay)&&(!q||o.name.toLowerCase().includes(q)||o.id.includes(q)||o.phone.includes(q)));
@@ -942,25 +942,26 @@ function renderOrders(){
   if(!sc.length)h=`<div class="empty"><div class="empty-i">${I.bagL}</div><div class="empty-t">No orders yet today</div><div class="empty-s">Allie takes orders from 11:00 AM to 9:45 PM. Each one appears here the moment the caller confirms it.</div><div class="guide" style="max-width:420px"><div class="gstep"><span class="n">${I.phoneL}</span><div><div class="t">Try it yourself</div><div class="s">Call <span class="mono">${BRAND.num}</span> and order a pizza.</div></div></div></div></div>`;
   else if(!rows.length){const m={pending:['Nothing waiting for approval','With auto-accept on, orders go straight to Active.'],active:['No active orders','Accepted orders stay here until they’re delivered or picked up.'],done:['Nothing completed yet',''],closed:['No cancelled orders','Cancelled, declined and expired orders show here.'],all:['No orders match','Clear the search or filters.']}[S.orders.tab];
     h=`<div class="soft-empty"><b style="color:var(--ink);font-weight:600">${q?'No orders match “'+esc(q)+'”':m[0]}</b><br>${q?'Search checks name, order number and phone.':m[1]}</div>`;}
-  rows.forEach(o=>{const pend=o.state==='PENDING',r=pend?o.exp-Date.now():0;
+  rows.forEach(o=>{const pend=o.state==='PLACED',r=pend?o.exp-Date.now():0;
     h+=`<button class="it ${o.id===S.orders.sel?'on':''} ${pend?'pend':''} ${['DECLINED','EXPIRED'].includes(o.state)?'warn':''}" onclick="S.orders.sel='${o.id}';$('osplit').classList.add('detail');renderOrders()"><span class="av ${o.av}">${o.ini}</span>
-     <span class="it-m"><span class="it-n">${esc(o.name)} ${spill(o.state)} ${o.pre?pill('p-dust','Pre-order · '+o.pre):''}${o.payState==='pending'?pill('p-amber','Payment pending'):''}</span><span class="it-s">${o.id} · ${o.ful==='delivery'?'Delivery':'Pickup'} · ${payTag(o)}${S.outlet==='all'?' · '+ON(o.outlet).short:''}</span><span class="it-sum">${o.items.map(i=>(i.q>1?i.q+'× ':'')+i.n).join(', ')}</span></span>
-     <span class="it-r"><span class="t">${clock(o.placed)}</span><span class="s">${money(totT(o))}</span>${pend?`<span class="cd ${r<180000?'urgent':''}" data-exp="${o.exp}">${countdown(r)}</span>`:ACTIVE.includes(o.state)?`<span class="s">Ready ${o.quote}</span>`:''}</span></button>`;});
+     <span class="it-m"><span class="it-n">${esc(o.name)} ${spill(o.state)} ${o.pre?pill('p-dust','Pre-order · '+o.pre):''}${o.payState==='refunded'?pill('p-grey','Refunded'):o.refd?pill('p-grey','Partially refunded'):''}</span><span class="it-s">${o.id} · ${o.ful==='delivery'?'Delivery':'Pickup'} · ${payTag(o)}${S.outlet==='all'?' · '+ON(o.outlet).short:''}</span><span class="it-sum">${o.items.map(i=>(i.q>1?i.q+'× ':'')+i.n).join(', ')}</span></span>
+     <span class="it-r"><span class="t">${clock(o.placed)}</span><span class="s">${money(totT(o))}</span>${pend?`<span class="cd ${r<180000?'urgent':''}" data-exp="${o.exp}">${countdown(r)}</span>`:['AWAITING','PAYFAILED'].includes(o.state)?`<span class="cd" data-exp="${o.lexp}">${countdown(o.lexp-Date.now())}</span>`:ACTIVE.includes(o.state)?`<span class="s">Ready ${o.quote}</span>`:''}</span></button>`;});
   $('o-list').innerHTML=h;renderOrderDetail();renderRail();
 }
-const LC={delivery:['ACCEPTED','PREPARING','PREPARED','DISPATCHED','DELIVERED'],pickup:['ACCEPTED','PREPARING','PREPARED','PICKED_UP']};
-const LCL={PENDING:'Order confirmed on call',ACCEPTED:'Accepted',PREPARING:'Preparing',PREPARED:'Ready',DISPATCHED:'Out for delivery',DELIVERED:'Delivered',PICKED_UP:'Picked up',CANCELLED:'Cancelled',DECLINED:'Declined',EXPIRED:'Expired'};
+const LC={delivery:['ACCEPTED','PREPARED','DISPATCHED','DELIVERED'],pickup:['ACCEPTED','PREPARED','PICKED_UP']};
+const LCL={AWAITING:'Awaiting payment',PLACED:'Order placed',ACCEPTED:'Accepted',PREPARED:'Ready',DISPATCHED:'Out for delivery',DELIVERED:'Delivered',PICKED_UP:'Picked up',CANCELLED:'Cancelled',DECLINED:'Declined',EXPIRED:'Expired'};
 function payLine(o){
   if(o.pay==='after'){const cod=o.ful==='delivery';return o.payState==='paid'?[cod?'Paid in cash on delivery':'Paid at pickup','Collected '+(cod?'at the door':'at the counter')]:[cod?'Cash on delivery':'Pay at pickup',CLOSED.includes(o.state)?'Nothing was paid, so nothing to refund':'Collect '+money(totT(o))+(cod?' at the door'+(o.cod?' · '+o.cod:''):' at the counter')];}
   if(o.payState==='refunded')return ['Refunded in full',money(totT(o))+' back to the caller’s card'];
   if(o.payState==='unpaid')return ['Not paid','The link expired before anyone accepted the order, so it was cancelled'];
-  if(o.payState==='pending')return ['Payment pending','Text link sent · the caller hasn’t paid yet'];
+  if(o.state==='PAYFAILED')return ['Payment failed','The last attempt didn’t go through · the caller can try again until the link expires'];
+  if(o.payState==='pending')return ['Awaiting payment','Text link sent · the caller hasn’t paid yet'];
   return ['Paid online',o.refd?'Text link · '+money(o.refd)+' refunded':'Text link · '+(o.ful==='delivery'?'paid before the kitchen saw the order':'paid after the call')];
 }
 function renderOrderDetail(){
   const el=$('o-detail'),o=DB.orders.find(x=>x.id===S.orders.sel&&inScope(x));
   if(!o){el.innerHTML=`<div class="dempty"><div class="empty-i">${I.bagL}</div><div style="font-weight:600;color:var(--ink)">${DB.orders.length?'Select an order':'Order details open here'}</div><div class="small">Items, payment, delivery and the call it came from.</div></div>`;return;}
-  const pend=o.state==='PENDING',r=pend?o.exp-Date.now():0,pos=posFor(o),pl=payLine(o);
+  const pend=o.state==='PLACED',r=pend?o.exp-Date.now():0,pos=posFor(o),pl=payLine(o);
   let acts='';
   if(pend)acts=`<button class="btn btn-line" onclick="accept('${o.id}')">Accept order</button><button class="btn btn-red" onclick="S.modal={t:'decline',id:'${o.id}'};renderOverlay()">Decline</button>`;
   else if(ACTIVE.includes(o.state)){
@@ -970,7 +971,7 @@ function renderOrderDetail(){
     acts+=rf;
   }
   else if(DONE.includes(o.state)&&o.pay==='before'&&o.payState==='charged')acts=`<button class="btn btn-line btn-sm" onclick="S.modal={t:'refund',id:'${o.id}',mode:'items',sel:[],r:'Item unavailable'};renderOverlay()">Refund</button>`;
-  const lcSteps=CLOSED.includes(o.state)?['PENDING',o.state]:['PENDING',...LC[o.ful]];
+  const hasAw=o.ev.some(e=>e.c==='AWAITING'),hasPl=o.ev.some(e=>e.c==='PLACED'),base=[...(hasAw?['AWAITING']:[]),...(hasPl||!CLOSED.includes(o.state)?['PLACED']:[])];const lcSteps=CLOSED.includes(o.state)?[...base,o.state]:[...base,...LC[o.ful]];
   const reached=o.ev.map(e=>e.c);
   const cur=lcSteps.find(s=>!reached.includes(s));
   let h=`<div class="dbody"><div class="dsec"><div style="display:flex;gap:12px;align-items:flex-start"><div class="d-name" style="flex:1">${esc(o.name)} ${spill(o.state)} ${o.pre?pill('p-dust','Pre-order · '+o.pre):''}</div><button class="x dclose" aria-label="Close" onclick="S.orders.sel=null;$('osplit').classList.remove('detail');renderOrders()">${I.x}</button></div>
@@ -982,7 +983,7 @@ function renderOrderDetail(){
    <div class="ailabel"><div class="k">${I.spark} AI CALL LABEL</div><div class="v">${esc(o.label)}</div></div>`;
   if(pend)h+=`<div class="banner b-amber">${I.clock.replace('width="22" height="22"','width="17" height="17"')}<div>Accept within <b class="mono" data-exp="${o.exp}">${countdown(r)}</b> or the order expires. ${o.payState==='charged'?'The caller has already paid online, so declining or letting it expire refunds them in full automatically.':o.pay==='after'?'Nothing has been paid, so declining or expiring costs nothing.':'The caller hasn’t paid yet.'}</div></div>`;
   if(o.pre)h+=`<div class="banner b-dust" style="font-size:13px">${I.clock.replace('width="22" height="22"','width="16" height="16"')}<div><b>Pre-order for ${o.pre}.</b> The caller asked for this time, so don’t start it early. It follows the same payment and acceptance steps as any order.</div></div>`;
-  if(o.payState==='pending')h+=`<div class="banner b-amber">${I.card.replace('width="20" height="20"','width="16" height="16"')}<div><b>Payment pending.</b> The caller was texted a link and hasn’t paid yet (expires in <b class="mono" data-exp="${o.lexp}">${countdown(o.lexp-Date.now())}</b>). ${o.state==='PENDING'?'If it expires before you accept, the order is cancelled.':'If it expires, this order becomes pay at pickup and you’re alerted.'}</div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-proto btn-sm" onclick="simPaid('${o.id}')">Simulate: caller pays</button><button class="btn btn-proto btn-sm" onclick="simExpire('${o.id}')">Simulate: link expires</button></div></div>`;
+  if(o.state==='AWAITING'||o.state==='PAYFAILED')h+=`<div class="banner ${o.state==='PAYFAILED'?'b-red':'b-amber'}">${I.card.replace('width="20" height="20"','width="16" height="16"')}<div><b>${o.state==='PAYFAILED'?'Payment failed.':'Awaiting payment.'}</b> ${o.state==='PAYFAILED'?'The caller’s last attempt didn’t go through and they were texted the link again.':'The caller was texted a link and hasn’t paid yet.'} They can try as often as they like until the link expires in <b class="mono" data-exp="${o.lexp}">${countdown(o.lexp-Date.now())}</b>. The order is locked until it’s paid, then it moves to Placed. If the link expires unpaid, the order is cancelled.</div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-proto btn-sm" onclick="simPaid('${o.id}')">Simulate: caller pays</button><button class="btn btn-proto btn-sm" onclick="simFail('${o.id}')">Simulate: payment fails</button><button class="btn btn-proto btn-sm" onclick="simExpire('${o.id}')">Simulate: link expires</button></div></div>`;
   if(pos&&!CLOSED.includes(o.state))h+=`<div class="banner b-grey" style="font-size:13px">${I.pos.replace('width="22" height="22"','width="16" height="16"')}<div>Sent straight to <b>${esc(ON(o.outlet).pos)}</b>. The kitchen accepts it and moves it on the POS; this page follows automatically.</div></div>`;
   if(ACTIVE.includes(o.state)||DONE.includes(o.state))h+=`<div class="lock">${I.lock}<div>Accepted orders are locked. The caller and Allie can no longer change or cancel it.${o.pay==='before'?' If the kitchen can’t make something, use Refund: the whole order or single items.':''}</div></div>`;
   h+=`</div><div class="dsec"><div class="dsec-l">Items</div><table class="lines"><tbody>${o.items.map(i=>`<tr class="${i.ref?'refd':''}"><td>${i.q}× ${esc(i.n)} ${i.up?pill('p-dust','Suggested'):''}${i.ref?pill('p-grey','Refunded'):''}${i.m?`<div class="m">${esc(i.m)}</div>`:''}</td><td>${money(i.p*i.q)}</td></tr>`).join('')}</tbody></table>
@@ -995,20 +996,19 @@ function renderOrderDetail(){
    <div class="dsec"><div class="dsec-l">Call</div><button class="mini" onclick="S.calls.sel='${o.call}';go('calls')" style="padding:0"><span class="av mint" style="width:36px;height:36px">${I.phone}</span><span class="m"><span class="t" style="display:block">${o.call} · recording and transcript</span><span class="s" style="display:block">${clock(o.placed)}</span></span>${I.arrow}</button></div></div>`;
   el.innerHTML=h;
 }
-function heldStrip(){const hs=DB.held.filter(inScope);if(!hs.length)return '';return hs.map(o=>`<div class="banner b-dust" style="margin-bottom:12px">${I.clock.replace('width="22" height="22"','width="17" height="17"')}<div><b>${esc(o.name)}’s delivery order ${o.id} is waiting for payment</b> · ${money(totT(o))} · ${esc(ON(o.outlet).short)}. It stays out of Orders until it’s paid, so the kitchen never starts an unpaid delivery. Link expires in <b class="mono" data-exp="${o.lexp}">${countdown(o.lexp-Date.now())}</b>.</div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-proto btn-sm" onclick="heldPaid('${o.id}')">Simulate: caller pays</button><button class="btn btn-proto btn-sm" onclick="heldExpire('${o.id}')">Simulate: link expires</button></div></div>`).join('');}
-function heldPaid(id){const o=DB.held.find(x=>x.id===id);DB.held=DB.held.filter(x=>x!==o);o.payState='charged';o.exp=Date.now()+10*60000;o.pevt=[['Paid '+money(totT(o))+' by text link','Card · just now · the order then reached the kitchen']];
+function heldStrip(){const hs=DB.held.filter(inScope);if(!hs.length)return '';return hs.map(o=>`<div class="banner b-dust" style="margin-bottom:12px">${I.clock.replace('width="22" height="22"','width="17" height="17"')}<div><b>${esc(o.name)}’s delivery order ${o.id} is waiting for payment</b> · ${money(totT(o))} · ${esc(ON(o.outlet).short)}. <span class="tag">Prototype only</span> In the product staff never see this: a delivery order stays hidden until it’s paid, so the kitchen never starts an unpaid delivery. Link expires in <b class="mono" data-exp="${o.lexp}">${countdown(o.lexp-Date.now())}</b>.</div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-proto btn-sm" onclick="heldPaid('${o.id}')">Simulate: caller pays</button><button class="btn btn-proto btn-sm" onclick="heldExpire('${o.id}')">Simulate: link expires</button></div></div>`).join('');}
+function heldPaid(id){const o=DB.held.find(x=>x.id===id);DB.held=DB.held.filter(x=>x!==o);o.payState='charged';o.state='PLACED';o.exp=Date.now()+10*60000;o.pevt=[['Paid '+money(totT(o))+' by text link','Card · just now · the order then reached the kitchen']];logEv(o,'PLACED','Paid by link');
   if(DB.autoAccept[o.outlet]){o.state='ACCEPTED';logEv(o,'ACCEPTED','Auto-accept · paid by link');}
-  DB.orders.unshift(o);S.orders.tab=o.state==='PENDING'?'pending':'active';S.orders.sel=o.id;render();toast(o.id+' paid · it now appears in Orders');}
+  DB.orders.unshift(o);S.orders.tab=o.state==='PLACED'?'pending':'active';S.orders.sel=o.id;render();toast(o.id+' paid · it now appears in Orders');}
 function heldExpire(id){DB.held=DB.held.filter(x=>x.id!==id);render();toast(id+' cancelled · the link expired unpaid and the caller was told by text');}
-function simPaid(id){const o=DB.orders.find(x=>x.id===id);o.payState='charged';o.pevt=[['Paid '+money(totT(o))+' by text link','Card · just now']];toast(o.id+' paid');renderOrders();}
-function simExpire(id){const o=DB.orders.find(x=>x.id===id);
-  if(o.state==='PENDING'){o.state='CANCELLED';o.payState='unpaid';logEv(o,'CANCELLED','Link expired unpaid · caller told by text');toast(o.id+' cancelled · the link expired before anyone accepted it');}
-  else{o.pay='after';o.payState='due';o.pevt.push(['Payment link expired','Now pay at pickup · '+realClock()]);toast(o.id+' is now pay at pickup · staff alerted');}
-  renderOrders();}
+function simPaid(id){const o=DB.orders.find(x=>x.id===id);o.payState='charged';o.state='PLACED';o.exp=Date.now()+10*60000;o.pevt=[['Paid '+money(totT(o))+' by text link','Card · just now']];logEv(o,'PLACED','Paid by link');
+  if(DB.autoAccept[o.outlet]&&!posFor(o)){o.state='ACCEPTED';logEv(o,'ACCEPTED','Auto-accept · paid by link');}
+  S.orders.tab=o.state==='PLACED'?'pending':'active';toast(o.id+' paid · it moved to '+(o.state==='PLACED'?'Placed':'Accepted'));render();}
+function simFail(id){const o=DB.orders.find(x=>x.id===id);o.state='PAYFAILED';o.pevt.push(['Payment attempt failed','Card declined · '+realClock()+' · link texted again']);toast(o.id+' · payment failed · the caller was texted the link again, the clock keeps running');S.orders.tab='await';render();}
+function simExpire(id){const o=DB.orders.find(x=>x.id===id);o.state='CANCELLED';o.payState='unpaid';o.reason='Payment link expired';logEv(o,'CANCELLED','Payment link expired · caller told by text');toast(o.id+' cancelled · the link expired unpaid');S.orders.tab='closed';render();}
 function nextStep(o){
   switch(o.state){
-   case 'ACCEPTED':return `<button class="btn btn-line" onclick="advance('${o.id}')">Start preparing</button>`;
-   case 'PREPARING':return `<button class="btn btn-line" onclick="advance('${o.id}')">Mark ready</button>`;
+   case 'ACCEPTED':return `<button class="btn btn-line" onclick="advance('${o.id}')">Mark prepared</button>`;
    case 'PREPARED':if(o.ful==='pickup')return `<button class="btn btn-line" onclick="advance('${o.id}')">Mark picked up</button>${o.payState==='due'?`<span class="small muted">Collect ${money(totT(o))}</span>`:''}`;
      return `<button class="btn btn-line" onclick="advance('${o.id}')">Mark out for delivery</button>`;
    case 'DISPATCHED':return `<button class="btn btn-line" onclick="advance('${o.id}')">Mark delivered</button>`;
@@ -1023,7 +1023,7 @@ function advance(id,src){const o=DB.orders.find(x=>x.id===id);const steps=LC[o.f
   toast(o.id+' · '+LCL[nx].toLowerCase()+(src?' (from '+src+')':''));renderOrders();}
 function markPaid(id){const o=DB.orders.find(x=>x.id===id);o.payState='paid';o.pevt.push(['Paid '+money(totT(o))+(o.ful==='delivery'?' in cash on delivery':' at the store'),realClock()]);toast('Marked paid');renderOrders();}
 setInterval(()=>{document.querySelectorAll('[data-exp]').forEach(el=>{const r=+el.dataset.exp-Date.now();el.textContent=countdown(r);if(r<180000)el.classList.add(el.classList.contains('cd')?'urgent':'warn');});
-  if(!DB)return;let ch=false;DB.orders.forEach(o=>{if(o.state==='PENDING'&&o.exp&&o.exp<=Date.now()){const pd=o.payState==='charged';o.state='EXPIRED';if(pd){o.payState='refunded';o.pevt.push(['Refunded '+money(totT(o))+' in full','Nobody accepted · '+realClock()]);}logEv(o,'EXPIRED','Nobody accepted within 10 min');toast(o.id+' expired'+(pd?' · the caller was refunded in full':' · nothing was paid, so nothing to refund'));ch=true;}});
+  if(!DB)return;let ch=false;DB.orders.forEach(o=>{if(['AWAITING','PAYFAILED'].includes(o.state)&&o.lexp&&o.lexp<=Date.now()){o.state='CANCELLED';o.payState='unpaid';o.reason='Payment link expired';logEv(o,'CANCELLED','Payment link expired · caller told by text');toast(o.id+' cancelled · the link expired unpaid');ch=true;}if(o.state==='PLACED'&&o.exp&&o.exp<=Date.now()){const pd=o.payState==='charged';o.state='EXPIRED';if(pd){o.payState='refunded';o.pevt.push(['Refunded '+money(totT(o))+' in full','Nobody accepted · '+realClock()]);}logEv(o,'EXPIRED','Nobody accepted within 10 min');toast(o.id+' expired'+(pd?' · the caller was refunded in full':' · nothing was paid, so nothing to refund'));ch=true;}});
   if(ch){if(S.route==='orders')renderOrders();else render();}},1000);
 
 /* ════════ CALLS ════════ */
@@ -1533,14 +1533,14 @@ const SET={
    <div class="sep"></div><div class="field"><span class="fl">Time to accept</span><span class="fh" style="margin-top:-6px">The caller has already hung up expecting food, so keep it short. If nobody accepts, the order expires. If the caller already paid online, they’re refunded in full and told by text.</span><div class="segp sm">${['5 min','10 min','15 min'].map((x,i)=>`<button class="${i===1?'on':''}" onclick="this.parentNode.querySelectorAll('button').forEach(b=>b.classList.remove('on'));this.classList.add('on')">${x}</button>`).join('')}</div></div></div>
   <div class="scard"><div class="h2">After an order is accepted</div><div class="rules">
    <div class="rule"><span class="ic">${I.lock}</span><div><b style="font-weight:600">It’s locked.</b> The caller can’t change or cancel it, and Allie tells them so if they call back. Before acceptance, Allie can still change or cancel it.</div></div>
-   <div class="rule"><span class="ic">${I.card}</span><div><b style="font-weight:600">Online orders follow your auto-accept setting.</b> Delivery orders appear only once they’re paid. Pickup orders appear straight away with a “Payment pending” mark. Allie only confirms items that are in stock, so the kitchen rarely needs to say no.</div></div>
+   <div class="rule"><span class="ic">${I.card}</span><div><b style="font-weight:600">Online orders follow your auto-accept setting.</b> Delivery orders appear only once they’re paid. Pickup orders show straight away as “Awaiting payment”, locked until paid, then move to Placed. Allie only confirms items that are in stock, so the kitchen rarely needs to say no.</div></div>
    <div class="rule"><span class="ic">${I.warn}</span><div><b style="font-weight:600">If the kitchen can’t make it after all,</b> decline it or press Refund on the order in Orders: the whole order (it’s cancelled) or single items. Declined or unaccepted paid orders are refunded in full automatically.</div></div></div></div>
   <div class="scard"><div class="tg"><div class="tx"><div class="h3">Suggestions</div><div class="fh">Allie offers at most one add-on per order, from each item’s “Suggest with” in Menu.</div></div><button class="tog on" aria-label="Suggestions" onclick="this.classList.toggle('on')"></button></div></div>`,
  'ord-pay':()=>{
   const ok=DB.stripe==='active',cod=DB.cod,pw=DB.payWhen,pick=!ok?'store':(DB.payPick.call&&DB.payPick.store?'both':DB.payPick.call?'online':'store');
   const fl=f=>`<div class="flow">${f.map((n,i)=>`<div class="fnode ${n[3]||''}"><div class="k">${n[0]}</div><div class="t">${n[1]}</div><div class="s">${n[2]}</div></div>${i<f.length-1?`<span class="farrow">${I.arrow}</span>`:''}`).join('')}</div>`;
   const seg=(items,cur,fn)=>`<div class="segp sm">${items.map(x=>`<button class="${cur===x[0]?'on':''}" ${x[2]?'disabled':''} onclick="${fn}('${x[0]}')">${x[1]}</button>`).join('')}</div>`;
-  const flowOn=[['1 · '+(pw==='call'?'On the call':'End of the call'),'Link texted','Card, Apple Pay or Google Pay on a Tringg checkout page'],['2 · Caller pays','Charged','Collected through Payserv, then paid out to you','g'],['3 · Kitchen','Delivery appears once paid','Pickup appears at once, marked Payment pending']];
+  const flowOn=[['1 · '+(pw==='call'?'On the call':'End of the call'),'Link texted','Card, Apple Pay or Google Pay on a Tringg checkout page'],['2 · Caller pays','Charged','Collected through Payserv, then paid out to you','g'],['3 · Kitchen','Order moves to Placed once paid','Pickup shows locked meanwhile · delivery stays hidden']];
   const flowOff=[['1 · On the call','Order confirmed','No payment taken'],['2 · You accept','Order locked','Or auto-accept'],['3 · At pickup or on delivery','Paid in person','Card or cash','g']];
   let st='';
   if(DB.stripe==='none')st=`<div class="banner b-amber">${I.card.replace('width="20" height="20"','width="17" height="17"')}<div><b>Connect payments to send online payment links.</b> Until then outlets take pickup orders paid at pickup, and delivery works only for orders that qualify for cash on delivery.</div></div><div class="flow"><div class="fnode"><div class="k">Step 1</div><div class="t">Business details</div><div class="s">Legal name, EIN, address</div></div><div class="fnode"><div class="k">Step 2</div><div class="t">Identity check</div><div class="s">Owner ID and date of birth (KYC)</div></div><div class="fnode"><div class="k">Step 3</div><div class="t">Bank account</div><div class="s">Where payouts land</div></div></div><button class="btn btn-dark" style="align-self:flex-start" onclick="S.modal={t:'stripe'};renderOverlay()">Connect payments</button>`;
@@ -1558,7 +1558,7 @@ const SET={
   <div class="scard"><div class="h2">When callers pay online</div><div class="fh" style="margin-top:-10px">Every minute on the phone costs money. Choose whether Allie waits for the payment or ends the call once the link is sent.</div>
    ${seg([['call','On the call'],['after','After the call ends']],pw,'setPayWhen')}
    <div class="rules">${pw==='call'?`<div class="rule"><span class="ic">${I.phone}</span><div><b style="font-weight:600">Allie texts the link and stays on the line</b> until the caller has paid, then confirms. Callers hear the confirmation before they hang up, but the wait is billed as call time.</div></div>`:`<div class="rule"><span class="ic">${I.phone}</span><div><b style="font-weight:600">Allie confirms the order, texts the link and ends the call.</b> Shorter calls cost less. The order reaches the kitchen once the caller pays, so hanging up never loses it.</div></div>`}
-    <div class="rule"><span class="ic">${I.clock.replace('width="22" height="22"','width="15" height="15"')}</span><div>The link works for <b style="font-weight:600">10 minutes</b> and can be sent again. It applies to every online order, pickup or delivery.</div></div></div></div>
+    <div class="rule"><span class="ic">${I.clock.replace('width="22" height="22"','width="15" height="15"')}</span><div>The link works for <b style="font-weight:600">15 minutes in total</b>. Callers can retry as often as they like and ask for it again, but a failed attempt doesn’t restart the clock.</div></div></div></div>
   <div class="scard"><div class="h2">How callers can pay</div><div class="fh" style="margin-top:-10px"><b>Online</b> means a text link paid by card, Apple Pay or Google Pay. <b>Offline</b> means paying in person: at pickup, or cash on delivery.</div>
    <div class="field"><span class="fl">Pickup</span>${seg([['online','Online',!ok],['store','At pickup'],['both','Both',!ok]],pick,'setPickPay')}${ok?'':` <span class="xs muted">Online needs a connected payments account ${pill('p-amber','Needs payments')}</span>`}</div>
    <div class="field"><span class="fl">Delivery</span><div class="small">Online by default, because a delivery order from an unknown caller is the one most likely to be fake. Allow cash on delivery only under the rules below.</div></div></div>
@@ -1575,7 +1575,7 @@ const SET={
    ${qual?`<div class="small" style="margin-top:4px"><b>Delivery, caller who qualifies:</b> “You can pay cash when it arrives.”</div>`:''}
    <div class="small" style="margin-top:4px"><b>Delivery${qual?', everyone else':''}:</b> “I’ll text you a secure link to pay. ${pw==='call'?'Stay on the line while you pay and I’ll confirm straight away.':'Your order goes to the kitchen once it’s paid, and you can hang up now.'}”</div></div></div>
   <div class="scard"><div class="h2">What happens to the money and the order</div><div class="eyebrow" style="font-size:12px">Paid online</div>${fl(flowOn)}<div class="eyebrow" style="font-size:12px">Paid offline</div>${fl(flowOff)}
-   <div class="rules"><div class="rule"><span class="ic">${I.clock.replace('width="22" height="22"','width="15" height="15"')}</span><div><b style="font-weight:600">Unpaid link, delivery:</b> the order is cancelled and the caller is told by text. <b style="font-weight:600">Unpaid link, pickup:</b> cancelled if nobody has accepted it. If staff already accepted it, it becomes pay at pickup and staff are alerted.</div></div><div class="rule"><span class="ic">${I.card.replace('width="20" height="20"','width="15" height="15"')}</span><div><b style="font-weight:600">No card holds.</b> If staff decline a paid order, or nobody acts on it, the caller is refunded in full and told by text.</div></div><div class="rule"><span class="ic">${I.lock}</span><div>Changes to these settings apply to <b style="font-weight:600">new orders only</b>. Once accepted, an order can’t be changed or cancelled by the caller or by Allie.</div></div></div></div>
+   <div class="rules"><div class="rule"><span class="ic">${I.clock.replace('width="22" height="22"','width="15" height="15"')}</span><div><b style="font-weight:600">Pickup:</b> the order shows in Orders as Awaiting payment (or Payment failed), locked until it’s paid. <b style="font-weight:600">Delivery:</b> staff don’t see it at all until it’s paid. <b style="font-weight:600">Unpaid after 15 minutes:</b> the order is cancelled and the caller is told by text.</div></div><div class="rule"><span class="ic">${I.card.replace('width="20" height="20"','width="15" height="15"')}</span><div><b style="font-weight:600">No card holds.</b> If staff decline a paid order, or nobody acts on it, the caller is refunded in full and told by text.</div></div><div class="rule"><span class="ic">${I.lock}</span><div>Changes to these settings apply to <b style="font-weight:600">new orders only</b>. Once accepted, an order can’t be changed or cancelled by the caller or by Allie.</div></div></div></div>
   <div class="scard"><div class="scard-h"><div><div class="h2">Payouts · Payserv</div><div class="fh">Online payments are collected through Payserv and paid out to your bank.</div></div><div class="r">${DB.stripe==='active'?pill('p-green','Connected'):DB.stripe==='pending'?pill('p-dust','Verifying'):pill('p-grey','Not connected')}</div></div>${st}</div>`;},
  'ord-hours':()=>{const one=S.outlet!=='all',o=one?S.outlet:(S.ohOutlet||'wp');S.ohOutlet=o;const on=ON(o),h=DB.oh[o];
   let r=sH('Ordering hours',one?'When '+esc(on.short)+' takes phone orders. Changes here also show in All outlets.':'When each outlet takes phone orders. These can differ from opening hours.',one?'':'all');
@@ -1627,7 +1627,7 @@ const SET={
   return h+svcShared(one);},
  'ord-pos':()=>sH('POS connection','Connect the POS each outlet already uses. When it’s connected, the POS is the source of truth: statuses after hand-off come from it, and staff move orders there, not here. Outlets without a POS run fully from this dashboard.','all')+`
   <div class="scard"><div class="scard-h"><span class="stat-ic ic-mint" style="width:44px;height:44px">${I.pos}</span><div><div class="h3">Square · Wicker Park, River North</div><div class="fh">Menu synced 4 min ago · 31 orders sent today · status webhooks on</div></div><div class="r"><button class="tog ${DB.posSync?'on':''}" aria-label="POS sync" onclick="togglePos()"></button></div></div>
-   <div class="flow"><div class="fnode"><div class="k">Tringg</div><div class="t">Order accepted</div><div class="s">Sent to Square</div></div><span class="farrow">${I.arrow}</span><div class="fnode"><div class="k">Square webhook</div><div class="t">Preparing → Ready</div><div class="s">Updates the order here</div></div><span class="farrow">${I.arrow}</span><div class="fnode g"><div class="k">Square webhook</div><div class="t">Completed</div><div class="s">Picked up or delivered</div></div></div>
+   <div class="flow"><div class="fnode"><div class="k">Tringg</div><div class="t">Order accepted</div><div class="s">Sent to Square</div></div><span class="farrow">${I.arrow}</span><div class="fnode"><div class="k">Square webhook</div><div class="t">Ready</div><div class="s">Updates the order here</div></div><span class="farrow">${I.arrow}</span><div class="fnode g"><div class="k">Square webhook</div><div class="t">Completed</div><div class="s">Picked up or delivered</div></div></div>
    <div class="small muted">ROSSA Loop has no POS, so its orders are always updated from the dashboard. The switch is also at the top right of Orders.</div></div>
   <div class="scard"><div class="h3">When an order goes to the POS</div><div class="fh" style="margin-top:-10px">Choose whether staff review orders here first. After the hand-off the POS controls the status, so later steps are locked on this dashboard.</div>
    <div class="segp sm"><button class="${DB.posPush==='arrive'?'on':''}" onclick="DB.posPush='arrive';render();toast('Orders go to the POS as soon as they arrive')">As soon as it arrives</button><button class="${DB.posPush==='accept'?'on':''}" onclick="DB.posPush='accept';render();toast('Orders go to the POS after staff accept them here')">After staff accept it here</button></div>
@@ -1698,11 +1698,12 @@ const SPEC={
   ['decision','One subscription, capabilities per agent','Enquiry, reservation and ordering are all included. No module is sold or locked; a merchant turns a capability off per agent.'],
   ['decision','No ordering onboarding yet','Onboarding stays enquiry + reservation. Ordering setup is a 4-step guide inside Orders until onboarding is redesigned.']]],
  orders:['Every phone order. States follow LimeTray. The POS sync switch sits top right because it decides where orders are accepted and moved: on the POS, or here.',[
-  ['decision','Two ways an order is handled','POS connected (sync on): the order goes straight to the POS; accept, decline and statuses happen there and show here read-only. No POS: accept or decline here (or auto-accept), then move it Preparing → Ready → Picked up / Out for delivery → Delivered here.'],
-  ['decision','Online orders follow auto-accept','The card is charged when the caller pays. Delivery orders appear only once paid; pickup orders appear straight away with a Payment pending mark. Accept is needed only when auto-accept is off, and declining a paid order refunds it in full.'],
+  ['decision','Two ways an order is handled','POS connected (sync on): the order goes straight to the POS; accept, decline and statuses happen there and show here read-only. No POS: accept or decline here (or auto-accept), then move it Prepared → Picked up / Dispatched → Delivered here.'],
+  ['decision','Online orders are held until paid','Every online order waits in Awaiting payment (LimeTray’s PAYMENT AWAITED). Pickup orders are visible but locked, and show Payment failed after a failed attempt. Delivery orders are hidden from staff until paid. The link lasts 15 minutes in total, with retries; a failed attempt doesn’t restart the clock. Paid means Placed, then auto-accept or staff decide.'],
+  ['decision','States follow LimeTray','Placed (not Pending), Accepted, Prepared, Dispatched, Delivered, Picked up, Cancelled. No Preparing. Declined and Expired are Tringg additions that map to Cancelled with a reason. Refunded is a tag, not a status, because items can be refunded on an open order.'],
   ['decision','Pre-orders','A caller can order for later the same day. The order lands in Orders marked with its time and follows the normal steps. Configurable per outlet.'],
   ['decision','Cash on delivery is rule-based','Delivery is paid online by default because of fake-order risk. The merchant can allow cash up to an amount limit, for repeat customers, or both. New callers always get a link.'],
-  ['beats','Changes allowed before acceptance','Allie can still edit or cancel a PENDING order when the caller calls back. Maple makes the caller cancel and re-order.'],
+  ['beats','Changes allowed before acceptance','Allie can still edit or cancel a PLACED order when the caller calls back. Maple makes the caller cancel and re-order.'],
   ['decision','No rider or courier handling this phase','No rider assignment, courier tracking, simulate buttons or call buttons. Delivery is marked out and delivered by staff, or by the POS.'],
   ['decision','Refund from the order','For the rare paid order the kitchen can’t make: refund the whole order (it moves to Cancelled) or single items. Declined or unaccepted paid orders are refunded in full automatically.']],
   [['Charge','Before kitchen (pay by link)','Charged by link; delivery waits for payment'],['Decline','—','Only pay-at-pickup orders; nothing to refund'],['Refund','—','Whole order or items, from the order'],['Status sync','POS partners','POS webhooks + manual for no-POS']]],
