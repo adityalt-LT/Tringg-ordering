@@ -843,7 +843,7 @@ function renderTop(){
     <button class="ibtn ${S.spec?'on':''}" aria-label="Spec notes and Maple comparison" title="Spec notes · vs Maple" onclick="S.spec=!S.spec;renderOverlay();renderTop()">${I.doc}</button>
    </div>`;
 }
-function togglePos(){DB.posSync=!DB.posSync;render();toast(DB.posSync?'POS sync on · orders go straight to the POS':'POS sync off · accept and update orders here');}
+function togglePos(){DB.posSync=!DB.posSync;if(!DB.posSync)OUTLETS.filter(o=>o.pos).forEach(o=>{DB.autoAccept[o.id]=false;});render();toast(DB.posSync?'POS sync on · orders go straight to the POS':'POS disconnected · auto-accept is off, so orders wait for you. Switch it on again to accept them automatically');}
 function render(){
   $('shell').classList.toggle('nav-open',S.nav);
   renderRail();renderTop();$('view').innerHTML=(VIEWS[S.route]||VIEWS.overview)();
