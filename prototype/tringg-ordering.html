@@ -473,6 +473,9 @@ body:has(.pubbar) .toast-w{bottom:calc(92px + env(safe-area-inset-bottom,0px))}
 .chk-n svg{width:11px;height:11px}
 
 /* roles */
+.mod-chip{display:block;margin:0 12px 6px;padding:8px 12px;border:1px solid #333;border-radius:10px;color:#E8E8E8;font-size:12.5px;text-decoration:none}
+.mod-chip:hover{background:#222}
+.mod-name{margin:0 14px 12px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#8a8a8a}
 .role-manager .own,.role-staff .own{display:none!important}
 .role-staff .mgr{display:none!important}
 .staff-only{display:none}.role-staff .staff-only{display:inline}
@@ -622,7 +625,7 @@ const ROLE_N={owner:'Owner',manager:'Manager',staff:'Staff'};
 const R=()=>(typeof S!=='undefined'&&S.role)||'owner';
 const isOwner=()=>R()==='owner',isMgr=()=>R()==='manager',notStaff=()=>R()!=='staff';
 function applyRole(all){const a=all?null:ROLE_OUT[R()];OUTLETS.length=0;OUTLETS.push(...OUTLETS_ALL.filter(o=>!a||a.includes(o.id)));}
-function setRole(r){S.role=r;applyRole();S.outlet=OUTLETS.length>1?'all':OUTLETS[0].id;S.dd=false;S.orders.sel=null;S.calls.sel=null;if(S.route==='agents'&&r==='staff')S.route='overview';toast('Viewing as '+ROLE_N[r]+(r==='owner'?' · all outlets':' · '+OUTLETS.length+' outlet'+(OUTLETS.length>1?'s':'')));render();}
+function setRole(r){S.role=r;applyRole();S.outlet=OUTLETS.length>1?'all':OUTLETS[0].id;S.dd=false;S.orders.sel=null;S.calls.sel=null;if(S.route==='agents'&&r==='staff'&&typeof SLICE==='undefined')S.route='overview';toast('Viewing as '+ROLE_N[r]+(r==='owner'?' · all outlets':' · '+OUTLETS.length+' outlet'+(OUTLETS.length>1?'s':'')));render();}
 const setAllowed=k=>{const r=R();if(r==='owner')return true;if(!k.startsWith('ord-'))return true;if(r==='manager')return !['ord-pay','ord-pos'].includes(k);return ['ord-delivery','ord-hours','ord-pre'].includes(k);};
 const roleNav=n=>n.map(g=>[g[0],g[1].filter(i=>setAllowed(i[0]))]).filter(g=>g[1].length);
 const ON=id=>OUTLETS_ALL.find(o=>o.id===id)||{};
@@ -871,7 +874,7 @@ function renderTop(){
 }
 function togglePos(){DB.posSync=!DB.posSync;if(!DB.posSync)OUTLETS.filter(o=>o.pos).forEach(o=>{DB.autoAccept[o.id]=false;});render();toast(DB.posSync?'POS sync on · orders go straight to the POS':'POS disconnected · auto-accept is off, so orders wait for you. Switch it on again to accept them automatically');}
 function render(){
-  $('shell').classList.toggle('nav-open',S.nav);['owner','manager','staff'].forEach(r=>$('shell').classList.toggle('role-'+r,R()===r));if(S.route==='agents'&&R()==='staff')S.route='overview';
+  $('shell').classList.toggle('nav-open',S.nav);['owner','manager','staff'].forEach(r=>$('shell').classList.toggle('role-'+r,R()===r));if(S.route==='agents'&&R()==='staff'&&typeof SLICE==='undefined')S.route='overview';
   renderRail();renderTop();$('view').innerHTML=(VIEWS[S.route]||VIEWS.overview)();
   if(S.route==='orders'&&DB.orderingOn)renderOrders();
   if(S.route==='calls')renderCalls();
