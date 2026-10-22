@@ -64,3 +64,22 @@ Rename "3E. Order acceptance and auto-accept" to "3E. Order acceptance, auto-acc
 - No "Suggestions" story exists in the PRD, so nothing to remove there.
 - The cancellation-request flag and "Cancel" action on the order screen are not in the prototype yet (the Orders screen is out of scope for this change).
 - Open for you: whether staff can also cancel after preparation starts (OS-057C says "usually while preparation has not started").
+
+## Correction: auto-accept applies to every order, and why owners use it
+
+A new merchant turns auto-accept off for two reasons: to check they can fulfil a particular order, and as a gate against fake orders. So it applies to **every** order, paid online or cash. The earlier draft in this file (criterion 3 and the top card in the prototype) said paid orders skip the wait. That was wrong and is withdrawn.
+
+Cash on delivery is only offered to repeat customers or orders under the cap set in Delivery & pickup (prototype default: $30, either condition). That is the first fraud gate. Auto-accept off is the second.
+
+Replace criterion 3 with:
+
+| # | Criterion |
+|---|---|
+| 3 | With auto-accept off, staff check each placed order (paid online or cash) and accept or decline it. An order nobody acts on expires. A paid order that is declined or expires is refunded in full automatically. |
+
+Add to 3E:
+
+| ID | As a… | I want to… | So that… | Ph | Pri |
+|---|---|---|---|---|---|
+| **OS-047D** | Owner | turn auto-accept off and review each order before the kitchen starts it | I can check I am able to fulfil it and screen out fake orders | Ph 1 | **P0** |
+| **OS-047E** | Owner | see on the Ordering controls screen which callers can pay cash on delivery, with a link to change it | I understand the fraud gate that works alongside auto-accept | Ph 1 | **P1** |
