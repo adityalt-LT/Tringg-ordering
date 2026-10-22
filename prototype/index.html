@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tringg Ordering prototype modules</title>
+<style>
+:root{--bg:#f6f4ef;--card:#fff;--ink:#16181a;--mute:#5d6469;--line:#e3dfd6;--accent:#1f8a7d;--accent-ink:#fff;--chip:#eef6f4}
+@media (prefers-color-scheme:dark){:root{--bg:#121413;--card:#1b1e1d;--ink:#eef1ef;--mute:#9aa3a0;--line:#2c312f;--accent:#4fc2b4;--accent-ink:#0c1110;--chip:#1f2a28}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+main{max-width:1040px;margin:0 auto;padding:40px 16px 64px}
+h1{font-size:30px;line-height:1.2;margin:0 0 8px}
+.lead{color:var(--mute);margin:0 0 28px;max-width:70ch}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:10px}
+.card h2{font-size:20px;margin:0}
+.meta{font-size:13px;color:var(--mute)}
+.card ul{margin:0;padding-left:18px;color:var(--ink);font-size:14.5px}
+.card li{margin:2px 0}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:auto;padding-top:8px}
+a.btn{display:inline-block;padding:9px 16px;border-radius:999px;font-weight:600;font-size:14px;text-decoration:none;border:1px solid var(--accent)}
+a.primary{background:var(--accent);color:var(--accent-ink)}
+a.ghost{color:var(--accent);background:transparent}
+a.btn:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.how{margin-top:32px;background:var(--chip);border:1px solid var(--line);border-radius:16px;padding:20px}
+.how h2{margin:0 0 8px;font-size:18px}
+.how p{margin:6px 0;color:var(--ink)}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.tag{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:13px}
+</style>
+</head>
+<body>
+<main>
+<h1>Tringg Ordering prototype</h1>
+<p class="lead">One file per module, each opened on its own area so it can be reviewed with its PRD. Every module has the same left rail: <b>View as</b> (Owner, Manager, Staff) and <b>Prototype state</b> (Ordering off, Ready, Live).</p>
+
+<div class="grid">
+
+<section class="card" aria-labelledby="m-settings">
+<h2 id="m-settings">Settings</h2>
+<div class="meta">PRD v2 draft · 134 stories</div>
+<ul>
+<li>Setup checklist and going live</li>
+<li>Ordering controls: auto-accept, large orders</li>
+<li>Ordering hours, pre-orders per service</li>
+<li>Delivery and pickup, menu link and texts</li>
+<li>Payments and payouts (Owner), POS connection (Owner)</li>
+</ul>
+<div class="actions"><a class="btn primary" href="slices/settings.html">Open module</a><a class="btn ghost" href="https://limetray.atlassian.net/wiki/spaces/Tringg/pages/4789829645">PRD</a></div>
+</section>
+
+<section class="card" aria-labelledby="m-menu">
+<h2 id="m-menu">Menu</h2>
+<div class="meta">PRD v2 draft · 148 stories</div>
+<ul>
+<li>Import, items, sizes, price groups, choices</li>
+<li>Slots: when parts of the menu are served</li>
+<li>Voice highlights and spoken names</li>
+<li>Availability and stock, publishing</li>
+<li>Taxes and charges (Owner)</li>
+</ul>
+<div class="actions"><a class="btn primary" href="slices/menu.html">Open module</a><a class="btn ghost" href="https://limetray.atlassian.net/wiki/spaces/Tringg/pages/4791468041">PRD</a></div>
+</section>
+
+<section class="card" aria-labelledby="m-orders">
+<h2 id="m-orders">Orders</h2>
+<div class="meta">PRD v2 draft · 110 stories</div>
+<ul>
+<li>Order states, awaiting payment, auto-accept</li>
+<li>POS-connected outlets, refunds</li>
+<li>Delivery instructions, allergy notes</li>
+<li>Staff cannot refund or cancel after accept</li>
+</ul>
+<div class="actions"><a class="btn primary" href="slices/orders.html">Open module</a><a class="btn ghost" href="https://limetray.atlassian.net/wiki/spaces/Tringg/pages/4790485012">PRD</a></div>
+</section>
+
+<section class="card" aria-labelledby="m-agents">
+<h2 id="m-agents">Agents</h2>
+<div class="meta">PRD v2 draft · 79 stories</div>
+<ul>
+<li>One agent, several capabilities</li>
+<li>Ordering switch and readiness per outlet</li>
+<li>How the agent handles ordering (review)</li>
+<li>Pause: Owner and Manager, not Staff</li>
+</ul>
+<div class="actions"><a class="btn primary" href="slices/agents.html">Open module</a><a class="btn ghost" href="https://limetray.atlassian.net/wiki/spaces/Tringg/pages/4791894017">PRD</a></div>
+</section>
+
+<section class="card" aria-labelledby="m-overview">
+<h2 id="m-overview">Overview</h2>
+<div class="meta">PRD v2 draft · 48 stories</div>
+<ul>
+<li>Pending requests, including callback requests</li>
+<li>Ordering today (hidden from Staff)</li>
+<li>Ordering readiness and recent calls</li>
+</ul>
+<div class="actions"><a class="btn primary" href="slices/overview.html">Open module</a><a class="btn ghost" href="https://limetray.atlassian.net/wiki/spaces/Tringg/pages/4791894038">PRD</a></div>
+</section>
+
+<section class="card" aria-labelledby="m-calls">
+<h2 id="m-calls">Calls</h2>
+<div class="meta">PRD v2 draft · 62 stories</div>
+<ul>
+<li>Outcomes: awaiting payment, callback, cart abandoned</li>
+<li>Order and payment link on the call</li>
+<li>Recording and transcript (Owner and Manager)</li>
+</ul>
+<div class="actions"><a class="btn primary" href="slices/calls.html">Open module</a><a class="btn ghost" href="https://limetray.atlassian.net/wiki/spaces/Tringg/pages/4791631901">PRD</a></div>
+</section>
+
+<section class="card" aria-labelledby="m-perm">
+<h2 id="m-perm">Owner, Manager, Staff</h2>
+<div class="meta">Permissions PRD · v4 draft</div>
+<ul>
+<li>No screens of its own: the rules show in every module through <b>View as</b></li>
+<li>Manager: three outlets. Staff: one outlet</li>
+</ul>
+<div class="actions"><a class="btn ghost" href="https://limetray.atlassian.net/wiki/spaces/Tringg/pages/4791500850">Permissions PRD</a></div>
+</section>
+
+</div>
+
+<section class="how" aria-labelledby="how-h">
+<h2 id="how-h">How to review</h2>
+<p><b>Prototype state</b> changes what data you see: <i>Ordering off</i> shows the setup checklist, <i>Ready</i> is set up with no orders yet, <i>Live</i> is a busy Monday night across 12 outlets.</p>
+<p><b>View as</b> changes who is looking. Try Staff in Orders (no Refund) and in Calls (no recording).</p>
+<div class="row"><span class="tag">Whole prototype in one file: <a href="tringg-ordering.html">tringg-ordering.html</a></span></div>
+</section>
+</main>
+</body>
+</html>
