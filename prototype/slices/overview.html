@@ -455,19 +455,22 @@ body:has(.pubbar) .toast-w{bottom:calc(92px + env(safe-area-inset-bottom,0px))}
 .outlet-dd{max-height:min(60vh,420px);overflow-y:auto}
 .modal{max-height:calc(100vh - 32px);overflow-y:auto}
 
-.chk{margin:0 12px 10px;border-radius:14px;background:#1a1a1a;border:1px solid #2c2c2c;overflow:hidden}
-.chk-h{width:100%;display:flex;align-items:center;gap:8px;padding:11px 12px;background:none;border:0;color:#fff;cursor:pointer;font:inherit;text-align:left}
-.chk-t{font-size:13px;font-weight:600;flex:1}
-.chk-c{font-size:11px;color:#9a9a9a}
-.chk-chev{display:flex;color:#9a9a9a;transition:transform .15s}
-.chk-chev svg{width:14px;height:14px}
-.chk.open .chk-chev{transform:rotate(180deg)}
+.chk{margin:0 12px 12px;border-radius:16px;background:linear-gradient(180deg,#16302d,#1a1a1a 70%);border:1.5px solid #4FC2B4;overflow:hidden;box-shadow:0 0 0 4px rgba(79,194,180,.12)}
+.chk-h{width:100%;display:flex;align-items:center;gap:10px;padding:12px 12px 10px;color:#fff;font:inherit;text-align:left}
+.chk-ring{width:38px;height:38px;flex-shrink:0}
+.chk-t{font-size:13.5px;font-weight:700}
+.chk-c{font-size:11px;color:#9ec9c3}
+.chk-x{display:flex;width:26px;height:26px;border-radius:8px;align-items:center;justify-content:center;background:#ffffff14;border:0;color:#fff;cursor:pointer}
+.chk-x svg{width:14px;height:14px}
+.chk-min{margin:0 12px 12px;display:flex;align-items:center;gap:10px;padding:6px 12px 6px 6px;border-radius:999px;background:#16302d;border:1.5px solid #4FC2B4;color:#fff;cursor:pointer;font:inherit;text-align:left;box-shadow:0 0 0 4px rgba(79,194,180,.12);width:calc(100% - 24px)}
+.chk-min b{display:block;font-size:12.5px;font-weight:700}.chk-min small{display:block;font-size:11px;color:#9ec9c3}
 .chk-b{padding:0 8px 10px;display:flex;flex-direction:column;gap:2px}
-.chk-bar{height:4px;border-radius:2px;background:#333;margin:0 4px 8px;overflow:hidden}
-.chk-bar i{display:block;height:100%;background:#4FC2B4}
 .chk-i{display:flex;align-items:center;gap:9px;padding:7px 6px;border-radius:8px;background:none;border:0;color:#d6d6d6;font:inherit;font-size:12.5px;cursor:pointer;text-align:left}
-.chk-i:hover{background:#242424}
+.chk-i:hover{background:#ffffff12}
 .chk-i.done{color:#7d7d7d;text-decoration:line-through}
+.chk-i.next{background:#4FC2B4;color:#0d2a26;font-weight:700}
+.chk-nx{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;background:#0d2a26;color:#4FC2B4;border-radius:999px;padding:2px 7px}
+.chk-i.next .chk-n{border-color:#0d2a26;color:#0d2a26}
 .chk-n{width:20px;height:20px;border-radius:50%;border:1.5px solid #555;display:flex;align-items:center;justify-content:center;font-size:10.5px;flex-shrink:0}
 .chk-i.done .chk-n{background:#fff;color:#111;border-color:#fff}
 .chk-n svg{width:11px;height:11px}
@@ -502,6 +505,11 @@ body:has(.pubbar) .toast-w{bottom:calc(92px + env(safe-area-inset-bottom,0px))}
 .ti .tt{display:none;position:absolute;left:50%;bottom:calc(100% + 8px);transform:translateX(-50%);width:max-content;max-width:260px;background:#111;color:#fff;padding:8px 10px;border-radius:9px;font-size:12px;font-weight:400;line-height:1.45;z-index:40;text-align:left;box-shadow:0 6px 18px rgba(0,0,0,.2)}
 .ti:hover .tt,.ti:focus .tt{display:block}
 button,input,select,textarea{color:var(--ink)}
+.proto-tog{margin:0 12px 10px;width:calc(100% - 24px);display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px dashed #333;border-radius:12px;background:none;color:#8a8a8a;font:inherit;font-size:10.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;text-align:left}
+.proto-tog .pt-v{flex:1;text-transform:none;letter-spacing:0;font-weight:500;color:#6f6f6f;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.proto-tog svg{width:13px;height:13px}.proto-tog[aria-expanded=true] svg{transform:rotate(180deg)}
+.rail{overflow-y:auto;scrollbar-width:thin;scrollbar-color:#333 transparent}.rail>*{flex-shrink:0}
+.chk-i{padding:5px 6px}
 .rail-nav .nav:not(.on){display:none}
 /* overlays */
 .scrim{position:fixed;inset:0;background:rgba(17,17,17,.3);z-index:150}
@@ -852,8 +860,10 @@ const setupSteps=()=>{const m=ordMissUI(ordO());return[
  {k:'pos',opt:true,t:'POS connection (optional)',s:'Orders then go straight to your POS.',done:OUTLETS.some(o=>o.pos)&&DB.posSync,go:()=>goSet('ord-pos')},
  {k:'cap',t:'Turn on for the agent',s:'The agent starts taking orders on its next call.',done:DB.orderingOn,go:()=>goSet('ord-cap')}];};
 function renderChk(){const st=setupSteps(),req=st.filter(x=>!x.opt);if(req.every(x=>x.done))return '';
-  const d=req.filter(x=>x.done).length,open=S.chk!==false;
-  return `<div class="chk ${open?'open':''}"><button class="chk-h" onclick="S.chk=${!open};renderRail()" aria-expanded="${open}"><span class="chk-t">Set up ordering</span><span class="chk-c">${d} of ${req.length}</span><span class="chk-chev">${I.chev}</span></button>${open?`<div class="chk-b"><div class="chk-bar"><i style="width:${Math.round(d/req.length*100)}%"></i></div>${st.map((x,i)=>`<button class="chk-i ${x.done?'done':''}" onclick="setupSteps()[${i}].go()"><span class="chk-n">${x.done?I.check:i+1}</span><span>${x.t}</span></button>`).join('')}</div>`:''}</div>`;}
+  const d=req.filter(x=>x.done).length,left=req.length-d,open=S.chk!==false,nx=st.find(x=>!x.done&&!x.opt),C=113.1;
+  const ring=`<svg class="chk-ring" viewBox="0 0 44 44" aria-hidden="true"><circle cx="22" cy="22" r="18" fill="none" stroke="#333" stroke-width="4"/><circle cx="22" cy="22" r="18" fill="none" stroke="#4FC2B4" stroke-width="4" stroke-linecap="round" stroke-dasharray="${(C*d/req.length).toFixed(1)} ${C}" transform="rotate(-90 22 22)"/><text x="22" y="26.5" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">${left}</text></svg>`;
+  if(!open)return `<button class="chk-min" onclick="S.chk=true;renderRail()" aria-label="Set up ordering, ${left} step${left>1?'s':''} left. Open the checklist">${ring}<span><b>Set up ordering</b><small>${left} step${left>1?'s':''} left</small></span></button>`;
+  return `<div class="chk open"><div class="chk-h">${ring}<span style="flex:1;min-width:0"><span class="chk-t" style="display:block">Set up ordering</span><span class="chk-c">${left} step${left>1?'s':''} left</span></span><button class="chk-x" onclick="S.chk=false;renderRail()" aria-label="Minimise the checklist">${I.chev}</button></div><div class="chk-b">${st.map((x,i)=>`<button class="chk-i ${x.done?'done':''} ${nx&&nx.k===x.k?'next':''}" onclick="setupSteps()[${i}].go()"><span class="chk-n">${x.done?I.check:i+1}</span><span style="flex:1">${x.t}</span>${nx&&nx.k===x.k?'<span class="chk-nx">Next</span>':''}</button>`).join('')}</div></div>`;}
 
 /* ── shell ── */
 const NAV=[['overview','Overview','grid'],['reservations','Reservations','res'],['orders','Orders','bag'],['calls','Calls','phone'],['menu','Menu','menu'],['agents','Agents','agent']];
@@ -868,8 +878,8 @@ function renderRail(){
     if(n[0]==='reservations'){const p=DB.res.filter(r=>r.st==='pending'&&inScope(r)).length;b=p?`<span class="bdg">${p}</span>`:'';}
     return `<button class="nav ${S.route===n[0]?'on':''}" onclick="go('${n[0]}')">${I[n[2]]}${n[1]}${b}</button>`;}).join('')+'</nav>';
   h+=renderChk();
-  h+=`<div class="role-chip"><div class="proto-l">View as</div><div class="proto-seg">${['owner','manager','staff'].map(k=>`<button class="${R()===k?'on':''}" onclick="setRole('${k}')">${ROLE_N[k]}</button>`).join('')}</div><div class="proto-h">${R()==='owner'?'Everything, at every outlet.':R()==='manager'?'Runs 3 outlets: Loop, West Loop, River North. No payments, POS or taxes.':'Works orders at Loop. No settings, money, agent or recordings.'}</div></div>
-   <div class="proto"><div class="proto-l">Prototype state</div><div class="proto-seg">${Object.keys(SCEN).map(k=>`<button class="${DB.k===k?'on':''}" onclick="setScen('${k}')">${SCEN[k].t}</button>`).join('')}</div><div class="proto-h">${SCEN[DB.k].h}</div></div>
+  h+=`<button class="proto-tog" onclick="S.protoOpen=!S.protoOpen;renderRail()" aria-expanded="${!!S.protoOpen}"><span>Prototype</span><span class="pt-v">${ROLE_N[R()]} · ${SCEN[DB.k].t}</span>${I.chev}</button>${S.protoOpen?`<div class="role-chip"><div class="proto-l">View as</div><div class="proto-seg">${['owner','manager','staff'].map(k=>`<button class="${R()===k?'on':''}" onclick="setRole('${k}')">${ROLE_N[k]}</button>`).join('')}</div><div class="proto-h">${R()==='owner'?'Everything, at every outlet.':R()==='manager'?'Runs 3 outlets: Loop, West Loop, River North. No payments, POS or taxes.':'Works orders at Loop. No settings, money, agent or recordings.'}</div></div>
+   <div class="proto"><div class="proto-l">Prototype state</div><div class="proto-seg">${Object.keys(SCEN).map(k=>`<button class="${DB.k===k?'on':''}" onclick="setScen('${k}')">${SCEN[k].t}</button>`).join('')}</div><div class="proto-h">${SCEN[DB.k].h}</div></div>`:''}
    <button class="acct" onclick="S.acct=!S.acct;renderRail()" aria-expanded="${S.acct}"><span class="acct-av">${BRAND.user.ini}</span><span style="min-width:0;flex:1"><span class="acct-n" style="display:block">${BRAND.user.n}</span><span class="acct-e" style="display:block">${BRAND.user.e}</span></span><span style="color:#888">${I.updown}</span>
    ${S.acct?`<span class="acct-menu" onclick="event.stopPropagation()"><button onclick="S.acct=false;go('settings')">${I.gear} Settings</button><button onclick="S.acct=false;renderRail();toast('Signed out (prototype)')">${I.back} Sign out</button></span>`:''}</button>`;
   $('rail').innerHTML=h;
@@ -879,7 +889,7 @@ function pickOutlet(id){S.outlet=id;S.dd=false;S.orders.sel=null;S.calls.sel=nul
   render();}
 function setScen(k){try{localStorage.setItem('tringg-proto-v2',k);}catch(e){}applyRole(true);loadScenario(k);applyRole();S.orders.sel=null;S.calls.sel=null;S.menu.flow=null;S.orders.tab='pending';render();toast('Prototype: '+SCEN[k].t);}
 function go(r){S.route=r;S.nav=false;S.acct=false;try{history.replaceState(null,'','#'+r);}catch(e){}render();}
-function goSet(k){const M={'ord-controls':'acc','ord-hours':'hrs','ord-pre':'pre','ord-msg':'ml','ord-pay':'pay','ord-delivery':'svc','ord-tax':'tax','ord-menu':'menu','ord-cap':'cap'};let sec=null;if(M[k]){sec=M[k];k='ord';}S.set=k;if(['phone','info','hours','faq'].includes(k)&&S.outlet==='all')S.outlet='wp';if(k==='ord-pos')S.outlet='all';go('settings');if(sec)setTimeout(()=>{const e=$('ordsec-'+sec);if(e)e.scrollIntoView({behavior:'smooth',block:'start'});},80);}
+function goSet(k){const M={'ord-controls':'acc','ord-hours':'hrs','ord-pre':'pre','ord-msg':'ml','ord-pay':'pay','ord-delivery':'svc','ord-tax':'tax','ord-menu':'menu','ord-cap':'cap'};let sec=null;if(M[k]){sec=M[k];k='ord';}S.set=k;if(['phone','info','hours','faq'].includes(k)&&S.outlet==='all')S.outlet='wp';go('settings');if(sec)setTimeout(()=>{const e=$('ordsec-'+sec);if(e)e.scrollIntoView({behavior:'smooth',block:'start'});},80);}
 const TITLE={overview:()=>'Today · Mon 28 Sept',reservations:()=>'Reservations · '+DB.res.filter(inScope).length+' total',orders:()=>'Orders',calls:()=>'Calls',menu:()=>'Menu',agents:()=>'Agents',settings:()=>'Settings'};
 function renderTop(){
   const posOutlets=OUTLETS.filter(o=>o.pos&&inScope(o));
@@ -1003,11 +1013,17 @@ function ordPage(){
   (tx.length?tx.map(t=>orow(esc(t.n),'',`<button class="btn btn-line btn-sm" onclick="openTax('${t.id}')">Edit</button>`,(t.vt==='%'?t.v+'%':'$'+t.v)+' · '+esc(t.type))).join('<div class="sep"></div>'):'<div class="soft-empty">No taxes yet</div>')+
   `<div class="sep"></div><div class="tg"><div class="tx"></div><div style="display:flex;gap:10px"><button class="btn btn-line btn-sm" onclick="openTax()">${I.plus} Add tax</button>${DB.taxOk?'':`<button class="btn btn-dark btn-sm" onclick="DB.taxOk=true;render();toast('Taxes confirmed')">Confirm taxes</button>`}</div></div>`);
  }
- if(!staff&&!mgr)P.pos=osec('pos','POS connection','Connect the POS each outlet uses. It has its own setup because every POS signs in differently.',orow('POS','',`<button class="btn btn-line btn-sm" onclick="pickOutlet('all');goSet('ord-pos')">Open</button>`));
+ if(!staff&&!mgr)P.pos=osec('pos','POS connection','Connect the POS each outlet uses. It has its own setup because every POS signs in differently.',orow('POS','',`<button class="btn btn-line btn-sm" onclick="goSet('ord-pos')">Open</button>`));
  h+=['menu','svc','hrs','tax','pay','pos','cap'].map(k=>P[k]||'').join('');
  const more=['acc','pre','lg','ml'].map(k=>P[k]||'').join('');
  if(more)h+=`<div class="eyebrow" style="margin:14px 4px 0">More settings</div>`+more;
  return h;}
+function posOne(){const o=ON(S.outlet),has=!!o.pos;
+  return sH('POS connection','')+(has?`<div class="scard"><div class="scard-h"><span class="stat-ic ic-mint" style="width:44px;height:44px">${I.pos}</span><div><div class="h3">${esc(o.pos)} · ${esc(o.short)}${tip('When a POS is connected it is the source of truth: statuses after hand-off come from it, and staff move orders there.')}</div><div class="fh">Menu synced 4 min ago · status webhooks on</div></div><div class="r">${otog(DB.posSync,'POS sync','togglePos()')}</div></div>
+   <div class="flow"><div class="fnode"><div class="k">Tringg</div><div class="t">Order accepted</div><div class="s">Sent to ${esc(o.pos)}</div></div><span class="farrow">${I.arrow}</span><div class="fnode"><div class="k">${esc(o.pos)}</div><div class="t">Ready</div><div class="s">Updates the order here</div></div><span class="farrow">${I.arrow}</span><div class="fnode g"><div class="k">${esc(o.pos)}</div><div class="t">Completed</div><div class="s">Picked up or delivered</div></div></div></div>
+  <div class="scard"><div class="h3">When an order goes to the POS${tip('After hand-off the POS controls the status, so later steps are locked on this dashboard.')}</div>
+   <div class="segp sm"><button class="${DB.posPush==='arrive'?'on':''}" onclick="DB.posPush='arrive';render();toast('Orders go to the POS as soon as they arrive')">As soon as it arrives</button><button class="${DB.posPush==='accept'?'on':''}" onclick="DB.posPush='accept';render();toast('Orders go to the POS after staff accept them here')">After staff accept it here</button></div></div>`
+  :`<div class="scard"><div class="empty" style="padding:30px 20px"><div class="empty-i">${I.pos}</div><div class="empty-t">${esc(o.short)} has no POS connected</div><div class="empty-s">Orders are accepted and updated on this dashboard.</div><div style="margin-top:10px"><button class="btn btn-dark" onclick="openPos()">Connect POS</button></div></div></div>`)+(has?`<div class="scard"><div class="scard-h"><div class="h3">Use a different POS${tip('Toast, Square, Clover, SpotOn, SkyTab, Lightspeed, NCR Aloha and more. You sign in to your POS to approve it.')}</div><div class="r"><button class="btn btn-line" onclick="openPos()">Change POS</button></div></div></div>`:'');}
 function togglePos(){DB.posSync=!DB.posSync;if(!DB.posSync)OUTLETS.filter(o=>o.pos).forEach(o=>aaSet(o.id,false));render();toast(DB.posSync?'POS sync on · orders go straight to the POS':'POS disconnected · auto-accept is off, so orders wait for you. Switch it on again to accept them automatically');}
 function render(){
   const _k=S.route+'|'+(S.route==='settings'?S.set+'|'+S.outlet:'')+(S.route==='menu'?S.menu.tab:''),_keep=render._k===_k?[...document.querySelectorAll('#view .scroll')].map(e=>e.scrollTop):null;
@@ -1704,7 +1720,7 @@ function vAgents(){const caps=[['Enquiries',true],['Reservations',DB.caps.res]],
    All-outlets view holds the ordering settings (with per-outlet rows) so owners don't hop between outlets.
    Single-outlet view keeps what is truly per location: phone, basic info, hours, FAQ. */
 const SETNAV_ALL=[['PHONE',[['phone-all','Phone numbers']]],['ORDERING',[['ord','Ordering'],['ord-pos','POS connection']]],['ACCOUNT',[['msg','Messaging agent'],['team','Users & roles'],['billing','Billing']]]];
-const SETNAV_ONE=[['PHONE',[['phone','Phone number']]],['OUTLET',[['info','Basic info'],['hours','Hours & booking'],['faq','FAQ / Knowledge']]],['ORDERING',[['ord','Ordering']]],['ACCOUNT',[['msg','Messaging agent'],['team','Users & roles'],['billing','Billing']]]];
+const SETNAV_ONE=[['PHONE',[['phone','Phone number']]],['OUTLET',[['info','Basic info'],['hours','Hours & booking'],['faq','FAQ / Knowledge']]],['ORDERING',[['ord','Ordering'],['ord-pos','POS connection']]],['ACCOUNT',[['msg','Messaging agent'],['team','Users & roles'],['billing','Billing']]]];
 const SETIC={'phone-all':'phone',phone:'phone',info:'doc',hours:'clock',faq:'menu',ord:'bag','ord-pos':'pos','ord-outlet':'bag',msg:'phone',team:'agent',billing:'card'};
 function lgOf(id){DB.lg=DB.lg||{};if(!DB.lg[id])DB.lg[id]={on:false,amt:250};return DB.lg[id];}
 function lgSet(id,k,v){lgOf(id)[k]=v;render();}
@@ -1737,7 +1753,8 @@ const SET={
   <div class="scard"><div class="scard-h"><div><div class="h2">Special dates & closures</div><div class="fh">Override hours for holidays, events, or one-off closures.</div></div><div class="r"><button class="btn btn-line" onclick="toast('Add special date')">${I.plus} Add special date</button></div></div></div>`,
  faq:()=>sH('FAQ / Knowledge','Answers the agent can use on calls.')+`<div class="scard">${[['Do you have gluten-free crust?','Yes, 12" for $3 extra. It’s made in a shared kitchen.'],['Is there parking?','Street parking on Damen after 6 PM.'],['Do you cater?','Yes. The agent transfers catering calls to the team.']].map(q=>`<div><div class="fl">${q[0]}</div><div class="fh">${q[1]}</div></div>`).join('<div class="sep"></div>')}</div>`,
  ord:()=>ordPage(),
- 'ord-pos':()=>sH('POS connection','Connect the POS each outlet already uses. When it’s connected, the POS is the source of truth: statuses after hand-off come from it, and staff move orders there, not here. Outlets without a POS run fully from this dashboard.','all')+`
+ 'ord-pos':()=>S.outlet!=='all'?posOne():SET._posAll(),
+ _posAll:()=>sH('POS connection','Connect the POS each outlet already uses. When it’s connected, the POS is the source of truth: statuses after hand-off come from it, and staff move orders there, not here. Outlets without a POS run fully from this dashboard.','all')+`
   <div class="scard"><div class="scard-h"><span class="stat-ic ic-mint" style="width:44px;height:44px">${I.pos}</span><div><div class="h3">Square · Wicker Park, River North</div><div class="fh">Menu synced 4 min ago · 31 orders sent today · status webhooks on</div></div><div class="r"><button class="tog ${DB.posSync?'on':''}" aria-label="POS sync" onclick="togglePos()"></button></div></div>
    <div class="flow"><div class="fnode"><div class="k">Tringg</div><div class="t">Order accepted</div><div class="s">Sent to Square</div></div><span class="farrow">${I.arrow}</span><div class="fnode"><div class="k">Square webhook</div><div class="t">Ready</div><div class="s">Updates the order here</div></div><span class="farrow">${I.arrow}</span><div class="fnode g"><div class="k">Square webhook</div><div class="t">Completed</div><div class="s">Picked up or delivered</div></div></div>
    <div class="small muted">ROSSA Loop has no POS, so its orders are always updated from the dashboard. The switch is also at the top right of Orders.</div></div>
@@ -1891,6 +1908,7 @@ const _renderRail=renderRail;renderRail=function(){_renderRail();const t=documen
 (function(){try{if(typeof SLICE!=='undefined'&&SLICE!=='settings')return;if(new URLSearchParams(location.search).get('from')!=='onboarding')return;const d=JSON.parse(localStorage.getItem('tringg-onboarding')||'null');if(!d||!d.ord)return;
  applyRole(true);loadScenario('off');applyRole();const o='wl',q=d.ord;
  DB.svc[o]={set:'draft',pick:!!q.pick,prep:q.pick?q.prep:null,del:!!q.del,rad:q.del?{mi:q.mi,fee:q.fee,min:q.min}:null};if(q.del)DB.deliveryMode[o]='radius';
- S.route='settings';S.outlet='all';S.ordOutlet=o;S.set='ord';S.handoff=true;}catch(e){}})();
+ S.route='overview';S.outlet='all';S.ordOutlet=o;S.set='ord';S.handoff=true;}catch(e){}})();
 render();
+if(S.handoff)toast('Your answers from onboarding are filled in. Finish the checklist to start taking orders.');
 </script>
