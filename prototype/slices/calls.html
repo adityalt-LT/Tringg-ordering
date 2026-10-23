@@ -1911,7 +1911,7 @@ const _goFull=go;go=function(r){if(r!==SLICE){toast((NAV.find(x=>x[0]===r)||[0,'
 const _renderRail=renderRail;renderRail=function(){_renderRail();const t=document.querySelector('#rail .rail-top');if(t)t.insertAdjacentHTML('afterend','<a class="mod-chip" href="../index.html">← All modules</a><div class="mod-name">Module · Calls</div>');};
 
 /* arriving from onboarding: land on Settings › Ordering with the owner's first answers filled in */
-(function(){try{if(typeof SLICE!=='undefined'&&SLICE!=='settings')return;if(new URLSearchParams(location.search).get('from')!=='onboarding')return;const d=JSON.parse(localStorage.getItem('tringg-onboarding')||'null');if(!d||!d.ord)return;
+(function(){try{if(typeof SLICE!=='undefined'&&SLICE!=='settings')return;if(!window.__handoff&&new URLSearchParams(location.search).get('from')!=='onboarding')return;const d=window.__handoff||JSON.parse(localStorage.getItem('tringg-onboarding')||'null');if(!d||!d.ord)return;
  applyRole(true);loadScenario('off');applyRole();const o='wl',q=d.ord;
  DB.svc[o]={set:'draft',pick:!!q.pick,prep:q.pick?q.prep:null,del:!!q.del,rad:q.del?{mi:q.mi,fee:q.fee,min:q.min}:null};if(q.del)DB.deliveryMode[o]='radius';
  S.route='overview';S.outlet='all';S.ordOutlet=o;S.set='ord';S.handoff=true;}catch(e){}})();
