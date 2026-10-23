@@ -929,6 +929,7 @@ function ordPage(){
  S.ordOutlet=o;S.zoneOutlet=o;S.ohOutlet=o;
  const own=isOwner(),mgr=isMgr(),staff=R()==='staff',v=DB.svc[o],on=ON(o),mode=DB.deliveryMode[o],z=DB.zones[o],miss=ordMiss(o);
  let h=sH('Ordering','',one?'':'all');
+ if(S.handoff)h+=`<div class="banner b-mint">${I.check}<div><b>Your answers from onboarding are filled in.</b> Add your menu, taxes and payments to start taking orders.</div><button class="btn btn-ghost btn-sm" onclick="S.handoff=false;render()">Dismiss</button></div>`;
  if(!one)h+=`<div class="scard" style="flex-direction:row;align-items:center;gap:6px;flex-wrap:wrap;padding:16px 20px"><span class="fl">Outlet</span>${opBtn([o],`openOP({title:'Ordering for…',mode:'single',sel:['${o}'],apply:s=>{S.ordOutlet=s[0];S.zoneSel=(DB.zones[s[0]][0]||{}).id;S.test=null},note:svcNote})`,true)}${tip('Services, hours and delivery area are set per outlet. Payments, taxes and auto-accept apply to every outlet.')}</div>`;
  const stp=[['menu','Menu'],['tax','Taxes'],['pay','Payments'],['svc','Services'],['hrs','Hours']],done=stp.filter(x=>!miss.includes(x[0])).length,live=v.set===true,other=miss.filter(m=>m!=='svc'),pz=(DB.pauseSvc&&DB.pauseSvc[o])||{};
  h+=`<div class="scard"><div class="scard-h"><div class="h2">${esc(on.short)}${tip('The agent only takes orders for an outlet once every step below is done.')}</div><div class="r">${live?(DB.paused[o]?pill('p-amber','Paused'):pill('p-green','Taking orders')):pill('p-amber','Setup '+done+' of '+stp.length)}</div></div>
@@ -1876,5 +1877,10 @@ const SLICE='orders';S.route=SLICE;
 const _goFull=go;go=function(r){if(r!==SLICE){toast((NAV.find(x=>x[0]===r)||[0,'Settings'])[1]+' is in its own module file');return;}_goFull(r);};
 const _renderRail=renderRail;renderRail=function(){_renderRail();const t=document.querySelector('#rail .rail-top');if(t)t.insertAdjacentHTML('afterend','<a class="mod-chip" href="../index.html">← All modules</a><div class="mod-name">Module · Orders</div>');};
 
+/* arriving from onboarding: land on Settings › Ordering with the owner's first answers filled in */
+(function(){try{if(typeof SLICE!=='undefined'&&SLICE!=='settings')return;if(new URLSearchParams(location.search).get('from')!=='onboarding')return;const d=JSON.parse(localStorage.getItem('tringg-onboarding')||'null');if(!d||!d.ord)return;
+ applyRole(true);loadScenario('off');applyRole();const o='wl',q=d.ord;
+ DB.svc[o]={set:'draft',pick:!!q.pick,prep:q.pick?q.prep:null,del:!!q.del,rad:q.del?{mi:q.mi,fee:q.fee,min:q.min}:null};if(q.del)DB.deliveryMode[o]='radius';
+ S.route='settings';S.outlet=o;S.set='ord';S.handoff=true;}catch(e){}})();
 render();
 </script>
