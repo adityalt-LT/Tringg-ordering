@@ -501,6 +501,7 @@ body:has(.pubbar) .toast-w{bottom:calc(92px + env(safe-area-inset-bottom,0px))}
 .ti{position:relative;display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;margin-left:6px;border-radius:50%;background:var(--sunken);color:var(--ink-50);font-size:10.5px;font-weight:600;cursor:help;vertical-align:middle;border:1px solid var(--border);text-transform:none;letter-spacing:0}
 .ti .tt{display:none;position:absolute;left:50%;bottom:calc(100% + 8px);transform:translateX(-50%);width:max-content;max-width:260px;background:#111;color:#fff;padding:8px 10px;border-radius:9px;font-size:12px;font-weight:400;line-height:1.45;z-index:40;text-align:left;box-shadow:0 6px 18px rgba(0,0,0,.2)}
 .ti:hover .tt,.ti:focus .tt{display:block}
+button,input,select,textarea{color:var(--ink)}
 .rail-nav .nav:not(.on){display:none}
 /* overlays */
 .scrim{position:fixed;inset:0;background:rgba(17,17,17,.3);z-index:150}
@@ -1890,6 +1891,6 @@ const _renderRail=renderRail;renderRail=function(){_renderRail();const t=documen
 (function(){try{if(typeof SLICE!=='undefined'&&SLICE!=='settings')return;if(new URLSearchParams(location.search).get('from')!=='onboarding')return;const d=JSON.parse(localStorage.getItem('tringg-onboarding')||'null');if(!d||!d.ord)return;
  applyRole(true);loadScenario('off');applyRole();const o='wl',q=d.ord;
  DB.svc[o]={set:'draft',pick:!!q.pick,prep:q.pick?q.prep:null,del:!!q.del,rad:q.del?{mi:q.mi,fee:q.fee,min:q.min}:null};if(q.del)DB.deliveryMode[o]='radius';
- S.route='settings';S.outlet=o;S.set='ord';S.handoff=true;}catch(e){}})();
+ S.route='settings';S.outlet='all';S.ordOutlet=o;S.set='ord';S.handoff=true;}catch(e){}})();
 render();
 </script>
