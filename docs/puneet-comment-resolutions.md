@@ -1,0 +1,32 @@
+# Ordering Settings PRD: resolutions for Puneet's comments without a reply
+
+Page: [Ordering Settings · PRD](https://limetray.atlassian.net/wiki/spaces/Tringg/pages/4789829645/Ordering+Settings+PRD). Checked 23 Oct 2026. Comments already answered (auto-accept, 3H POS, POS held and retried, 3F and 3G payments) are not listed.
+Prototype: Settings › Ordering (one page). Nothing has been posted to Confluence; the replies below are drafts.
+
+## Inline comments
+
+| # | Anchor | Puneet's point | Resolution | Draft reply |
+|---|---|---|---|---|
+| 1 | 6B Pickup and delivery | Map too small to draw zones; the zone list gets long; zone properties can't be edited; per-zone delivery fee vs the taxes dashboard; limit zones; what is "check an address"; the outlet dropdown in All outlets is not intuitive; settings are spread over dashboards; how to pause just delivery or just pickup | Map is now full width. Zones are chips under the map; the selected zone has name, fee, minimum and time fields and a Remove button. Maximum 5 zones per outlet. Delivery fees exist only per zone here, so Taxes & charges has no delivery fee; tax can still apply to it. "Check an address" is renamed "Test an address", with a tip. In All outlets the outlet picker sits at the top of one Ordering page. Pickup and delivery each have their own Pause (15, 30, 60 min or until resumed) | "Done in the new prototype: full-width map, editable zone fee, minimum, time and name, max 5 zones. Delivery fee is set only per zone, so it is not a separate charge in Taxes. 'Check an address' is now 'Test an address'. Pickup and delivery can each be paused on their own from the Pickup & delivery card." |
+| 2 | 3L Menu link and customer texts | Unclear why an online URL is asked | Renamed "Online menu link", labelled "Link to your online menu", with an example placeholder and a tip: it is optional, and the agent texts it to callers who ask to see the whole menu; empty means the agent keeps guiding by voice | "Reworded. It is optional: if the restaurant has an online menu, the agent texts that link to callers who ask to see the whole menu. Empty means the agent guides by voice." |
+| 3 | 3C Ordering hours | Rework the whole outlet configuration, creation and update flow | Done as one Ordering page with a checklist in the same order as the page (Menu, Pickup & delivery, Ordering hours, Taxes, Payments), a few ordering questions in onboarding step 2, and the owner landing on Overview with the checklist | "Reworked: onboarding step 2 asks the key ordering settings, then one Ordering page with a checklist that follows the same order as the page." |
+| 4 | "last-order cut-off in minutes before closing" | Delivery hours already end at the last order time, so why an offset? | Agreed. Removed the "Last order" setting. The end of the pickup or delivery window is the last time the agent takes an order; to stop earlier, the owner ends the window earlier | "Agreed, removed. The end of the window is the last order time." |
+| 5 | 6J Taxes | Taxes belong in settings, not menu | Taxes moved out of Menu into Settings › Ordering and are step 4 of the checklist. Manager and Staff cannot open it | "Moved: Taxes is now in Settings › Ordering and part of the ordering checklist. The Menu module no longer has a Taxes tab." |
+| 6 | "Payserv flow. Akhilesh to agree with the tech team…" | Not a tech and business agreement; give the clear implementation | Payserv is dropped. Online payments run through Stripe Connect from a US Stripe entity, each restaurant with its own account. Card fee on the restaurant, no Tringg cut, flat subscription. Payouts and refunds on the Stripe dashboard. Full flow in the Ordering Payments PRD | "Payserv is out. Payments run on Stripe Connect from a US entity, one account per restaurant, fee on the restaurant, no per-order cut. The full flow is in the Ordering Payments PRD." |
+
+## Page-level comments
+
+| # | Puneet's point | Resolution | Draft reply |
+|---|---|---|---|
+| 7 | Configure timings, pickup or delivery, minimum, pre-order and special hours from one outlet journey, not separate dashboards. Make the journey cohesive and minimal; reservations can change too | One Ordering page replaces six screens. Per outlet: Pickup & delivery (with minimum), Ordering hours, Pre-orders, Large orders, Online menu link. Brand-wide, set once: Taxes, Payments, Accepting orders. POS stays a separate screen because its sign-in differs per vendor. Setup checklist matches the page order; onboarding step 2 collects the first answers. Reservation rules are not reworked yet | "Done as one Ordering page with a checklist in the same order, and key ordering questions in onboarding. Reservation setup is not changed yet; I'll bring it into the same journey next." |
+| 8 | Why ordering hours differ from outlet hours; new dashboard or the existing hours dashboard? | No new dashboard. Ordering hours default to the outlet's opening hours ("Same as opening hours"). Only if pickup or delivery runs on different hours does the owner change them, on the Ordering page. Special dates stay in the existing Hours & booking screen and are linked from there | "Not a new dashboard. Ordering hours follow opening hours unless changed. Special dates stay in Hours & booking." |
+| 9 | "Different for ordering" lists pickup and delivery while Settings has a separate toggle; enabling delivery today and pickup tomorrow loses the owner | Service on/off and hours are on the same page now. The hours rows shown under "Different for pickup or delivery" are only for services that are switched on, so turning a service on is the single place to start | "The toggle and the hours are now on one page, and hours appear only for services that are on." |
+
+## PRD edits needed (by hand)
+
+- 3L: rename to "Online menu link" and say it is optional.
+- 3C: delete the story "set a last-order cut-off in minutes before closing" and the cut-off wording in the acceptance criteria and edge cases.
+- 3B, 6B: delivery area becomes zones, maximum 5 per outlet, editable fee, minimum, time and name; delivery fee only per zone; per-service pause.
+- 3J, 6J: taxes live in Settings › Ordering, with no delivery fee charge.
+- 3A, 4.1: the guided flow (onboarding step 2, Overview, checklist in page order).
+- Remove Payserv everywhere; point to the Ordering Payments PRD.
