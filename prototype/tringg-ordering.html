@@ -989,9 +989,6 @@ function ordPage(){
  if(!staff){
  P.lg=osec('lg','Large orders','For catering and big lunches. Over the limit, the agent connects the caller to the restaurant instead of building the cart.',
   orow('Hand off large orders','Needs a fallback number on the outlet. If nobody answers, the agent takes a callback request.',ctls(`<div class="inp-suf" style="width:130px"><input class="inp sm" type="number" min="50" step="10" ${lg.on?'':'disabled'} aria-label="Large order limit" value="${lg.amt}" onchange="lgOf('${o}').amt=+this.value"><span>$</span></div>${otog(lg.on,'Large orders',`lgSet('${o}','on',${!lg.on})`)}`)));
- P.ml=osec('ml','Online menu link','Optional. If your menu is online, the agent texts this link to callers who ask to see the whole menu. Leave it empty and the agent keeps guiding by voice.',
-  `<div class="frow"><div class="field" style="flex:2;min-width:260px"><label class="fl" for="mlu">Link to your online menu</label><input class="inp sm" style="width:100%" id="mlu" placeholder="https://yourrestaurant.com/menu" value="${esc(ml.url)}" onchange="mlSet('${o}','url',this.value.trim())">${badU?'<div class="xs" style="color:var(--coral-700)">Start with https://</div>':''}</div><div class="field"><label class="fl" for="mlc">Send by</label><select class="inp sm" style="min-width:190px" id="mlc" onchange="mlSet('${o}','ch',this.value)">${[['sms','Text message'],['wa','WhatsApp'],['both','Text and WhatsApp']].map(c=>`<option value="${c[0]}" ${ml.ch===c[0]?'selected':''}>${c[1]}</option>`).join('')}</select></div></div>`);
- /* all outlets */
  const exc=OUTLETS.filter(x=>x.id in DB.aaExc),rest=OUTLETS.filter(x=>!(x.id in DB.aaExc)),anyOff=!DB.aaDefault||exc.some(x=>!DB.autoAccept[x.id]);
  P.acc=osec('acc','Accepting orders','Turn auto-accept off to check you can make each order and screen out fake ones. Orders paid online follow this too. After acceptance the caller can’t change or cancel by phone: the agent flags a cancellation request and connects them to the restaurant.',
   `<div class="flow"><div class="fnode"><div class="k">1 · Caller orders</div><div class="t">The agent takes it</div></div><span class="farrow">${I.arrow}</span><div class="fnode"><div class="k">2 · ${DB.aaDefault?'Order arrives':'You decide'}</div><div class="t">${DB.aaDefault?'Accepted for you':'Accept or decline'}</div></div><span class="farrow">${I.arrow}</span><div class="fnode g"><div class="k">3 · Kitchen</div><div class="t">${DB.aaDefault?'Starts right away':'Starts once you accept'}</div></div></div>`+
@@ -1025,7 +1022,7 @@ function ordPage(){
  }
  if(!one)h+=ordTable();
  h+=['menu','svc','hrs','tax','pay'].filter(k=>one||['menu','tax','pay'].includes(k)).map(k=>P[k]||'').join('');
- const more=['acc','pre','lg','ml'].filter(k=>one||k==='acc').map(k=>P[k]||'').join('');
+ const more=['acc','pre','lg'].filter(k=>one||k==='acc').map(k=>P[k]||'').join('');
  if(more)h+=`<div class="eyebrow" style="margin:14px 4px 0">More settings</div>`+more;
  return h;}
 function posOne(){const o=ON(S.outlet),has=!!o.pos;

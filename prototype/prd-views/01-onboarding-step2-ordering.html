@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>Tringg · Set up your host</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--canvas:#F2F1ED;--panel:#fff;--sunken:#F7F6F1;--chip:#EAE9E4;
+ --ink:#111;--ink-70:#3F3F3F;--ink-50:#6B6B6B;--ink-30:#A3A3A0;--border:#E6E4DE;--border-s:#D6D4CD;
+ --mint:#4FC2B4;--mint-d:#1F6E62;--mint-50:#DDF2EE;
+ --e1:0 1px 2px rgba(17,17,17,.04);--e2:0 14px 36px -12px rgba(17,17,17,.18);
+ --r-card:20px;--r-btn:12px;--ease:cubic-bezier(.2,.7,.2,1);color-scheme:light}
+html,body{height:100%}
+body{font-family:"Poppins",system-ui,sans-serif;font-size:14.5px;line-height:1.5;letter-spacing:.005em;color:var(--ink);background:var(--canvas);-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;letter-spacing:inherit;color:inherit}
+button{cursor:pointer;background:none;border:0}
+:focus-visible{outline:2px solid var(--mint);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.mono{font-family:"JetBrains Mono",ui-monospace,monospace;letter-spacing:0}
+
+#app{min-height:100vh;display:flex;flex-direction:column}
+.bar{position:fixed;top:0;left:0;height:3px;background:var(--mint);transition:width .7s var(--ease);z-index:5}
+.hdr{padding:22px 36px}
+.logo{display:inline-block;font-weight:700;font-size:30px;line-height:1;letter-spacing:-1px;color:var(--mint);-webkit-text-stroke:1.2px #0a0a0a;text-shadow:2px 2px 0 #000}
+.page{flex:1;display:flex;flex-direction:column;align-items:center;padding:0 24px}
+.col{width:100%;max-width:640px;flex:1;display:flex;flex-direction:column}
+.body{flex:1;padding-top:clamp(8px,4vh,48px)}
+.fade{animation:up .55s var(--ease) both}
+@keyframes up{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.chipstep{display:inline-flex;align-items:center;height:32px;padding:0 14px;border:1px solid var(--border);border-radius:999px;background:var(--panel);font-size:12.5px;font-weight:600;letter-spacing:.08em;color:var(--ink-50);margin-bottom:18px}
+h1{font-size:clamp(30px,4.6vw,44px);line-height:1.12;font-weight:600;letter-spacing:-1.6px;min-height:1.12em;text-wrap:balance}
+h1 .caret{display:inline-block;width:3px;height:.82em;background:var(--ink);margin-left:3px;vertical-align:-.06em;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.sub{margin-top:12px;color:var(--ink-50);font-size:17px;opacity:0;animation:up .6s var(--ease) .5s both}
+.sub.now{animation:none;opacity:1}
+.sec{margin-top:32px}
+.cap{font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-50)}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:var(--r-card);box-shadow:var(--e1)}
+.card+.card{margin-top:14px}
+.pad{padding:24px 26px}
+.cardh{padding-bottom:16px;margin-bottom:20px;border-bottom:1px solid var(--border)}
+
+.in,.sel,.ta{width:100%;border:1.5px solid var(--border);background:var(--panel);border-radius:12px;padding:0 14px;height:48px;outline:none;transition:border-color .2s}
+.sel{appearance:none;-webkit-appearance:none;padding-right:40px;background:var(--panel) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236B6B6B' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 14px center}
+.ta{height:auto;padding:12px 14px;resize:none;line-height:1.55}
+.in:focus,.sel:focus,.ta:focus{border-color:var(--ink)}
+.ask{display:flex;align-items:center;gap:12px;border:1.5px solid var(--border);background:var(--panel);border-radius:14px;padding:0 8px 0 16px;height:52px;transition:border-color .2s}
+.ask:focus-within{border-color:var(--ink)}
+.ask input{flex:1;border:0;outline:0;background:none;font-size:15px;min-width:0}
+.ask input::placeholder{color:var(--ink-30)}
+.ask button{width:36px;height:36px;border-radius:10px;background:var(--ink);color:#fff;display:grid;place-items:center;flex-shrink:0}
+.bigin{display:flex;align-items:center;gap:18px;padding:20px 24px;transition:box-shadow .2s,border-color .2s}
+.bigin:focus-within{border-color:var(--ink);box-shadow:0 0 0 4px rgba(79,194,180,.18)}
+.tile{width:54px;height:54px;border-radius:14px;border:1px solid var(--border);background:var(--sunken);color:var(--mint-d);display:grid;place-items:center;flex-shrink:0}
+.bigin input{display:block;width:100%;border:0;outline:0;background:none;font-size:21px;font-weight:500;margin-top:2px;min-width:0}
+.bigin input::placeholder{color:var(--ink-30);font-weight:400}
+.field{display:flex;flex-direction:column;gap:8px}.field>span{font-size:14px;font-weight:500;color:var(--ink)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px 16px}
+.hint{font-size:13.5px;color:var(--ink-50);margin-top:14px}
+.lnk{color:var(--mint-d);font-weight:500;font-size:inherit;transition:opacity .2s}
+.lnk:hover{opacity:.7}
+.lnk.g{color:var(--ink-50)}
+
+.btn{height:48px;padding:0 22px;border-radius:var(--r-btn);border:1.5px solid var(--ink);background:var(--ink);color:#fff;font-weight:500;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:background .15s,opacity .2s;white-space:nowrap;text-decoration:none}
+.btn:hover:not(:disabled){background:#2c2c2c}
+.btn:disabled{opacity:.28;cursor:not-allowed}
+.btn.line{background:var(--panel);color:var(--ink)}
+.btn.line:hover:not(:disabled){background:var(--sunken)}
+.btn.sm{height:38px;padding:0 16px;font-size:13px}
+.foot{position:sticky;bottom:16px;display:flex;align-items:center;gap:16px;padding:14px 16px;margin:36px 0 16px;background:var(--panel);border:1px solid var(--border);border-radius:var(--r-card);box-shadow:var(--e2)}
+.why{margin-left:auto;font-size:13px;color:var(--ink-50);text-align:right}
+.foot>.btn:last-child{margin-left:auto}.foot .why+.btn{margin-left:0}
+.note{font-size:13.5px;color:var(--ink-50);margin-top:18px}
+
+.sug{margin-top:12px;padding:6px}
+.sg{display:block;width:100%;padding:14px 18px;text-align:left;border-radius:14px;transition:background .15s}
+.sg:hover,.sg:focus-visible{background:var(--sunken)}
+.sg b{display:block;font-weight:500;font-size:14.5px}.sg small{color:var(--ink-50);font-size:12.5px;display:block}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{height:34px;padding:0 14px;border-radius:999px;border:1.5px solid var(--border);background:var(--panel);font-size:13px;transition:all .2s}
+.chip:hover:not(:disabled){border-color:var(--ink)}.chip:disabled{opacity:.4}
+
+/* research */
+.rcard{padding:26px 28px}
+.rhead{display:flex;align-items:center;gap:22px}
+.avw{position:relative;width:68px;height:68px;flex-shrink:0}
+.avw .av{position:absolute;inset:9px;border-radius:50%;background:var(--mint);color:#06231e;font-weight:700;font-size:26px;display:grid;place-items:center;z-index:2}
+.avw .ring{position:absolute;inset:9px;border-radius:50%;border:1.5px solid var(--mint);opacity:0;animation:radar 2.4s ease-out infinite}
+.avw .ring:nth-child(2){animation-delay:.8s}.avw .ring:nth-child(3){animation-delay:1.6s}
+@keyframes radar{from{transform:scale(1);opacity:.7}to{transform:scale(1.9);opacity:0}}
+.avw .orbit{position:absolute;inset:0;animation:spin 2.6s linear infinite;z-index:3}
+.avw .orbit::after{content:"";position:absolute;top:0;left:50%;width:9px;height:9px;margin-left:-4.5px;border-radius:50%;background:var(--ink);box-shadow:0 0 0 3px #fff}
+@keyframes spin{to{transform:rotate(360deg)}}
+.rcard.done .avw .ring,.rcard.done .avw .orbit{animation:none;opacity:0}
+.rname{font-size:20px;font-weight:600;letter-spacing:-.4px;line-height:1.25}
+.rsub{font-size:13.5px;color:var(--ink-50);margin-top:2px}
+.rbar{margin-top:20px}
+.rbar-h{display:flex;justify-content:space-between;font-size:12px;letter-spacing:.1em;text-transform:uppercase;font-weight:600;color:var(--ink-50);margin-bottom:10px}
+.rbar-h span:last-child{letter-spacing:0;text-transform:none;font-weight:400;color:var(--ink-30)}
+.track{height:6px;border-radius:6px;background:var(--chip);overflow:hidden}
+.fill{height:100%;width:0;border-radius:6px;background:var(--mint);transition:width 1.25s linear;position:relative;overflow:hidden}
+.fill::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.65),transparent);transform:translateX(-100%);animation:sheen 1.3s linear infinite}
+@keyframes sheen{to{transform:translateX(100%)}}
+.srcs{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+.src{display:inline-flex;align-items:center;gap:8px;height:32px;padding:0 14px 0 10px;border-radius:999px;border:1px solid var(--border);font-size:12.5px;color:var(--ink-30);transition:all .35s var(--ease)}
+.src i{width:8px;height:8px;border-radius:50%;background:var(--border-s)}
+.src.act{color:var(--ink);border-color:var(--ink)}.src.act i{background:var(--mint);animation:pulse 1s ease-in-out infinite}
+.src.ok{color:var(--mint-d);background:var(--mint-50);border-color:transparent}.src.ok i{background:var(--mint-d)}
+@keyframes pulse{50%{transform:scale(1.7);opacity:.5}}
+.tick{margin-top:12px;height:46px;border-radius:14px;background:var(--sunken);border:1px solid var(--border);padding:0 16px;display:flex;align-items:center;gap:12px;font-size:12.5px;color:var(--ink-70);overflow:hidden;position:relative}
+.tick::after{content:"";position:absolute;left:0;top:0;bottom:0;width:60px;background:linear-gradient(90deg,transparent,rgba(79,194,180,.18),transparent);animation:scan 2s ease-in-out infinite}
+@keyframes scan{from{transform:translateX(-60px)}to{transform:translateX(640px)}}
+.rcard.done .tick{display:none}.rcard.done .fill::after{display:none}
+.tick em{font-style:normal;color:var(--mint-d);font-weight:500;flex-shrink:0}
+.tick span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.tick span::after{content:"";display:inline-block;width:6px;height:13px;background:var(--ink);margin-left:2px;vertical-align:-2px;animation:blink .9s steps(1) infinite}
+.rlist{margin-top:16px;display:flex;flex-direction:column;gap:2px}
+.ri{display:flex;gap:14px;align-items:flex-start;padding:7px 0;opacity:.3;transition:opacity .5s}
+.ri.act,.ri.ok{opacity:1}
+.ri .c{width:26px;height:26px;border-radius:50%;border:1.5px solid var(--border-s);display:grid;place-items:center;flex-shrink:0;margin-top:1px;transition:all .3s var(--ease)}
+.ri.act .c{border-color:var(--mint);border-top-color:transparent;animation:spin .8s linear infinite}
+.ri.ok .c{background:var(--mint);border-color:var(--mint)}
+.ri .c svg{width:14px;height:14px;stroke:#06231e;stroke-width:3;fill:none;stroke-dasharray:22;stroke-dashoffset:22;transition:stroke-dashoffset .45s var(--ease) .1s}
+.ri.ok .c svg{stroke-dashoffset:0}
+.ri b{font-weight:500;font-size:15px;display:block}
+.ri span.d{font-size:13px;color:var(--ink-50);display:block;max-height:0;opacity:0;overflow:hidden;transition:all .5s var(--ease)}
+.ri.ok span.d{max-height:24px;opacity:1}
+
+/* verify */
+.rows{padding:0 26px}
+.row{display:grid;grid-template-columns:110px 1fr auto;gap:8px 16px;padding:22px 0;border-top:1px solid var(--border);align-items:start}
+.row:first-child{border-top:0}
+.row>label{font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-50);padding-top:3px}
+.row .v{font-size:15px;min-width:0}.row .v small{display:block;color:var(--ink-50);font-size:13.5px;margin-top:2px}
+.row .full{grid-column:2/4}
+.row>.lnk{font-size:13.5px}
+.map{position:relative;height:150px;border-radius:14px;overflow:hidden;background:#EAEFE7;margin-top:10px;cursor:crosshair;touch-action:none;border:1px solid var(--border)}
+.map svg.bg{position:absolute;inset:0;width:100%;height:100%}
+.map .pin{position:absolute;width:16px;height:16px;border-radius:50%;background:var(--mint-d);border:3px solid #fff;box-shadow:0 0 0 1px var(--mint-d),0 4px 10px rgba(0,0,0,.25);transform:translate(-50%,-50%);transition:left .25s var(--ease),top .25s var(--ease);pointer-events:none}
+.coords{font-size:12px;color:var(--ink-50);margin-top:8px}
+.days{display:flex;gap:6px;margin:4px 0 12px}
+.day{width:38px;height:38px;border-radius:10px;border:1.5px solid var(--border);background:var(--panel);font-size:12px;font-weight:500}.day.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.faq+.faq{margin-top:12px}.faq b{font-weight:500;font-size:14.5px;display:block}.faq span{color:var(--ink-50);font-size:13.5px}
+
+/* agent */
+.host{display:flex;gap:22px;align-items:center}
+.sq{width:76px;height:76px;border-radius:20px;background:var(--ink);color:var(--mint);font-size:34px;font-weight:600;display:grid;place-items:center;flex-shrink:0}
+.host .cap{display:block;margin-bottom:2px}
+.nm{width:100%;border:0;border-bottom:1.5px solid transparent;outline:0;background:none;font-size:30px;font-weight:600;letter-spacing:-.8px;line-height:1.2;padding:0;transition:border-color .2s}
+.nm:hover,.nm:focus{border-bottom-color:var(--border-s)}
+.host p{color:var(--ink-50);font-size:14px;margin-top:4px}
+.vrow{display:flex;gap:10px;align-items:center}.vrow .sel{flex:1}
+.play{width:48px;height:48px;border-radius:50%;border:1.5px solid var(--border);display:grid;place-items:center;flex-shrink:0;color:var(--ink);transition:border-color .2s;background:var(--panel)}
+.play:hover{border-color:var(--ink)}
+.play .wave{display:none}.play.on .wave{display:inline-flex}.play.on svg{display:none}
+.wave{gap:2px;align-items:center;height:16px}
+.wave s{display:block;width:3px;height:4px;border-radius:2px;background:var(--mint-d);animation:bar .7s ease-in-out infinite}
+@keyframes bar{50%{height:16px}}
+.wave s:nth-child(2){animation-delay:.12s}.wave s:nth-child(3){animation-delay:.24s}.wave s:nth-child(4){animation-delay:.06s}
+.tg{display:flex;align-items:flex-start;gap:20px;padding:18px 0;border-top:1px solid var(--border)}
+.tg:first-of-type{border-top:0;padding-top:4px}
+.tg>div{flex:1}.tg b{font-weight:600;display:block}.tg span{color:var(--ink-50);font-size:14px}
+.sw{position:relative;width:46px;height:26px;border-radius:999px;background:var(--border-s);flex-shrink:0;transition:background .2s;margin-top:2px}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:transform .2s var(--ease)}
+.sw[aria-checked=true]{background:var(--mint)}.sw[aria-checked=true]::after{transform:translateX(20px)}
+
+/* review */
+.kv{display:flex;justify-content:space-between;gap:24px;padding:14px 0;border-top:1px solid var(--border);font-size:14.5px}
+.kv span{color:var(--ink-50);flex-shrink:0}.kv b{font-weight:500;text-align:right}
+.gh{display:flex;justify-content:space-between;align-items:center;padding:18px 0 14px}
+.grp{padding:0 26px 6px}
+.try{padding:20px 22px;margin-bottom:14px}
+.chat{display:flex;flex-direction:column;gap:16px;margin-bottom:18px}
+.m{max-width:88%;animation:up .4s var(--ease) both}
+.m small{display:block;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-30);margin-bottom:2px}
+.m.g{align-self:flex-end;background:var(--ink);color:#fff;padding:9px 16px;border-radius:16px 16px 4px 16px}
+.m.g small{display:none}
+.dots{display:inline-flex;gap:4px;padding:6px 0}.dots i{width:6px;height:6px;border-radius:50%;background:var(--ink-30);animation:dot 1s infinite}
+.dots i:nth-child(2){animation-delay:.15s}.dots i:nth-child(3){animation-delay:.3s}
+@keyframes dot{40%{transform:translateY(-4px);background:var(--mint)}}
+.sugg{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+
+/* live */
+.num{display:flex;align-items:center;gap:14px;padding:16px 20px}
+.num .mono{font-size:22px;color:var(--ink)}.num .btn{margin-left:auto}
+.choice{display:flex;align-items:flex-start;gap:14px;width:100%;text-align:left;padding:16px 20px;margin-top:10px;background:var(--panel);border:1.5px solid var(--border);border-radius:16px;transition:transform .2s var(--ease),box-shadow .2s var(--ease),border-color .2s}
+.choice:hover{border-color:var(--ink)}
+.choice.on{border-color:var(--ink);box-shadow:4px 5px 0 var(--ink);transform:translate(-2px,-2px)}
+.rad{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--ink-30);flex-shrink:0;margin-top:3px;display:grid;place-items:center}
+.choice.on .rad{border-color:var(--ink)}.choice.on .rad::after{content:"";width:10px;height:10px;border-radius:50%;background:var(--ink)}
+.choice b{font-weight:600;display:block}.choice .d{color:var(--ink-50);font-size:13.5px;display:block}
+@media (max-width:640px){.hdr{padding:18px 20px}.grid2{grid-template-columns:1fr}.row{grid-template-columns:1fr auto}.row>label{grid-column:1/-1}.row .full{grid-column:1/-1}.rcard{padding:22px}.host{align-items:flex-start}}
+.ti{position:relative;display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;margin-left:6px;border-radius:50%;background:#F5F4EF;color:var(--ink-50);font-size:10.5px;font-weight:600;cursor:help;vertical-align:middle;border:1px solid var(--border);text-transform:none;letter-spacing:0}
+.ti .tt{display:none;position:absolute;left:50%;bottom:calc(100% + 8px);transform:translateX(-50%);width:max-content;max-width:250px;background:#111;color:#fff;padding:8px 10px;border-radius:9px;font-size:12px;font-weight:400;line-height:1.45;z-index:40;text-align:left}
+.ti:hover .tt,.ti:focus .tt{display:block}
+.oi{display:inline-flex;align-items:center;gap:6px}.oi .in{width:64px;padding:7px 8px}
+</style>
+</head>
+<body>
+<div class="bar" id="bar"></div>
+<div id="app"></div>
+<script>
+const OUTLETS=[
+ {id:'abc',name:'ABC | ALADDIN BROASTED CHICKEN INDIRANAGAR',short:'Aladdin Broasted Chicken',area:'Indiranagar, Bengaluru',addr:'Ground floor, Shop 474, 10th Main Rd, HAL 3rd Stage, Indiranagar, Bengaluru 560075',cuisine:'Middle Eastern',country:'India',lat:12.97831,lng:77.64083,tz:'Asia/Kolkata',phone:'+91 80 4567 2210',rating:'4.3 ★ from 1,284 reviews',
+  desc:'Crispy broasted chicken, shawarma and rolls. Dine in, takeaway and delivery.',open:'11:00',close:'23:00',
+  faqs:[['Is your chicken halal?','Yes, all our chicken is halal certified.'],['Do you have vegetarian options?','Yes: paneer rolls, veg shawarma and loaded fries.']]},
+ {id:'music',name:'Music Café',short:'Music Café',area:'Patharagadia, Bhubaneswar',addr:'Patharagadia, Bhubaneswar, Odisha 751024',cuisine:'Café',country:'India',lat:20.36615,lng:85.79406,tz:'Asia/Kolkata',phone:'+91 99183 17120',rating:'4.5 ★ from 612 reviews',
+  desc:'A relaxed café with live music on weekends and an all-day menu.',open:'09:00',close:'23:00',
+  faqs:[['Do you have live music?','Yes, every Friday and Saturday from 7 PM.'],['Is there parking?','There is street parking right outside.']]},
+ {id:'rossa',name:'ROSSA Pizzeria',short:'ROSSA Pizzeria',area:'West Loop, Chicago',addr:'845 W Randolph St, Chicago, IL 60607',cuisine:'Italian',country:'United States',lat:41.88414,lng:-87.64798,tz:'America/Chicago',phone:'+1 (312) 555-0147',rating:'4.6 ★ from 2,031 reviews',
+  desc:'Wood-fired Neapolitan pizza, fresh pasta and an Italian wine list.',open:'16:00',close:'23:00',
+  faqs:[['Do you have gluten-free crusts?','Yes, on any 12-inch pizza.'],['Can you host a private party?','Yes, up to 40 guests.']]}];
+const CUISINES=['Middle Eastern','Café','Italian','North Indian','South Indian','Chinese','Burgers','Pizza','Bakery','Other'];
+const VOICES=[{id:'shubh',n:'Shubh',t:'Male · Hindi',pitch:.8,rate:1},{id:'allie',n:'Agent',t:'Female · English',pitch:1.15,rate:1},{id:'marcus',n:'Marcus',t:'Male · English',pitch:.7,rate:.95},{id:'priya',n:'Priya',t:'Female · Hindi',pitch:1.3,rate:1.08},{id:'leo',n:'Leo',t:'Male · English',pitch:.9,rate:1.1}];
+const NOTICE=[[0,'No notice'],[30,'30 min'],[60,'1 hour'],[120,'2 hours'],[240,'4 hours'],[1440,'1 day']];
+const DAYS=['M','T','W','T','F','S','S'],FULL=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+const GROUPS=['Discover','Verify','Reservation','Meet your agent','Review','Go live'];
+const STEPS=['find','research','verify','rules','voice','review','live'];
+const GI={find:0,research:0,verify:1,rules:2,voice:3,review:4,live:5};
+const CAPS=[['create','Create Reservation','Capture and log reservation requests from callers'],['avail','Check Availability','Look up open slots before confirming a booking'],['cancel','Cancel Booking','Let callers cancel a reservation over the phone'],['transfer','Transfer Call',n=>`When a caller needs something ${n} can’t handle`],['human','Caller asks for a human','If the caller says “speak to someone”, the agent transfers immediately.'],['tries','Cannot answer after 2 tries','After 2 consecutive failed tools or unanswered FAQs, connect to staff when the restaurant is open.'],['after','Call received outside business hours','When closed, take a message or offer a callback — do not transfer to staff.']];
+
+const S={i:0,q:'',fresh:true,rs:0,edit:{},play:false,chat:[],typing:false,o:null,
+ d:{brand:'',cuisine:'',country:'',desc:'',days:[1,1,1,1,1,1,1],open:'11:00',close:'23:00',lat:0,lng:0,ord:{pick:true,prep:20,del:false,mi:3,fee:3,min:15}},
+ rules:{perDay:50,window:30,minParty:1,maxParty:12,duration:90,notice:60},
+ agent:{voice:'shubh',name:'Novi',greet:''},
+ caps:{create:1,avail:1,cancel:0,transfer:1,human:1,tries:1,after:0},fwd:'busy'};
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const ICONS={search:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',up:'<path d="M12 19V5M6 11l6-6 6 6"/>',chev:'<path d="m9 6 6 6-6 6"/>',store:'<path d="M4 9l1.5-5h13L20 9M4 9v11h16V9M4 9a3 3 0 0 0 5.3 1.9A3 3 0 0 0 14.7 10.9 3 3 0 0 0 20 9M10 20v-5h4v5"/>',play:'<path d="M8 5v14l11-7z"/>'};
+const ic=(n,s=18)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[n]}</svg>`;
+const t12=t=>{const[h,m]=t.split(':').map(Number);return`${h%12||12}${m?':'+String(m).padStart(2,'0'):''} ${h<12?'AM':'PM'}`};
+function hoursText(){const on=S.d.days.filter(Boolean).length;if(!on)return'Closed every day';const days=on===7?'Every day':S.d.days.map((v,i)=>v?FULL[i].slice(0,3):null).filter(Boolean).join(', ');return`${days}, ${t12(S.d.open)} to ${t12(S.d.close)}`}
+const tip=t=>`<span class="ti" tabindex="0" role="note" aria-label="${esc(t)}">?<span class="tt">${esc(t)}</span></span>`;
+const ordText=()=>{const q=S.d.ord,p=[];if(q.pick)p.push(`Pickup, ready in ${q.prep} min`);if(q.del)p.push(`Delivery within ${q.mi} mi, $${q.fee} fee, $${q.min} minimum`);return p.length?p.join(' · '):'Not taking phone orders yet'};
+const brandShort=()=>S.d.brand||'your restaurant';
+const greet=()=>S.agent.greet||`Thanks for calling ${brandShort()}, this is ${S.agent.name} — how can I help you today?`;
+const voice=()=>VOICES.find(v=>v.id===S.agent.voice);
+const noticeLabel=()=>(NOTICE.find(n=>n[0]===+S.rules.notice)||[0,'—'])[1];
+
+function go(i){S.i=i;S.fresh=true;scrollTo(0,0);render();if(STEPS[i]==='research'&&S.rs<RS.length)runResearch()}
+const next=()=>go(S.i+1),back=()=>go(S.i-1);
+function footer(o){const{next:nl='Continue',ok=true,why='',hideBack=false}=o||{};
+ return`<div class="foot">${hideBack?'':`<button class="btn line" style="border-color:var(--ink)" onclick="back()">Back</button>`}<span class="why">${ok?'':esc(why)}</span><button class="btn" id="fbtn" ${ok?'':'disabled'} onclick="next()">${nl} ${ic('chev',16)}</button></div>`}
+const chip=()=>{const g=GI[STEPS[S.i]];return`<div class="chipstep">0${g+1} · ${GROUPS[g].toUpperCase()}</div>`};
+const head=(t,s)=>`${chip()}<h1 class="tw" data-t="${esc(t)}">${esc(t)}</h1>${s?`<p class="sub">${s}</p>`:''}`;
+
+function render(){
+ const id=STEPS[S.i],v=VIEWS[id](),fresh=S.fresh;
+ $('#bar').style.width=(id==='live'?100:(GI[id]+(id==='research'?.6:.5))/6*100)+'%';
+ $('#app').innerHTML=`<header class="hdr"><div class="logo">Tringg</div></header><main class="page"><div class="col">${v.body}${v.foot||''}</div></main>`;
+ S.fresh=false;
+ if(fresh)typeHeading();else document.querySelectorAll('.sub').forEach(e=>e.classList.add('now'));
+ if(VIEWS_AFTER[id])VIEWS_AFTER[id]();
+}
+/* the agent "speaks" its heading */
+function typeHeading(){const h=$('h1.tw');if(!h||matchMedia('(prefers-reduced-motion:reduce)').matches)return;const t=h.dataset.t;
+ let k=0;const tick=()=>{if(!h.isConnected||h.dataset.t!==t)return;k++;h.innerHTML=esc(t.slice(0,k))+(k<t.length?'<span class="caret"></span>':'');if(k<t.length)setTimeout(tick,16)};tick()}
+
+const VIEWS={},VIEWS_AFTER={};
+
+/* 01 · discover */
+VIEWS.find=()=>({body:`<div class="body fade">${head('Tell Tringg your restaurant.','Type its name or paste your website. I’ll pull the rest automatically.')}
+ <div class="sec"><div class="card bigin"><span class="tile">${ic('store',24)}</span><div style="flex:1;min-width:0"><div class="cap">Restaurant</div><input id="q" autocomplete="off" placeholder="e.g. Your restaurant name" value="${esc(S.q)}" oninput="onQ(this.value)" onkeydown="if(event.key==='Enter')pickFirst()" aria-label="Restaurant name or website"/></div></div><div id="sug"></div>
+ <p class="hint">Can’t find it? <button class="lnk" onclick="manual()">Enter it manually</button></p></div></div>`});
+VIEWS_AFTER.find=()=>{onQ(S.q);const q=$('#q');if(q)q.focus()};
+function matches(q){q=q.trim().toLowerCase();if(!q)return[];
+ if(/^(https?:\/\/|www\.)|\.[a-z]{2,}(\/|$)/.test(q))return[{...OUTLETS[0],viaUrl:q.replace(/^https?:\/\//,'')}];
+ return OUTLETS.filter(o=>q.split(/\s+/).every(w=>(o.name+' '+o.area).toLowerCase().includes(w)))}
+function onQ(v){S.q=v;const m=matches(v),el=$('#sug');if(!el)return;
+ if(!v.trim()){el.innerHTML=`<p class="hint">Try <button class="lnk" onclick="try1('Aladdin')">Aladdin Broasted Chicken</button> or <button class="lnk" onclick="try1('ROSSA')">ROSSA Pizzeria</button></p>`;return}
+ el.innerHTML=m.length?`<div class="card sug">`+m.map(o=>`<button class="sg" onclick="pick('${o.id}')"><b>${esc(o.viaUrl?'Read '+o.viaUrl:o.name)}</b><small>${esc(o.viaUrl?'Pull name, hours and menu from this site':o.addr)}</small></button>`).join('')+'</div>':`<p class="hint">No match for “${esc(v)}”. Try the full name with the neighbourhood, or paste your website.</p>`}
+function try1(v){S.q=v;$('#q').value=v;onQ(v)}
+function pickFirst(){const m=matches(S.q);if(m.length)pick(m[0].id)}
+function pick(id){S.o=OUTLETS.find(o=>o.id===id);loadOutlet();next()}
+function manual(){S.o={...OUTLETS[0],id:'manual',name:S.q||'My restaurant',faqs:[],desc:'',addr:'',area:'Add your location',phone:''};loadOutlet();S.i=2;S.fresh=true;S.edit={brand:true,hours:true};render()}
+function loadOutlet(){const o=S.o;Object.assign(S.d,{brand:o.short||o.name,cuisine:o.cuisine,country:o.country,desc:o.desc,open:o.open,close:o.close,lat:o.lat,lng:o.lng,days:[1,1,1,1,1,1,1]});S.rs=0}
+
+/* research: the "teaching your host" moment */
+const RS=[['Found your map listing',()=>S.o.rating,()=>`google maps › ${S.o.short} · ${S.o.rating}`],
+ ['Picked up the restaurant story',()=>'Menu, photos and what guests mention',()=>`website › “${S.o.desc}”`],
+ ['Mapped the location callers can book',()=>S.o.area,()=>`address › ${S.o.addr}`],
+ ['Learned the hours callers will hear',()=>hoursText(),()=>`hours › ${hoursText()}`],
+ ['Drafted answers to common questions',()=>`${S.o.faqs.length} drafted, starting with “${S.o.faqs[0][0]}”`,()=>`faq › “${S.o.faqs[0][0]}” → “${S.o.faqs[0][1]}”`]];
+const SRC=['Google Maps','Your website','Public reviews'];
+let rsRun=0,tkT=null;
+function runResearch(){const id=++rsRun;S.rs=0;const go=k=>{if(id!==rsRun||STEPS[S.i]!=='research')return;S.rs=k;rsPaint();if(k>=RS.length)return;typeTicker(RS[k][2]());
+  const f=$('#fill');if(f)f.style.width=((k+1)/RS.length*100)+'%';
+  setTimeout(()=>{if(id!==rsRun)return;S.rs=k+1;rsPaint();go(k+1)},1250)};setTimeout(()=>go(0),400)}
+function typeTicker(t){clearInterval(tkT);const el=$('#tk');if(!el)return;let k=0;tkT=setInterval(()=>{if(!el.isConnected||k>=t.length){clearInterval(tkT);return}k+=2;el.textContent=t.slice(0,k)},14)}
+function rsPaint(){const done=S.rs>=RS.length,card=$('#rcard');if(!card)return;
+ card.classList.toggle('done',done);
+ RS.forEach((r,k)=>{const el=$('#ri'+k);if(!el)return;el.className='ri '+(S.rs>k?'ok':S.rs===k?'act':'');if(S.rs>k)el.querySelector('.d').textContent=r[1]()});
+ SRC.forEach((n,k)=>{const el=$('#sr'+k);if(el)el.className='src '+(S.rs>k?'ok':S.rs===k?'act':'')});
+ const lab=$('#rlab');if(lab)lab.textContent=done?'Ready to review':'Reading your public listings';
+ if(done){const h=$('h1.tw');if(h){h.dataset.t='Here’s what I learned.';typeHeading()}
+  const sub=$('.sub');if(sub)sub.textContent='You’ll confirm each detail next. Nothing goes live until you say so.';
+  const b=$('#fbtn');if(b)b.disabled=false;const w=$('.why');if(w)w.textContent=''}}
+VIEWS.research=()=>{const done=S.rs>=RS.length,o=S.o;
+ return{body:`<div class="body fade">${head(done?'Here’s what I learned.':'Teaching your host…',done?'You’ll confirm each detail next. Nothing goes live until you say so.':'Learning from public listings so your first call sounds like staff.')}
+ <div class="sec card rcard ${done?'done':''}" id="rcard">
+  <div class="rhead"><div class="avw"><i class="ring"></i><i class="ring"></i><i class="ring"></i><div class="av">${esc((S.d.brand||'T')[0].toUpperCase())}</div><div class="orbit"></div></div><div><div class="rname">${esc(S.d.brand)}</div><div class="rsub">${esc(o.area)}</div></div></div>
+  <div class="rbar"><div class="rbar-h"><span id="rlab">${done?'Ready to review':'Reading your public listings'}</span><span>Usually under a minute</span></div><div class="track"><div class="fill" id="fill" style="width:${done?100:0}%"></div></div></div>
+  <div class="srcs">${SRC.map((n,k)=>`<span class="src" id="sr${k}"><i></i>${n}</span>`).join('')}</div>
+  <div class="tick mono" aria-hidden="true"><em>now reading</em><span id="tk"></span></div>
+  <div class="rlist">${RS.map((r,k)=>`<div class="ri ${S.rs>k?'ok':S.rs===k?'act':''}" id="ri${k}"><span class="c"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></span><div><b>${r[0]}</b><span class="d">${S.rs>k?esc(r[1]()):''}</span></div></div>`).join('')}</div>
+ </div></div>`,foot:footer({ok:done,why:'Almost there…',next:'Review'})}};
+VIEWS_AFTER.research=()=>{rsPaint()};
+
+const ordEdit=()=>{const q=S.d.ord;return`<div class="full"><div class="tg" style="border-top:0;padding-top:0"><div><b>Pickup</b><span class="oi">Ready in <input class="in" type="number" min="5" step="5" value="${q.prep}" aria-label="Pickup prep minutes" onchange="S.d.ord.prep=Math.max(5,+this.value||20)"/> min</span></div><button class="sw" role="switch" aria-checked="${!!q.pick}" aria-label="Pickup" onclick="S.d.ord.pick=!S.d.ord.pick;render()"></button></div>
+ <div class="tg"><div><b>Delivery</b>${q.del?`<span class="oi" style="flex-wrap:wrap">Within <input class="in" type="number" min="0.5" step="0.5" value="${q.mi}" aria-label="Delivery radius miles" onchange="S.d.ord.mi=Math.max(.5,+this.value||3)"/> mi · fee $<input class="in" type="number" min="0" step="0.5" value="${q.fee}" aria-label="Delivery fee" onchange="S.d.ord.fee=Math.max(0,+this.value||0)"/> · minimum $<input class="in" type="number" min="0" value="${q.min}" aria-label="Minimum order" onchange="S.d.ord.min=Math.max(0,+this.value||0)"/></span>`:`<span>Off. Callers are offered pickup.</span>`}</div><button class="sw" role="switch" aria-checked="${!!q.del}" aria-label="Delivery" onclick="S.d.ord.del=!S.d.ord.del;render()"></button></div></div>`};
+/* 02 · verify */
+VIEWS.verify=()=>{const o=S.o,d=S.d,e=S.edit;
+ const brand=e.brand?`<div class="full"><div class="grid2"><label class="field"><span>Name</span><input class="in" value="${esc(d.brand)}" oninput="S.d.brand=this.value"/></label><label class="field"><span>Cuisine</span><select class="sel" onchange="S.d.cuisine=this.value">${CUISINES.map(c=>`<option ${c===d.cuisine?'selected':''}>${c}</option>`).join('')}</select></label></div><label class="field" style="margin-top:16px"><span>Description</span><textarea class="ta" rows="2" oninput="S.d.desc=this.value">${esc(d.desc)}</textarea></label></div>`:`<div class="v">${esc(d.brand)}<small>${esc(d.cuisine)}${d.country?' · '+esc(d.country):''}</small><small>${esc(d.desc)}</small></div>`;
+ const hrs=e.hours?`<div class="full"><div class="days">${DAYS.map((x,k)=>`<button class="day ${d.days[k]?'on':''}" aria-pressed="${!!d.days[k]}" aria-label="${FULL[k]}" onclick="S.d.days[${k}]^=1;render()">${x}</button>`).join('')}</div><div class="grid2"><label class="field"><span>Opens</span><input class="in" type="time" value="${d.open}" onchange="S.d.open=this.value"/></label><label class="field"><span>Closes</span><input class="in" type="time" value="${d.close}" onchange="S.d.close=this.value"/></label></div></div>`:`<div class="v">${esc(hoursText())}</div>`;
+ return{body:`<div class="body fade">${head('Choose the outlet you’re setting up.','Everything’s pre-filled. Just confirm it’s right.')}
+ <div class="sec card rows">
+  <div class="row"><label>Restaurant</label>${e.brand?'<span></span>':brand}<button class="lnk" onclick="tog('brand')">${e.brand?'Done':'Edit'}</button>${e.brand?brand:''}</div>
+  <div class="row"><label>Location</label><div class="v">${esc(o.name)}<small>${esc(o.addr||'Drop a pin on the map')}</small></div><span></span>
+   <div class="full"><div class="map" id="map" aria-label="Map. Click to move the pin."><svg class="bg" viewBox="0 0 600 140" preserveAspectRatio="none"><g stroke="#E4E3DD" stroke-width="8" fill="none"><path d="M0 45h600M0 105h600M130 0v140M310 0v140M470 0v140"/></g><g stroke="#ECEBE6" stroke-width="2" fill="none"><path d="M0 75h600M220 0v140M390 0v140"/></g></svg><div class="pin" id="pin" style="left:50%;top:55%"></div></div><div class="coords" id="coords">${d.lat.toFixed(5)}, ${d.lng.toFixed(5)} · click the map to move the pin</div></div></div>
+  <div class="row"><label>Hours</label>${e.hours?'<span></span>':hrs}<button class="lnk" onclick="tog('hours')">${e.hours?'Done':'Edit'}</button>${e.hours?hrs:''}</div>
+  <div class="row"><label>Ordering${tip('Optional. The agent can take pickup and delivery orders by phone. You finish the rest, menu, taxes and payments, in the dashboard after you go live.')}</label>${e.ord?'<span></span>':`<div class="v">${esc(ordText())}</div>`}<button class="lnk" onclick="tog('ord')">${e.ord?'Done':'Edit'}</button>${e.ord?ordEdit():''}</div>
+  <div class="row"><label>Answers</label><div class="v">${o.faqs.length?o.faqs.map(f=>`<div class="faq"><b>${esc(f[0])}</b><span>${esc(f[1])}</span></div>`).join(''):'<small>None yet. You can add them later in Settings.</small>'}</div><span></span></div>
+ </div></div>`,foot:footer({next:'Continue',ok:!!d.brand.trim(),why:'Add a restaurant name'})}};
+VIEWS_AFTER.verify=()=>{const m=$('#map');if(!m)return;let drag=false;
+ const set=ev=>{const r=m.getBoundingClientRect(),x=Math.min(Math.max(ev.clientX-r.left,0),r.width),y=Math.min(Math.max(ev.clientY-r.top,0),r.height);
+  $('#pin').style.left=x/r.width*100+'%';$('#pin').style.top=y/r.height*100+'%';S.d.lat=S.o.lat+(.5-y/r.height)*.004;S.d.lng=S.o.lng+(x/r.width-.5)*.006;$('#coords').textContent=`${S.d.lat.toFixed(5)}, ${S.d.lng.toFixed(5)} · address updated`};
+ m.onpointerdown=e=>{drag=true;m.setPointerCapture(e.pointerId);set(e)};m.onpointermove=e=>{if(drag)set(e)};m.onpointerup=()=>drag=false};
+function tog(k){S.edit[k]=!S.edit[k];render()}
+
+/* 03 · reservation: the real six rules */
+const num=(k,l,mn,mx)=>`<label class="field"><span>${l}</span><input class="in" type="number" min="${mn}" max="${mx}" value="${S.rules[k]}" onchange="setRule('${k}',this.value,${mn},${mx})"/></label>`;
+const pick2=(k,l,opts)=>`<label class="field"><span>${l}</span><select class="sel" onchange="setRule('${k}',this.value)">${opts.map(([v,t])=>`<option value="${v}" ${+S.rules[k]===v?'selected':''}>${t}</option>`).join('')}</select></label>`;
+function setRule(k,v,mn,mx){v=+v;if(mn!=null)v=Math.min(mx,Math.max(mn,v||mn));S.rules[k]=v;const R=S.rules;if(R.minParty>R.maxParty){if(k==='minParty')R.maxParty=R.minParty;else R.minParty=R.maxParty}render()}
+VIEWS.rules=()=>{const R=S.rules;
+ return{body:`<div class="body fade">${head('Set your reservation rules.','Reservations are already on. These are solid starting defaults — adjust any of them below.')}
+ <div class="sec card pad"><div class="cap cardh">Capacity</div><div class="grid2">
+  ${num('perDay','Max reservations / day',1,500)}
+  ${pick2('window','Advance booking window',[[7,'7 days'],[14,'14 days'],[30,'30 days'],[60,'60 days'],[90,'90 days']])}
+  ${num('minParty','Min party size',1,50)}${num('maxParty','Max party size',1,50)}
+  ${pick2('duration','Reservation duration',[[60,'60 min'],[90,'90 min'],[120,'2 hours'],[150,'2.5 hours'],[180,'3 hours']])}
+  ${pick2('notice','Minimum notice',NOTICE)}
+ </div></div>
+ <p class="note">Callers will hear: “I can book ${R.minParty} to ${R.maxParty} guests, up to ${R.window} days ahead, with at least ${noticeLabel().toLowerCase()} notice.”</p></div>`,foot:footer()}};
+
+/* 04 · agent */
+VIEWS.voice=()=>{const A=S.agent,n=A.name;
+ return{body:`<div class="body fade">${head('Meet your AI host.','I’ve drafted a name, voice and greeting — take a listen and tweak anything.')}
+ <div class="sec card pad">
+  <div class="host"><div class="sq" id="sq">${esc(n[0]||'?')}</div><div style="flex:1;min-width:0"><span class="cap">Your AI host</span><input class="nm" id="nm" value="${esc(n)}" aria-label="Agent name" oninput="onName(this.value)"/><p>Warm, casual, and helpful — conversational, low-pressure, and attentive.</p></div></div>
+  <div class="field" style="margin-top:26px"><span>Voice</span><div class="vrow"><select class="sel" onchange="S.agent.voice=this.value;speak()">${VOICES.map(v=>`<option value="${v.id}" ${A.voice===v.id?'selected':''}>${v.n} · ${v.t}</option>`).join('')}</select><button class="play ${S.play?'on':''}" id="pl" onclick="speak()" aria-label="Play greeting">${ic('play',16)}<span class="wave"><s></s><s></s><s></s><s></s></span></button></div></div>
+  <label class="field" style="margin-top:22px"><span>Greeting</span><textarea class="ta" id="gr" rows="3" oninput="S.agent.greet=this.value">${esc(greet())}</textarea></label>
+  <p class="hint" style="margin-top:10px">Auto-fills from your brand and agent name — edit any time.</p></div>
+ <div class="sec card pad"><div class="cap cardh">What ${esc(n)} can do</div>${CAPS.map(([k,t,d])=>`<div class="tg"><div><b>${t}</b><span>${typeof d==='function'?d(esc(n)):d}</span></div><button class="sw" role="switch" aria-checked="${!!S.caps[k]}" aria-label="${t}" onclick="S.caps['${k}']^=1;this.setAttribute('aria-checked',!!S.caps['${k}'])"></button></div>`).join('')}</div></div>`,foot:footer()}};
+function onName(v){S.agent.name=v.trim()||'Novi';const sq=$('#sq');if(sq)sq.textContent=S.agent.name[0];if(!S.agent.greet){const g=$('#gr');if(g)g.value=greet()}}
+function speak(){const v=voice();S.play=true;const p=$('#pl');if(p)p.classList.add('on');
+ try{if(window.speechSynthesis){speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(greet());u.pitch=v.pitch;u.rate=v.rate;u.onend=()=>{S.play=false;const q=$('#pl');if(q)q.classList.remove('on')};speechSynthesis.speak(u);}}catch(e){}
+ setTimeout(()=>{S.play=false;const q=$('#pl');if(q)q.classList.remove('on')},4200)}
+
+/* 05 · review: summary, plus a way to actually talk to the agent */
+function reply(q){const s=q.toLowerCase(),R=S.rules,o=S.o,C=S.caps,n=+((s.match(/\d+/)||[])[0]);
+ if(/cancel/.test(s))return C.cancel?'Of course. What name is the booking under?':'I can’t cancel bookings over the phone, but I’ll pass this to the team and they’ll confirm with you shortly.';
+ if(/human|person|someone|manager|staff|speak to/.test(s))return C.human?'Of course, I’ll connect you to the team now.':'The team isn’t available right now. I can take a message instead.';
+ if(/table|book|reserv|seat|party|people|guests|group/.test(s)){if(!C.create)return'I can’t take bookings by phone, but I’ll pass your details to the team.';const g=n||4;
+  if(g>R.maxParty)return`For groups over ${R.maxParty} I’ll take your details and someone from ${brandShort()} will call you back within the hour.`;
+  if(g<R.minParty)return`I can book tables for ${R.minParty} or more guests. Would that work?`;
+  return`Yes, I can book a table for ${g}. It’ll be held for ${R.duration} minutes. What name should I put it under?`}
+ if(/hour|open|close|when|time/.test(s))return`We’re open ${hoursText().replace('Every day','every day')}.`;
+ const w=s.split(/\W+/).filter(x=>x.length>3);for(const f of o.faqs){if(w.some(x=>f[0].toLowerCase().includes(x)))return f[1]}
+ return'I’m not sure about that one. I’ll take your number and have the team call you right back.'}
+const scrollDown=()=>setTimeout(()=>{const c=$('.chat');if(c)c.lastElementChild&&c.lastElementChild.scrollIntoView({behavior:'smooth',block:'center'})},50);
+function ask(q){q=(q||'').trim();if(!q||S.typing)return;if(!S.chat.length)S.chat.push(['a',greet()]);S.chat.push(['g',q]);S.typing=true;render();scrollDown();
+ setTimeout(()=>{S.typing=false;S.chat.push(['a',reply(q)]);render();scrollDown();const i=$('#tq');if(i)i.focus()},1000)}
+const kv=(k,v)=>`<div class="kv"><span>${k}</span><b>${esc(v)}</b></div>`;
+const grp=(t,step,rows)=>`<div class="card grp"><div class="gh"><span class="cap">${t}</span><button class="lnk g" onclick="go(${step})">Edit</button></div>${rows}</div>`;
+VIEWS.review=()=>{const o=S.o,d=S.d,R=S.rules,A=S.agent;
+ const chat=S.chat.map(([w,t])=>`<div class="m ${w}"><small>${w==='a'?esc(A.name):'You'}</small>${esc(t)}</div>`).join('')+(S.typing?'<div class="m"><div class="dots"><i></i><i></i><i></i></div></div>':'');
+ const sg=['Table for 4 tonight','Table for 20 on Saturday','What are your hours?',o.faqs[0]?o.faqs[0][0]:'Do you deliver?'];
+ return{body:`<div class="body fade">${head('Let’s make sure your host is ready.','Try a call with '+esc(A.name)+', then review the details below.')}
+ <div class="sec card try">${S.chat.length?`<div class="chat" role="log" aria-live="polite">${chat}</div>`:''}
+  <form onsubmit="event.preventDefault();const i=$('#tq');const v=i.value;i.value='';ask(v)"><div class="ask"><input id="tq" placeholder="Ask ${esc(A.name)} something a guest would…" autocomplete="off" aria-label="Your question"/><button type="submit" aria-label="Send">${ic('up',16)}</button></div></form>
+  <div class="sugg">${sg.map(x=>`<button class="chip" ${S.typing?'disabled':''} onclick="ask(this.textContent)">${esc(x)}</button>`).join('')}</div></div>
+ ${grp('Brand · '+esc(d.brand),2,kv('Cuisine',d.cuisine||'Not set')+kv('Country',d.country||'Not set')+kv('Description',d.desc||'Not set'))}
+ ${grp('Outlet',2,kv('Address',o.addr||'Not set')+kv('Phone',o.phone||'Not set')+kv('Timezone',o.tz)+kv('Business hours',hoursText()))}
+ ${grp('FAQs',2,kv(o.faqs.length+' questions imported',o.faqs.map(f=>f[0]).join(' · ')||'None yet'))}
+ ${grp('Ordering',1,kv('Phone orders',ordText()))}
+ ${grp('Booking rules',3,kv('Max reservations / day',R.perDay)+kv('Party size',`${R.minParty}–${R.maxParty} guests`)+kv('Duration',R.duration+' min')+kv('Advance window',R.window+' days')+kv('Minimum notice',noticeLabel()))}
+ ${grp('Agent',4,kv('Name',A.name)+kv('Voice',voice().n+' · '+voice().t)+kv('Greeting',greet()))}
+ <p class="note">Nothing is billed until you subscribe. You can set everything up first.</p></div>`,foot:footer({next:'Go live'})}};
+
+/* 06 · go live */
+VIEWS.live=()=>{const A=S.agent,F=S.fwd,N='+1 (312) 555-0147';
+ return{body:`<div class="body fade">${head(`${A.name} is set up.`,'Subscribe to make it active, then forward your restaurant line to your Tringg number.')}
+ <div class="sec"><div class="cap" style="margin-bottom:10px">Your Tringg number</div><div class="card num"><span class="mono">${N}</span><button class="btn line sm" onclick="copyNum(this)">Copy</button></div></div>
+ <div class="sec"><div class="cap" style="margin-bottom:12px">When should ${esc(A.name)} answer?</div>
+ <button class="choice ${F==='busy'?'on':''}" onclick="S.fwd='busy';render()"><span class="rad"></span><span><b>When we can’t pick up</b><span class="d">Staff still get calls first. Recommended to start.</span></span></button>
+ <button class="choice ${F==='all'?'on':''}" onclick="S.fwd='all';render()"><span class="rad"></span><span><b>Every call</b><span class="d">${esc(A.name)} answers everything and hands off to staff when needed.</span></span></button>
+ <p class="hint">From your restaurant phone, dial <span class="mono" style="color:var(--ink);font-size:13px">${F==='busy'?'*61*':'*21*'}13125550147#</span>. You can also do this later from Settings.</p></div>
+ <div style="margin-top:32px;display:flex;gap:12px;align-items:center"><a class="btn" href="tringg-ordering.html?from=onboarding" onclick="saveHandoff()">Open dashboard ${ic('chev',16)}</a></div><div class="sec" style="margin-top:34px"><div class="cap" style="margin-bottom:10px">What’s next</div><div class="card rows"><div class="row" style="grid-template-columns:34px 1fr"><b>1</b><div class="v">Finish ordering in the dashboard<small>Add your menu, taxes and payments. A checklist shows what is left.</small></div></div><div class="row" style="grid-template-columns:34px 1fr"><b>2</b><div class="v">Turn on ordering in Agents<small>You are asked to subscribe then. Calls, bookings and orders are active once you do. Nothing is billed before that.</small></div></div><div class="row" style="grid-template-columns:34px 1fr"><b>3</b><div class="v">Forward your restaurant line<small>Dial the code above so ${esc(A.name)} answers your calls.</small></div></div></div></div></div>`}};
+function saveHandoff(){try{localStorage.setItem('tringg-onboarding',JSON.stringify({brand:S.d.brand,ord:S.d.ord,agent:S.agent.name}))}catch(e){}}
+function copyNum(b){try{navigator.clipboard.writeText('+13125550147').catch(()=>{})}catch(e){}b.textContent='Copied';setTimeout(()=>{if(b.isConnected)b.textContent='Copy'},1500)}
+
+render();
+pick('rossa');S.rs=99;S.d.ord={pick:true,prep:20,del:true,mi:3,fee:3,min:15};go(2);tog('ord');setTimeout(function(){var l=[].slice.call(document.querySelectorAll('.row label')).find(function(l){return l.textContent.indexOf('Ordering')===0});if(l)l.scrollIntoView({block:'center'});},400);render();
+</script>
+</body>
+</html>
