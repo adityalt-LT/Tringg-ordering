@@ -38,8 +38,8 @@ VIEWS = [
  ('09-payment-link-preview', 'Payments with the payment link preview open (texts and payment page)', 'db', scen('live') + goto('settings','wp','ord','S.plOpen=true;') + "setTimeout(function(){var c=[].slice.call(document.querySelectorAll('.scard')).find(function(x){return x.innerText.indexOf('What the caller sees')>=0});if(c)c.scrollIntoView({block:'start'});},150);"),
  ('10-taxes', 'Taxes inside Settings > Ordering', 'db', scen('live') + goto('settings','wp') + anchor('tax')),
  ('11-not-subscribed-orders', 'Not subscribed: Orders asks to subscribe', 'db', scen('ready', False) + goto('orders','wp')),
- ('12-not-subscribed-agents', 'Not subscribed: Agents asks to subscribe', 'db', scen('ready', False) + goto('agents','wp')),
- ('13-turn-on-ordering-asks-to-subscribe', 'Turn on ordering in Agents opens the Subscribe confirmation', 'db', scen('ready', False) + "DB.caps.ord=false;DB.orderingOn=false;" + goto('agents','all','ord','S.agentEdit=true;') + "openSub();"),
+ ('12-not-subscribed-agents', 'Not subscribed: Agents and Calls show the Subscribe prompt', 'db', scen('ready', False) + goto('agents','wp')),
+ ('13-turn-on-ordering-asks-to-subscribe', 'Last checklist step opens the Subscribe confirmation', 'db', scen('ready', False) + "DB.caps.ord=false;DB.orderingOn=false;" + goto('overview','wp') + "openSub();"),
 ]
 rows = []
 for name, title, kind, init in VIEWS:
