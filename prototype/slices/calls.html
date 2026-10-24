@@ -1047,7 +1047,7 @@ function render(){
   $('shell').classList.toggle('nav-open',S.nav);['owner','manager','staff'].forEach(r=>$('shell').classList.toggle('role-'+r,R()===r));if(S.route==='agents'&&R()==='staff'&&typeof SLICE==='undefined')S.route='overview';
   renderRail();renderTop();$('view').innerHTML=(VIEWS[S.route]||VIEWS.overview)();
   if(S.route==='orders'&&DB.orderingOn&&DB.subscribed)renderOrders();
-  if(S.route==='calls')renderCalls();
+  if(S.route==='calls'&&DB.subscribed)renderCalls();
   if(S.route==='settings'&&S.set==='ord')bindMap();
   renderOverlay();
   if(_keep)document.querySelectorAll('#view .scroll').forEach((e,i)=>{if(_keep[i]!=null)e.scrollTop=_keep[i];});render._k=_k;
