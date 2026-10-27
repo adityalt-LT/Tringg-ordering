@@ -343,12 +343,13 @@ function tog(k){S.edit[k]=!S.edit[k];render()}
 const num=(k,l,mn,mx)=>`<label class="field"><span>${l}</span><input class="in" type="number" min="${mn}" max="${mx}" value="${S.rules[k]}" onchange="setRule('${k}',this.value,${mn},${mx})"/></label>`;
 const pick2=(k,l,opts)=>`<label class="field"><span>${l}</span><select class="sel" onchange="setRule('${k}',this.value)">${opts.map(([v,t])=>`<option value="${v}" ${+S.rules[k]===v?'selected':''}>${t}</option>`).join('')}</select></label>`;
 function setRule(k,v,mn,mx){v=+v;if(mn!=null)v=Math.min(mx,Math.max(mn,v||mn));S.rules[k]=v;const R=S.rules;if(R.minParty>R.maxParty){if(k==='minParty')R.maxParty=R.minParty;else R.minParty=R.maxParty}render()}
-function setSvc(k){const o=k==='res'?'ord':'res';if(S.mods[k]&&!S.mods[o])return;S.mods[k]=!S.mods[k];render()}
+function setSvc(k){S.mods[k]=!S.mods[k];render()}
 VIEWS.rules=()=>{const R=S.rules,M=S.mods;
  const pick=(k,t,d)=>`<button class="${M[k]?'on':''}" role="checkbox" aria-checked="${M[k]}" onclick="setSvc('${k}')"><span class="bx">${M[k]?ic('check',16):''}</span><b>${t}</b><span class="d">${d}</span><span class="st">${M[k]?'Selected':'Not selected'}</span></button>`;
  const ordCard=`<div class="sec card pad"><div class="cap cardh">Ordering${tip('The agent takes pickup and delivery orders by phone. You finish the rest, menu, taxes and payments, in the dashboard after you go live.')}</div>${ordEdit()}<p class="note" style="margin-top:12px">${esc(ordText())}</p></div>`;
  return{body:`<div class="body fade">${head(`What should ${esc(S.agent.name||'your agent')} handle?`,'Both are selected to start. You can change this any time in Settings.')}
  <div class="svc2" role="group" aria-label="Services">${pick('res','Reservations','Takes table requests and bookings.')}${pick('ord','Ordering','Takes pickup and delivery orders by phone.')}</div>
+ ${!M.res&&!M.ord?`<div class="sec card pad"><b>Enquiries only.</b><p class="note" style="margin-top:6px">${esc(S.agent.name||'Your agent')} will answer questions about your hours, location and FAQs, and pass other calls to your team. It won’t take bookings or orders. You can add them later in Settings › Services.</p></div>`:''}
  ${M.res?`<div class="sec"><div class="cap" style="margin:18px 0 10px">Reservation rules</div>${`<div class="sec card pad"><div class="cap cardh">Capacity</div><div class="grid2">
   ${num('perDay','Max reservations / day',1,500)}
   ${pick2('window','Advance booking window',[[7,'7 days'],[14,'14 days'],[30,'30 days'],[60,'60 days'],[90,'90 days']])}
@@ -358,7 +359,7 @@ VIEWS.rules=()=>{const R=S.rules,M=S.mods;
  </div></div>
  `}</div>`:''}
  ${M.ord?ordCard:''}
- <p class="note">Callers will hear: “I can book ${R.minParty} to ${R.maxParty} guests, up to ${R.window} days ahead, with at least ${noticeLabel().toLowerCase()} notice.”</p></div>`,foot:footer()}};
+ ${M.res?`<p class="note">Callers will hear: “I can book ${R.minParty} to ${R.maxParty} guests, up to ${R.window} days ahead, with at least ${noticeLabel().toLowerCase()} notice.”</p>`:''}</div>`,foot:footer()}};
 
 /* 04 · agent */
 VIEWS.voice=()=>{const A=S.agent,n=A.name;
@@ -392,7 +393,7 @@ const kv=(k,v)=>`<div class="kv"><span>${k}</span><b>${esc(v)}</b></div>`;
 const grp=(t,step,rows)=>`<div class="card grp"><div class="gh"><span class="cap">${t}</span><button class="lnk g" onclick="go(${step})">Edit</button></div>${rows}</div>`;
 VIEWS.review=()=>{const o=S.o,d=S.d,R=S.rules,A=S.agent;
  const chat=S.chat.map(([w,t])=>`<div class="m ${w}"><small>${w==='a'?esc(A.name):'You'}</small>${esc(t)}</div>`).join('')+(S.typing?'<div class="m"><div class="dots"><i></i><i></i><i></i></div></div>':'');
- const sg=[...(S.mods.res?['Table for 4 tonight','Table for 20 on Saturday']:['One Margherita for pickup','Can I get delivery to Damen Ave?']),'What are your hours?',o.faqs[0]?o.faqs[0][0]:'Do you deliver?'];
+ const sg=[...(S.mods.res?['Table for 4 tonight','Table for 20 on Saturday']:S.mods.ord?['One Margherita for pickup','Can I get delivery to Damen Ave?']:['Where are you located?']),'What are your hours?',o.faqs[0]?o.faqs[0][0]:'Do you deliver?'];
  return{body:`<div class="body fade">${head('Let’s make sure your host is ready.','Try a call with '+esc(A.name)+', then review the details below.')}
  <div class="sec card try">${S.chat.length?`<div class="chat" role="log" aria-live="polite">${chat}</div>`:''}
   <form onsubmit="event.preventDefault();const i=$('#tq');const v=i.value;i.value='';ask(v)"><div class="ask"><input id="tq" placeholder="Ask ${esc(A.name)} something a guest would…" autocomplete="off" aria-label="Your question"/><button type="submit" aria-label="Send">${ic('up',16)}</button></div></form>
@@ -400,7 +401,7 @@ VIEWS.review=()=>{const o=S.o,d=S.d,R=S.rules,A=S.agent;
  ${grp('Brand · '+esc(d.brand),2,kv('Cuisine',d.cuisine||'Not set')+kv('Country',d.country||'Not set')+kv('Description',d.desc||'Not set'))}
  ${grp('Outlet',2,kv('Address',o.addr||'Not set')+kv('Phone',o.phone||'Not set')+kv('Timezone',o.tz)+kv('Business hours',hoursText()))}
  ${grp('FAQs',2,kv(o.faqs.length+' questions imported',o.faqs.map(f=>f[0]).join(' · ')||'None yet'))}
- ${grp('Services',3,kv('Agent handles',[S.mods.res?'Reservations':null,S.mods.ord?'Ordering':null].filter(Boolean).join(' and ')))}
+ ${grp('Services',3,kv('Agent handles',[S.mods.res?'Reservations':null,S.mods.ord?'Ordering':null].filter(Boolean).join(' and ')||'Enquiries only'))}
  ${S.mods.ord?grp('Ordering',3,kv('Phone orders',ordText())):''}
  ${S.mods.res?grp('Booking rules',3,kv('Max reservations / day',R.perDay)+kv('Party size',`${R.minParty}–${R.maxParty} guests`)+kv('Duration',R.duration+' min')+kv('Advance window',R.window+' days')+kv('Minimum notice',noticeLabel())):''}
  ${grp('Agent',4,kv('Name',A.name)+kv('Voice',voice().n+' · '+voice().t)+kv('Greeting',greet()))}
@@ -409,7 +410,7 @@ VIEWS.review=()=>{const o=S.o,d=S.d,R=S.rules,A=S.agent;
 /* 06 · go live */
 function nextSteps(A){const st=[];
  if(S.mods.ord){st.push(['Finish ordering in the dashboard','Add your menu, taxes and payments. A checklist shows what is left.']);st.push(['Turn on ordering in Agents','You are asked to subscribe then. '+(S.mods.res?'Calls, bookings and orders':'Calls and orders')+' are active once you do. Nothing is billed before that.']);}
- else st.push(['Subscribe to make '+esc(A.name)+' active','Calls and bookings are active once you do. Nothing is billed before that.']);
+ else st.push(['Subscribe to make '+esc(A.name)+' active',(S.mods.res?'Calls and bookings':'Calls')+' are answered once you do. Nothing is billed before that.']);
  st.push(['Forward your restaurant line','Dial the code above so '+esc(A.name)+' answers your calls.']);
  return st.map((x,k)=>`<div class="row" style="grid-template-columns:34px 1fr"><b>${k+1}</b><div class="v">${x[0]}<small>${x[1]}</small></div></div>`).join('')}
 VIEWS.live=()=>{const A=S.agent,F=S.fwd,N='+1 (312) 555-0147';

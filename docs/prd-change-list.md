@@ -341,3 +341,8 @@ Prototype changes since the list above. PRD edits to make by hand (nothing was c
 
 ## 5. Not built yet from the MoM (need a decision, see discussion)
 - Payment settings per outlet; Overview customizable widget; the MoM decision "retain modals, no sidebar UI" (the delivery-area editor is full screen and the Edit agent panel is a side drawer); regional payment rollout (UAE first); entry price and premium plan.
+
+## Update 27 Oct (2): empty state and "enquiries only"
+- ADD (Overview, 4.1): when the account is **not subscribed** (just signed up), the Overview shows **no data**: a "Not active yet" card with Subscribe (and "Set up ordering · n/5" when Ordering is selected), tiles with "—", empty Pending requests, an agent card marked "Not active", and "No calls yet". Reservations, Orders and Calls already show only the Subscribe prompt. Navigation badges (pending counts) are hidden until subscribed.
+- ADD (greyed services): tiles and cards for a service that is off show "—" placeholders, never real figures.
+- ADD (Services): **both services can be unselected**. Wording shown: "Enquiries only. The agent answers questions about your hours, location and FAQs, and passes other calls to your team. It doesn't take bookings or orders." Shown in onboarding step 3 (reservation and ordering settings hidden), Review ("Agent handles: Enquiries only"), Go-live next steps (subscribe, forward line), Settings > Services and the Overview banner (with a Change button for the owner).

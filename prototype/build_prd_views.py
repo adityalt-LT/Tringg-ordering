@@ -49,6 +49,9 @@ VIEWS = [
  ('20-ordering-only-reservations-greyed', 'Ordering only: Overview with reservation items greyed out', 'db', scen('live') + "MODS.res=false;applyMods();S.route='overview';S.outlet='wp';render();"),
  ('21-reservations-only-ordering-greyed', 'Reservations only: Orders screen greyed out with a Turn on button', 'db', scen('live') + "MODS.ord=false;applyMods();S.route='orders';S.outlet='wp';render();"),
  ('22-profile', 'My profile: details, security, notifications and access (opens from the top right or the left menu)', 'db', scen('live') + "S.route='profile';S.outlet='all';render();"),
+ ('23-overview-not-subscribed-no-data', 'Just signed up (not subscribed): Overview shows no data, only a Subscribe prompt', 'db', scen('off') + "S.route='overview';S.outlet='all';render();"),
+ ('24-onboarding-step3-enquiries-only', 'Onboarding step 3 with nothing selected: the agent answers enquiries only (stated explicitly)', 'ob', "pick('rossa');S.rs=99;S.mods.res=false;S.mods.ord=false;go(3);"),
+ ('25-overview-enquiries-only', 'Dashboard with Reservations and Ordering both off: Enquiries-only banner, both services greyed', 'db', scen('live') + "MODS.res=false;MODS.ord=false;applyMods();S.route='overview';S.outlet='all';render();"),
 ]
 rows = []
 for name, title, kind, init in VIEWS:
