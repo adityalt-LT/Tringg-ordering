@@ -346,3 +346,47 @@ Prototype changes since the list above. PRD edits to make by hand (nothing was c
 - ADD (Overview, 4.1): when the account is **not subscribed** (just signed up), the Overview shows **no data**: a "Not active yet" card with Subscribe (and "Set up ordering · n/5" when Ordering is selected), tiles with "—", empty Pending requests, an agent card marked "Not active", and "No calls yet". Reservations, Orders and Calls already show only the Subscribe prompt. Navigation badges (pending counts) are hidden until subscribed.
 - ADD (greyed services): tiles and cards for a service that is off show "—" placeholders, never real figures.
 - ADD (Services): **both services can be unselected**. Wording shown: "Enquiries only. The agent answers questions about your hours, location and FAQs, and passes other calls to your team. It doesn't take bookings or orders." Shown in onboarding step 3 (reservation and ordering settings hidden), Review ("Agent handles: Enquiries only"), Go-live next steps (subscribe, forward line), Settings > Services and the Overview banner (with a Change button for the owner).
+
+---
+
+# Update 28 Oct: multi-outlet services, outlet-level payments and taxes, checklist, menu (from the 26 Oct MoM)
+
+## 1. Account menu (left navigation, bottom)
+- EDIT 4.1: same as the launched product. Tapping the account block opens a card above it: avatar, name and email at the top (opens My profile), then Settings, then Sign out (red).
+
+## 2. Setup checklist is dynamic
+- EDIT: steps are Menu, Pickup & delivery, Taxes, Payments, and **Turn on ordering only while ordering is not on**. A restaurant that subscribed first, or already switched ordering on in Agents, does not see "Turn on ordering". Each step shows done from the data (published menu, taxes confirmed, payments connected, outlet service set). The checklist disappears when nothing is left.
+- EDIT: the Ordering page outlet card no longer repeats the steps. It shows only the status ("Setup n of m", "Taking orders", "Paused"), the pause control and "Start taking orders".
+
+## 3. Services are per outlet; agent capabilities follow (3A, 6A, 4.1)
+- ADD: **Settings > Services** is a table in All outlets: one row per outlet, a toggle for Reservations and a toggle for Ordering, a column "The agent handles" (Enquiries is always on; "Enquiries only" when both are off), and "On for all / Off for all" shortcuts. In a single outlet the page shows two cards for that outlet.
+- RULE: the agent's capabilities in Agents are derived from this page. A capability is on for the agent when at least one assigned outlet has it. The agent card shows "Reservations · on at 7 of 13 outlets" and "Ordering · on at 7 of 13 outlets"; the Edit agent panel shows the same counts with a link to Services. At call time the agent offers bookings or orders only for the outlet that was called, and answers enquiries everywhere else.
+- RULE (All outlets view when outlets differ):
+  - Navigation stays active if at least one outlet has the service.
+  - Overview shows a strip: "Services differ by outlet. Reservations at 7 of 13 · Ordering at 7 of 13. Totals count only the outlets where each is on."
+  - Orders and Reservations show only data from outlets where that service is on, with a banner "Ordering is on at 7 of 13 outlets" and a "By outlet" link.
+  - The Ordering outlet table lists every outlet; outlets with ordering off are greyed with "Turn on". The checklist stays single-outlet only.
+  - In a single outlet where the service is off, that outlet's screens are greyed out with a Turn on button (owner).
+- EDIT: onboarding step 3 sets the starting choice for every outlet; Settings > Services changes it per outlet afterwards.
+
+## 4. Payments can differ by outlet (3F, 3G, 6F)
+- Model: **one default for all outlets plus exceptions**, the same pattern as auto-accept. The Stripe account is always shared.
+- Single outlet: a row "This outlet" shows "Same as all outlets" with **Change for this outlet**, or "Different from all outlets" with **Match all outlets**. While the outlet follows the default, edits change the default for every outlet that follows it, and the row says how many. Overridable: pickup payment (Online, At pickup, Both) and the cash-on-delivery rules (order limit, repeat customers). Not overridable: Stripe account, expiry fallbacks, payment link text.
+- All outlets: the Payments card shows the default and a table **Outlets that differ** (outlet, pickup payment, cash limit, Open, Match all). When empty it says "Every outlet follows these settings."
+
+## 5. Taxes by outlet (3J, 6J)
+- Taxes already apply to chosen outlets (set when a tax is edited). Single outlet: the card lists only taxes that apply there and says how many apply only at other outlets. All outlets: each tax shows its scope ("All outlets" or "n outlets") and a table **Taxes by outlet** (outlet, taxes that apply).
+
+## 6. Menu changes from the MoM
+- ADD import issues: a card listing items without an image and items without veg / non-veg, with **Fix here** (filters the list) and, when the menu comes from a POS, **Fix in {POS}**.
+- ADD images: a thumbnail on every item row, with a dashed "No image" tile for quality checks. Voice ordering does not need images.
+- EDIT filters: one **Filter** button next to search, same pattern as Orders and Calls. Status (All, Needs a check, Missing info, Out of stock, Popular) and Quality check (No image, Veg / non-veg not set).
+- EDIT row actions: edit, duplicate and delete icons appear on hover, on keyboard focus and on a selected row (always visible on touch). **Duplicate asks for confirmation.** The unclear "OK" button on items that need a check is now **Fix** (opens the item).
+- EDIT sizes and prices: column renamed "Sizes & prices"; the Choices column shows two add-on groups and "+n" for the rest (hover lists them).
+- EDIT categories: drag and drop replaces move up / down, for the category list and for the numbered Voice highlights. The text explains that category order is the order the agent offers categories.
+- EDIT: the duplicate "Category" button in the page header is removed; "Add category" stays under the category list.
+- EDIT: **Slots tab is disabled** ("Slots · needs POS") until a POS is connected.
+- EDIT: dietary options, allergens and "Allergens it adds" are removed from the item and option editors, and "allergens" is removed from the readiness rule. Rationale for the PRD: collecting them is manual work for every item and is deferred; the agent does not answer allergen or dietary questions in Phase 1 and hands those to the team.
+- EDIT: stock availability stays a toggle in the list, outside the editor.
+- DECISION applied: **no side panels**. The item, option, group, category, slot and tax editors and the Edit agent panel open as centred modals. The delivery-area editor stays full screen because it needs the map.
+- Not changed (needs a decision): whether Modifiers stays a separate tab; the display of many add-on templates beyond the "+n" summary.
