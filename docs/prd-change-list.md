@@ -390,3 +390,22 @@ Prototype changes since the list above. PRD edits to make by hand (nothing was c
 - EDIT: stock availability stays a toggle in the list, outside the editor.
 - DECISION applied: **no side panels**. The item, option, group, category, slot and tax editors and the Edit agent panel open as centred modals. The delivery-area editor stays full screen because it needs the map.
 - Not changed (needs a decision): whether Modifiers stays a separate tab; the display of many add-on templates beyond the "+n" summary.
+
+---
+
+# Update 29 Oct: menu clean-up, Sync now, multiple agents
+
+## Menu
+- ADD **Sync now** (top right of Menu, brand view): pulls the latest menu from the last source the menu was synced from (POS, delivery app or other import). Shows "Last synced 4 min ago from {source}" and a "Syncing…" state; unpublished edits are kept. Not shown for a menu built in Tringg.
+- REMOVE item images from the Items list, the image quality filter and the "no image" import issue. (Not looking good and caused errors; revisit later.) Import issues now covers veg / non-veg only.
+- EDIT **Sizes & prices**: one line per size, size name left and price right-aligned in a fixed two-column grid, so alphanumeric names (12", Large, 500 ml, 2 pc) line up. A single-size item shows just the price. Long names truncate with a tooltip. "n price groups" stays under it.
+- EDIT wording: columns are "On menu at" and **"Available today"** (a switch). Available today off means the kitchen has run out: the agent tells callers it is unavailable today, and it returns by itself the next day unless switched off again. The old "In stock / Stock" label is gone.
+- REMOVE the **Voice highlights** section. The category list now carries a highlighted note: "The agent offers categories in this order. Drag to reorder."
+- REMOVE the **Slots** tab and the Slots section in the item editor until a POS flow exists.
+
+## Agents (multiple agents)
+- Model: **each outlet has one agent; an agent covers one or more outlets; Reservations and Ordering are set per outlet.** Agent capabilities are shown from the outlets it covers, so one agent can take orders at some outlets and only bookings at others.
+- Agents page: one card per agent. Header with status (Live / Paused / Not active); stats (outlets, calls today, success); **What it does** chips ("Reservations · all 2 outlets", "Ordering · 1 of 3 outlets" or "Ordering · off"); a **By outlet** table (outlet, reservations ✓/—, ordering Off / ✓ Ready / ⚠ what is missing). Buttons: Edit, Manage outlets, Listen, Pause or Resume (per agent).
+- **New Agent / Edit agent** modal with six tabs, same as the launched product: Identity (name, type: Reservation, Ordering, Reservation & Ordering, Enquiries only; greeting; personality), Voice (All / Female / Male, Listen), Tools (reservation tools, ordering tools, common tools; in Edit, the Ordering switch and readiness by outlet), Behaviour (max call duration, silence timeout, booking mode, read the order back), Escalation (three rules), **Numbers** (tick the outlets this agent answers, with the Tringg number and a Reservations and an Ordering switch for each ticked outlet). Name is required on the first tab; at least one outlet is required to create.
+- RULES: ticking an outlet that belongs to another agent says "Moves from {agent}". Creating an agent applies its type as the starting services for the ticked outlets, and the Numbers switches change a single outlet. Unticking an outlet in Edit hands it back to another agent. Settings > Services shows the same data (outlet, agent, reservations, ordering).
+- The "Turn on ordering" checklist step still opens the Edit agent modal on the Tools tab (subscribes first if needed).

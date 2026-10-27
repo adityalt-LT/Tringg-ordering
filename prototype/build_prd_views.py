@@ -58,10 +58,15 @@ VIEWS = [
  ('29-payments-all-outlets-differences', 'Payments in All outlets: default settings and the table of outlets that differ', 'db', scen('live') + "payOvSet('wp');DB.payOv.wp.pick='store';payOvSet('rn');DB.payOv.rn.cod.cap=60;" + goto('settings','all') + anchor('pay')),
  ('30-taxes-by-outlet', 'Taxes in All outlets: taxes and the table of which taxes apply at each outlet', 'db', scen('live') + goto('settings','all') + anchor('tax')),
  ('31-account-menu', 'Account menu at the bottom of the left navigation: profile, Settings, Sign out', 'db', scen('live') + "S.route='overview';S.acct=true;render();"),
- ('32-menu-items-and-filter', 'Menu Items: thumbnails, hover-only edit icons, drag handles for category order, Filter panel', 'db', scen('live') + "S.route='menu';S.outlet='all';S.menu.fo=true;render();"),
- ('33-menu-import-issues', 'Menu: Import issues card (missing images, veg / non-veg) with Fix here / Fix in POS', 'db', scen('live') + "S.route='menu';S.outlet='all';render();setTimeout(function(){var e=$('imp');if(e)e.scrollIntoView({block:'start'});},150);"),
+ ('32-menu-items-and-filter', 'Menu Items: Sync now, clean sizes & prices, hover-only edit icons, drag handles for category order, Filter panel', 'db', scen('live') + "S.route='menu';S.outlet='all';S.menu.fo=true;render();"),
+ ('33-menu-import-issues', 'Menu: Import issues card (veg / non-veg) with Fix here / Fix in POS', 'db', scen('live') + "S.route='menu';S.outlet='all';render();setTimeout(function(){var e=$('imp');if(e)e.scrollIntoView({block:'start'});},150);"),
  ('34-menu-item-modal', 'Menu: item editor as a centred modal (no side panel)', 'db', scen('live') + "S.route='menu';S.outlet='all';render();openItem(DB.items[0].id);"),
  ('35-checklist-after-subscribing-first', 'Checklist when the restaurant subscribed first: Turn on ordering is not listed', 'db', scen('off') + "DB.subscribed=true;DB.orderingOn=true;DB.caps.ord=true;S.outlet='wl';DB.svc.wl={set:'draft',pick:true,prep:25,del:true,rad:{mi:4,fee:4,min:20}};DB.deliveryMode.wl='radius';S.route='overview';render();"),
+ ('36-new-agent-identity', 'New Agent: Identity tab (name, type, greeting, personality)', 'db', scen('live') + "S.route='agents';S.outlet='all';render();openAgent('new');"),
+ ('37-new-agent-numbers-outlets', 'New Agent: Numbers tab, choose outlets and what the agent does at each (Reservations, Ordering)', 'db', scen('live') + "S.route='agents';S.outlet='all';render();openAgent('new');S.ag.d.n='Marco';S.ag.d.type='res';S.ag.tab='num';agAsg('lp');agAsg('wl');renderOverlay();"),
+ ('38-agents-two-agents-different-services', 'Agents page with two agents: one takes orders at its outlets, the other only bookings', 'db', scen('live') + "S.route='agents';S.outlet='all';render();openAgent('new');S.ag.d.n='Marco';S.ag.d.type='res';agAsg('lp');agAsg('wl');agSave();"),
+ ('39-new-agent-voice', 'New Agent: Voice tab', 'db', scen('live') + "S.route='agents';S.outlet='all';render();openAgent('new');S.ag.tab='voice';renderOverlay();"),
+ ('40-edit-agent-tools-ordering-switch', 'Edit agent: Tools tab with the Ordering switch and readiness by outlet', 'db', scen('live') + "S.route='agents';S.outlet='all';render();openAgent('a1','tools');"),
 ]
 rows = []
 for name, title, kind, init in VIEWS:
