@@ -11,7 +11,7 @@ db = (here / 'tringg-ordering.html').read_text(encoding='utf-8')
 # in the combined file the button hands over through the wrapper instead of a link
 old = '<a class="btn" href="tringg-ordering.html?from=onboarding" onclick="saveHandoff()">Open dashboard'
 assert ob.count(old) == 1
-ob = ob.replace(old, '<a class="btn" href="#" onclick="event.preventDefault();parent.postMessage({tringg:\'handoff\',d:{brand:S.d.brand,ord:S.d.ord,agent:S.agent.name}},\'*\')">Open dashboard')
+ob = ob.replace(old, '<a class="btn" href="#" onclick="event.preventDefault();parent.postMessage({tringg:\'handoff\',d:{brand:S.d.brand,ord:S.d.ord,mods:S.mods,agent:S.agent.name}},\'*\')">Open dashboard')
 dash = '<!doctype html><html lang="en"><head><meta charset="utf-8">' + db + '</html>'
 b64 = lambda t: base64.b64encode(t.encode('utf-8')).decode('ascii')
 page = f'''<!doctype html>

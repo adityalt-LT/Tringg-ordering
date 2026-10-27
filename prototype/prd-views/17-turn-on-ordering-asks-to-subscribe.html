@@ -47,6 +47,31 @@ button,input,select,textarea{font-family:inherit;letter-spacing:inherit}
 .nav:hover{background:#1d1d1d;color:#fff}
 .nav.on{background:var(--rail-act);color:#fff;font-weight:500}
 .nav svg{flex-shrink:0}
+.nav.off{opacity:.55}.nav .bdg.off{background:transparent;border:1px solid #444;color:#999;font-weight:500}
+.sn.off{opacity:.55}
+.modoff{display:flex;flex-direction:column;flex:1;min-height:0}
+.mo-b{display:flex;align-items:center;gap:12px;padding:12px 28px;background:var(--sunken);color:var(--ink-70);font-size:14px;flex-shrink:0}
+.mo-b b{color:var(--ink);font-weight:600}.mo-b button{margin-left:auto}
+.mo-c{flex:1;min-height:0;display:flex;flex-direction:column;opacity:.45;filter:grayscale(1)}
+.goff{opacity:.45;filter:grayscale(1);pointer-events:none;display:flex;flex-direction:column;gap:18px}
+.stats>.goff{display:block}
+.adv-t{display:flex;align-items:center;gap:8px;border:0;background:none;padding:2px 0;font-size:14px;font-weight:500;color:var(--ink);cursor:pointer;text-align:left}
+.adv-t span{display:inline-flex;transition:transform .15s;transform:rotate(-90deg)}.adv-t span.open{transform:none}
+.adv{display:flex;flex-direction:column;gap:14px;padding:6px 0 0}
+.fpanel{position:absolute;right:0;top:54px;z-index:40;width:360px;max-width:calc(100vw - 48px);background:var(--panel);border-radius:16px;box-shadow:var(--e3);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.fpanel .fl{margin-bottom:5px;font-size:12.5px}.fpanel .dchips button{height:32px;padding:0 12px;font-size:13px}.fpanel .dchips{flex-wrap:wrap}
+.fpanel-f{display:flex;justify-content:space-between;gap:10px}
+.btn.on{background:var(--ink);color:#fff}
+.svc-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.svc-card{text-align:left;border:1.5px solid var(--border);border-radius:18px;background:var(--panel);padding:22px;cursor:pointer;display:flex;flex-direction:column;gap:8px;position:relative}
+.svc-card.on{border-color:var(--ink);box-shadow:0 0 0 1px var(--ink)}
+.svc-card .ck{position:absolute;top:18px;right:18px;width:24px;height:24px;border-radius:7px;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;color:#fff}
+.svc-card.on .ck{background:var(--ink);border-color:var(--ink)}
+@media(max-width:720px){.svc-grid{grid-template-columns:1fr}}
+.prof-h{display:flex;gap:18px;align-items:center}
+.prof-av{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#E8B96A,#C99344);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:600;color:#3a2600;flex-shrink:0}
+.top-av{width:40px;height:40px;border-radius:50%;border:0;background:linear-gradient(135deg,#E8B96A,#C99344);color:#3a2600;font-size:13px;font-weight:600;cursor:pointer;flex-shrink:0}
+.top-av.on{box-shadow:0 0 0 2px var(--panel),0 0 0 4px var(--ink)}
 .nav .bdg{margin-left:auto;font-size:11px;font-weight:600;min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:var(--cream-500);color:#111;display:flex;align-items:center;justify-content:center}
 .nav .bdg.new{background:transparent;border:1px solid #444;color:#999;font-weight:500}
 .proto{margin:0 12px 12px;border:1px dashed #333;border-radius:12px;padding:10px}
@@ -644,6 +669,8 @@ const I={
  trend:sv('<path d="M4 8l6 6 3-3 7 7M20 13v5h-5"/>',22)
 };
 
+const ME={owner:{n:'Priya Raman',e:'priya@rossapizza.com',ini:'PR',ph:'(312) 555-0188'},manager:{n:'Daniel Ortiz',e:'daniel@rossapizza.com',ini:'DO',ph:'(312) 555-0142'},staff:{n:'Maya Chen',e:'maya@rossapizza.com',ini:'MC',ph:'(312) 555-0119'}};
+const me=()=>ME[(typeof S!=='undefined'&&S.role)||'owner'];
 const BRAND={name:'ROSSA Pizzeria',agent:'Agent',num:'+1 (312) 555-0147',user:{n:'ROSSA Pizzeria',e:'priya@rossapizza.com',ini:'RP'}};
 const OUTLETS_ALL=[
  {id:'wp',name:'ROSSA Wicker Park',short:'Wicker Park',region:'Chicago',pos:'Square',num:'+1 (312) 555-0147'},
@@ -667,7 +694,7 @@ const R=()=>(typeof S!=='undefined'&&S.role)||'owner';
 const isOwner=()=>R()==='owner',isMgr=()=>R()==='manager',notStaff=()=>R()!=='staff';
 function applyRole(all){const a=all?null:ROLE_OUT[R()];OUTLETS.length=0;OUTLETS.push(...OUTLETS_ALL.filter(o=>!a||a.includes(o.id)));}
 function setRole(r){S.role=r;applyRole();S.outlet=OUTLETS.length>1?'all':OUTLETS[0].id;S.dd=false;S.orders.sel=null;S.calls.sel=null;if(S.route==='agents'&&r==='staff'&&typeof SLICE==='undefined')S.route='overview';toast('Viewing as '+ROLE_N[r]+(r==='owner'?' · all outlets':' · '+OUTLETS.length+' outlet'+(OUTLETS.length>1?'s':'')));render();}
-const setAllowed=k=>{const r=R();if(r==='owner')return true;if(!k.startsWith('ord-'))return true;if(r==='manager')return !['ord-pay','ord-pos'].includes(k);return ['ord-delivery','ord-hours','ord-pre'].includes(k);};
+const setAllowed=k=>{const r=R();if(k==='mods')return r==='owner';if(r==='owner')return true;if(!k.startsWith('ord-'))return true;if(r==='manager')return !['ord-pay','ord-pos'].includes(k);return ['ord-delivery','ord-pre'].includes(k);};
 const roleNav=n=>n.map(g=>[g[0],g[1].filter(i=>setAllowed(i[0]))]).filter(g=>g[1].length);
 const ON=id=>OUTLETS_ALL.find(o=>o.id===id)||{};
 
@@ -822,13 +849,14 @@ const SCEN={
  ready:{t:'Ready',h:'Ordering is set up and switched on, but no orders have come in yet today.'},
  live:{t:'Live',h:'A busy Monday night across 12 outlets.'}};
 let DB;
+const MODS={res:true,ord:true};
 function loadScenario(k){
-  DB={k,orderingOn:k!=='off',subscribed:k!=='off',menuState:k==='off'?'none':'live',menuSource:k==='off'?null:'LimeTray menu',
+  DB={k,mods:MODS,ohx:{},orderingOn:k!=='off'&&MODS.ord,subscribed:k!=='off',menuState:k==='off'?'none':'live',menuSource:k==='off'?null:'LimeTray menu',
    stripe:k==='off'?'none':'active',payPick:{call:true,store:true},serviceSet:k!=='off',posSync:k!=='off',aaDefault:true,aaExc:{ls:false},
    autoAccept:Object.fromEntries(OUTLETS.map(o=>[o.id,!['ls'].includes(o.id)])),orders:k==='live'?mkOrders():[],calls:mkCalls(k),res:clone(RES),
    items:clone(MENU.items),cats:clone(MENU.cats),groups:clone(MENU.groups),wins:clone(MENU.wins),taxes:clone(MENU.taxes),pending:0,snap:null,zones:Object.fromEntries(OUTLETS.map(o=>[o.id,o.isNew?[]:ZONES[o.id]?clone(ZONES[o.id]):[]])),deliveryMode:Object.fromEntries(OUTLETS.map(o=>[o.id,o.isNew?null:['wp','lp'].includes(o.id)?'zones':'radius'])),
    svc:Object.fromEntries(OUTLETS.map(o=>[o.id,o.isNew?{set:false,del:false,pick:false,prep:null,rad:null}:{set:true,del:o.id!=='oh',pick:true,prep:o.id==='oh'?12:20,rad:{mi:3,fee:3,min:15}}])),
-      caps:{enq:true,res:true,ord:k!=='off'},
+      caps:{enq:true,res:MODS.res,ord:k!=='off'&&MODS.ord},
    payWhen:'after',payFall:{pk:false,dl:false},payOk:k!=='off',taxOk:k!=='off',hoursOk:k!=='off',posPush:'accept',
    cod:{capOn:true,cap:30,repeatOn:true,repeatN:1,mode:'both'},
    oh:Object.fromEntries(OUTLETS.map(o=>[o.id,o.isNew?{set:false}:['lp','ev'].includes(o.id)?{set:true,same:false,pick:['11:00 AM','11:00 PM'],del:['11:00 AM','9:00 PM'],cut:15}:{set:true,same:true,pick:['11:00 AM','10:00 PM'],del:['11:00 AM','10:00 PM'],cut:15}])),
@@ -845,12 +873,12 @@ const ZONES={
 
 /* ── UI state ── */
 const S={route:'overview',outlet:'all',dd:false,nav:false,acct:false,spec:false,modal:null,
- orders:{tab:'pending',sel:null,q:'',ful:'all',pay:'all'},calls:{tab:'all',sel:null,q:''},res:{tab:'inbox',sel:'R-311'},
+ orders:{tab:'pending',sel:null,q:'',ful:'all',pay:'all',out:'all',pre:false,rf:false,fo:false},calls:{tab:'all',sel:null,q:''},res:{tab:'inbox',sel:'R-311'},
  menu:{tab:'items',cat:'pz',flow:null,files:[],src:null,pct:0,f:'all',q:'',sel:[],drawer:null,gsel:'g1',ao:'wp',aq:'',af:'all',cut:0,ret:false},
  set:'ord',zoneOutlet:'wp',zoneSel:'A',test:null,agentEdit:false};
 let scen='live';try{const k=localStorage.getItem('tringg-proto-v2');if(k&&SCEN[k])scen=k;}catch(e){}
 loadScenario(scen);
-const hash=location.hash.slice(1);if(['overview','reservations','orders','calls','menu','agents','settings'].includes(hash))S.route=hash;
+const hash=location.hash.slice(1);if(['overview','reservations','orders','calls','menu','agents','settings','profile'].includes(hash))S.route=hash;
 
 const inScope=o=>S.outlet==='all'?(!ROLE_OUT[R()]||ROLE_OUT[R()].includes(o.outlet)):o.outlet===S.outlet;
 const subT=o=>o.items.reduce((a,i)=>a+i.p*i.q,0);
@@ -863,15 +891,14 @@ const spill=s=>pill(ST[s][0],ST[s][1]);
 const posFor=o=>DB.posSync&&ON(o.outlet).pos;
 const deliveryPayable=()=>DB.stripe==='active'||DB.cod.capOn||DB.cod.repeatOn;
 const setupSteps=()=>{const all=S.outlet==='all',os=all?OUTLETS.map(x=>x.id):[S.outlet],ms=os.map(ordMissUI),has=k=>ms.some(m=>m.includes(k)),n=k=>all?(os.length-ms.filter(m=>m.includes(k)).length)+' of '+os.length:'';
- const per=k=>()=>{if(all){const o=OUTLETS.find(x=>ordMissUI(x.id).includes(k))||OUTLETS[0];pickOutlet(o.id);}goSet(k==='svc'?'ord-delivery':'ord-hours');};
+ const per=k=>()=>{if(all){const o=OUTLETS.find(x=>ordMissUI(x.id).includes(k))||OUTLETS[0];pickOutlet(o.id);}goSet('ord-delivery');};
  return[
  {k:'menu',t:'Menu',s:'Publish your menu. Import it or build it here.',done:!has('menu'),go:()=>goSet('ord-menu')},
  {k:'svc',t:'Pickup & delivery',s:'Prep time, delivery area, fee and minimum.',done:!has('svc'),n:n('svc'),go:per('svc')},
- {k:'hrs',t:'Ordering hours',s:'When the agent takes orders.',done:!has('hrs'),n:n('hrs'),go:per('hrs')},
  {k:'tax',t:'Taxes',s:'Rates the agent reads out in the total. 0% is fine.',done:!has('tax'),go:()=>goSet('ord-tax')},
  {k:'pay',t:'Payments',s:'How callers pay: online, at pickup, or cash on delivery.',done:!has('pay'),go:()=>goSet('ord-pay')},
  {k:'cap',t:'Turn on ordering',s:'Subscribe, then switch on Ordering in Agents.',done:!!(DB.orderingOn&&DB.subscribed),go:capGo}];};
-function renderChk(){if(S.outlet==='all')return '';const st=setupSteps(),req=st.filter(x=>!x.opt);if(req.every(x=>x.done))return '';
+function renderChk(){if(S.outlet==='all'||!DB.mods.ord)return '';const st=setupSteps(),req=st.filter(x=>!x.opt);if(req.every(x=>x.done))return '';
   const d=req.filter(x=>x.done).length,left=req.length-d,open=S.chk!==false,nx=st.find(x=>!x.done&&!x.opt),C=113.1;
   const ring=`<svg class="chk-ring" viewBox="0 0 44 44" aria-hidden="true"><circle cx="22" cy="22" r="18" fill="none" stroke="#333" stroke-width="4"/><circle cx="22" cy="22" r="18" fill="none" stroke="#4FC2B4" stroke-width="4" stroke-linecap="round" stroke-dasharray="${(C*d/req.length).toFixed(1)} ${C}" transform="rotate(-90 22 22)"/><text x="22" y="26.5" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">${left}</text></svg>`;
   if(!open)return `<button class="chk-min" onclick="S.chk=true;renderRail()" aria-label="Set up ordering, ${left} step${left>1?'s':''} left. Open the checklist">${ring}<span><b>Set up ordering</b><small>${left} step${left>1?'s':''} left</small></span></button>`;
@@ -886,15 +913,17 @@ function renderRail(){
    <button class="outlet-btn" onclick="S.dd=!S.dd;renderRail()" aria-expanded="${S.dd}">${I.store}<span>${esc(o)}</span>${I.chev}</button>`;
   if(S.dd)h+=`<div class="outlet-dd">${OUTLETS.length>1?`<button class="odi ${S.outlet==='all'?'on':''}" onclick="pickOutlet('all')"><span class="d"></span>${isOwner()?'All Outlets':'My outlets'} · ${OUTLETS.length}</button>`:''}${[...new Set(OUTLETS.map(o=>o.region))].map(r=>`<div class="odd-reg">${r}</div>`+OUTLETS.filter(o=>o.region===r).map(x=>`<button class="odi ${S.outlet===x.id?'on':''}" onclick="pickOutlet('${x.id}')"><span class="d"></span>${esc(x.name)}${DB.svc[x.id].set!==true?'<span class="odd-new">New</span>':''}</button>`).join('')).join('')}</div>`;
   h+='<nav class="rail-nav" aria-label="Main">'+NAV.filter(n=>!(n[0]==='agents'&&R()==='staff')).map(n=>{let b='';
-    if(n[0]==='orders'){b=!DB.orderingOn?'<span class="bdg new">Set up</span>':pend?`<span class="bdg">${pend}</span>`:'';}
-    if(n[0]==='reservations'){const p=DB.res.filter(r=>r.st==='pending'&&inScope(r)).length;b=p?`<span class="bdg">${p}</span>`:'';}
-    return `<button class="nav ${S.route===n[0]?'on':''}" onclick="go('${n[0]}')">${I[n[2]]}${n[1]}${b}</button>`;}).join('')+'</nav>';
+    const off=(n[0]==='orders'&&!DB.mods.ord)||(n[0]==='reservations'&&!DB.mods.res);
+    if(n[0]==='orders'){b=!DB.mods.ord?'<span class="bdg off">Off</span>':!DB.orderingOn?'<span class="bdg new">Set up</span>':pend?`<span class="bdg">${pend}</span>`:'';}
+    if(n[0]==='reservations'){const p=DB.res.filter(r=>r.st==='pending'&&inScope(r)).length;b=!DB.mods.res?'<span class="bdg off">Off</span>':p?`<span class="bdg">${p}</span>`:'';}
+    return `<button class="nav ${S.route===n[0]?'on':''} ${off?'off':''}" onclick="go('${n[0]}')">${I[n[2]]}${n[1]}${b}</button>`;}).join('')+'</nav>';
   h+=renderChk();
   h+=`<button class="proto-tog" onclick="S.protoOpen=!S.protoOpen;renderRail()" aria-expanded="${!!S.protoOpen}"><span>Prototype</span><span class="pt-v">${ROLE_N[R()]} · ${SCEN[DB.k].t}</span>${I.chev}</button>${S.protoOpen?`<div class="role-chip"><div class="proto-l">View as</div><div class="proto-seg">${['owner','manager','staff'].map(k=>`<button class="${R()===k?'on':''}" onclick="setRole('${k}')">${ROLE_N[k]}</button>`).join('')}</div><div class="proto-h">${R()==='owner'?'Everything, at every outlet.':R()==='manager'?'Runs 3 outlets: Loop, West Loop, River North. No payments, POS or taxes.':'Works orders at Loop. No settings, money, agent or recordings.'}</div></div>
    <div class="proto"><div class="proto-l">Prototype state</div><div class="proto-seg">${Object.keys(SCEN).map(k=>`<button class="${DB.k===k?'on':''}" onclick="setScen('${k}')">${SCEN[k].t}</button>`).join('')}</div><div class="proto-h">${SCEN[DB.k].h}</div></div>
+   <div class="proto"><div class="proto-l">Services chosen</div><div class="proto-seg" style="grid-template-columns:repeat(3,1fr)">${[['both','Both'],['ord','Ordering'],['res','Reserv.']].map(x=>`<button class="${svcMode()===x[0]?'on':''}" onclick="setSvcMode('${x[0]}')">${x[1]}</button>`).join('')}</div></div>
    <div class="proto"><div class="proto-l">Subscription</div><div class="proto-seg" style="grid-template-columns:repeat(2,1fr)"><button class="${!DB.subscribed?'on':''}" onclick="setSub(false)">Not subscribed</button><button class="${DB.subscribed?'on':''}" onclick="setSub(true)">Subscribed</button></div></div>`:''}
-   <button class="acct" onclick="S.acct=!S.acct;renderRail()" aria-expanded="${S.acct}"><span class="acct-av">${BRAND.user.ini}</span><span style="min-width:0;flex:1"><span class="acct-n" style="display:block">${BRAND.user.n}</span><span class="acct-e" style="display:block">${BRAND.user.e}</span></span><span style="color:#888">${I.updown}</span>
-   ${S.acct?`<span class="acct-menu" onclick="event.stopPropagation()"><button onclick="S.acct=false;go('settings')">${I.gear} Settings</button><button onclick="S.acct=false;renderRail();toast('Signed out (prototype)')">${I.back} Sign out</button></span>`:''}</button>`;
+   <button class="acct" onclick="S.acct=!S.acct;renderRail()" aria-expanded="${S.acct}"><span class="acct-av">${me().ini}</span><span style="min-width:0;flex:1"><span class="acct-n" style="display:block">${me().n}</span><span class="acct-e" style="display:block">${me().e}</span></span><span style="color:#888">${I.updown}</span>
+   ${S.acct?`<span class="acct-menu" onclick="event.stopPropagation()"><button onclick="S.acct=false;go('profile')">${I.agent} My profile</button><button onclick="S.acct=false;go('settings')">${I.gear} Settings</button><button onclick="S.acct=false;renderRail();toast('Signed out (prototype)')">${I.back} Sign out</button></span>`:''}</button>`;
   $('rail').innerHTML=h;
 }
 function pickOutlet(id){S.outlet=id;S.dd=false;S.orders.sel=null;S.calls.sel=null;
@@ -902,8 +931,8 @@ function pickOutlet(id){S.outlet=id;S.dd=false;S.orders.sel=null;S.calls.sel=nul
   render();}
 function setScen(k){try{localStorage.setItem('tringg-proto-v2',k);}catch(e){}applyRole(true);loadScenario(k);applyRole();S.orders.sel=null;S.calls.sel=null;S.menu.flow=null;S.orders.tab='pending';render();toast('Prototype: '+SCEN[k].t);}
 function go(r){S.route=r;S.nav=false;S.acct=false;try{history.replaceState(null,'','#'+r);}catch(e){}render();}
-function goSet(k){const M={'ord-controls':'acc','ord-hours':'hrs','ord-pre':'pre','ord-msg':'ml','ord-pay':'pay','ord-delivery':'svc','ord-tax':'tax','ord-menu':'menu','ord-cap':'cap','ord-sub':'sub'};let sec=null;if(M[k]){sec=M[k];k='ord';}S.set=k;if(['phone','info','hours','faq'].includes(k)&&S.outlet==='all')S.outlet='wp';go('settings');if(sec)setTimeout(()=>{const e=$('ordsec-'+sec);if(e)e.scrollIntoView({behavior:'smooth',block:'start'});},80);}
-const TITLE={overview:()=>'Today · Mon 28 Sept',reservations:()=>'Reservations · '+DB.res.filter(inScope).length+' total',orders:()=>'Orders',calls:()=>'Calls',menu:()=>'Menu',agents:()=>'Agents',settings:()=>'Settings'};
+function goSet(k){if(k==='ord-hours'){S.set='hours';if(S.outlet==='all')S.outlet='wp';go('settings');setTimeout(()=>{const e=$('ohrs');if(e)e.scrollIntoView({behavior:'smooth',block:'start'});},80);return;}const M={'ord-controls':'acc','ord-pre':'pre','ord-msg':'ml','ord-pay':'pay','ord-delivery':'svc','ord-tax':'tax','ord-menu':'menu','ord-cap':'cap','ord-sub':'sub'};let sec=null;if(M[k]){sec=M[k];k='ord';}S.set=k;if(['phone','info','hours','faq'].includes(k)&&S.outlet==='all')S.outlet='wp';go('settings');if(sec)setTimeout(()=>{const e=$('ordsec-'+sec);if(e)e.scrollIntoView({behavior:'smooth',block:'start'});},80);}
+const TITLE={overview:()=>'Today · Mon 28 Sept',reservations:()=>'Reservations · '+DB.res.filter(inScope).length+' total',orders:()=>'Orders',calls:()=>'Calls',menu:()=>'Menu',agents:()=>'Agents',settings:()=>'Settings',profile:()=>'My profile'};
 function renderTop(){
   const posOutlets=OUTLETS.filter(o=>o.pos&&inScope(o));
   $('top').innerHTML=`<button class="ibtn menu-btn" aria-label="Open navigation" onclick="event.stopPropagation();S.nav=true;$('shell').classList.add('nav-open')">${I.burger}</button>
@@ -914,6 +943,7 @@ function renderTop(){
     ${S.route==='orders'&&DB.orderingOn&&S.outlet!=='all'&&!(ON(S.outlet).pos&&DB.posSync)?`<button class="pos-sw ${DB.autoAccept[S.outlet]?'on':''}" onclick="aaSet(S.outlet,!DB.autoAccept[S.outlet]);render();toast(DB.autoAccept[S.outlet]?'Auto-accept on at '+ON(S.outlet).short:'Auto-accept off at '+ON(S.outlet).short+' · accept orders in Needs approval')" aria-pressed="${!!DB.autoAccept[S.outlet]}">Auto-accept <span class="sub">· ${esc(ON(S.outlet).short)}</span><span class="tog ${DB.autoAccept[S.outlet]?'on':''}" style="width:36px;height:22px" aria-hidden="true"></span></button>`:''}
     <label class="srch">${I.search}<input type="search" placeholder="Search…" aria-label="Search"><span class="kbd">⌘K</span></label>
     <button class="ibtn" aria-label="Notifications" onclick="toast('No new notifications')">${I.bell}${DB.orders.some(o=>o.state==='PLACED')?'<span class="dot"></span>':''}</button>
+    <button class="top-av ${S.route==='profile'?'on':''}" aria-label="My profile" title="My profile" onclick="go('profile')">${me().ini}</button>
     <button class="ibtn ${S.spec?'on':''}" aria-label="Spec notes and Maple comparison" title="Spec notes · vs Maple" onclick="S.spec=!S.spec;renderOverlay();renderTop()">${I.doc}</button>
    </div>`;
 }
@@ -955,7 +985,7 @@ function ordPage(){
  const own=isOwner(),mgr=isMgr(),staff=R()==='staff',v=DB.svc[o],on=ON(o),mode=DB.deliveryMode[o],z=DB.zones[o],miss=ordMissUI(o),P={};
  let h=sH('Ordering','',one?'':'all');
  if(S.handoff)h+=`<div class="banner b-mint">${I.check}<div><b>Your answers from onboarding are filled in.</b> Add your menu, taxes and payments to start taking orders.</div><button class="btn btn-ghost btn-sm" onclick="S.handoff=false;render()">Dismiss</button></div>`;
- const stp=setupSteps(),req=stp.filter(x=>!x.opt).length,done=stp.filter(x=>!x.opt&&x.done).length,vis=k=>staff?['svc','hrs'].includes(k):mgr?!['tax','pay'].includes(k):true,other=miss.filter(m=>m!=='svc'),live=v.set===true&&!other.length&&!!(DB.subscribed&&DB.orderingOn),pz=(DB.pauseSvc&&DB.pauseSvc[o])||{};
+ const stp=setupSteps(),req=stp.filter(x=>!x.opt).length,done=stp.filter(x=>!x.opt&&x.done).length,vis=k=>staff?['svc'].includes(k):mgr?!['tax','pay'].includes(k):true,other=miss.filter(m=>m!=='svc'),live=v.set===true&&!other.length&&!!(DB.subscribed&&DB.orderingOn),pz=(DB.pauseSvc&&DB.pauseSvc[o])||{};
  if(one)h+=`<div class="scard"><div class="scard-h"><div class="h2">${esc(on.short)}${tip('The agent only takes orders for an outlet once every step below is done.')}</div><div class="r">${live?(DB.paused[o]?pill('p-amber','Paused'):pill('p-green','Taking orders')):pill('p-amber','Setup '+done+' of '+req)}</div></div>
   <div class="dchips">${stp.filter(x=>vis(x.k)).map((x,i)=>`<button class="${x.done?'on':''}" onclick="${x.k==='cap'?`capGo()`:`ordGo('${x.k}')`}">${x.done?'✓ ':(i+1)+' '}${x.t}</button>`).join('')}</div>
   ${live?(DB.paused[o]?`<div class="banner b-amber">${I.clock.replace('width="22" height="22"','width="17" height="17"')}<div><b>Ordering is paused.</b> ${DB.paused[o]}</div><button class="btn btn-line btn-sm" onclick="resumeOrd('${o}')">Resume</button></div>`:`<div class="tg"><div class="tx"><div class="fl">Pause all ordering${tip('Stops new phone orders for a while without closing the outlet.')}</div></div><select class="inp sm" style="width:175px" aria-label="Pause ordering" onchange="if(this.value)pauseOrd('${o}',this.value)"><option value="">Pause for…</option>${[['15 min','Until 8:45 PM.'],['30 min','Until 9:00 PM.'],['60 min','Until 9:30 PM.'],['Until I resume','Until you resume it.']].map(x=>`<option value="${x[1]}">${x[0]}</option>`).join('')}</select></div>`):(v.set==='draft'||(v.set===true&&other.length)?`<div class="tg"><div class="tx"><div class="fh">${other.length?'Still to do: '+other.map(m=>({menu:'Menu',tax:'Taxes',pay:'Payments',hrs:'Hours'}[m])).join(' · '):'Everything is ready.'}</div></div><button class="btn btn-dark" ${other.length?'disabled':''} onclick="finishSvc('${o}')">Start taking orders</button></div>`:(v.set===true&&!(DB.subscribed&&DB.orderingOn)?`<div class="tg"><div class="tx"><div class="fh">${DB.subscribed?'Last step: turn on ordering in Agents.':'Last step: subscribe to make the agent active.'}</div></div><button class="btn btn-dark" onclick="capGo()">${DB.subscribed?'Open Agents':'Subscribe'}</button></div>`:''))}</div>`;
@@ -975,13 +1005,6 @@ function ordPage(){
   orow('Pickup','The agent quotes this prep time from the moment an order is accepted. Switch off to stop offering pickup. Pause stops it for a set time and it resumes by itself.',ctls(`<div class="inp-suf" style="width:120px"><input class="inp sm" type="number" min="1" aria-label="Pickup prep minutes" placeholder="Ready in" value="${v.prep??''}" oninput="DB.svc['${o}'].prep=this.value?+this.value:null"><span>min</span></div>${v.pick?pauseCtl('pk'):''}${otog(v.pick,'Pickup',`DB.svc['${o}'].pick=!DB.svc['${o}'].pick;render()`)}`))+'<div class="sep"></div>'+
   orow('Delivery','Paid online by default. Cash is only allowed under the rules in Payments. Switch off to stop offering delivery. Pause stops it for a set time and it resumes by itself.',ctls(`${v.del?pauseCtl('dl'):''}${otog(v.del,'Delivery',`if(!DB.svc['${o}'].del&&!deliveryPayable()){toast('Delivery needs online payments or a cash rule first');return;}DB.svc['${o}'].del=!DB.svc['${o}'].del;S.test=null;render()`)}`))+
   (v.del&&!deliveryPayable()?`<div class="banner b-amber" style="font-size:13px">${I.card.replace('width="20" height="20"','width="16" height="16"')}<div><b>Delivery can’t be paid for yet.</b> Connect payments or allow cash.</div><button class="btn btn-line btn-sm" onclick="ordGo('pay')">Go to Payments</button></div>`:'')+area);
- /* hours */
- const hh=DB.oh[o],rowH=(k,lab)=>`<div class="tg"><div class="tx"><div class="fl">${lab}</div></div><div class="frow" style="max-width:340px"><input class="inp sm" aria-label="${lab} opens" value="${hh[k][0]}" onchange="DB.oh['${o}'].${k}[0]=this.value"><input class="inp sm" aria-label="${lab} closes" value="${hh[k][1]}" onchange="DB.oh['${o}'].${k}[1]=this.value"></div></div>`;
- P.hrs=osec('hrs','Ordering hours','Defaults to your opening hours. Change them only if pickup or delivery runs on different hours, for example the kitchen closes before the dining room.',
-  hh.set===false?`<div class="tg"><div class="tx"><div class="fh">Not set yet</div></div><button class="btn btn-dark btn-sm" onclick="setOh('${o}')">Use opening hours</button></div>`
-  :`<div class="segp sm"><button class="${hh.same?'on':''}" onclick="setOhSame('${o}',true)">Same as opening hours</button><button class="${!hh.same?'on':''}" onclick="setOhSame('${o}',false)">Different for pickup or delivery</button></div>
-   ${hh.same?`<div class="small muted">${OPEN[0]} – ${OPEN[1]}</div>`:(v.pick?rowH('pick','Pickup'):'')+(v.del?rowH('del','Delivery'):'')+(!v.pick&&!v.del?'<div class="small muted">Turn on pickup or delivery above to set its hours.</div>':'')}
-   <div class="tg"><div class="tx"><div class="fh"><button class="u-link" onclick="goSet('hours')">Opening hours and special dates</button></div></div>${DB.hoursOk?'':`<button class="btn btn-dark btn-sm" onclick="DB.hoursOk=true;render();toast('Hours confirmed')">Confirm hours</button>`}</div>`);
  /* pre-orders, large orders, menu link */
  const pr=DB.pre[o]||(DB.pre[o]={on:false,lead:60,days:3,pk:true,dl:true}),lg=lgOf(o),ml=mlOf(o),badU=ml.url&&!/^https?:\/\/[^ ]+\.[^ ]+/.test(ml.url);
  P.pre=osec('pre','Pre-orders','Callers can order for later today. Same payment and acceptance steps as any other order.',
@@ -1021,7 +1044,7 @@ function ordPage(){
   `<div class="sep"></div><div class="tg"><div class="tx"></div><div style="display:flex;gap:10px"><button class="btn btn-line btn-sm" onclick="openTax()">${I.plus} Add tax</button>${DB.taxOk?'':`<button class="btn btn-dark btn-sm" onclick="DB.taxOk=true;render();toast('Taxes confirmed')">Confirm taxes</button>`}</div></div>`);
  }
  if(!one)h+=ordTable();
- h+=['menu','svc','hrs','tax','pay'].filter(k=>one||['menu','tax','pay'].includes(k)).map(k=>P[k]||'').join('');
+ h+=['menu','svc','tax','pay'].filter(k=>one||['menu','tax','pay'].includes(k)).map(k=>P[k]||'').join('');
  const more=['acc','pre','lg'].filter(k=>one||k==='acc').map(k=>P[k]||'').join('');
  if(more)h+=`<div class="eyebrow" style="margin:14px 4px 0">More settings</div>`+more;
  return h;}
@@ -1031,12 +1054,16 @@ function posOne(){const o=ON(S.outlet),has=!!o.pos;
   <div class="scard"><div class="h3">When an order goes to the POS${tip('After hand-off the POS controls the status, so later steps are locked on this dashboard.')}</div>
    <div class="segp sm"><button class="${DB.posPush==='arrive'?'on':''}" onclick="DB.posPush='arrive';render();toast('Orders go to the POS as soon as they arrive')">As soon as it arrives</button><button class="${DB.posPush==='accept'?'on':''}" onclick="DB.posPush='accept';render();toast('Orders go to the POS after staff accept them here')">After staff accept it here</button></div></div>`
   :`<div class="scard"><div class="empty" style="padding:30px 20px"><div class="empty-i">${I.pos}</div><div class="empty-t">${esc(o.short)} has no POS connected</div><div class="empty-s">Orders are accepted and updated on this dashboard.</div><div style="margin-top:10px"><button class="btn btn-dark" onclick="openPos()">Connect POS</button></div></div></div>`)+(has?`<div class="scard"><div class="scard-h"><div class="h3">Use a different POS${tip('Toast, Square, Clover, SpotOn, SkyTab, Lightspeed, NCR Aloha and more. You sign in to your POS to approve it.')}</div><div class="r"><button class="btn btn-line" onclick="openPos()">Change POS</button></div></div></div>`:'');}
-function ordTable(){const nm={menu:'Menu',svc:'Pickup & delivery',hrs:'Ordering hours',tax:'Taxes',pay:'Payments'};
+function ordTable(){const nm={menu:'Menu',svc:'Pickup & delivery',tax:'Taxes',pay:'Payments'};
  const rows=OUTLETS.map(x=>{const m=ordMissUI(x.id),live=DB.svc[x.id].set===true&&!m.filter(k=>k!=='svc').length&&!!(DB.subscribed&&DB.orderingOn);return `<tr><td style="font-weight:600">${esc(x.name)}</td><td>${live?pill('p-green','Taking orders'):pill('p-amber','Setup '+(5-m.length)+' of 5')}</td><td class="small">${m.length?m.map(k=>nm[k]).join(' · '):'Nothing left'}</td></tr>`;}).join('');
- return `<div class="scard"><div class="scard-h"><div class="h2">Outlets${tip('Pickup & delivery, ordering hours, pre-orders, large orders and the menu link are set per outlet. Pick an outlet in the left menu to set it up.')}</div></div><div class="tblw"><table class="tbl"><thead><tr><th>Outlet</th><th>Status</th><th>Still to do</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;}
+ return `<div class="scard"><div class="scard-h"><div class="h2">Outlets${tip('Pickup & delivery, pre-orders and large orders are set per outlet; ordering hours are in Outlet hours. Pick an outlet in the left menu to set it up.')}</div></div><div class="tblw"><table class="tbl"><thead><tr><th>Outlet</th><th>Status</th><th>Still to do</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;}
 function capGo(){if(!DB.subscribed){openSub();return;}S.agentEdit=true;go('agents');}
 function openSub(){S.modal={t:'sub'};renderOverlay();}
-function doSub(){DB.subscribed=true;DB.orderingOn=true;DB.caps.ord=true;S.modal=null;renderOverlay();render();toast('Subscribed · the agent is active');}
+function doSub(){DB.subscribed=true;DB.orderingOn=MODS.ord;DB.caps.ord=MODS.ord;S.modal=null;renderOverlay();render();toast('Subscribed · the agent is active');}
+const svcMode=()=>MODS.res&&MODS.ord?'both':MODS.ord?'ord':'res';
+function applyMods(){DB.caps.res=MODS.res;const on=MODS.ord&&DB.k!=='off'&&DB.subscribed;DB.orderingOn=on;DB.caps.ord=on;if(!MODS.ord&&S.route==='orders'&&false)S.route='overview';}
+function setSvcMode(m){MODS.res=m!=='ord';MODS.ord=m!=='res';applyMods();render();toast({both:'Reservations and ordering are on',ord:'Ordering only · reservations are greyed out',res:'Reservations only · ordering is greyed out'}[m]);}
+function setMod(k){const was=MODS[k];if(was&&!MODS[k==='res'?'ord':'res']){toast('Keep at least one service on');return;}MODS[k]=!was;applyMods();render();toast((k==='res'?'Reservations':'Ordering')+(MODS[k]?' turned on':' turned off · settings are kept, screens are greyed out'));}
 function setSub(b){DB.subscribed=b;render();toast('Prototype: '+(b?'subscribed':'not subscribed'));}
 const subCta=what=>`<div class="scroll"><div class="page" style="max-width:820px"><div class="card"><div class="empty" style="padding:48px 24px"><div class="empty-i">${I.bagL}</div><div class="empty-t">Subscribe to make the agent active</div><div class="empty-s">${what} appear here once the agent is active. Nothing is billed until you subscribe.</div><div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap;justify-content:center"><button class="btn btn-dark" onclick="openSub()">Subscribe</button><button class="btn btn-line" onclick="goSet('ord')">Finish ordering setup</button></div></div></div></div></div>`;
 const subBanner=()=>`<div class="banner b-amber" style="margin-bottom:16px">${I.warn}<div><b>The agent isn’t active.</b> Subscribe so it answers calls, bookings and orders.</div><button class="btn btn-dark btn-sm" onclick="openSub()">Subscribe</button></div>`;
@@ -1052,6 +1079,7 @@ function render(){
   if(_keep)document.querySelectorAll('#view .scroll').forEach((e,i)=>{if(_keep[i]!=null)e.scrollTop=_keep[i];});render._k=_k;
 }
 document.addEventListener('click',e=>{
+  if(S.orders.fo&&!e.target.closest('.fpanel')&&!e.target.closest('[data-fbtn]')){S.orders.fo=false;render();}
   if(S.nav&&!e.target.closest('.rail')){S.nav=false;$('shell').classList.remove('nav-open');}
   if(S.acct&&!e.target.closest('.acct')){S.acct=false;renderRail();}
   if(S.dd&&!e.target.closest('.outlet-btn')&&!e.target.closest('.outlet-dd')){S.dd=false;renderRail();}
@@ -1063,14 +1091,18 @@ const SC={all:1,wp:.41,rn:.34,lp:.25};
 function stat(ic,cls,v,l){return `<div class="stat"><div class="stat-ic ${cls}">${I[ic]}</div><div style="min-width:0"><div class="stat-v">${v}</div><div class="stat-l">${l}</div></div></div>`;}
 function vOverview(){
   const f=(SC[S.outlet]??0.06),n=v=>Math.round(v*f);
-  const pendO=DB.orders.filter(o=>inScope(o)&&o.state==='PLACED');
-  const pendR=DB.res.filter(r=>inScope(r)&&r.st==='pending');
-  const live=DB.k==='live';
+  const mo=DB.mods;
+  const pendO=mo.ord?DB.orders.filter(o=>inScope(o)&&o.state==='PLACED'):[];
+  const pendR=mo.res?DB.res.filter(r=>inScope(r)&&r.st==='pending'):[];
+  const live=DB.k==='live',G=h=>`<div class="goff">${h}</div>`;
   let h=`<div class="scroll"><div class="page"><div class="lbl">${S.outlet==='all'?'All outlets':esc(ON(S.outlet).name)}</div><div class="stats">`;
-  if(!DB.orderingOn)h+=stat('cal','ic-mint',n(6),'Today’s bookings')+stat('clock','ic-coral',pendR.length,'Pending now')+stat('phoneL','ic-cream',DB.calls.filter(inScope).length,'Calls today')+stat('trend','ic-grey','0%','No-show rate');
+  if(!mo.ord)h+=stat('cal','ic-mint',n(6),'Today’s bookings')+stat('clock','ic-coral',pendR.length,'Pending now')+G(stat('bagL','ic-mint',0,'Orders today'))+G(stat('dollar','ic-cream','$0','Order revenue'));
+  else if(!mo.res)h+=stat('bagL','ic-mint',live?n(38):0,'Orders today')+(notStaff()?stat('dollar','ic-cream',live?'$'+n(1486).toLocaleString():'$0','Order revenue'):'')+stat('clock','ic-coral',pendO.length,'Pending now')+G(stat('cal','ic-mint',n(6),'Today’s bookings'));
+  else if(!DB.orderingOn)h+=stat('cal','ic-mint',n(6),'Today’s bookings')+stat('clock','ic-coral',pendR.length,'Pending now')+stat('phoneL','ic-cream',DB.calls.filter(inScope).length,'Calls today')+stat('trend','ic-grey','0%','No-show rate');
   else h+=stat('bagL','ic-mint',live?n(38):0,'Orders today')+(notStaff()?stat('dollar','ic-cream',live?'$'+n(1486).toLocaleString():'$0','Order revenue'):'')+stat('clock','ic-coral',pendO.length+pendR.length,'Pending now')+stat('phoneL','ic-grey',live?n(142):DB.calls.filter(inScope).length,'Calls today');
   h+='</div>';
-  if(!DB.orderingOn){const st=setupSteps().filter(x=>!x.opt);const d=st.filter(x=>x.done).length;
+  if(!mo.ord){h+=`<div class="nudge"><div><div class="eyebrow" style="color:var(--mint-500)">Not turned on</div><div class="h2" style="margin-top:6px">Ordering is off for this restaurant</div><p>Its screens stay visible but greyed out. Turn it on and the agent can take phone orders too.</p></div>${isOwner()?`<button class="btn btn-line" onclick="goSet('mods')">Turn on ordering</button>`:''}</div>`;}
+  else if(!DB.orderingOn){const st=setupSteps().filter(x=>!x.opt);const d=st.filter(x=>x.done).length;
     h+=`<div class="nudge"><div><div class="eyebrow" style="color:var(--mint-500)">Included in your plan</div><div class="h2" style="margin-top:6px">Let the agent take phone orders too</div><p>Callers who want pizza, not a table, get their order taken, read back and paid for on the call. A few steps, and none of them change your reservations.</p></div>${S.outlet==='all'?`<button class="btn btn-line" onclick="goSet('ord')">Set up ordering · ${ordReady().length}/${OUTLETS.length} outlets ready</button>`:`<button class="btn btn-line" onclick="go('orders')">Set up ordering · ${d}/${st.length}</button>`}</div>`;}
   h+=`<div class="ov-grid"><div class="col"><div class="card"><div class="card-h"><div class="h2">Pending requests</div><button class="linkbtn r" onclick="go('${pendO.length?'orders':'reservations'}')">View all ${I.arrow}</button></div><div class="card-b" style="display:flex;flex-direction:column;gap:10px">`;
   if(!pendO.length&&!pendR.length)h+='<div class="soft-empty">No pending requests</div>';
@@ -1078,7 +1110,9 @@ function vOverview(){
   pendR.forEach(r=>{h+=`<div class="req"><span class="av">${r.ini}</span><div class="m"><div class="t">${esc(r.name)} ${pill('p-dust','Reservation')}</div><div class="s">${r.day} ${r.when} · ${r.party} guests${S.outlet==='all'?' · '+ON(r.outlet).short:''}</div></div><button class="btn btn-line btn-sm" onclick="S.res.sel='${r.id}';S.res.tab='inbox';go('reservations')">Review</button></div>`;});
   DB.calls.filter(c=>c.kind==='callback'&&!c.cbDone&&inScope(c)).forEach(c=>{h+=`<button class="req" style="border:0;cursor:pointer;text-align:left;width:100%" onclick="S.calls.sel='${c.id}';S.calls.tab='cb';go('calls')"><span class="av">${c.ini}</span><div class="m"><div class="t">${esc(c.name)} ${pill('p-dust','Callback')}</div><div class="s">${c.phone} · asked to be called back${S.outlet==='all'?' · '+ON(c.outlet).short:''}</div></div>${I.arrow}</button>`;});
   h+='</div></div>';
-  if(live&&notStaff()){h+=`<div class="card"><div class="card-h"><div class="h2">Ordering today</div></div><div class="card-b"><div class="kv" style="grid-template-columns:repeat(3,minmax(0,1fr))"><div><div class="k">Avg order value</div><div class="v" style="font-size:20px;font-weight:600">$39.10</div></div><div><div class="k">Upsell attach</div><div class="v" style="font-size:20px;font-weight:600">31%</div></div><div><div class="k">Order calls finished by the agent</div><div class="v" style="font-size:20px;font-weight:600">88%</div></div></div></div>
+  if(!mo.res)h+=G(`<div class="card"><div class="card-h"><div class="h2">Today’s reservations</div></div><div class="card-b" style="display:flex;flex-direction:column;gap:10px">${DB.res.slice(0,3).map(r=>`<div class="req"><span class="av">${r.ini}</span><div class="m"><div class="t">${esc(r.name)}</div><div class="s">${r.day} ${r.when} · ${r.party} guests</div></div></div>`).join('')}</div></div>`);
+  if(!mo.ord)h+=G(`<div class="card"><div class="card-h"><div class="h2">Ordering today</div></div><div class="card-b"><div class="kv" style="grid-template-columns:repeat(3,minmax(0,1fr))"><div><div class="k">Avg order value</div><div class="v" style="font-size:20px;font-weight:600">—</div></div><div><div class="k">Upsell attach</div><div class="v" style="font-size:20px;font-weight:600">—</div></div><div><div class="k">Order calls finished by the agent</div><div class="v" style="font-size:20px;font-weight:600">—</div></div></div></div></div>`);
+  if(live&&notStaff()&&mo.ord){h+=`<div class="card"><div class="card-h"><div class="h2">Ordering today</div></div><div class="card-b"><div class="kv" style="grid-template-columns:repeat(3,minmax(0,1fr))"><div><div class="k">Avg order value</div><div class="v" style="font-size:20px;font-weight:600">$39.10</div></div><div><div class="k">Upsell attach</div><div class="v" style="font-size:20px;font-weight:600">31%</div></div><div><div class="k">Order calls finished by the agent</div><div class="v" style="font-size:20px;font-weight:600">88%</div></div></div></div>
     <div class="card-b" style="padding-top:0;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:28px" class="ov2"><div><div class="fl" style="margin-bottom:12px">Top items</div><div class="bars">${[['Pepperoni',14],['Margherita',11],['Garlic Knots',10],['Half & Half',7],['Rigatoni alla Vodka',6]].map(r=>`<div class="bar"><span>${r[0]}</span><span class="tr"><i style="width:${r[1]/14*100}%"></i></span><span class="n">${n(r[1])}</span></div>`).join('')}</div></div>
     <div><div class="fl" style="margin-bottom:12px">Pickup vs delivery</div><div class="bars">${[['Pickup',22,'$748'],['Delivery',16,'$738']].map(r=>`<div class="bar" style="grid-template-columns:70px minmax(0,1fr) 90px"><span>${r[0]}</span><span class="tr"><i style="width:${r[1]/38*100}%;background:${r[0]==='Pickup'?'var(--mint-500)':'var(--dust-500)'}"></i></span><span class="n">${n(r[1])} · ${r[2]}</span></div>`).join('')}</div>
 </div></div></div>`;}
@@ -1124,20 +1158,26 @@ function vOrders(){
      <div class="guide">${st.map((s,i)=>`<div class="gstep ${s.done?'done':''}"><span class="n">${s.done?I.check:i+1}</span><div style="min-width:0"><div class="t">${s.t}</div><div class="s">${s.s}</div></div><button class="btn ${s.done?'btn-ghost':'btn-line'} btn-sm" onclick="setupSteps()[${i}].go()">${s.done?'Edit':'Start'}</button></div>`).join('')}</div></div></div></div></div>`;}
   const f=(SC[S.outlet]??0.06),n=v=>Math.round(v*f),live=DB.k==='live';
   const tiles=`<div class="tiles"><div class="tile t-mint"><div class="v">${live?n(38):0}</div><div class="l">Orders today</div></div><div class="tile t-coral"><div class="v">${live?Math.max(1,n(3)):0}</div><div class="l">Cancelled, declined or expired</div></div><div class="tile t-cream"><div class="v">${live?'16 min':'—'}</div><div class="l">Avg time to ready</div></div><div class="tile t-white"><div class="v">${live?'$'+n(1486).toLocaleString():'$0'}</div><div class="l">GMV today</div></div></div>`;
-  const fl={all:'All',delivery:'Delivery',pickup:'Pickup'},pl={all:'All',before:'Online',after:'Offline'};
-  return `<div class="work">${tiles}${heldStrip()}<div class="row-h"><div class="ptabs" id="o-tabs"></div><div class="r fchips">
-    <button class="fchip ${S.orders.ful!=='all'?'on':''}" onclick="S.orders.ful={all:'delivery',delivery:'pickup',pickup:'all'}[S.orders.ful];render()">Fulfilment: <b>${fl[S.orders.ful]}</b> ${I.chev}</button>
-    <button class="fchip ${S.orders.pay!=='all'?'on':''}" onclick="S.orders.pay={all:'before',before:'after',after:'all'}[S.orders.pay];render()">Payment: <b>${pl[S.orders.pay]}</b> ${I.chev}</button></div></div>
-   <div class="split ${S.orders.sel?'detail':''}" id="osplit"><div class="card lcard"><div class="lhead"><div class="h3">Latest orders</div><span class="xs muted" id="o-meta" style="margin-left:auto;letter-spacing:.05em"></span></div>
-    <label class="lsearch">${I.search}<input type="search" placeholder="Search name, order # or phone…" value="${esc(S.orders.q)}" oninput="S.orders.q=this.value;renderOrders()"></label><div class="lst" id="o-list"></div></div>
+  const O=S.orders,fcount=[O.ful!=='all',O.pay!=='all',O.out!=='all',O.pre,O.rf].filter(Boolean).length;
+  const opt=(k,v,l)=>`<button class="${O[k]===v?'on':''}" onclick="S.orders.${k}='${v}';render()">${l}</button>`;
+  const panel=`<div class="fpanel" onclick="event.stopPropagation()"><div><div class="fl">Fulfilment</div><div class="dchips">${opt('ful','all','All')}${opt('ful','pickup','Pickup')}${opt('ful','delivery','Delivery')}</div></div>
+    <div><div class="fl">Payment</div><div class="dchips">${opt('pay','all','All')}${opt('pay','before','Online')}${opt('pay','after','On arrival')}</div></div>
+    ${S.outlet==='all'&&OUTLETS.length>1?`<div><div class="fl">Outlet</div><select class="inp sm" aria-label="Outlet" onchange="S.orders.out=this.value;render()"><option value="all">All outlets</option>${OUTLETS.map(x=>`<option value="${x.id}" ${O.out===x.id?'selected':''}>${esc(x.name)}</option>`).join('')}</select></div>`:''}
+    <div><div class="fl">Only show</div><div class="dchips"><button class="${O.pre?'on':''}" onclick="S.orders.pre=!S.orders.pre;render()">Pre-orders</button><button class="${O.rf?'on':''}" onclick="S.orders.rf=!S.orders.rf;render()">Refunded</button></div></div>
+    <div class="fpanel-f"><button class="btn btn-ghost btn-sm" onclick="S.orders.ful='all';S.orders.pay='all';S.orders.out='all';S.orders.pre=false;S.orders.rf=false;render()">Reset</button><button class="btn btn-dark btn-sm" onclick="S.orders.fo=false;render()">Done</button></div></div>`;
+  return `<div class="work">${tiles}${heldStrip()}
+   <div class="split ${S.orders.sel?'detail':''}" id="osplit"><div class="card lcard"><div class="lhead"><div class="h2">Latest orders</div><span class="xs muted" id="o-meta" style="margin-left:auto;letter-spacing:.05em"></span></div>
+    <div class="utabs" id="o-tabs" style="margin-bottom:14px"></div>
+    <div style="display:flex;gap:10px;position:relative"><label class="lsearch" style="flex:1">${I.search}<input type="search" placeholder="Search name, order # or phone…" value="${esc(S.orders.q)}" oninput="S.orders.q=this.value;renderOrders()"></label><button class="btn btn-soft ${fcount?'on':''}" data-fbtn style="height:48px" onclick="S.orders.fo=!S.orders.fo;render()" aria-expanded="${!!O.fo}">${I.filter} Filter${fcount?' · '+fcount:''}</button>${O.fo?panel:''}</div>
+    <div class="lst" id="o-list"></div></div>
     <div class="card dcard" id="o-detail"></div></div></div>`;
 }
 function renderOrders(){
   const sc=DB.orders.filter(inScope);
   if(S.orders.tab==='pending'&&!sc.some(o=>o.state==='PLACED')&&sc.length)S.orders.tab='active';
-  $('o-tabs').innerHTML=OTABS.map(t=>{const c=sc.filter(t[2]).length;return `<button class="ptab ${S.orders.tab===t[0]?'on':''}" onclick="S.orders.tab='${t[0]}';renderOrders()">${t[1]} <span class="n">${c}</span></button>`;}).join('');
+  $('o-tabs').innerHTML=OTABS.map(t=>{const c=sc.filter(t[2]).length;return `<button class="utab ${S.orders.tab===t[0]?'on':''}" onclick="S.orders.tab='${t[0]}';renderOrders()">${t[1]} <span class="n">${c}</span></button>`;}).join('');
   const q=S.orders.q.trim().toLowerCase(),fn=OTABS.find(t=>t[0]===S.orders.tab)[2];
-  const rows=sc.filter(o=>fn(o)&&(S.orders.ful==='all'||o.ful===S.orders.ful)&&(S.orders.pay==='all'||o.pay===S.orders.pay)&&(!q||o.name.toLowerCase().includes(q)||o.id.includes(q)||o.phone.includes(q)));
+  const rows=sc.filter(o=>fn(o)&&(S.orders.ful==='all'||o.ful===S.orders.ful)&&(S.orders.pay==='all'||o.pay===S.orders.pay)&&(S.orders.out==='all'||o.outlet===S.orders.out)&&(!S.orders.pre||o.pre)&&(!S.orders.rf||o.payState==='refunded'||o.refd)&&(!q||o.name.toLowerCase().includes(q)||o.id.includes(q)||o.phone.includes(q)));
   $('o-meta').textContent=rows.length+' order'+(rows.length===1?'':'s')+' · '+(S.outlet==='all'?'All outlets':ON(S.outlet).short);
   let h='';
   if(!sc.length)h=`<div class="empty"><div class="empty-i">${I.bagL}</div><div class="empty-t">No orders yet today</div><div class="empty-s">The agent takes orders from 11:00 AM to 9:45 PM. Each one appears here the moment the caller confirms it.</div><div class="guide" style="max-width:420px"><div class="gstep"><span class="n">${I.phoneL}</span><div><div class="t">Try it yourself</div><div class="s">Call <span class="mono">${BRAND.num}</span> and order a pizza.</div></div></div></div></div>`;
@@ -1699,12 +1739,12 @@ function doDelete(){const m=S.modal;
   S.modal=null;renderOverlay();render();}
 
 /* ════════ AGENTS ════════ */
-const REQN={menu:'Menu published',tax:'Taxes',pay:'Payments',svc:'Pickup & delivery',hrs:'Ordering hours'};
-function ordMiss(o){const m=[];if(DB.menuState!=='live'||DB.menuOffline)m.push('menu');if(!DB.taxOk)m.push('tax');if(!(DB.payOk||DB.stripe==='active'))m.push('pay');if(DB.svc[o].set!==true||DB.broken[o])m.push('svc');if(DB.oh[o].set===false||!DB.hoursOk)m.push('hrs');return m;}
+const REQN={menu:'Menu published',tax:'Taxes',pay:'Payments',svc:'Pickup & delivery'};
+function ordMiss(o){const m=[];if(DB.menuState!=='live'||DB.menuOffline)m.push('menu');if(!DB.taxOk)m.push('tax');if(!(DB.payOk||DB.stripe==='active'))m.push('pay');if(DB.svc[o].set!==true||DB.broken[o])m.push('svc');return m;}
 function svcErr(o){const v=DB.svc[o],m=DB.deliveryMode[o];return !v.pick&&!v.del?'Turn on pickup, delivery or both':v.pick&&!v.prep?'Add a pickup prep time':v.del&&!m?'Choose a delivery area':v.del&&m==='radius'&&(!v.rad.mi||v.rad.fee==null)?'Add the radius and delivery fee':v.del&&m==='zones'&&!DB.zones[o].length?'Add at least one zone':v.del&&!deliveryPayable()?'Connect payments or allow cash on delivery to offer delivery · or turn delivery off':'';}
 function ordMissUI(o){const m=ordMiss(o);if(m.includes('svc')&&DB.svc[o].set==='draft'&&!svcErr(o))return m.filter(x=>x!=='svc');return m;}
 const ordReady=()=>OUTLETS.filter(o=>!ordMiss(o.id).length);
-function reqFix(k){S.agentEdit=false;({menu:()=>go('menu'),tax:()=>goSet('ord-tax'),pay:()=>goSet('ord-pay'),svc:()=>goSet('ord-delivery'),hrs:()=>goSet('ord-hours')})[k]();}
+function reqFix(k){S.agentEdit=false;({menu:()=>go('menu'),tax:()=>goSet('ord-tax'),pay:()=>goSet('ord-pay'),svc:()=>goSet('ord-delivery')})[k]();}
 function ordChip(){const N=OUTLETS.length,r=ordReady().length;
   if(!DB.caps.ord)return `<span class="tag" style="color:var(--ink-30)">— Ordering · Off</span>`;
   if(DB.agentPaused)return `<span class="tag" style="background:var(--amber-50,#fbf0d9);color:#8a5a00;border-color:transparent">Ordering · agent paused</span>`;
@@ -1736,9 +1776,9 @@ function vAgents(){const caps=[['Enquiries',true],['Reservations',DB.caps.res]],
 /* ════════ SETTINGS ════════
    All-outlets view holds the ordering settings (with per-outlet rows) so owners don't hop between outlets.
    Single-outlet view keeps what is truly per location: phone, basic info, hours, FAQ. */
-const SETNAV_ALL=[['PHONE',[['phone-all','Phone numbers']]],['ORDERING',[['ord','Ordering'],['ord-pos','POS connection']]],['ACCOUNT',[['msg','Messaging agent'],['team','Users & roles'],['billing','Billing']]]];
-const SETNAV_ONE=[['PHONE',[['phone','Phone number']]],['OUTLET',[['info','Basic info'],['hours','Hours & booking'],['faq','FAQ / Knowledge']]],['ORDERING',[['ord','Ordering'],['ord-pos','POS connection']]],['ACCOUNT',[['msg','Messaging agent'],['team','Users & roles'],['billing','Billing']]]];
-const SETIC={'phone-all':'phone',phone:'phone',info:'doc',hours:'clock',faq:'menu',ord:'bag','ord-pos':'pos','ord-outlet':'bag',msg:'phone',team:'agent',billing:'card'};
+const SETNAV_ALL=[['PHONE',[['phone-all','Phone numbers']]],['ORDERING',[['ord','Ordering'],['ord-pos','POS connection']]],['ACCOUNT',[['mods','Services'],['msg','Messaging agent'],['team','Users & roles'],['billing','Billing']]]];
+const SETNAV_ONE=[['PHONE',[['phone','Phone number']]],['OUTLET',[['info','Basic info'],['hours','Outlet hours'],['faq','FAQ / Knowledge']]],['ORDERING',[['ord','Ordering'],['ord-pos','POS connection']]],['ACCOUNT',[['mods','Services'],['msg','Messaging agent'],['team','Users & roles'],['billing','Billing']]]];
+const SETIC={'phone-all':'phone',phone:'phone',info:'doc',hours:'clock',faq:'menu',ord:'bag','ord-pos':'pos','ord-outlet':'bag',msg:'phone',mods:'agent',team:'agent',billing:'card'};
 function lgOf(id){DB.lg=DB.lg||{};if(!DB.lg[id])DB.lg[id]={on:false,amt:250};return DB.lg[id];}
 function lgSet(id,k,v){lgOf(id)[k]=v;render();}
 function preSvc(id,k){const q=DB.pre[id];q[k]=q[k]===false?true:false;if(q.pk===false&&q.dl===false)q.on=false;render();}
@@ -1749,9 +1789,9 @@ function vSettings(){
   if(!nav.flatMap(g=>g[1]).some(i=>i[0]===S.set))S.set=nav[0][1][0][0];
   const badge=k=>k==='ord'&&((!DB.payOk&&DB.stripe!=='active')||(S.outlet==='all'?OUTLETS.some(o=>DB.svc[o.id].set!==true):DB.svc[S.outlet].set!==true))?'<span class="b">Set up</span>':'';
   const ic=k=>(I[SETIC[k]]||'').replace(/width="\d+" height="\d+"/,'width="18" height="18"');
-  return `<div class="sset"><nav class="snav" aria-label="Settings">${nav.map(g=>`<div class="sn-sec">${g[0]}</div>`+g[1].map(i=>`<button class="sn ${S.set===i[0]?'on':''}" onclick="S.set='${i[0]}';render()">${ic(i[0])}${i[1]}${badge(i[0])}</button>`).join('')).join('')}
+  return `<div class="sset"><nav class="snav" aria-label="Settings">${nav.map(g=>`<div class="sn-sec">${g[0]}</div>`+g[1].map(i=>`<button class="sn ${S.set===i[0]?'on':''} ${!DB.mods.ord&&['ord','ord-pos'].includes(i[0])?'off':''}" onclick="S.set='${i[0]}';render()">${ic(i[0])}${i[1]}${badge(i[0])}</button>`).join('')).join('')}
    <div class="scope-note">${S.outlet==='all'?'<b>All outlets.</b> Pick an outlet in the left menu to set it up.':'<b>'+esc(ON(S.outlet).short)+'.</b> Payments, taxes and auto-accept are set once for every outlet.'}</div></nav>
-   <div class="scroll"><div class="spage">${R()==='staff'?`<div class="banner b-dust" style="pointer-events:auto;opacity:1">${I.lock}<div><b>View only.</b> Staff can see how the outlet is set up. A Manager or Owner changes settings.</div></div>`:''}${(SET[S.set]||SET['ord-controls'])()}</div></div></div>`;
+   <div class="scroll"><div class="spage">${R()==='staff'?`<div class="banner b-dust" style="pointer-events:auto;opacity:1">${I.lock}<div><b>View only.</b> Staff can see how the outlet is set up. A Manager or Owner changes settings.</div></div>`:''}${(()=>{const c=(SET[S.set]||SET['ord-controls'])();return !DB.mods.ord&&['ord','ord-pos'].includes(S.set)?greyed(c,'ord'):c;})()}</div></div></div>`;
 }
 const sH=(t,d,scope)=>`<div class="spage-h"><div><div class="h1-lg">${t}</div>${d?`<p class="desc" style="margin-top:6px">${d}</p>`:''}</div><div class="scope">${scope==='all'?'All outlets':'Outlet · '+esc(ON(S.outlet).name)}</div></div>`;
 const CARRIERS={'AT&T':['*21*13125550147#','#21#'],'Verizon':['*72 3125550147','*73'],'T-Mobile':['**21*13125550147#','##21#']};
@@ -1764,10 +1804,25 @@ const SET={
   <div class="scard"><div class="h3">Fallback number</div><div class="fh" style="margin-top:-10px">Where the agent transfers calls it can’t finish. It can’t be your restaurant number, or the call rings the agent again.</div>
    <div class="frow"><div class="field"><label class="fl" for="rn1">Restaurant number</label><input class="inp" id="rn1" value="(312) 555-0100" oninput="fbChk()"></div><div class="field"><label class="fl" for="fb1">Fallback number</label><input class="inp" id="fb1" value="(312) 555-0101" oninput="fbChk()"><span class="xs" id="fberr" style="color:var(--coral-700)"></span></div></div></div>`;},
  info:()=>sH('Basic info','The agent uses these to answer where you are.')+`<div class="scard"><div class="frow"><div class="field"><label class="fl" for="bi1">Outlet name</label><input class="inp" id="bi1" value="${esc(ON(S.outlet).name)}"></div><div class="field"><label class="fl" for="bi2">Timezone</label><select class="inp" id="bi2"><option>America/Chicago</option></select></div></div><div class="field"><label class="fl" for="bi3">Address</label><input class="inp" id="bi3" style="max-width:600px" value="1640 N Damen Ave, Chicago, IL 60647"></div></div>`,
- hours:()=>sH('Business hours & booking rules','')+`<div class="scard"><div class="h3">Hours mode</div><div class="segp"><button class="on">Same for all days</button><button>Day-by-day</button></div></div>
-  <div class="scard"><div><div class="h2">All days</div><div class="fh">Applied to every day of the week. Toggle individual days off below.</div></div><div class="frow"><div class="field"><label class="fl" for="h1">Opens at</label><input class="inp" id="h1" value="11:00 AM"></div><div class="field"><label class="fl" for="h2">Closes at</label><input class="inp" id="h2" value="10:00 PM"></div></div><div class="sep"></div><div class="eyebrow" style="font-size:12px">Closed on</div><div class="dchips">${['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map((d,i)=>`<button class="${i===0?'on':''}" onclick="this.classList.toggle('on')">${d}</button>`).join('')}</div>
-   <div class="banner b-grey" style="font-size:13px">${I.bag}<div>Ordering hours can differ from these, for example takeaway can run after the dining room closes. Set them in <button class="u-link" onclick="goSet('ord-hours')">Settings › Ordering</button>.</div></div></div>
-  <div class="scard"><div class="scard-h"><div><div class="h2">Special dates & closures</div><div class="fh">Override hours for holidays, events, or one-off closures.</div></div><div class="r"><button class="btn btn-line" onclick="toast('Add special date')">${I.plus} Add special date</button></div></div></div>`,
+ hours:()=>{const o=S.outlet,hh=DB.oh[o],v=DB.svc[o],on=DB.mods.ord,rs=DB.mods.res,x=ohx(o);
+  if(hh.set===false)Object.assign(hh,{set:true,same:true,pick:OPEN.slice(),del:OPEN.slice(),cut:15});
+  const rowH=(k,lab)=>`<div class="tg"><div class="tx"><div class="fl">${lab}</div></div><div class="frow" style="max-width:340px"><input class="inp sm" aria-label="${lab} opens" value="${hh[k][0]}" onchange="DB.oh['${o}'].${k}[0]=this.value"><input class="inp sm" aria-label="${lab} closes" value="${hh[k][1]}" onchange="DB.oh['${o}'].${k}[1]=this.value"></div></div>`;
+  const DAYS7=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+  const ordCard=`<div class="scard" id="ohrs"><div class="scard-h"><div><div class="h2">Ordering hours${tip('When the agent takes phone orders. They follow the opening hours above until you change them. The end of the window is the last time an order is taken.')}</div><div class="fh">Follows the opening hours unless pickup or delivery runs on different hours.</div></div>${on?'':'<div class="r">'+pill('p-grey','Ordering is off')+'</div>'}</div>
+   <div class="segp sm"><button class="${hh.same?'on':''}" onclick="setOhSame('${o}',true)">Same as opening hours</button><button class="${!hh.same?'on':''}" onclick="setOhSame('${o}',false)">Different for pickup or delivery</button></div>
+   ${hh.same?`<div class="small muted">${OPEN[0]} – ${OPEN[1]}, every open day</div>`:(v.pick?rowH('pick','Pickup'):'')+(v.del?rowH('del','Delivery'):'')+(!v.pick&&!v.del?'<div class="small muted">Turn on pickup or delivery in Ordering to set its hours.</div>':'')}
+   <button class="adv-t" onclick="S.ohAdv=!S.ohAdv;render()" aria-expanded="${!!S.ohAdv}"><span class="${S.ohAdv?'open':''}">${I.chev}</span>Advanced: day-by-day hours, special dates and closures</button>
+   ${S.ohAdv?`<div class="adv"><div><div class="fl">Day by day</div><div class="fh">Leave the times empty to follow the hours above. Turn a day off to stop orders that day.</div></div>
+    ${DAYS7.map((d,i)=>`<div class="tg"><div class="tx"><div class="fl">${d}</div></div><div class="frow" style="max-width:300px"><input class="inp sm" placeholder="Default" aria-label="${d} ordering opens" value="${esc(x.days[i].a)}" ${x.days[i].on?'':'disabled'} onchange="ohxSet('${o}',${i},'a',this.value)"><input class="inp sm" placeholder="Default" aria-label="${d} ordering closes" value="${esc(x.days[i].b)}" ${x.days[i].on?'':'disabled'} onchange="ohxSet('${o}',${i},'b',this.value)"></div>${otog(x.days[i].on,d+' takes orders',`ohxDay('${o}',${i})`)}</div>`).join('')}
+    <div class="sep"></div><div><div class="fl">Special dates and closures for ordering</div><div class="fh">For example, close ordering on a holiday, or take orders only until 6 PM on one evening. Dining special dates are separate.</div></div>
+    ${x.sp.length?x.sp.map((d,i)=>`<div class="tg"><div class="frow" style="flex:1;max-width:560px"><input class="inp sm" placeholder="Date, e.g. Nov 27" aria-label="Date" value="${esc(d.d)}" onchange="ohxSp('${o}',${i},'d',this.value)"><select class="inp sm" aria-label="What changes" onchange="ohxSp('${o}',${i},'closed',this.value==='closed');render()"><option value="closed" ${d.closed?'selected':''}>No orders all day</option><option value="hours" ${d.closed?'':'selected'}>Different hours</option></select>${d.closed?'':`<input class="inp sm" placeholder="Opens" aria-label="Opens" value="${esc(d.a)}" onchange="ohxSp('${o}',${i},'a',this.value)"><input class="inp sm" placeholder="Closes" aria-label="Closes" value="${esc(d.b)}" onchange="ohxSp('${o}',${i},'b',this.value)">`}</div><button class="btn btn-ghost btn-sm" onclick="ohxDel('${o}',${i})">Remove</button></div>`).join(''):'<div class="small muted">None yet.</div>'}
+    <div><button class="btn btn-line btn-sm" onclick="ohxAdd('${o}')">${I.plus} Add special date</button></div></div>`:''}</div>`;
+  return sH('Outlet hours','When the outlet is open, and when the agent takes orders.')+`<div class="scard"><div class="h3">Hours mode</div><div class="segp"><button class="on">Same for all days</button><button>Day-by-day</button></div></div>
+  <div class="scard"><div><div class="h2">Opening hours</div><div class="fh">Applied to every day of the week. Toggle individual days off below.</div></div><div class="frow"><div class="field"><label class="fl" for="h1">Opens at</label><input class="inp" id="h1" value="11:00 AM"></div><div class="field"><label class="fl" for="h2">Closes at</label><input class="inp" id="h2" value="10:00 PM"></div></div><div class="sep"></div><div class="eyebrow" style="font-size:12px">Closed on</div><div class="dchips">${['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map((d,i)=>`<button class="${i===0?'on':''}" onclick="this.classList.toggle('on')">${d}</button>`).join('')}</div></div>
+  <div class="scard"><div class="scard-h"><div><div class="h2">Special dates & closures</div><div class="fh">Override hours for holidays, events, or one-off closures.</div></div><div class="r"><button class="btn btn-line" onclick="toast('Add special date')">${I.plus} Add special date</button></div></div></div>
+  ${on?ordCard:`<div class="goff" inert>${ordCard}</div>`}
+  ${rs?'':'<div class="banner b-grey" style="font-size:13px">'+I.lock+'<div>Reservations aren’t turned on, so the booking rules below are greyed out.</div></div>'}
+  <div class="${rs?'':'goff'}" ${rs?'':'inert'}><div class="scard"><div class="h2">Booking rules${tip('How the agent takes table requests at this outlet.')}</div><div class="frow"><div class="field"><label class="fl" for="br1">Largest party</label><input class="inp sm" id="br1" value="12"></div><div class="field"><label class="fl" for="br2">Table time</label><select class="inp sm" id="br2"><option>90 min</option></select></div><div class="field"><label class="fl" for="br3">Shortest notice</label><select class="inp sm" id="br3"><option>1 hour</option></select></div></div></div></div>`;},
  faq:()=>sH('FAQ / Knowledge','Answers the agent can use on calls.')+`<div class="scard">${[['Do you have gluten-free crust?','Yes, 12" for $3 extra. It’s made in a shared kitchen.'],['Is there parking?','Street parking on Damen after 6 PM.'],['Do you cater?','Yes. The agent transfers catering calls to the team.']].map(q=>`<div><div class="fl">${q[0]}</div><div class="fh">${q[1]}</div></div>`).join('<div class="sep"></div>')}</div>`,
  ord:()=>ordPage(),
  'ord-pos':()=>S.outlet!=='all'?posOne():SET._posAll(),
@@ -1779,19 +1834,39 @@ const SET={
    <div class="segp sm"><button class="${DB.posPush==='arrive'?'on':''}" onclick="DB.posPush='arrive';render();toast('Orders go to the POS as soon as they arrive')">As soon as it arrives</button><button class="${DB.posPush==='accept'?'on':''}" onclick="DB.posPush='accept';render();toast('Orders go to the POS after staff accept them here')">After staff accept it here</button></div>
    <div class="small muted">${DB.posPush==='accept'?'Staff review each order in Orders › Needs approval, accept it, and it is pushed to the POS.':'Orders reach the POS the moment they arrive, and the kitchen accepts them there.'}</div></div>
   <div class="scard"><div class="scard-h"><div><div class="h3">Connect another POS</div><div class="fh">Toast, Square, Clover, SpotOn, SkyTab, Lightspeed, NCR Aloha and more. You sign in to your POS to approve it.</div></div><div class="r"><button class="btn btn-line" onclick="openPos()">Connect POS</button></div></div></div>`,
+ mods:()=>sH('Services','Choose what the agent handles for this restaurant. You can change it any time. Switching one off keeps its settings, and its screens stay visible but greyed out.','all')+`<div class="svc-grid">${[['res','Reservations','The agent takes table requests and bookings.'],['ord','Ordering','The agent takes pickup and delivery orders by phone.']].map(x=>`<button class="svc-card ${MODS[x[0]]?'on':''}" onclick="setMod('${x[0]}')" aria-pressed="${MODS[x[0]]}"><span class="ck">${MODS[x[0]]?I.check:''}</span><div class="h2">${x[1]}</div><div class="fh">${x[2]}</div><div class="small ${MODS[x[0]]?'':'muted'}">${MODS[x[0]]?'On':'Off · greyed out across the dashboard'}</div></button>`).join('')}</div><div class="small muted">At least one must stay on. Enquiries are always answered.</div>`,
  msg:()=>sH('Messaging agent','Your existing messaging agent settings. Unchanged by ordering.','all')+`<div class="scard"><div class="soft-empty">Existing page · not part of this prototype</div></div>`,
  team:()=>sH('Users & roles','Who can see and act on orders.','all')+`<div class="scard"><div class="tblw"><table class="tbl"><thead><tr><th>Permission</th><th>Owner</th><th>Manager</th><th>Staff</th></tr></thead><tbody>${[['View orders, reservations and calls',1,1,1],['Accept, decline and advance orders',1,1,1],['Turn menu items on or off',1,1,1],['Delivery zones, prep times and ordering hours',1,1,0],['Auto-accept, pause ordering and go live',1,1,0],['Payments, payouts and cash-on-delivery rules',1,0,0],['Billing and team',1,0,0]].map(r=>`<tr><td>${r[0]}</td>${[1,2,3].map(i=>`<td>${r[i]?'<span style="color:var(--sage-700)">'+I.check+'</span>':'<span class="muted">—</span>'}</td>`).join('')}</tr>`).join('')}</tbody></table></div></div>`,
  billing:()=>sH('Billing','One subscription covers everything.','all')+`<div class="scard"><div class="scard-h"><div><div class="eyebrow">Tringg subscription</div><div class="h1" style="margin-top:4px">$350 <span class="small muted" style="font-weight:400">/ outlet / month</span></div></div><div class="r">${pill('p-green','Active')}</div></div>
-   <div class="dchips">${['Enquiries','Reservations','Ordering'].map(x=>`<span class="tag" style="background:var(--mint-50);color:var(--mint-700);border-color:transparent">✓ ${x}</span>`).join('')}</div>
-   <div class="small muted">Nothing is sold per module. Don’t want reservations or ordering? Switch that capability off for the agent in <button class="u-link" onclick="S.agentEdit=true;go('agents')">Agents › Edit</button>.</div></div>`
+   <div class="dchips">${[['Enquiries',true],['Reservations',MODS.res],['Ordering',MODS.ord]].map(x=>`<span class="tag" style="${x[1]?'background:var(--mint-50);color:var(--mint-700)':'opacity:.5'};border-color:transparent">${x[1]?'✓ ':'○ '}${x[0]}</span>`).join('')}</div>
+   <div class="small muted">Nothing is sold per module. Choose what the agent handles in <button class="u-link" onclick="goSet('mods')">Settings › Services</button>.</div></div>`
 };
 const OPEN=['11:00 AM','10:00 PM'];
+S.notif=S.notif||{ord:{e:true,s:true},res:{e:true,s:false},call:{e:true,s:false},sum:{e:true,s:false}};
+function notifTog(k,c){S.notif[k][c]=!S.notif[k][c];render();}
+function vProfile(){const u=me(),r=R(),on=DB.mods,nr=[['ord','New order needs approval','Orders waiting for you to accept.','ord'],['res','New reservation request','Table requests waiting for a reply.','res'],['call','Missed or transferred calls','Calls the agent could not finish.',null],['sum','Daily summary','Calls, orders and bookings, every morning.',null]];
+  const outs=OUTLETS.map(o=>esc(o.name));
+  return `<div class="scroll"><div class="spage" style="max-width:820px;margin:0 auto;padding:28px 24px;display:flex;flex-direction:column;gap:18px">
+  <div class="scard"><div class="prof-h"><span class="prof-av">${u.ini}</span><div style="min-width:0;flex:1"><div class="h1" style="margin:0">${u.n}</div><div class="fh">${u.e}</div><div class="dchips" style="margin-top:8px"><span class="tag">${ROLE_N[r]}</span><span class="tag">${BRAND.name}</span></div></div><button class="btn btn-line" onclick="S.acct=false;toast('Signed out (prototype)')">${I.back} Sign out</button></div></div>
+  <div class="scard"><div class="h2">Personal details</div><div class="frow"><div class="field"><label class="fl" for="pf1">Full name</label><input class="inp" id="pf1" value="${u.n}"></div><div class="field"><label class="fl" for="pf2">Mobile number${tip('Used for text alerts and to sign in with a code.')}</label><input class="inp" id="pf2" value="${u.ph}"></div></div>
+   <div class="frow"><div class="field"><label class="fl" for="pf3">Email</label><input class="inp" id="pf3" value="${u.e}" disabled></div><div class="field"><label class="fl" for="pf4">Language</label><select class="inp" id="pf4"><option>English</option><option>Español</option></select></div></div>
+   <div><button class="btn btn-dark" onclick="toast('Profile saved')">Save changes</button></div></div>
+  <div class="scard"><div class="h2">Password and security</div>${orow('Password','','<button class="btn btn-line btn-sm" onclick="toast(\'Password reset link sent\')">Change password</button>','Last changed 3 months ago')}${orow('Two-step verification','Ask for a code when you sign in from a new device.',otog(true,'Two-step verification',"toast('Two-step verification is required for owners')"))}</div>
+  <div class="scard"><div class="scard-h"><div><div class="h2">Notifications</div><div class="fh">Only for you. Email on the left, text on the right.</div></div></div>${nr.map(x=>{const off=x[3]&&!on[x[3]];return `<div class="${off?'goff':''}" ${off?'inert':''}>${orow(x[1]+(off?' · '+(x[3]==='ord'?'Ordering':'Reservations')+' is off':''),'',`<div class="r" style="gap:14px"><label class="small">Email ${otog(S.notif[x[0]].e,'Email',`notifTog('${x[0]}','e')`)}</label><label class="small">Text ${otog(S.notif[x[0]].s,'Text',`notifTog('${x[0]}','s')`)}</label></div>`,x[2])}</div>`;}).join('')}</div>
+  <div class="scard"><div class="h2">Your access</div><div class="fh">${r==='owner'?'Owners see every outlet, payments, taxes and billing.':r==='manager'?'Managers run their outlets. No payments, POS or taxes.':'Staff see one outlet and can act on orders. Settings are view only.'}</div><div class="dchips">${outs.map(n=>`<span class="tag">${n}</span>`).join('')}</div></div>
+  </div></div>`;}
 function setPickPay(v){DB.payPick={call:v!=='store',store:v!=='online'};DB.payOk=true;render();toast('Pickup payment: '+{both:'online or at pickup',online:'online only',store:'at pickup only'}[v]+' · applies to new orders');}
 function setPayWhen(v){DB.payWhen=v;DB.payOk=true;render();toast(v==='call'?'Callers pay while the agent stays on the line':'The agent ends the call after texting the link');}
 function codSet(k,v){DB.cod[k]=v;DB.payOk=true;render();}
 function setCodMode(v){DB.cod.mode=v;render();}
 function delPayTxt(){const c=DB.cod,ok=DB.stripe==='active';if(!c.capOn&&!c.repeatOn)return ok?'online by text link':'needs payments';
   const cash='cash '+(c.capOn&&c.repeatOn?(c.mode==='either'?'up to '+money(c.cap)+' or repeat customers':'up to '+money(c.cap)+' for repeat customers'):c.capOn?'up to '+money(c.cap):'for repeat customers');return cash+(ok?', otherwise online':', others need payments');}
+const ohx=o=>DB.ohx[o]||(DB.ohx[o]={days:[0,1,2,3,4,5,6].map(()=>({on:true,a:'',b:''})),sp:[]});
+function ohxDay(o,i){const d=ohx(o).days[i];d.on=!d.on;render();}
+function ohxSet(o,i,k,v){ohx(o).days[i][k]=v;}
+function ohxAdd(o){ohx(o).sp.push({d:'',closed:true,a:'',b:''});render();}
+function ohxDel(o,i){ohx(o).sp.splice(i,1);render();}
+function ohxSp(o,i,k,v){ohx(o).sp[i][k]=v;}
 function setOh(o){DB.oh[o]={set:true,same:true,pick:OPEN.slice(),del:OPEN.slice(),cut:15};render();}
 function setOhSame(o,b){const h=DB.oh[o];h.same=b;if(b){h.pick=OPEN.slice();h.del=OPEN.slice();}else{h.pick=['11:00 AM','11:00 PM'];h.del=['11:00 AM','9:00 PM'];}render();}
 function pauseOrd(o,t){DB.paused[o]=t;render();toast('Ordering paused at '+ON(o).short);}
@@ -1941,13 +2016,16 @@ function doRefund(){const m=S.modal,o=DB.orders.find(x=>x.id===m.id);
   S.modal=null;renderOverlay();renderOrders();}
 
 const gate=(fn,what)=>()=>DB.subscribed?fn():subCta(what);
-const VIEWS={overview:vOverview,reservations:gate(vReservations,'Table requests and bookings'),orders:gate(vOrders,'Phone orders'),calls:gate(vCalls,'Calls and call recordings'),menu:vMenu,agents:gate(vAgents,'Your agent and its settings'),settings:vSettings};
+const greyed=(h,m)=>`<div class="modoff"><div class="mo-b">${I.lock}<div><b>${m==='ord'?'Ordering':'Reservations'} isn’t turned on.</b> You can look around, but nothing here is active.</div>${isOwner()?`<button class="btn btn-dark btn-sm" onclick="goSet('mods')">Turn on</button>`:'<span class="small">Ask the owner to turn it on.</span>'}</div><div class="mo-c" inert>${h}</div></div>`;
+const modG=(fn,m)=>()=>DB.mods[m]?fn():greyed(fn(),m);
+const VIEWS={overview:vOverview,reservations:modG(gate(vReservations,'Table requests and bookings'),'res'),orders:modG(gate(vOrders,'Phone orders'),'ord'),profile:vProfile,calls:gate(vCalls,'Calls and call recordings'),menu:vMenu,agents:gate(vAgents,'Your agent and its settings'),settings:vSettings};
 /* arriving from onboarding: land on Settings › Ordering with the owner's first answers filled in */
-(function(){try{if(typeof SLICE!=='undefined'&&SLICE!=='settings')return;if(!window.__handoff&&new URLSearchParams(location.search).get('from')!=='onboarding')return;const d=window.__handoff||JSON.parse(localStorage.getItem('tringg-onboarding')||'null');if(!d||!d.ord)return;
+(function(){try{if(typeof SLICE!=='undefined'&&SLICE!=='settings')return;if(!window.__handoff&&new URLSearchParams(location.search).get('from')!=='onboarding')return;const d=window.__handoff||JSON.parse(localStorage.getItem('tringg-onboarding')||'null');if(!d)return;
+ if(d.mods){MODS.res=d.mods.res!==false;MODS.ord=d.mods.ord!==false;}
  applyRole(true);loadScenario('off');applyRole();const o='wl',q=d.ord;
- DB.svc[o]={set:'draft',pick:!!q.pick,prep:q.pick?q.prep:null,del:!!q.del,rad:q.del?{mi:q.mi,fee:q.fee,min:q.min}:null};if(q.del)DB.deliveryMode[o]='radius';
+ if(MODS.ord&&q){DB.svc[o]={set:'draft',pick:!!q.pick,prep:q.pick?q.prep:null,del:!!q.del,rad:q.del?{mi:q.mi,fee:q.fee,min:q.min}:null};if(q.del)DB.deliveryMode[o]='radius';}
  S.route='overview';S.outlet='all';S.ordOutlet=o;S.set='ord';S.handoff=true;}catch(e){}})();
 render();
 if(S.handoff)toast('Your answers from onboarding are filled in. Finish the checklist to start taking orders.');
 </script>
-<script>(function(){applyRole(true);loadScenario('live');applyRole();S.route='settings';S.outlet='wp';S.set='ord';render();setTimeout(function(){var e=$('ordsec-svc');if(e)e.scrollIntoView({block:'start'});},150);})();</script></html>
+<script>(function(){applyRole(true);loadScenario('ready');applyRole();DB.subscribed=false;DB.caps.ord=false;DB.orderingOn=false;S.route='overview';S.outlet='wp';S.set='ord';render();openSub();})();</script></html>

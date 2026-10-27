@@ -310,3 +310,34 @@ The three page-level comments (cohesive journey, ordering hours vs outlet hours,
 2. **Not built in the prototype, but in the PRD:** pickup instructions (OS-016), apply settings to several outlets (OS-031), choose which settings to copy (OS-100, 101), pre-order ready windows (OS-134), per-outlet payment accounts (OS-083), the Payments PRD's SMS-failure paths, a "Needs reconnecting" POS status.
 3. **Built in the prototype, but not in the PRD:** per-service pause, five-zone limit, zone colours and names, onboarding ordering row, subscription prompts, the outlet status table in All outlets.
 4. **Other Confluence pages to check for the same changes:** Ordering · Module PRDs (index), Ordering Orders (mentions the menu-link setting OR-110 and the POS order sync), Ordering Permissions · Owner, Manager, Staff, 08 - Payment (ordering voice E2E) (SMS-failure behaviour), and Ordering Payments · PRD (add subscription and the checklist step; it already has the rest).
+
+---
+
+# Update 27 Oct: changes from the 26 Oct Product & Tech MoM
+
+Prototype changes since the list above. PRD edits to make by hand (nothing was changed in Confluence).
+
+## 1. Ordering hours move into Outlet hours (3C, 6C, checklist)
+- EDIT: "Hours & booking" is renamed **Outlet hours** everywhere (3A, 4.1, nav text, other PRDs that link to it).
+- EDIT 3C / 6C: Ordering hours is no longer a card on the Ordering page and no longer a checklist step. It is a card inside **Settings > Outlet hours** (single outlet only). Default "Same as opening hours"; the owner can switch to "Different for pickup or delivery".
+- ADD (advanced, collapsed by default): day-by-day ordering hours (empty = follow the hours above, toggle a day off), and **special dates and closures for ordering** (no orders all day, or different hours). This answers the MoM line "Special dates: different for ordering".
+- EDIT: checklist is now Menu, Pickup & delivery, Taxes, Payments, Turn on ordering (5 steps, was 6). Any "6 steps" or "step 3 Ordering hours" wording changes.
+- EDIT: the card is greyed out when Ordering is not selected for the restaurant.
+
+## 2. Choose services: Reservations, Ordering or both (3A, 4.1, onboarding)
+- ADD: onboarding step 3 is **"What should the agent handle?"** with two large selectable cards, **both selected by default**; at least one must stay selected. The ordering questions (pickup, delivery) move here from the Verify step. Reservation rules show only if Reservations is selected; ordering answers only if Ordering is selected.
+- ADD: Review and Go-live screens follow the choice (Services group; suggested test questions; "What's next" steps).
+- ADD **Settings > Services** (owner only, in All outlets and single outlet): turn Reservations and Ordering on or off at any time. Settings are kept when one is turned off.
+- ADD behaviour for a service that is off: its nav item shows an "Off" tag; its screen opens but is greyed out and not clickable, with a banner "Ordering/Reservations isn't turned on" and a **Turn on** button (owner) or "Ask the owner" (others). Overview tiles and cards for that service are greyed. The Ordering settings and POS pages, the Ordering hours card and the Booking rules card are greyed. The setup checklist is hidden when Ordering is off.
+- EDIT: Billing text points to Settings > Services (not Agents > Edit).
+- Rule to confirm with product: reservations-only restaurants see the existing reservation experience; Orders and Ordering settings are visible but greyed.
+
+## 3. My profile (new, all roles)
+- ADD: a profile page opened from the avatar at the top right and from **My profile** in the account block at the bottom left of the navigation. Sections: personal details (name, mobile, email read-only, language), password and two-step verification, notifications (email and text per alert; order and reservation alerts greyed when that service is off), and "Your access" (role and outlets). Sign out is on the page.
+
+## 4. Orders list filter (6G / orders screen)
+- EDIT: the Orders list uses the same structure as Calls: card title and count, **status tabs with counts** (Needs approval, Awaiting payment, Active, Completed, Cancelled, All), a search box and a **Filter** button. The Fulfilment and Payment chips above the list are removed.
+- ADD: the Filter panel holds the advanced options: Fulfilment (Pickup, Delivery), Payment (Online, On arrival), Outlet (All outlets view only), Only show Pre-orders / Refunded. The button shows how many filters are active; Reset and Done at the bottom.
+
+## 5. Not built yet from the MoM (need a decision, see discussion)
+- Payment settings per outlet; Overview customizable widget; the MoM decision "retain modals, no sidebar UI" (the delivery-area editor is full screen and the Edit agent panel is a side drawer); regional payment rollout (UAE first); entry price and premium plan.

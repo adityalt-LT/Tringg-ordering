@@ -192,6 +192,15 @@ h1 .caret{display:inline-block;width:3px;height:.82em;background:var(--ink);marg
 .choice.on{border-color:var(--ink);box-shadow:4px 5px 0 var(--ink);transform:translate(-2px,-2px)}
 .rad{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--ink-30);flex-shrink:0;margin-top:3px;display:grid;place-items:center}
 .choice.on .rad{border-color:var(--ink)}.choice.on .rad::after{content:"";width:10px;height:10px;border-radius:50%;background:var(--ink)}
+.svc2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:28px}
+.svc2 button{display:flex;flex-direction:column;gap:6px;text-align:left;padding:22px;background:var(--panel);border:1.5px solid var(--border);border-radius:18px;position:relative;cursor:pointer;transition:transform .2s var(--ease),box-shadow .2s var(--ease),border-color .2s}
+.svc2 button:hover{border-color:var(--ink)}
+.svc2 button.on{border-color:var(--ink);box-shadow:4px 5px 0 var(--ink);transform:translate(-2px,-2px)}
+.svc2 b{font-size:17px;font-weight:600}.svc2 .d{color:var(--ink-50);font-size:13.5px}
+.svc2 .bx{position:absolute;top:18px;right:18px;width:24px;height:24px;border-radius:7px;border:1.5px solid var(--ink-30);display:grid;place-items:center;color:#fff}
+.svc2 button.on .bx{background:var(--ink);border-color:var(--ink)}
+.svc2 .st{font-size:12.5px;font-weight:600;color:var(--ink-50);margin-top:4px}.svc2 .on .st{color:var(--ink)}
+@media(max-width:640px){.svc2{grid-template-columns:1fr}}
 .choice b{font-weight:600;display:block}.choice .d{color:var(--ink-50);font-size:13.5px;display:block}
 @media (max-width:640px){.hdr{padding:18px 20px}.grid2{grid-template-columns:1fr}.row{grid-template-columns:1fr auto}.row>label{grid-column:1/-1}.row .full{grid-column:1/-1}.rcard{padding:22px}.host{align-items:flex-start}}
 .ti{position:relative;display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;margin-left:6px;border-radius:50%;background:#F5F4EF;color:var(--ink-50);font-size:10.5px;font-weight:600;cursor:help;vertical-align:middle;border:1px solid var(--border);text-transform:none;letter-spacing:0}
@@ -218,19 +227,19 @@ const CUISINES=['Middle Eastern','Café','Italian','North Indian','South Indian'
 const VOICES=[{id:'shubh',n:'Shubh',t:'Male · Hindi',pitch:.8,rate:1},{id:'allie',n:'Agent',t:'Female · English',pitch:1.15,rate:1},{id:'marcus',n:'Marcus',t:'Male · English',pitch:.7,rate:.95},{id:'priya',n:'Priya',t:'Female · Hindi',pitch:1.3,rate:1.08},{id:'leo',n:'Leo',t:'Male · English',pitch:.9,rate:1.1}];
 const NOTICE=[[0,'No notice'],[30,'30 min'],[60,'1 hour'],[120,'2 hours'],[240,'4 hours'],[1440,'1 day']];
 const DAYS=['M','T','W','T','F','S','S'],FULL=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
-const GROUPS=['Discover','Verify','Reservation','Meet your agent','Review','Go live'];
+const GROUPS=['Discover','Verify','Services','Meet your agent','Review','Go live'];
 const STEPS=['find','research','verify','rules','voice','review','live'];
 const GI={find:0,research:0,verify:1,rules:2,voice:3,review:4,live:5};
 const CAPS=[['create','Create Reservation','Capture and log reservation requests from callers'],['avail','Check Availability','Look up open slots before confirming a booking'],['cancel','Cancel Booking','Let callers cancel a reservation over the phone'],['transfer','Transfer Call',n=>`When a caller needs something ${n} can’t handle`],['human','Caller asks for a human','If the caller says “speak to someone”, the agent transfers immediately.'],['tries','Cannot answer after 2 tries','After 2 consecutive failed tools or unanswered FAQs, connect to staff when the restaurant is open.'],['after','Call received outside business hours','When closed, take a message or offer a callback — do not transfer to staff.']];
 
-const S={i:0,q:'',fresh:true,rs:0,edit:{},play:false,chat:[],typing:false,o:null,
+const S={mods:{res:true,ord:true},i:0,q:'',fresh:true,rs:0,edit:{},play:false,chat:[],typing:false,o:null,
  d:{brand:'',cuisine:'',country:'',desc:'',days:[1,1,1,1,1,1,1],open:'11:00',close:'23:00',lat:0,lng:0,ord:{pick:true,prep:20,del:false,mi:3,fee:3,min:15}},
  rules:{perDay:50,window:30,minParty:1,maxParty:12,duration:90,notice:60},
  agent:{voice:'shubh',name:'Novi',greet:''},
  caps:{create:1,avail:1,cancel:0,transfer:1,human:1,tries:1,after:0},fwd:'busy'};
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const ICONS={search:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',up:'<path d="M12 19V5M6 11l6-6 6 6"/>',chev:'<path d="m9 6 6 6-6 6"/>',store:'<path d="M4 9l1.5-5h13L20 9M4 9v11h16V9M4 9a3 3 0 0 0 5.3 1.9A3 3 0 0 0 14.7 10.9 3 3 0 0 0 20 9M10 20v-5h4v5"/>',play:'<path d="M8 5v14l11-7z"/>'};
+const ICONS={search:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',up:'<path d="M12 19V5M6 11l6-6 6 6"/>',chev:'<path d="m9 6 6 6-6 6"/>',store:'<path d="M4 9l1.5-5h13L20 9M4 9v11h16V9M4 9a3 3 0 0 0 5.3 1.9A3 3 0 0 0 14.7 10.9 3 3 0 0 0 20 9M10 20v-5h4v5"/>',play:'<path d="M8 5v14l11-7z"/>',check:'<path d="m5 12.5 4.5 4.5L19 7.5"/>'};
 const ic=(n,s=18)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[n]}</svg>`;
 const t12=t=>{const[h,m]=t.split(':').map(Number);return`${h%12||12}${m?':'+String(m).padStart(2,'0'):''} ${h<12?'AM':'PM'}`};
 function hoursText(){const on=S.d.days.filter(Boolean).length;if(!on)return'Closed every day';const days=on===7?'Every day':S.d.days.map((v,i)=>v?FULL[i].slice(0,3):null).filter(Boolean).join(', ');return`${days}, ${t12(S.d.open)} to ${t12(S.d.close)}`}
@@ -322,7 +331,6 @@ VIEWS.verify=()=>{const o=S.o,d=S.d,e=S.edit;
   <div class="row"><label>Location</label><div class="v">${esc(o.name)}<small>${esc(o.addr||'Drop a pin on the map')}</small></div><span></span>
    <div class="full"><div class="map" id="map" aria-label="Map. Click to move the pin."><svg class="bg" viewBox="0 0 600 140" preserveAspectRatio="none"><g stroke="#E4E3DD" stroke-width="8" fill="none"><path d="M0 45h600M0 105h600M130 0v140M310 0v140M470 0v140"/></g><g stroke="#ECEBE6" stroke-width="2" fill="none"><path d="M0 75h600M220 0v140M390 0v140"/></g></svg><div class="pin" id="pin" style="left:50%;top:55%"></div></div><div class="coords" id="coords">${d.lat.toFixed(5)}, ${d.lng.toFixed(5)} · click the map to move the pin</div></div></div>
   <div class="row"><label>Hours</label>${e.hours?'<span></span>':hrs}<button class="lnk" onclick="tog('hours')">${e.hours?'Done':'Edit'}</button>${e.hours?hrs:''}</div>
-  <div class="row"><label>Ordering${tip('Optional. The agent can take pickup and delivery orders by phone. You finish the rest, menu, taxes and payments, in the dashboard after you go live.')}</label>${e.ord?'<span></span>':`<div class="v">${esc(ordText())}</div>`}<button class="lnk" onclick="tog('ord')">${e.ord?'Done':'Edit'}</button>${e.ord?ordEdit():''}</div>
   <div class="row"><label>Answers</label><div class="v">${o.faqs.length?o.faqs.map(f=>`<div class="faq"><b>${esc(f[0])}</b><span>${esc(f[1])}</span></div>`).join(''):'<small>None yet. You can add them later in Settings.</small>'}</div><span></span></div>
  </div></div>`,foot:footer({next:'Continue',ok:!!d.brand.trim(),why:'Add a restaurant name'})}};
 VIEWS_AFTER.verify=()=>{const m=$('#map');if(!m)return;let drag=false;
@@ -335,15 +343,21 @@ function tog(k){S.edit[k]=!S.edit[k];render()}
 const num=(k,l,mn,mx)=>`<label class="field"><span>${l}</span><input class="in" type="number" min="${mn}" max="${mx}" value="${S.rules[k]}" onchange="setRule('${k}',this.value,${mn},${mx})"/></label>`;
 const pick2=(k,l,opts)=>`<label class="field"><span>${l}</span><select class="sel" onchange="setRule('${k}',this.value)">${opts.map(([v,t])=>`<option value="${v}" ${+S.rules[k]===v?'selected':''}>${t}</option>`).join('')}</select></label>`;
 function setRule(k,v,mn,mx){v=+v;if(mn!=null)v=Math.min(mx,Math.max(mn,v||mn));S.rules[k]=v;const R=S.rules;if(R.minParty>R.maxParty){if(k==='minParty')R.maxParty=R.minParty;else R.minParty=R.maxParty}render()}
-VIEWS.rules=()=>{const R=S.rules;
- return{body:`<div class="body fade">${head('Set your reservation rules.','Reservations are already on. These are solid starting defaults — adjust any of them below.')}
- <div class="sec card pad"><div class="cap cardh">Capacity</div><div class="grid2">
+function setSvc(k){const o=k==='res'?'ord':'res';if(S.mods[k]&&!S.mods[o])return;S.mods[k]=!S.mods[k];render()}
+VIEWS.rules=()=>{const R=S.rules,M=S.mods;
+ const pick=(k,t,d)=>`<button class="${M[k]?'on':''}" role="checkbox" aria-checked="${M[k]}" onclick="setSvc('${k}')"><span class="bx">${M[k]?ic('check',16):''}</span><b>${t}</b><span class="d">${d}</span><span class="st">${M[k]?'Selected':'Not selected'}</span></button>`;
+ const ordCard=`<div class="sec card pad"><div class="cap cardh">Ordering${tip('The agent takes pickup and delivery orders by phone. You finish the rest, menu, taxes and payments, in the dashboard after you go live.')}</div>${ordEdit()}<p class="note" style="margin-top:12px">${esc(ordText())}</p></div>`;
+ return{body:`<div class="body fade">${head(`What should ${esc(S.agent.name||'your agent')} handle?`,'Both are selected to start. You can change this any time in Settings.')}
+ <div class="svc2" role="group" aria-label="Services">${pick('res','Reservations','Takes table requests and bookings.')}${pick('ord','Ordering','Takes pickup and delivery orders by phone.')}</div>
+ ${M.res?`<div class="sec"><div class="cap" style="margin:18px 0 10px">Reservation rules</div>${`<div class="sec card pad"><div class="cap cardh">Capacity</div><div class="grid2">
   ${num('perDay','Max reservations / day',1,500)}
   ${pick2('window','Advance booking window',[[7,'7 days'],[14,'14 days'],[30,'30 days'],[60,'60 days'],[90,'90 days']])}
   ${num('minParty','Min party size',1,50)}${num('maxParty','Max party size',1,50)}
   ${pick2('duration','Reservation duration',[[60,'60 min'],[90,'90 min'],[120,'2 hours'],[150,'2.5 hours'],[180,'3 hours']])}
   ${pick2('notice','Minimum notice',NOTICE)}
  </div></div>
+ `}</div>`:''}
+ ${M.ord?ordCard:''}
  <p class="note">Callers will hear: “I can book ${R.minParty} to ${R.maxParty} guests, up to ${R.window} days ahead, with at least ${noticeLabel().toLowerCase()} notice.”</p></div>`,foot:footer()}};
 
 /* 04 · agent */
@@ -378,7 +392,7 @@ const kv=(k,v)=>`<div class="kv"><span>${k}</span><b>${esc(v)}</b></div>`;
 const grp=(t,step,rows)=>`<div class="card grp"><div class="gh"><span class="cap">${t}</span><button class="lnk g" onclick="go(${step})">Edit</button></div>${rows}</div>`;
 VIEWS.review=()=>{const o=S.o,d=S.d,R=S.rules,A=S.agent;
  const chat=S.chat.map(([w,t])=>`<div class="m ${w}"><small>${w==='a'?esc(A.name):'You'}</small>${esc(t)}</div>`).join('')+(S.typing?'<div class="m"><div class="dots"><i></i><i></i><i></i></div></div>':'');
- const sg=['Table for 4 tonight','Table for 20 on Saturday','What are your hours?',o.faqs[0]?o.faqs[0][0]:'Do you deliver?'];
+ const sg=[...(S.mods.res?['Table for 4 tonight','Table for 20 on Saturday']:['One Margherita for pickup','Can I get delivery to Damen Ave?']),'What are your hours?',o.faqs[0]?o.faqs[0][0]:'Do you deliver?'];
  return{body:`<div class="body fade">${head('Let’s make sure your host is ready.','Try a call with '+esc(A.name)+', then review the details below.')}
  <div class="sec card try">${S.chat.length?`<div class="chat" role="log" aria-live="polite">${chat}</div>`:''}
   <form onsubmit="event.preventDefault();const i=$('#tq');const v=i.value;i.value='';ask(v)"><div class="ask"><input id="tq" placeholder="Ask ${esc(A.name)} something a guest would…" autocomplete="off" aria-label="Your question"/><button type="submit" aria-label="Send">${ic('up',16)}</button></div></form>
@@ -386,12 +400,18 @@ VIEWS.review=()=>{const o=S.o,d=S.d,R=S.rules,A=S.agent;
  ${grp('Brand · '+esc(d.brand),2,kv('Cuisine',d.cuisine||'Not set')+kv('Country',d.country||'Not set')+kv('Description',d.desc||'Not set'))}
  ${grp('Outlet',2,kv('Address',o.addr||'Not set')+kv('Phone',o.phone||'Not set')+kv('Timezone',o.tz)+kv('Business hours',hoursText()))}
  ${grp('FAQs',2,kv(o.faqs.length+' questions imported',o.faqs.map(f=>f[0]).join(' · ')||'None yet'))}
- ${grp('Ordering',1,kv('Phone orders',ordText()))}
- ${grp('Booking rules',3,kv('Max reservations / day',R.perDay)+kv('Party size',`${R.minParty}–${R.maxParty} guests`)+kv('Duration',R.duration+' min')+kv('Advance window',R.window+' days')+kv('Minimum notice',noticeLabel()))}
+ ${grp('Services',3,kv('Agent handles',[S.mods.res?'Reservations':null,S.mods.ord?'Ordering':null].filter(Boolean).join(' and ')))}
+ ${S.mods.ord?grp('Ordering',3,kv('Phone orders',ordText())):''}
+ ${S.mods.res?grp('Booking rules',3,kv('Max reservations / day',R.perDay)+kv('Party size',`${R.minParty}–${R.maxParty} guests`)+kv('Duration',R.duration+' min')+kv('Advance window',R.window+' days')+kv('Minimum notice',noticeLabel())):''}
  ${grp('Agent',4,kv('Name',A.name)+kv('Voice',voice().n+' · '+voice().t)+kv('Greeting',greet()))}
  <p class="note">Nothing is billed until you subscribe. You can set everything up first.</p></div>`,foot:footer({next:'Go live'})}};
 
 /* 06 · go live */
+function nextSteps(A){const st=[];
+ if(S.mods.ord){st.push(['Finish ordering in the dashboard','Add your menu, taxes and payments. A checklist shows what is left.']);st.push(['Turn on ordering in Agents','You are asked to subscribe then. '+(S.mods.res?'Calls, bookings and orders':'Calls and orders')+' are active once you do. Nothing is billed before that.']);}
+ else st.push(['Subscribe to make '+esc(A.name)+' active','Calls and bookings are active once you do. Nothing is billed before that.']);
+ st.push(['Forward your restaurant line','Dial the code above so '+esc(A.name)+' answers your calls.']);
+ return st.map((x,k)=>`<div class="row" style="grid-template-columns:34px 1fr"><b>${k+1}</b><div class="v">${x[0]}<small>${x[1]}</small></div></div>`).join('')}
 VIEWS.live=()=>{const A=S.agent,F=S.fwd,N='+1 (312) 555-0147';
  return{body:`<div class="body fade">${head(`${A.name} is set up.`,'Subscribe to make it active, then forward your restaurant line to your Tringg number.')}
  <div class="sec"><div class="cap" style="margin-bottom:10px">Your Tringg number</div><div class="card num"><span class="mono">${N}</span><button class="btn line sm" onclick="copyNum(this)">Copy</button></div></div>
@@ -399,12 +419,12 @@ VIEWS.live=()=>{const A=S.agent,F=S.fwd,N='+1 (312) 555-0147';
  <button class="choice ${F==='busy'?'on':''}" onclick="S.fwd='busy';render()"><span class="rad"></span><span><b>When we can’t pick up</b><span class="d">Staff still get calls first. Recommended to start.</span></span></button>
  <button class="choice ${F==='all'?'on':''}" onclick="S.fwd='all';render()"><span class="rad"></span><span><b>Every call</b><span class="d">${esc(A.name)} answers everything and hands off to staff when needed.</span></span></button>
  <p class="hint">From your restaurant phone, dial <span class="mono" style="color:var(--ink);font-size:13px">${F==='busy'?'*61*':'*21*'}13125550147#</span>. You can also do this later from Settings.</p></div>
- <div style="margin-top:32px;display:flex;gap:12px;align-items:center"><a class="btn" href="tringg-ordering.html?from=onboarding" onclick="saveHandoff()">Open dashboard ${ic('chev',16)}</a></div><div class="sec" style="margin-top:34px"><div class="cap" style="margin-bottom:10px">What’s next</div><div class="card rows"><div class="row" style="grid-template-columns:34px 1fr"><b>1</b><div class="v">Finish ordering in the dashboard<small>Add your menu, taxes and payments. A checklist shows what is left.</small></div></div><div class="row" style="grid-template-columns:34px 1fr"><b>2</b><div class="v">Turn on ordering in Agents<small>You are asked to subscribe then. Calls, bookings and orders are active once you do. Nothing is billed before that.</small></div></div><div class="row" style="grid-template-columns:34px 1fr"><b>3</b><div class="v">Forward your restaurant line<small>Dial the code above so ${esc(A.name)} answers your calls.</small></div></div></div></div></div>`}};
-function saveHandoff(){try{localStorage.setItem('tringg-onboarding',JSON.stringify({brand:S.d.brand,ord:S.d.ord,agent:S.agent.name}))}catch(e){}}
+ <div style="margin-top:32px;display:flex;gap:12px;align-items:center"><a class="btn" href="tringg-ordering.html?from=onboarding" onclick="saveHandoff()">Open dashboard ${ic('chev',16)}</a></div><div class="sec" style="margin-top:34px"><div class="cap" style="margin-bottom:10px">What’s next</div><div class="card rows">${nextSteps(A)}</div></div></div>`}};
+function saveHandoff(){try{localStorage.setItem('tringg-onboarding',JSON.stringify({brand:S.d.brand,ord:S.d.ord,mods:S.mods,agent:S.agent.name}))}catch(e){}}
 function copyNum(b){try{navigator.clipboard.writeText('+13125550147').catch(()=>{})}catch(e){}b.textContent='Copied';setTimeout(()=>{if(b.isConnected)b.textContent='Copy'},1500)}
 
 render();
-pick('rossa');S.rs=99;S.d.ord={pick:true,prep:20,del:true,mi:3,fee:3,min:15};go(2);tog('ord');setTimeout(function(){var l=[].slice.call(document.querySelectorAll('.row label')).find(function(l){return l.textContent.indexOf('Ordering')===0});if(l)l.scrollIntoView({block:'center'});},400);render();
+pick('rossa');S.rs=99;go(3);render();
 </script>
 </body>
 </html>
