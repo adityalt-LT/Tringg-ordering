@@ -51,18 +51,24 @@ OB_CSS = r'''
 .foot .why{margin-left:auto;font-size:13px;color:var(--ink-50);text-align:right}
 .foot>.btn:last-child{margin-left:auto}.foot .why+.btn{margin-left:0}
 .btn{transition:transform .15s,box-shadow .15s,background .15s,opacity .2s}
-.btn:hover:not(:disabled){transform:translate(-2px,-2px);box-shadow:4px 5px 0 var(--ink);background:var(--ink)}
-.btn.line:hover:not(:disabled){background:var(--panel)}
-.btn.sm:hover:not(:disabled){box-shadow:3px 4px 0 var(--ink)}
+.btn:hover:not(:disabled){transform:translate(-2px,-2px);box-shadow:4px 5px 0 #fff,4px 5px 0 1.5px rgba(17,17,17,.16);background:var(--ink)}
+.btn.line:hover:not(:disabled){background:var(--panel);box-shadow:4px 5px 0 var(--ink)}
+.btn.sm:hover:not(:disabled){box-shadow:3px 4px 0 #fff,3px 4px 0 1.5px rgba(17,17,17,.16)}.btn.sm.line:hover:not(:disabled){box-shadow:3px 4px 0 var(--ink)}
 .btn:active:not(:disabled){transform:none;box-shadow:none}
 /* reading your listings */
 .rs{margin-top:36px;text-align:center}
-.orb{position:relative;width:88px;height:88px;margin:0 auto 22px}
-.orb i{position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 32% 28%,#fff 0,#BFEDE5 28%,#4FC2B4 62%,#1F6E62 100%);animation:orbf 3.2s ease-in-out infinite}
-.orb::before{content:"";position:absolute;inset:-24px;border-radius:50%;background:radial-gradient(circle,rgba(79,194,180,.30),transparent 66%);animation:orbb 2.6s ease-in-out infinite}
-.orb::after{content:"";position:absolute;inset:-8px;border-radius:50%;border:1.5px solid rgba(79,194,180,.6);border-top-color:transparent;border-left-color:transparent;animation:spin 1.8s linear infinite}
-.rs.done .orb::before,.rs.done .orb::after{opacity:0;animation:none}.rs.done .orb i{animation:none;transform:scale(.92)}
-@keyframes orbf{50%{transform:translateY(-4px) scale(1.03)}}@keyframes orbb{50%{transform:scale(1.18);opacity:.55}}
+.callw{position:relative;width:150px;height:150px;margin:0 auto 14px;display:grid;place-items:center}
+.callw::before{content:"";position:absolute;inset:8px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#DDF2EE 55%,#BFEDE5);box-shadow:0 0 0 1px rgba(79,194,180,.25)}
+.callw svg{position:relative;overflow:visible}
+.callw .body{transform-origin:60px 78px;animation:ringshake 1.5s infinite}
+.callw .hs{transform-origin:60px 40px;animation:hsjig 1.5s infinite}
+.callw .arc{fill:none;stroke:var(--mint-d);stroke-width:3.5;stroke-linecap:round;opacity:0;animation:arcp 1.5s infinite}
+.callw .a2,.callw .a4{animation-delay:.18s}
+@keyframes ringshake{0%,38%,100%{transform:rotate(0)}4%{transform:rotate(-5deg)}8%{transform:rotate(5deg)}12%{transform:rotate(-5deg)}16%{transform:rotate(5deg)}20%{transform:rotate(-4deg)}24%{transform:rotate(4deg)}28%{transform:rotate(-2deg)}32%{transform:rotate(2deg)}}
+@keyframes hsjig{0%,38%,100%{transform:translateY(0)}6%,14%,22%,30%{transform:translateY(-3px)}10%,18%,26%{transform:translateY(0)}}
+@keyframes arcp{0%{opacity:0}6%{opacity:.95}34%{opacity:.95}46%,100%{opacity:0}}
+.callw .okb{position:absolute;right:20px;bottom:18px;width:34px;height:34px;border-radius:50%;background:var(--mint);border:3px solid var(--canvas);display:none;place-items:center;color:#06231e}
+.rs.done .callw .body,.rs.done .callw .hs{animation:none}.rs.done .callw .arc{animation:none;opacity:0}.rs.done .callw .okb{display:grid}
 .rs-n{font-size:22px;font-weight:600;letter-spacing:-.4px}.rs-st{color:var(--ink-50);font-size:13px;margin-top:4px;height:20px}
 .rf-l{margin:30px auto 0;max-width:480px;text-align:left}
 .rf{display:flex;align-items:center;gap:14px;padding:13px 0;border-top:1px solid var(--border);opacity:0;transform:translateY(6px);transition:opacity .5s,transform .5s}
@@ -90,7 +96,7 @@ function rsPaint(){const done=S.rs>=RS.length,card=$('#rs');if(!card)return;card
  const b=$('#fbtn');if(b)b.disabled=!done}
 VIEWS.research=()=>{const done=S.rs>=RS.length;
  return{body:`<div class="body fade">${head(done?'Here’s what I found.':'Reading your listings…')}
- <div class="rs ${done?'done':''}" id="rs"><div class="orb"><i></i></div><div class="rs-n">${esc(S.d.brand)}</div><div class="rs-st mono" id="rst">${done?'Done':'Reading Google Maps'}</div>
+ <div class="rs ${done?'done':''}" id="rs"><div class="callw"><svg viewBox="0 0 120 100" width="120" height="100" aria-hidden="true"><path class="arc a1" d="M16 30c-5 6-5 14 0 20"/><path class="arc a2" d="M7 22c-11 11-11 33 0 44"/><path class="arc a3" d="M104 30c5 6 5 14 0 20"/><path class="arc a4" d="M113 22c11 11 11 33 0 44"/><g class="body"><rect x="24" y="56" width="72" height="28" rx="9" fill="#111"/><circle cx="48" cy="66" r="2.6" fill="#4FC2B4"/><circle cx="60" cy="66" r="2.6" fill="#4FC2B4"/><circle cx="72" cy="66" r="2.6" fill="#4FC2B4"/><circle cx="48" cy="75" r="2.6" fill="#4FC2B4"/><circle cx="60" cy="75" r="2.6" fill="#4FC2B4"/><circle cx="72" cy="75" r="2.6" fill="#4FC2B4"/><g class="hs"><path d="M28 50C28 28 92 28 92 50" fill="none" stroke="#111" stroke-width="12" stroke-linecap="round"/><rect x="21" y="46" width="15" height="14" rx="6" fill="#111"/><rect x="84" y="46" width="15" height="14" rx="6" fill="#111"/></g></g></svg><span class="okb">${ic('check',18)}</span></div><div class="rs-n">${esc(S.d.brand)}</div><div class="rs-st mono" id="rst">${done?'Done':'Reading Google Maps'}</div>
   <div class="rf-l">${RS.map((r,k)=>`<div class="rf ${S.rs>k?'ok':S.rs===k?'act':''}" id="rf${k}"><span class="c">${ic('check',12)}</span><span class="l">${r[0]}</span><span class="v">${S.rs>k?esc(r[1]()):''}</span></div>`).join('')}</div></div></div>`,foot:footer({ok:done,next:'Continue'})}};
 VIEWS_AFTER.research=()=>{rsPaint()};
 '''
@@ -111,7 +117,9 @@ VIEWS.services=()=>({body:`<div class="body fade">${head(`What should ${esc(agen
 function openDash(){try{parent.postMessage({tringg:'handoff'},'*')}catch(e){}}
 VIEWS.live=()=>{const N='+1 (312) 555-0147',left=TS.items().filter(i=>i.k!=='go'),A=TS.variant==='A';
  return{body:`<div class="body fade">${head('Go live.')}
- <div class="sec"><div class="card num"><span class="mono">${N}</span><button class="btn line sm" onclick="TS.copy(this)">Copy</button></div></div>
+ <div class="sec"><div class="cap" style="margin-bottom:10px">Forward your line to this number</div>
+  <div class="card num"><span class="mono">${N}</span><button class="btn line sm" onclick="TS.copy(this)">Copy</button></div>
+  <p class="hint" style="margin-top:12px">This is your Tringg number. It answers all your calls once your restaurant line forwards to it.</p></div>
  <div class="sec">${TS.goCard()}</div>
  ${A&&left.length?`<div class="sec"><div class="cap" style="margin-bottom:10px">Still open</div><div class="card rows">${left.map(i=>`<div class="row" style="grid-template-columns:1fr auto"><div class="v">${i.t}<small>${i.m}</small></div><button class="lnk" onclick="${i.f}">Finish</button></div>`).join('')}</div></div>`:''}
  <div style="margin-top:28px"><button class="btn" onclick="openDash()">Open dashboard ${ic('chev',16)}</button></div></div>`}};
@@ -171,11 +179,12 @@ OVERVIEW_FRESH = r'''function vOverviewFresh(){const mo=DB.mods,G=h=>`<div class
 
 BOOT = r'''/* setup prototypes: one location, empty to start, driven by the shared setup state */
 (function(){
- const PRIMARY='wl';ROLE_OUT.owner=[PRIMARY];SC.wl=.4;
- function initFresh(){applyRole(true);loadScenario('off');applyRole();
+ const PRIMARY='wl';ROLE_OUT.owner=[PRIMARY];SC.wl=.4;let FULL=false;
+ function initFresh(){FULL=false;ROLE_OUT.owner=[PRIMARY];applyRole(true);loadScenario('off');applyRole();TS.cfg.outlets=1;
   DB.k='setup';SCEN.setup={t:'Setup',h:''};DB.res=[];DB.calls=[];DB.orders=[];DB.held=[];DB.taxes=[];S.res.sel=null;S.route='overview';S.outlet=PRIMARY;S.ordOutlet=PRIMARY;S.dd=false;}
  TS.nav=r=>go(r);TS.cfg.outlets=1;
  window.applyTS=function(){const s=TS.get(),d=s.d,done=k=>!!s.done[k],sv=d.svc,p=d.pay,t=d.tax;
+  if(FULL){DB.subscribed=true;BRAND.agent=d.agent.name;if(DB.agents[0])DB.agents[0].n=d.agent.name;syncMods();return;}
   OUTLETS_ALL.forEach(o=>{DB.om[o.id]={res:!!s.svc.res,ord:!!s.svc.ord};});
   MODS.res=!!s.svc.res;MODS.ord=!!s.svc.ord;DB.caps.res=!!s.svc.res;DB.subscribed=!!s.sub;
   DB.menuState=done('ord.menu')?'live':'none';DB.menuSource=done('ord.menu')?({google:'Google profile',pos:'Your POS',web:'Website',agg:'Delivery app',upload:'Uploaded menu',scratch:'Built in Tringg'}[d.menu.src]||'Imported'):null;
@@ -188,8 +197,8 @@ BOOT = r'''/* setup prototypes: one location, empty to start, driven by the shar
   BRAND.agent=d.agent.name;if(DB.agents[0])DB.agents[0].n=d.agent.name;syncMods();};
  window.resetDash=()=>{TS.reset();initFresh();applyTS();render();};
  /* one state with everything set up and data for reservations and orders */
- window.loadReady=()=>{TS.fill();DB.k='live';const own=a=>a.map(x=>Object.assign({},x,{outlet:PRIMARY}));
-  DB.orders=own(mkOrders());DB.held=own(mkHeld());DB.res=own(clone(RES));DB.calls=own(mkCalls('live'));S.res.sel=DB.res[0].id;S.orders.sel=null;S.orders.tab='pending';render();};
+ window.loadReady=()=>{FULL=true;TS.fill();ROLE_OUT.owner=null;applyRole(true);loadScenario('live');applyRole();DB.k='live';
+  BRAND.agent=TS.get().d.agent.name;if(DB.agents[0])DB.agents[0].n=BRAND.agent;TS.cfg.outlets=OUTLETS.length;S.outlet='all';S.route='overview';S.dd=false;S.res.sel='R-311';S.orders.sel=null;S.orders.tab='pending';render();};
  initFresh();
  TS.on(()=>{applyTS();render();});
  window.addEventListener('message',e=>{const m=e.data;if(!m||!m.tringg)return;
@@ -219,6 +228,22 @@ def build_dashboard(v):
     # switching things on from other screens must respect the setup state
     t = must(t, "const on=anyO&&DB.k!=='off'&&DB.subscribed;DB.orderingOn=on;", "const on=anyO&&DB.subscribed&&TS.ready('ord');DB.orderingOn=on;")
     t = must(t, "function toggleOrd(){if(!DB.caps.ord&&!DB.subscribed){openSub();return;}", "function toggleOrd(){if(!DB.caps.ord&&!DB.subscribed){openSub();return;}if(!DB.caps.ord&&!TS.ready('ord')){TS.open('ord');return;}")
+    # no question-mark tooltips: a single hint line under the label instead
+    t, n = re.subn(r'const tip=t=>`<span class="ti".*?</span></span>`;', lambda m: "const tip=t=>'';const tip1=t=>String(t).split(/(?<=[.!?])\\s/)[0];", t, count=1, flags=re.S)
+    assert n == 1
+    t, n = re.subn(r"const orow=\(label,tp,ctl,sub\)=>.*?\n", lambda m: "const orow=(label,tp,ctl,sub)=>`<div class=\"tg\"><div class=\"tx\"><div class=\"fl\">${label}</div>${sub?`<div class=\"fh\">${sub}</div>`:tp?`<div class=\"fh fh1\">${esc(tip1(tp))}</div>`:''}</div>${ctl}</div>`;\n", t, count=1)
+    assert n == 1
+    t = must(t, '</style>', '.fh1{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:560px}.btn-dark{transition:transform .15s,box-shadow .15s,background .12s}.btn-dark:hover:not(:disabled){transform:translate(-2px,-2px);box-shadow:3px 4px 0 #fff,3px 4px 0 1.5px rgba(17,17,17,.16)}</style>')
+    # a single outlet shows that outlet only: no all-outlets billing, team, exceptions or other-outlet notes
+    t = must(t, "const nav=roleNav(S.outlet==='all'?SETNAV_ALL:SETNAV_ONE);", "const nav0=roleNav(S.outlet==='all'?SETNAV_ALL:SETNAV_ONE),nav=(S.outlet!=='all'&&OUTLETS.length>1)?nav0.map(g=>[g[0],g[1].filter(i=>!['billing','team'].includes(i[0]))]).filter(g=>g[1].length):nav0;")
+    t = must(t, '<div class="scope-note">${S.outlet===\'all\'', '<div class="scope-note" ${OUTLETS.length>1?\'\':\'hidden\'}>${S.outlet===\'all\'')
+    t = must(t, "`<div class=\"sep\"></div><div class=\"fl\">Outlets that differ${tip('An outlet can do the opposite of the main setting.')}</div>`+", "(one?'':`<div class=\"sep\"></div><div class=\"fl\">Outlets that differ</div>`)+")
+    t = must(t, "(exc.length?`<div class=\"tblw\">", "(one?'':exc.length?`<div class=\"tblw\">")
+    t = must(t, "(rest.length?`<div class=\"frow\"", "(!one&&rest.length?`<div class=\"frow\"")
+    t = must(t, "(one&&txAll.length>tx.length?", "(false?")
+    t = must(t, "(one?orow('This outlet'", "(one&&OUTLETS.length>1?orow('This outlet'")
+    t = must(t, "function svcShared(one){if(!one)return '';", "function svcShared(one){if(!one||OUTLETS.length<2)return '';")
+    t = must(t, '/ outlet / month', "${OUTLETS.length>1?'/ outlet / month':'/ month'}")
     # prototype panel
     a = t.index('<div class="proto"><div class="proto-l">Prototype state</div>')
     b = t.index('Subscribed</button></div></div>', a) + len('Subscribed</button></div></div>')
@@ -226,7 +251,7 @@ def build_dashboard(v):
     # modules: a service that is off offers to add itself; one that isn't set up shows its steps in place
     t = must(t, '''onclick="goSet('mods')">Turn on</button>''', '''onclick="TS.add('${m}')">Add ${m==='ord'?'ordering':'reservations'}</button>''')
     t = must(t, "const VIEWS={overview:vOverview,reservations:modG(gate(vReservations,'Table requests and bookings'),'res'),orders:modG(gate(vOrders,'Phone orders'),'ord'),",
-             "const modT=(fn,m)=>()=>{if(!DB.mods[m])return greyed(fn(),m);if(!TS.ready(m)||!DB.subscribed)return TS.variant==='B'?TS.panel(m):TS.bar(m);return fn();};\nconst VIEWS={overview:vOverview,reservations:modT(vReservations,'res'),orders:modT(vOrders,'ord'),")
+             "const modT=(fn,m)=>()=>{if(!DB.mods[m])return greyed(fn(),m);if(!TS.ready(m))return TS.variant==='B'?TS.panel(m):TS.bar(m);if(!DB.subscribed)return TS.readyPage(m);return fn();};\nconst VIEWS={overview:vOverview,reservations:modT(vReservations,'res'),orders:modT(vOrders,'ord'),")
     # overview: one setup block per variant, above the numbers
     t = must(t, "function vOverview(){\n  if(!DB.subscribed)return vOverviewFresh();", "function vOverview0(){")
     t = cut(t, 'function vOverviewFresh(){', 'function vOverview0(){', OVERVIEW_FRESH + '''const tsBlock=()=>TS.variant==='A'?TS.strip():TS.variant==='B'?TS.status():TS.center();

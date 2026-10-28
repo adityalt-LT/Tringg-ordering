@@ -18,15 +18,16 @@ var CSS=`
 .ts-hd{display:flex;align-items:center;gap:14px;padding:20px 24px 0 32px}.ts-hd>div{flex:1;min-width:0}
 .ts-eyebrow{font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--tk-50)}
 .ts-dots{display:flex;gap:6px;align-items:center;margin-top:8px}.ts-dots button{width:30px;height:5px;border-radius:5px;border:0;background:#E3E1DB;cursor:pointer;padding:0}
-.ts-dots button.done{background:var(--tk-mint)}.ts-dots button.on{background:var(--tk-ink)}.ts-dots span{font-size:12px;color:var(--tk-50);margin-left:6px}
+.ts-dots button:disabled{cursor:default}.ts-dots button.done{background:var(--tk-mint)}.ts-dots button.on{background:var(--tk-ink)}.ts-dots span{font-size:12px;color:var(--tk-50);margin-left:6px}
 .ts-xb{width:34px;height:34px;border-radius:10px;border:0;background:none;cursor:pointer;display:grid;place-items:center;color:var(--tk-50);align-self:flex-start}.ts-xb:hover{background:var(--tk-sun);color:var(--tk-ink)}
 .ts-body{flex:1;overflow:auto;padding:18px 32px 24px}
 .ts-h{font-size:26px;font-weight:600;letter-spacing:-.8px;line-height:1.2;margin:0 0 18px}
 .ts-foot{display:flex;align-items:center;gap:12px;padding:18px 32px 24px}
 .ts-foot .sp{flex:1}.ts-err{color:var(--tk-red);font-size:13px;font-weight:500}
 .ts-btn{height:44px;padding:0 22px;border-radius:12px;border:1.5px solid var(--tk-ink);background:var(--tk-ink);color:#fff;font:inherit;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap;text-decoration:none;transition:transform .15s,box-shadow .15s}
-.ts-btn:hover:not(:disabled){transform:translate(-2px,-2px);box-shadow:4px 5px 0 var(--tk-ink)}
-.ts-btn.line{background:#fff;color:var(--tk-ink)}.ts-btn.sm{height:34px;padding:0 14px;font-size:13px;border-radius:10px}.ts-btn.sm:hover:not(:disabled){box-shadow:3px 4px 0 var(--tk-ink)}
+.ts-btn:hover:not(:disabled){transform:translate(-2px,-2px);box-shadow:4px 5px 0 #fff,4px 5px 0 1.5px rgba(17,17,17,.16)}
+.ts-btn.line:hover:not(:disabled){box-shadow:4px 5px 0 var(--tk-ink)}
+.ts-btn.line{background:#fff;color:var(--tk-ink)}.ts-btn.sm{height:34px;padding:0 14px;font-size:13px;border-radius:10px}.ts-btn.sm:hover:not(:disabled){box-shadow:3px 4px 0 #fff,3px 4px 0 1.5px rgba(17,17,17,.16)}.ts-btn.sm.line:hover:not(:disabled){box-shadow:3px 4px 0 var(--tk-ink)}
 .ts-btn.ghost{border-color:transparent;background:none;color:var(--tk-50)}.ts-btn.ghost:hover:not(:disabled){transform:none;box-shadow:none;background:var(--tk-sun);color:var(--tk-ink)}
 .ts-btn:disabled{opacity:.35;cursor:not-allowed}
 .ts-g2{display:grid;grid-template-columns:1fr 1fr;gap:18px 16px}
@@ -59,6 +60,12 @@ var CSS=`
 .ts-num{display:flex;align-items:center;gap:14px;padding:14px 18px;border:1.5px solid var(--tk-bd);border-radius:14px;margin-bottom:16px}.ts-num .m{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:20px}.ts-num .ts-btn{margin-left:auto}
 .ts-price{font-size:34px;font-weight:600;letter-spacing:-1px}.ts-price small{font-size:14px;font-weight:400;color:var(--tk-50);letter-spacing:0}
 .ts-res{background:var(--tk-sun);border-radius:12px;padding:10px 14px;font-size:13px;margin-top:6px}
+/* the Tringg wordmark, and what happens when you click it */
+html .logo{display:inline-block;cursor:pointer;user-select:none;-webkit-user-select:none;font-weight:700;letter-spacing:-1.5px;line-height:1;transform:rotate(-3deg);transform-origin:left bottom;transition:transform .2s cubic-bezier(.3,1.6,.5,1),filter .2s;
+ background:linear-gradient(120deg,#7FE8D8 0%,#4FC2B4 45%,#D7F26B 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;text-shadow:none;-webkit-text-stroke:1.4px #0a0a0a;filter:drop-shadow(2px 3px 0 #0a0a0a)}
+html .logo:hover{transform:rotate(-6deg) scale(1.07)}html .logo:active{transform:rotate(-2deg) scale(.96)}
+html .rail-top .logo{-webkit-text-stroke:0;filter:drop-shadow(2px 2px 0 rgba(79,194,180,.35))}
+#ts-fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:2000}
 /* cards, strips and panels placed in the host pages */
 .ts-card{background:#fff;border:1.5px solid var(--tk-bd);border-radius:20px;padding:22px 24px;font-family:"Poppins",system-ui,sans-serif;color:var(--tk-ink);font-size:14px;line-height:1.5;text-align:left}
 .ts-card.off{background:transparent;border-style:dashed}
@@ -83,6 +90,7 @@ var CSS=`
 .ts-pan h2{font-size:26px;font-weight:600;letter-spacing:-.8px;margin:0}
 .ts-sc{display:flex;gap:16px;align-items:center;padding:14px 18px;border:1.5px solid var(--tk-bd);border-radius:16px;margin-top:12px}.ts-sc.done{background:var(--tk-sun);border-color:transparent}
 .ts-sc .ts-n{width:28px;height:28px;font-size:13px}.ts-sc.done .ts-n{background:var(--tk-mint);border-color:var(--tk-mint);color:#06231e}.ts-sc .t{flex:1;min-width:0;font-weight:600}
+.ts-ready{margin-top:70px;text-align:center;background:#fff;border:1.5px solid var(--tk-bd);border-radius:24px;padding:46px 32px;font-family:"Poppins",system-ui,sans-serif}.ts-ready h2{font-size:26px;font-weight:600;letter-spacing:-.8px;margin:0 0 6px}.ts-ready p{color:var(--tk-50);margin:0 0 24px}.ts-ready .ts-okc{width:60px;height:60px;border-radius:50%;background:var(--tk-mint);display:grid;place-items:center;margin:0 auto 18px;color:#06231e}
 .ts-skel{opacity:.5;margin-top:22px}.ts-skel .r{height:46px;border-radius:12px;background:#EFEEE9;margin-bottom:10px}.ts-skel .t{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}.ts-skel .t i{height:70px;border-radius:16px;background:#EFEEE9}
 .ts-pick{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:28px}
 .ts-pk{display:flex;flex-direction:column;gap:6px;text-align:left;padding:22px;background:#fff;border:1.5px solid var(--tk-bd);border-radius:18px;position:relative;font:inherit;color:inherit;cursor:pointer;transition:transform .2s,box-shadow .2s,border-color .2s}
@@ -198,11 +206,11 @@ BODY['ord.pay']=function(){var p=s.d.pay,qual=p.capOn||p.repeatOn,
 TS.conn=function(){s.d.pay.conn=true;if(s.d.pay.pick==='store')s.d.pay.pick='both';bcast();draw();};
 BODY['go.sub']=function(){var N=TS.cfg.outlets,P=TS.cfg.price;return {t:s.sub?'Subscribed':'Subscribe',h:
  '<div class="ts-price">$'+(N*P).toLocaleString()+' <small>/ month · '+N+' location'+(N>1?'s':'')+'</small></div><div style="color:var(--tk-50);margin-top:6px">Nothing is billed before you subscribe. Cancel any time.</div>'};};
-BODY['go.fwd']=function(){var m=s.d.fwd,code=(m==='busy'?'*61*':'*21*')+'13125550147#';return {t:'Forward your line',h:
- '<div class="ts-num"><span class="m">'+NUM+'</span><button class="ts-btn line sm" onclick="TS.copy(this)">Copy</button></div>'+
+BODY['go.fwd']=function(){var m=s.d.fwd,code=(m==='busy'?'*61*':'*21*')+'13125550147#';return {t:'Forward your line to this number',h:
+ '<div style="color:var(--tk-50);margin:-8px 0 16px">This is your Tringg number. It answers all your calls once your restaurant line forwards to it.</div><div class="ts-num"><span class="m">'+NUM+'</span><button class="ts-btn line sm" onclick="TS.copy(this)">Copy</button></div>'+
  '<button class="ts-opt '+(m==='busy'?'on':'')+'" onclick="TS.vr(\'fwd\',\'busy\')"><span class="ts-rad"></span><span><b>When we can’t pick up</b><span class="d">Recommended</span></span></button>'+
  '<button class="ts-opt '+(m==='all'?'on':'')+'" onclick="TS.vr(\'fwd\',\'all\')"><span class="ts-rad"></span><span><b>Every call</b></span></button>'+
- '<div style="color:var(--tk-50);font-size:13px;margin-top:6px">Dial <b style="color:var(--tk-ink);font-family:\'JetBrains Mono\',monospace">'+code+'</b> from your restaurant phone.</div>'};};
+ '<div style="color:var(--tk-50);font-size:13px;margin-top:6px">On your restaurant phone, dial <b style="color:var(--tk-ink);font-family:\'JetBrains Mono\',monospace">'+code+'</b></div>'};};
 TS.copy=function(b){try{navigator.clipboard.writeText('+13125550147').catch(function(){});}catch(e){}b.textContent='Copied';setTimeout(function(){if(b.isConnected)b.textContent='Copy';},1400);};
 var VAL={
  'ord.menu':function(){return UI.mp==='review'?'':'Add your menu first';},
@@ -218,16 +226,16 @@ function idx(){return cur().map(function(x){return x[0];}).indexOf(UI.step);}
 function draw(){
  var r=root();if(!UI.open){r.innerHTML='';return;}
  var k=UI.svc,st=cur(),i=idx(),last=i===st.length-1,key=k+'.'+UI.step,main;
- var dots=st.length>1?'<div class="ts-dots">'+st.map(function(x,j){return '<button class="'+(s.done[k+'.'+x[0]]?'done ':'')+(j===i&&UI.stage==='form'?'on':'')+'" aria-label="'+x[1]+'" title="'+x[1]+'" onclick="TS.goto(\''+x[0]+'\')"></button>';}).join('')+'<span>'+(UI.stage==='form'?'Step '+(i+1)+' of '+st.length:'')+'</span></div>':'';
+ var dots=st.length>1?'<div class="ts-dots">'+st.map(function(x,j){var open=st.slice(0,j).every(function(y){return s.done[k+'.'+y[0]];});return '<button class="'+(s.done[k+'.'+x[0]]?'done ':'')+(j===i&&UI.stage==='form'?'on':'')+'" aria-label="'+x[1]+'" title="'+x[1]+'" '+(open?'':'disabled ')+'onclick="TS.goto(\''+x[0]+'\')"></button>';}).join('')+'<span>'+(UI.stage==='form'?'Step '+(i+1)+' of '+st.length:'')+'</span></div>':'';
  var head='<div class="ts-hd"><div><div class="ts-eyebrow">'+SVC[k].n+'</div>'+dots+'</div><button class="ts-xb" aria-label="Close" onclick="TS.close()">'+XI+'</button></div>';
  if(UI.stage==='done'){
   var t={res:'Reservations are set up',ord:'Ordering is set up',go:'You’re live'}[k];
-  main=head+'<div class="ts-body"><div class="ts-ok"><div class="ts-okc">'+CHK.replace('width="14" height="14"','width="28" height="28"')+'</div><h3>'+t+'</h3><div style="display:flex;gap:12px;justify-content:center">'+(!s.sub&&k!=='go'?'<button class="ts-btn line" onclick="TS.open(\'go\',\'sub\')">Go live</button>':'')+'<button class="ts-btn" onclick="TS.close()">Done</button></div></div></div>';
+  main=head+'<div class="ts-body"><div class="ts-ok"><div class="ts-okc">'+CHK.replace('width="14" height="14"','width="28" height="28"')+'</div><h3>'+t+'</h3>'+(k==='go'?TS.liveList():'')+'<div style="display:flex;justify-content:center"><button class="ts-btn" onclick="TS.close()">Done</button></div></div></div>';
  }else{
   var b=BODY[key]();
   var cta=key==='go.sub'?(s.sub?'Continue':'Subscribe · $'+(TS.cfg.outlets*TS.cfg.price).toLocaleString()):key==='go.fwd'?'Done':key==='ord.menu'&&UI.mp==='review'?'Publish':last?'Save':'Continue';
   var dis=(key==='ord.menu'&&UI.mp!=='review')?'disabled':'';
-  main=head+'<div class="ts-body"><h2 class="ts-h">'+b.t+'</h2>'+b.h+'</div><div class="ts-foot">'+(i>0?'<button class="ts-btn line" onclick="TS.goto(\''+st[i-1][0]+'\')">Back</button>':'')+'<span class="sp"></span><span class="ts-err" role="alert">'+esc(UI.err)+'</span>'+(!last&&UI.mp!=='busy'?'<button class="ts-btn ghost" onclick="TS.skip()">Skip</button>':'')+'<button class="ts-btn" '+dis+' onclick="TS.save()">'+cta+'</button></div>';
+  main=head+'<div class="ts-body"><h2 class="ts-h">'+b.t+'</h2>'+b.h+'</div><div class="ts-foot">'+(i>0?'<button class="ts-btn line" onclick="TS.goto(\''+st[i-1][0]+'\')">Back</button>':'')+'<span class="sp"></span><span class="ts-err" role="alert">'+esc(UI.err)+'</span>'+'<button class="ts-btn" '+dis+' onclick="TS.save()">'+cta+'</button></div>';
  }
  r.innerHTML='<div class="ts-ov" onmousedown="if(event.target===this)TS.close()"><div class="ts-sheet" role="dialog" aria-modal="true" aria-label="'+esc(SVC[k].n)+'">'+main+'</div></div>';
 }
@@ -245,6 +253,23 @@ TS.save=function(){var key=UI.svc+'.'+UI.step,e=VAL[key]?VAL[key]():'';if(e){UI.
  if(nx){UI.step=nx;UI.err='';setMp();}else UI.stage='done';
  draw();};
 document.addEventListener('keydown',function(e){if(e.key==='Escape'&&UI.open)TS.close();});
+/* paint explosion from the logo: blobs, streaks and drips that fall with gravity and leave splats */
+var FX={cv:null,ctx:null,ps:[],sp:[],run:false};
+var PAL=['#4FC2B4','#D7F26B','#FF6B6B','#FFB84D','#8B7CF6','#111111','#5ED3F3'];
+function fxStep(){var c=FX.ctx,w=FX.cv.width,h=FX.cv.height;c.clearRect(0,0,w,h);var now=performance.now();
+ FX.sp=FX.sp.filter(function(q){return now-q.t<2600;});FX.sp.forEach(function(q){var a=Math.max(0,1-(now-q.t)/2600);c.globalAlpha=a*.9;c.fillStyle=q.c;c.beginPath();c.ellipse(q.x,q.y,q.r*1.5,q.r*.8,q.a,0,6.283);c.fill();if(q.d){c.fillRect(q.x-1.5,q.y,3,q.d*(1-a*.3));}});
+ FX.ps=FX.ps.filter(function(p){return p.l>0&&p.y<h+40;});FX.ps.forEach(function(p){p.vy+=.55;p.vx*=.992;p.x+=p.vx;p.y+=p.vy;p.l-=1;p.rot+=p.vr;
+  c.globalAlpha=Math.min(1,p.l/30);c.fillStyle=p.c;c.save();c.translate(p.x,p.y);c.rotate(p.rot);
+  if(p.k===0){c.beginPath();c.arc(0,0,p.r,0,6.283);c.fill();}else if(p.k===1){c.fillRect(-p.r*1.8,-1.6,p.r*3.6,3.2);}else{c.beginPath();for(var i=0;i<10;i++){var a=i*.628,rr=i%2?p.r*.45:p.r;c.lineTo(Math.cos(a)*rr,Math.sin(a)*rr);}c.closePath();c.fill();}
+  c.restore();
+  if(p.k===0&&p.y>h-30&&Math.random()<.5&&p.stick){FX.sp.push({x:p.x,y:h-8-Math.random()*20,r:p.r*1.4,c:p.c,t:now,a:Math.random()*3,d:Math.random()<.5?10+Math.random()*30:0});p.l=0;}});
+ c.globalAlpha=1;if(FX.ps.length||FX.sp.length)requestAnimationFrame(fxStep);else{FX.run=false;c.clearRect(0,0,w,h);}}
+TS.splat=function(x,y){if(!FX.cv){FX.cv=document.createElement('canvas');FX.cv.id='ts-fx';document.body.appendChild(FX.cv);FX.ctx=FX.cv.getContext('2d');}
+ FX.cv.width=window.innerWidth;FX.cv.height=window.innerHeight;
+ for(var i=0;i<90;i++){var a=Math.random()*6.283,sp=4+Math.random()*13;FX.ps.push({x:x,y:y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-5,r:2.5+Math.random()*7,c:PAL[Math.floor(Math.random()*PAL.length)],l:70+Math.random()*80,k:i%7===0?2:i%4===0?1:0,rot:Math.random()*6,vr:(Math.random()-.5)*.4,stick:Math.random()<.7});}
+ for(var j=0;j<6;j++)FX.sp.push({x:x+(Math.random()-.5)*40,y:y+(Math.random()-.5)*20,r:10+Math.random()*16,c:PAL[j%4],t:performance.now(),a:Math.random()*3,d:0});
+ if(!FX.run){FX.run=true;requestAnimationFrame(fxStep);}};
+document.addEventListener('click',function(e){var l=e.target.closest&&e.target.closest('.logo');if(l){var r=l.getBoundingClientRect();TS.splat(r.left+r.width/2,r.top+r.height/2);}});
 
 /* ── blocks placed in host pages ── */
 var pill=function(k){var x=TS.stat(k);
@@ -278,8 +303,11 @@ TS.status=function(){if(TS.allDone())return '';var rows=[['res','Reservations',"
 /* variant B: a module page that is the setup */
 TS.panel=function(k){var x=TS.stat(k),n=SVC[k].n,nx=TS.nextStep(k);
  var steps=STEPS[k].map(function(t,j){var dn=s.done[k+'.'+t[0]];return '<div class="ts-sc '+(dn?'done':'')+'"><span class="ts-n">'+(dn?CHK:j+1)+'</span><span class="t">'+t[1]+'</span><button class="ts-btn sm '+(dn?'line':'')+'" onclick="TS.open(\''+k+'\',\''+t[0]+'\')">'+(dn?'Edit':t[0]===nx?'Start':'Open')+'</button></div>';}).join('');
- var tail=x.complete&&!s.sub?'<div class="ts-sc" style="background:var(--tk-mint-50);border-color:transparent"><span class="t">Ready</span><button class="ts-btn sm" onclick="TS.open(\'go\',\'sub\')">Go live</button></div>':'';
+ var tail='';
  return '<div class="scroll"><div class="page" style="max-width:860px"><div class="ts-pan"><div style="display:flex;gap:20px;align-items:center"><h2 style="flex:1">'+(x.complete?n+' is set up':'Set up '+n.toLowerCase())+'</h2>'+ring(x.done,x.total)+'</div>'+steps+tail+'</div>'+TS.skel(k)+'</div></div>';};
+TS.liveList=function(){return '<div style="max-width:320px;margin:0 auto 22px;text-align:left">'+['res','ord'].filter(function(k){return TS.sel(k);}).map(function(k){var r=TS.ready(k);return '<div class="ts-cat"><span>'+SVC[k].n+'</span><span>'+(r?'<span class="ts-pl g">Live</span>':'<span class="ts-pl a">Finish setup</span>')+'</span></div>';}).join('')+'</div>';};
+TS.readyPage=function(k){var m={res:['Reservations are ready','Go live to start taking bookings.'],ord:['Ordering is ready','Go live to start taking orders.']}[k];
+ return '<div class="scroll"><div class="page" style="max-width:560px"><div class="ts-ready"><div class="ts-okc">'+CHK.replace('width="14" height="14"','width="28" height="28"')+'</div><h2>'+m[0]+'</h2><p>'+m[1]+'</p><div style="display:flex;gap:12px;justify-content:center"><button class="ts-btn" onclick="TS.open(\'go\',\'sub\')">Go live</button><button class="ts-btn line" onclick="TS.open(\''+k+'\')">Edit setup</button></div></div></div></div>';};
 TS.skel=function(){return '<div class="ts-skel" aria-hidden="true"><div class="t"><i></i><i></i><i></i><i></i></div><div class="r"></div><div class="r"></div><div class="r"></div></div>';};
 /* variants A and C: the module page is dimmed behind one slim row */
 TS.bar=function(k){var x=TS.stat(k),ready=x.complete;
