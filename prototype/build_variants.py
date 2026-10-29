@@ -9,10 +9,29 @@ Enquiries are already set up in onboarding (details + FAQs), so only Reservation
 The onboarding and the dashboard share global names, so each runs in its own frame inside a wrapper. The
 wrapper holds the single copy of the setup state and mirrors it into both frames.
 Run from the prototype folder:  python3 build_variants.py"""
-import base64, pathlib, re
+import base64, json, pathlib, re
 
 here = pathlib.Path(__file__).resolve().parent
-ENGINE = (here / 'setup' / 'setup-engine.js').read_text(encoding='utf-8')
+def _uri(path, mime):
+    return 'data:' + mime + ';base64,' + base64.b64encode(path.read_bytes()).decode('ascii')
+LOGO = _uri(here / 'setup' / 'assets' / 'tringg-logo.png', 'image/png')
+HERO = _uri(here / 'setup' / 'assets' / 'tringg-hero.webm', 'video/webm')
+# real restaurant photos: drop .jpg/.png files in setup/photos and they appear in step 1 and the details step
+def _photos():
+    out = []
+    try:
+        from PIL import Image
+        import io
+        for f in sorted((here / 'setup' / 'photos').glob('*')):
+            if f.suffix.lower() in ('.jpg', '.jpeg', '.png', '.webp'):
+                im = Image.open(f).convert('RGB'); im.thumbnail((640, 640))
+                b = io.BytesIO(); im.save(b, 'JPEG', quality=72)
+                out.append('data:image/jpeg;base64,' + base64.b64encode(b.getvalue()).decode('ascii'))
+    except Exception as e:
+        print('photos skipped:', e)
+    return out
+PHOTOS = _photos()
+ENGINE = (here / 'setup' / 'setup-engine.js').read_text(encoding='utf-8').replace('__LOGO_URI__', LOGO)
 OB = (here / 'onboarding.html').read_text(encoding='utf-8')
 DB = (here / 'tringg-ordering.html').read_text(encoding='utf-8')
 
@@ -55,23 +74,13 @@ OB_CSS = r'''
 .btn.line:hover:not(:disabled){background:var(--panel);box-shadow:4px 5px 0 var(--ink)}
 .btn.sm:hover:not(:disabled){box-shadow:3px 4px 0 #fff,3px 4px 0 1.5px rgba(17,17,17,.16)}.btn.sm.line:hover:not(:disabled){box-shadow:3px 4px 0 var(--ink)}
 .btn:active:not(:disabled){transform:none;box-shadow:none}
-/* reading your listings: the results card, with a ringing phone while it reads */
-.avw2{position:relative;width:88px;height:88px;flex-shrink:0}
-.callw{position:absolute;inset:0;display:grid;place-items:center}
-.callw::before{content:"";position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#DDF2EE 55%,#BFEDE5);box-shadow:0 0 0 1px rgba(79,194,180,.25)}
-.callw svg{position:relative;overflow:visible;width:74px;height:62px}
-.callw .body{transform-origin:60px 78px;animation:ringshake 1.5s infinite}
-.callw .hs{transform-origin:60px 40px;animation:hsjig 1.5s infinite}
-.callw .arc{fill:none;stroke:var(--mint-d);stroke-width:3.5;stroke-linecap:round;opacity:0;animation:arcp 1.5s infinite}
-.callw .a2,.callw .a4{animation-delay:.18s}
-@keyframes ringshake{0%,38%,100%{transform:rotate(0)}4%{transform:rotate(-5deg)}8%{transform:rotate(5deg)}12%{transform:rotate(-5deg)}16%{transform:rotate(5deg)}20%{transform:rotate(-4deg)}24%{transform:rotate(4deg)}28%{transform:rotate(-2deg)}32%{transform:rotate(2deg)}}
-@keyframes hsjig{0%,38%,100%{transform:translateY(0)}6%,14%,22%,30%{transform:translateY(-3px)}10%,18%,26%{transform:translateY(0)}}
-@keyframes arcp{0%{opacity:0}6%{opacity:.95}34%{opacity:.95}46%,100%{opacity:0}}
-.av2{position:absolute;inset:0;border-radius:50%;background:var(--mint);color:#06231e;font-weight:700;font-size:34px;display:none;place-items:center}
-.rcard.done .av2{display:grid}.rcard.done .callw{display:none}
-.faqh{font-size:11.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-50);margin:16px 0 8px}.faqh:first-child{margin-top:0}
+/* reading your listings: the results card, with the Tringg hero animation */
+.avw2{position:relative;width:132px;height:118px;flex-shrink:0;margin:-6px 0 -6px -10px}
+.avw2 video{width:100%;height:100%;object-fit:contain;display:block;mix-blend-mode:multiply}
+.phs{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:20px}.phs img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:12px;display:block}
+.row .phs{grid-column:2/4;margin-top:0}
+.faqh{margin:16px 0 8px}.faqh:first-child{margin-top:0}
 .faqe{display:flex;flex-direction:column;gap:8px;border:1.5px solid var(--border);border-radius:14px;padding:12px;margin-bottom:10px}.faqe .in{height:40px}
-.enqd{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--mint-d);background:var(--mint-50);border-radius:999px;padding:6px 14px 6px 10px;margin-top:22px}
 </style>'''
 
 NEW_VIEWS = r'''
@@ -82,9 +91,8 @@ function faqDel(i){S.o.faqs.splice(i,1);faqSync();render()}
 function faqAdd(c){S.o.faqs.push(['','',c||'general']);faqSync();render()}
 /* 03 · set up: Reservations and Ordering */
 const agentName=()=>TS.get().d.agent.name;
-const enqDone=`<div class="enqd">${ic('check',14)} Enquiries set up</div>`;
-VIEWS.services=()=>({body:`<div class="body fade">${head(`What should ${esc(agentName())} handle?`)}${enqDone}
- ${TS.variant==='A'?`<div class="ts-stk" style="margin-top:18px">${TS.card('res',{toggle:true})}${TS.card('ord',{toggle:true})}</div>`:TS.pick()}</div>`,
+VIEWS.services=()=>({body:`<div class="body fade">${head(`What should ${esc(agentName())} handle?`)}
+ ${TS.variant==='A'?`<div class="ts-stk">${TS.card('enq')}${TS.card('res',{toggle:true})}${TS.card('ord',{toggle:true})}</div>`:TS.pick()}</div>`,
  foot:footer({next:'Continue'})});
 /* 04 · go live */
 function openDash(){try{parent.postMessage({tringg:'handoff'},'*')}catch(e){}}
@@ -110,7 +118,9 @@ def build_onboarding(v):
   desc:'Wood-fired Neapolitan pizza, fresh pasta and an Italian wine list.',open:'16:00',close:'23:00',
   faqs:[['Do you have gluten-free crusts?','Yes, on any 12-inch pizza.','general'],['Is there parking nearby?','Yes, street parking and a garage next door.','general'],['Do you have vegan options?','Yes, a vegan cheese pizza and several pastas.','general'],['Can you host a private party?','Yes, up to 40 guests.','general'],
    ['Do you take walk-ins?','Yes, subject to availability. Booking is recommended on weekends.','res'],['How far ahead can I book?','Up to 30 days ahead.','res'],['Can I book for a large group?','Yes, up to 12 guests by phone.','res'],
-   ['Do you deliver?','Yes, within 3 miles.','ord'],['How long does pickup take?','About 20 minutes.','ord'],['Is there a delivery fee or minimum?','A $3 fee and a $15 minimum.','ord']]}];
+   ['Do you deliver?','Yes, within 3 miles.','ord'],['How long does pickup take?','About 20 minutes.','ord'],['Is there a delivery fee or minimum?','A $3 fee and a $15 minimum.','ord'],
+   ['Do you cater?','Yes. We cater events of 20 or more. Call us for a quote.','catering'],['How much notice do you need for catering?','At least 48 hours.','catering'],
+   ['Do you have live music?','Yes, every Friday and Saturday from 7 PM.','music'],['Can I book the restaurant for a music event?','Yes, for private events on weekdays.','music']]}];
 ''')
     t = must(t, "${head('Tell Tringg your restaurant.','Type its name or paste your website. I’ll pull the rest automatically.')}", "${head('Find your restaurant.')}")
     t = must(t, '''el.innerHTML=`<p class="hint">Try <button class="lnk" onclick="try1('Aladdin')">Aladdin Broasted Chicken</button> or <button class="lnk" onclick="try1('ROSSA')">ROSSA Pizzeria</button></p>`''',
@@ -127,21 +137,27 @@ def build_onboarding(v):
 const chip=()=>''')
     # reading your listings
     t = must(t, "${head(done?'Here’s what I learned.':'Teaching your host…',done?'You’ll confirm each detail next. Nothing goes live until you say so.':'Learning from public listings so your first call sounds like staff.')}", "${head(done?'Here’s what I found.':'Reading your listings…')}")
-    t = must(t, '<div class="avw"><i class="ring"></i><i class="ring"></i><i class="ring"></i><div class="av">${esc((S.d.brand||\'T\')[0].toUpperCase())}</div><div class="orbit"></div></div>', '<div class="avw2"><div class="callw"><svg viewBox="0 0 120 100" aria-hidden="true"><path class="arc a1" d="M16 30c-5 6-5 14 0 20"/><path class="arc a2" d="M7 22c-11 11-11 33 0 44"/><path class="arc a3" d="M104 30c5 6 5 14 0 20"/><path class="arc a4" d="M113 22c11 11 11 33 0 44"/><g class="body"><rect x="24" y="56" width="72" height="28" rx="9" fill="#111"/><circle cx="48" cy="66" r="2.6" fill="#4FC2B4"/><circle cx="60" cy="66" r="2.6" fill="#4FC2B4"/><circle cx="72" cy="66" r="2.6" fill="#4FC2B4"/><circle cx="48" cy="75" r="2.6" fill="#4FC2B4"/><circle cx="60" cy="75" r="2.6" fill="#4FC2B4"/><circle cx="72" cy="75" r="2.6" fill="#4FC2B4"/><g class="hs"><path d="M28 50C28 28 92 28 92 50" fill="none" stroke="#111" stroke-width="12" stroke-linecap="round"/><rect x="21" y="46" width="15" height="14" rx="6" fill="#111"/><rect x="84" y="46" width="15" height="14" rx="6" fill="#111"/></g></g></svg></div><div class="av2">${esc((S.d.brand||\'T\')[0].toUpperCase())}</div></div>')
+    t = must(t, '<div class="avw"><i class="ring"></i><i class="ring"></i><i class="ring"></i><div class="av">${esc((S.d.brand||\'T\')[0].toUpperCase())}</div><div class="orbit"></div></div>', '<div class="avw2"><video src="__HERO__" autoplay muted loop playsinline aria-hidden="true"></video></div>')
     t = must(t, '  <div class="tick mono" aria-hidden="true"><em>now reading</em><span id="tk"></span></div>\n', '')
     t = must(t, "foot:footer({ok:done,why:'Almost there…',next:'Review'})", "foot:footer({ok:done,next:'Continue'})")
+    t = re.sub(r"(<div class=\"rlist\">\$\{RS\.map\(.*?\)\.join\(''\)\}</div>)", lambda m: m.group(1) + "${phStrip()}", t, count=1, flags=re.S)
     t = must(t, "h.dataset.t='Here’s what I learned.'", "h.dataset.t='Here’s what I found.'")
+    t = must(t, "card.classList.toggle('done',done);", "card.classList.toggle('done',done);const hv=$('.avw2 video');if(hv&&done)hv.pause();")
+    t = must(t, '<div class="rlist">', '<div class="rlist">', count=1)
+    t = must(t, "const OUTLETS=[", "const PHOTOS=__PHOTOS__;const phStrip=()=>PHOTOS.length?`<div class=\"phs\">${PHOTOS.slice(0,5).map(u=>`<img src=\"${u}\" alt=\"\"/>`).join('')}</div>`:'';\nconst OUTLETS=[")
     # details step: short heading, editable FAQs
     t = must(t, "${head('Choose the outlet you’re setting up.','Everything’s pre-filled. Just confirm it’s right.')}", "${head('Check your details.')}")
     t = must(t, "VIEWS.verify=()=>{const o=S.o,d=S.d,e=S.edit;", '''VIEWS.verify=()=>{const o=S.o,d=S.d,e=S.edit;
- const CATN=[['general','General'],['res','Reservations'],['ord','Ordering']],byC=c=>o.faqs.map((f,i)=>[f,i]).filter(x=>(x[0][2]||'general')===c);
- const faqView=`<div class="v">${o.faqs.length?CATN.map(c=>byC(c[0]).length?`<div class="faqh">${c[1]}</div>`+byC(c[0]).map(x=>`<div class="faq"><b>${esc(x[0][0])}</b><span>${esc(x[0][1])}</span></div>`).join(''):'').join(''):'<small>None yet</small>'}</div>`;
- const faqEd=`<div class="full">${CATN.map(c=>`<div class="faqh">${c[1]}</div>`+byC(c[0]).map(x=>`<div class="faqe"><input class="in" value="${esc(x[0][0])}" aria-label="Question" onchange="faqSet(${x[1]},0,this.value)"/><textarea class="ta" rows="2" aria-label="Answer" onchange="faqSet(${x[1]},1,this.value)">${esc(x[0][1])}</textarea><button class="lnk g" style="align-self:flex-start" onclick="faqDel(${x[1]})">Remove</button></div>`).join('')+`<button class="btn line sm" style="margin-bottom:14px" onclick="faqAdd('${c[0]}')">Add a question</button>`).join('')}</div>`;''')
-    t, n = re.subn(r'<div class="row"><label>Answers</label>.*?<span></span></div>', '''<div class="row"><label>FAQs</label>${e.faq?'<span></span>':faqView}<button class="lnk" onclick="tog('faq')">${e.faq?'Done':'Edit'}</button>${e.faq?faqEd:''}</div>''', t, count=1, flags=re.S)
+ const CATN=[['general','General'],['res','Reservation'],['ord','Ordering'],['catering','Catering'],['music','Music events']],byC=c=>o.faqs.map((f,i)=>[f,i]).filter(x=>(x[0][2]||'general')===c);
+ const faqView=`<div class="v">${o.faqs.length?CATN.map(c=>byC(c[0]).length?`<div class="faqh"><span class="ts-cat2 c-${c[0]}">${c[1]}</span></div>`+byC(c[0]).map(x=>`<div class="faq"><b>${esc(x[0][0])}</b><span>${esc(x[0][1])}</span></div>`).join(''):'').join(''):'<small>None yet</small>'}</div>`;
+ const faqEd=`<div class="full">${CATN.map(c=>`<div class="faqh"><span class="ts-cat2 c-${c[0]}">${c[1]}</span></div>`+byC(c[0]).map(x=>`<div class="faqe"><input class="in" value="${esc(x[0][0])}" aria-label="Question" onchange="faqSet(${x[1]},0,this.value)"/><textarea class="ta" rows="2" aria-label="Answer" onchange="faqSet(${x[1]},1,this.value)">${esc(x[0][1])}</textarea><button class="lnk g" style="align-self:flex-start" onclick="faqDel(${x[1]})">Remove</button></div>`).join('')+`<button class="btn line sm" style="margin-bottom:14px" onclick="faqAdd('${c[0]}')">Add a question</button>`).join('')}</div>`;''')
+    t, n = re.subn(r'<div class="row"><label>Answers</label>.*?<span></span></div>', '''${PHOTOS.length?`<div class="row"><label>Photos</label><div class="phs">${PHOTOS.slice(0,5).map(u=>`<img src="${u}" alt=""/>`).join('')}</div><span></span></div>`:''}<div class="row"><label>FAQs</label>${e.faq?'<span></span>':faqView}<button class="lnk" onclick="tog('faq')">${e.faq?'Done':'Edit'}</button>${e.faq?faqEd:''}</div>''', t, count=1, flags=re.S)
     assert n == 1
     t = must(t, "function tog(k){S.edit[k]=!S.edit[k];render()}", "function tog(k){if(k==='faq'&&S.edit.faq){S.o.faqs=S.o.faqs.filter(f=>f[0].trim()&&f[1].trim());faqSync()}S.edit[k]=!S.edit[k];render()}")
     t = must(t, "days:[1,1,1,1,1,1,1]});S.rs=0}", "days:[1,1,1,1,1,1,1]});S.rs=0;TS.set(x=>{x.d.brand=o.short||o.name;x.d.faqs=(o.faqs||[]).map(f=>f.slice())})}")
     t = cut(t, '/* 03 · reservation: the real six rules */', 'function copyNum(b)', NEW_VIEWS)
+    t = t.replace('__PHOTOS__', json.dumps(PHOTOS))
+    t = t.replace('__HERO__', HERO)
     return t
 
 
@@ -229,6 +245,8 @@ def build_dashboard(v):
     a = t.index(" faq:()=>sH('FAQ / Knowledge'")
     b = t.index("\n ord:()=>ordPage(),", a)
     t = t[:a] + " faq:()=>sH('FAQ / Knowledge','')+TS.faqPage()," + t[b:]
+    t = must(t, "<button class=\"btn btn-dark\" onclick=\"toast('Log missed booking')\">${I.plus} Log missed booking</button>", "<button class=\"btn btn-dark\" onclick=\"toast('New booking')\">${I.plus} New booking</button>")
+    t = must(t, "(DB.subscribed&&TS.get().done['go.fwd'])?", "DB.subscribed?")
     # the Orders header switches belong to the live view only
     t = must(t, "S.route==='orders'&&DB.orderingOn", "S.route==='orders'&&DB.orderingOn&&TS.get().done['go.fwd']", count=3)
     # prototype panel
