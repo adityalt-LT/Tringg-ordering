@@ -24,8 +24,8 @@ def _photos():
         import io
         for f in sorted((here / 'setup' / 'photos').glob('*')):
             if f.suffix.lower() in ('.jpg', '.jpeg', '.png', '.webp'):
-                im = Image.open(f).convert('RGB'); im.thumbnail((640, 640))
-                b = io.BytesIO(); im.save(b, 'JPEG', quality=72)
+                im = Image.open(f).convert('RGB'); im.thumbnail((900, 900))
+                b = io.BytesIO(); im.save(b, 'JPEG', quality=74)
                 out.append('data:image/jpeg;base64,' + base64.b64encode(b.getvalue()).decode('ascii'))
     except Exception as e:
         print('photos skipped:', e)
@@ -77,9 +77,10 @@ OB_CSS = r'''
 /* reading your listings: the results card, with the Tringg hero animation */
 .avw2{position:relative;width:132px;height:118px;flex-shrink:0;margin:-6px 0 -6px -10px}
 .avw2 video{width:100%;height:100%;object-fit:contain;display:block;mix-blend-mode:multiply}
-.phs{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:20px}.phs img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:12px;display:block}
+.phs{display:grid;gap:10px;margin-top:20px}.phs img{width:100%;object-fit:cover;border-radius:14px;display:block}
 .row .phs{grid-column:2/4;margin-top:0}
 .faqh{margin:16px 0 8px}.faqh:first-child{margin-top:0}
+.sug-or{padding:12px 18px 4px;margin-top:6px;border-top:1px solid var(--border);font-size:11.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-50)}
 .faqe{display:flex;flex-direction:column;gap:8px;border:1.5px solid var(--border);border-radius:14px;padding:12px;margin-bottom:10px}.faqe .in{height:40px}
 </style>'''
 
@@ -92,17 +93,31 @@ function faqAdd(c){S.o.faqs.push(['','',c||'general']);faqSync();render()}
 /* 03 · set up: Reservations and Ordering */
 const agentName=()=>TS.get().d.agent.name;
 VIEWS.services=()=>({body:`<div class="body fade">${head(`What should ${esc(agentName())} handle?`)}
- ${TS.variant==='A'?`<div class="ts-stk">${TS.card('enq')}${TS.card('res',{toggle:true})}${TS.card('ord',{toggle:true})}</div>`:TS.pick()}</div>`,
+ <div class="ts-stk">${TS.variant==='A'?TS.list({toggle:true,go:false}):TS.pick()}</div></div>`,
  foot:footer({next:'Continue'})});
-/* 04 · go live */
+/* 04 · meet your agent: we created one for you */
+function onName(v){S.agent.name=v.trim()||'Novi';const sq=$('#sq');if(sq)sq.textContent=S.agent.name[0];if(!S.agent.greet){const g=$('#gr');if(g)g.value=greet()}}
+function speak(){const v=voice();S.play=true;const p=$('#pl');if(p)p.classList.add('on');
+ try{if(window.speechSynthesis){speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(greet());u.pitch=v.pitch;u.rate=v.rate;u.onend=()=>{S.play=false;const q=$('#pl');if(q)q.classList.remove('on')};speechSynthesis.speak(u);}}catch(e){}
+ setTimeout(()=>{S.play=false;const q=$('#pl');if(q)q.classList.remove('on')},4200)}
+function agSync(){TS.set(x=>{x.d.agent.name=S.agent.name;x.d.agent.voice=S.agent.voice;x.d.agent.greet=S.agent.greet})}
+function onName2(v){onName(v);agSync()}
+VIEWS.agent=()=>{const A=S.agent,n=A.name,caps=CAPS.filter(c=>!['create','avail','cancel'].includes(c[0])||TS.sel('res'));
+ return{body:`<div class="body fade">${head(`Meet ${esc(n)}.`,'We’ve created an agent for you. Take a listen and change anything.')}
+ <div class="sec card pad">
+  <div class="host"><div class="sq" id="sq">${esc(n[0]||'?')}</div><div style="flex:1;min-width:0"><span class="cap">Your agent</span><input class="nm" id="nm" value="${esc(n)}" aria-label="Agent name" oninput="onName2(this.value)"/></div></div>
+  <div class="field" style="margin-top:26px"><span>Voice</span><div class="vrow"><select class="sel" onchange="S.agent.voice=this.value;agSync();speak()">${VOICES.map(v=>`<option value="${v.id}" ${A.voice===v.id?'selected':''}>${v.n} · ${v.t}</option>`).join('')}</select><button class="play ${S.play?'on':''}" id="pl" onclick="speak()" aria-label="Play greeting">${ic('play',16)}<span class="wave"><s></s><s></s><s></s><s></s></span></button></div></div>
+  <label class="field" style="margin-top:22px"><span>Greeting</span><textarea class="ta" id="gr" rows="3" oninput="S.agent.greet=this.value;agSync()">${esc(greet())}</textarea></label></div>
+ <div class="sec card pad"><div class="cap cardh">What ${esc(n)} can do</div>${caps.map(([k,t,d])=>`<div class="tg"><div><b>${t}</b><span>${typeof d==='function'?d(esc(n)):d}</span></div><button class="sw" role="switch" aria-checked="${!!S.caps[k]}" aria-label="${t}" onclick="S.caps['${k}']^=1;this.setAttribute('aria-checked',!!S.caps['${k}'])"></button></div>`).join('')}</div></div>`,foot:footer({next:'Continue'})}};
+/* 05 · go live */
 function openDash(){try{parent.postMessage({tringg:'handoff'},'*')}catch(e){}}
-VIEWS.live=()=>{const N='+1 (312) 555-0147',left=TS.items().filter(i=>i.k!=='go'),A=TS.variant==='A';
+VIEWS.live=()=>{const N='+1 (312) 555-0147',A=TS.variant==='A';
  return{body:`<div class="body fade">${head('Go live.')}
+ <div class="sec"><div class="cap" style="margin-bottom:10px">What goes live</div><div class="card pad" style="padding:20px 24px">${TS.goSummary({finish:A})}</div></div>
  <div class="sec"><div class="cap" style="margin-bottom:10px">Forward your line to this number</div>
   <div class="card num"><span class="mono">${N}</span><button class="btn line sm" onclick="TS.copy(this)">Copy</button></div>
-  <p class="hint" style="margin-top:12px">This is your Tringg number. It answers all your calls once your restaurant line forwards to it.</p></div>
+  <p class="hint" style="margin-top:12px">This is your Tringg number. It answers every call that reaches it. Ask your network operator to forward your restaurant line to it.</p></div>
  <div class="sec">${TS.goCard()}</div>
- ${A&&left.length?`<div class="sec"><div class="cap" style="margin-bottom:10px">Still open</div><div class="card rows">${left.map(i=>`<div class="row" style="grid-template-columns:1fr auto"><div class="v">${i.t}<small>${i.m}</small></div><button class="lnk" onclick="${i.f}">Finish</button></div>`).join('')}</div></div>`:''}
  <div style="margin-top:28px"><button class="btn" onclick="openDash()">Open dashboard ${ic('chev',16)}</button></div></div>`}};
 TS.on(()=>{const id=STEPS[S.i];if(id==='services'||id==='live')render()});
 TS.hello();
@@ -113,23 +128,30 @@ def build_onboarding(v):
     t = OB
     t = must(t, '<div id="app"></div>\n<script>', '<div id="app"></div>\n' + engine_tag(v) + '<script>')
     t = must(t, '</style>', OB_CSS)
-    t = cut(t, 'const OUTLETS=[', 'const CUISINES', '''const OUTLETS=[
- {id:'rossa',name:'ROSSA Pizzeria',short:'ROSSA Pizzeria',area:'West Loop, Chicago',addr:'845 W Randolph St, Chicago, IL 60607',cuisine:'Italian',country:'United States',lat:41.88414,lng:-87.64798,tz:'America/Chicago',phone:'+1 (312) 555-0147',rating:'4.6 ★ · 2,031 reviews',
-  desc:'Wood-fired Neapolitan pizza, fresh pasta and an Italian wine list.',open:'16:00',close:'23:00',
-  faqs:[['Do you have gluten-free crusts?','Yes, on any 12-inch pizza.','general'],['Is there parking nearby?','Yes, street parking and a garage next door.','general'],['Do you have vegan options?','Yes, a vegan cheese pizza and several pastas.','general'],['Can you host a private party?','Yes, up to 40 guests.','general'],
-   ['Do you take walk-ins?','Yes, subject to availability. Booking is recommended on weekends.','res'],['How far ahead can I book?','Up to 30 days ahead.','res'],['Can I book for a large group?','Yes, up to 12 guests by phone.','res'],
-   ['Do you deliver?','Yes, within 3 miles.','ord'],['How long does pickup take?','About 20 minutes.','ord'],['Is there a delivery fee or minimum?','A $3 fee and a $15 minimum.','ord'],
-   ['Do you cater?','Yes. We cater events of 20 or more. Call us for a quote.','catering'],['How much notice do you need for catering?','At least 48 hours.','catering'],
-   ['Do you have live music?','Yes, every Friday and Saturday from 7 PM.','music'],['Can I book the restaurant for a music event?','Yes, for private events on weekdays.','music']]}];
+    t = cut(t, 'const OUTLETS=[', 'const CUISINES', '''const RFAQS=[['Do you have gluten-free crusts?','Yes, on any 12-inch pizza.','general'],['Is there parking nearby?','Yes, street parking and a garage next door.','general'],['Do you have vegan options?','Yes, a vegan cheese pizza and several pastas.','general'],['Can you host a private party?','Yes, up to 40 guests.','general'],
+ ['Do you take walk-ins?','Yes, subject to availability. Booking is recommended on weekends.','res'],['How far ahead can I book?','Up to 30 days ahead.','res'],['Can I book for a large group?','Yes, up to 12 guests by phone.','res'],
+ ['Do you deliver?','Yes, within 3 miles.','ord'],['How long does pickup take?','About 20 minutes.','ord'],['Is there a delivery fee or minimum?','A $3 fee and a $15 minimum.','ord'],
+ ['Do you cater?','Yes. We cater events of 20 or more. Call us for a quote.','catering'],['How much notice do you need for catering?','At least 48 hours.','catering'],
+ ['Do you have live music?','Yes, every Friday and Saturday from 7 PM.','music'],['Can I book the restaurant for a music event?','Yes, for private events on weekdays.','music']];
+const RBASE={cuisine:'Italian',country:'United States',tz:'America/Chicago',desc:'Wood-fired Neapolitan pizza, fresh pasta and an Italian wine list.',open:'16:00',close:'23:00',site:'rossapizza.com',faqs:RFAQS};
+const OUTLETS=[
+ {...RBASE,id:'rossa',name:'ROSSA Pizzeria',short:'ROSSA Pizzeria',area:'West Loop, Chicago',addr:'845 W Randolph St, Chicago, IL 60607',lat:41.88414,lng:-87.64798,phone:'+1 (312) 555-0147',rating:'4.6 ★ · 2,031 reviews'},
+ {...RBASE,id:'rossa-wp',name:'ROSSA Pizzeria',short:'ROSSA Pizzeria',area:'Wicker Park, Chicago',addr:'1520 N Milwaukee Ave, Chicago, IL 60622',lat:41.90887,lng:-87.67441,phone:'+1 (312) 555-0152',rating:'4.5 ★ · 1,184 reviews'},
+ {...RBASE,id:'rossa-nv',name:'ROSSA Pizzeria',short:'ROSSA Pizzeria',area:'Naperville, IL',addr:'55 S Main St, Naperville, IL 60540',lat:41.77243,lng:-88.14774,phone:'+1 (630) 555-0166',rating:'4.4 ★ · 612 reviews'},
+ {...RBASE,id:'rossa-au',name:'Rossa Trattoria',short:'Rossa Trattoria',area:'South Congress, Austin',addr:'1200 S Congress Ave, Austin, TX 78704',lat:30.2506,lng:-97.7495,tz:'America/Chicago',phone:'+1 (512) 555-0129',rating:'4.7 ★ · 903 reviews',site:'rossatrattoria.com'},
+ {...RBASE,id:'rossa-bk',name:'Rossa Pizza & Pasta',short:'Rossa Pizza & Pasta',area:'Park Slope, Brooklyn',addr:'318 7th Ave, Brooklyn, NY 11215',lat:40.6709,lng:-73.9806,tz:'America/New_York',phone:'+1 (718) 555-0143',rating:'4.3 ★ · 457 reviews',site:'rossapizzapasta.com'}];
 ''')
+
     t = must(t, "${head('Tell Tringg your restaurant.','Type its name or paste your website. I’ll pull the rest automatically.')}", "${head('Find your restaurant.')}")
     t = must(t, '''el.innerHTML=`<p class="hint">Try <button class="lnk" onclick="try1('Aladdin')">Aladdin Broasted Chicken</button> or <button class="lnk" onclick="try1('ROSSA')">ROSSA Pizzeria</button></p>`''',
              '''el.innerHTML=`<p class="hint">Try <button class="lnk" onclick="try1('ROSSA')">ROSSA Pizzeria</button></p>`''')
     t = must(t, '<input id="q" autocomplete="off" placeholder="e.g. Your restaurant name"', '<input id="q" autocomplete="off" placeholder="Restaurant name or website"')
     # four steps, one header stepper
-    t = must(t, "const GROUPS=['Discover','Verify','Services','Meet your agent','Review','Go live'];", "const GROUPS=['Find','Verify','Set up','Go live'];")
-    t = must(t, "const STEPS=['find','research','verify','rules','voice','review','live'];", "const STEPS=['find','research','verify','services','live'];")
-    t = must(t, "const GI={find:0,research:0,verify:1,rules:2,voice:3,review:4,live:5};", "const GI={find:0,research:0,verify:1,services:2,live:3};")
+    t = must(t, "<b>${esc(o.viaUrl?'Read '+o.viaUrl:o.name)}</b><small>${esc(o.viaUrl?'Pull name, hours and menu from this site':o.addr)}</small></button>`).join('')+'</div>'", "<b>${esc(o.viaUrl?'Read '+o.viaUrl:o.name)}</b><small>${esc(o.viaUrl?'Pull name, hours and menu from this site':o.area+' · '+o.addr)}</small></button>`).join('')+(m[0]&&!m[0].viaUrl?`<div class=\"sug-or\">Or search by website</div><button class=\"sg\" onclick=\"pickSite()\"><b>${esc(m[0].site)}</b><small>Pull name, hours and menu from this site</small></button>`:'')+'</div>'")
+    t = must(t, "function pickFirst(){", "function pickSite(){const o=OUTLETS[0];S.o={...o,viaUrl:o.site};loadOutlet();next()}\nfunction pickFirst(){")
+    t = must(t, "const GROUPS=['Discover','Verify','Services','Meet your agent','Review','Go live'];", "const GROUPS=['Find','Verify','Set up','Agent','Go live'];")
+    t = must(t, "const STEPS=['find','research','verify','rules','voice','review','live'];", "const STEPS=['find','research','verify','services','agent','live'];")
+    t = must(t, "const GI={find:0,research:0,verify:1,rules:2,voice:3,review:4,live:5};", "const GI={find:0,research:0,verify:1,services:2,agent:3,live:4};")
     t = must(t, "const head=(t,s)=>`${chip()}<h1", "const head=(t,s)=>`<h1")
     t = must(t, " $('#bar').style.width=(id==='live'?100:(GI[id]+(id==='research'?.6:.5))/6*100)+'%';\n", "")
     t = must(t, '<header class="hdr"><div class="logo">Tringg</div></header>', '<header class="hdr"><div class="logo">Tringg</div>${stepper()}<span></span></header>')
@@ -140,21 +162,21 @@ const chip=()=>''')
     t = must(t, '<div class="avw"><i class="ring"></i><i class="ring"></i><i class="ring"></i><div class="av">${esc((S.d.brand||\'T\')[0].toUpperCase())}</div><div class="orbit"></div></div>', '<div class="avw2"><video src="__HERO__" autoplay muted loop playsinline aria-hidden="true"></video></div>')
     t = must(t, '  <div class="tick mono" aria-hidden="true"><em>now reading</em><span id="tk"></span></div>\n', '')
     t = must(t, "foot:footer({ok:done,why:'Almost there…',next:'Review'})", "foot:footer({ok:done,next:'Continue'})")
-    t = re.sub(r"(<div class=\"rlist\">\$\{RS\.map\(.*?\)\.join\(''\)\}</div>)", lambda m: m.group(1) + "${phStrip()}", t, count=1, flags=re.S)
+    t = must(t, '<div class="rbar">', '${phStrip(true)}<div class="rbar">')
     t = must(t, "h.dataset.t='Here’s what I learned.'", "h.dataset.t='Here’s what I found.'")
-    t = must(t, "card.classList.toggle('done',done);", "card.classList.toggle('done',done);const hv=$('.avw2 video');if(hv&&done)hv.pause();")
+    t = must(t, "card.classList.toggle('done',done);", "card.classList.toggle('done',done);const hv=$('.avw2 video');if(hv&&done)hv.pause();const phe=$('#phs');if(phe)phe.style.opacity=S.rs>1?1:0;")
     t = must(t, '<div class="rlist">', '<div class="rlist">', count=1)
-    t = must(t, "const OUTLETS=[", "const PHOTOS=__PHOTOS__;const phStrip=()=>PHOTOS.length?`<div class=\"phs\">${PHOTOS.slice(0,5).map(u=>`<img src=\"${u}\" alt=\"\"/>`).join('')}</div>`:'';\nconst OUTLETS=[")
+    t = must(t, "const OUTLETS=[", "const PHOTOS=__PHOTOS__;const phStrip=(fade)=>PHOTOS.length?`<div class=\"phs\" ${fade?'id=\"phs\"':''} style=\"${fade?`opacity:${S.rs>1?1:0};transition:opacity .7s;`:''}grid-template-columns:repeat(${Math.min(PHOTOS.length,3)},1fr)\">${PHOTOS.slice(0,3).map(u=>`<img src=\"${u}\" alt=\"\" style=\"aspect-ratio:${PHOTOS.length<3?'4/3':'1'}\"/>`).join('')}</div>`:'';\nconst OUTLETS=[")
     # details step: short heading, editable FAQs
     t = must(t, "${head('Choose the outlet you’re setting up.','Everything’s pre-filled. Just confirm it’s right.')}", "${head('Check your details.')}")
     t = must(t, "VIEWS.verify=()=>{const o=S.o,d=S.d,e=S.edit;", '''VIEWS.verify=()=>{const o=S.o,d=S.d,e=S.edit;
  const CATN=[['general','General'],['res','Reservation'],['ord','Ordering'],['catering','Catering'],['music','Music events']],byC=c=>o.faqs.map((f,i)=>[f,i]).filter(x=>(x[0][2]||'general')===c);
  const faqView=`<div class="v">${o.faqs.length?CATN.map(c=>byC(c[0]).length?`<div class="faqh"><span class="ts-cat2 c-${c[0]}">${c[1]}</span></div>`+byC(c[0]).map(x=>`<div class="faq"><b>${esc(x[0][0])}</b><span>${esc(x[0][1])}</span></div>`).join(''):'').join(''):'<small>None yet</small>'}</div>`;
  const faqEd=`<div class="full">${CATN.map(c=>`<div class="faqh"><span class="ts-cat2 c-${c[0]}">${c[1]}</span></div>`+byC(c[0]).map(x=>`<div class="faqe"><input class="in" value="${esc(x[0][0])}" aria-label="Question" onchange="faqSet(${x[1]},0,this.value)"/><textarea class="ta" rows="2" aria-label="Answer" onchange="faqSet(${x[1]},1,this.value)">${esc(x[0][1])}</textarea><button class="lnk g" style="align-self:flex-start" onclick="faqDel(${x[1]})">Remove</button></div>`).join('')+`<button class="btn line sm" style="margin-bottom:14px" onclick="faqAdd('${c[0]}')">Add a question</button>`).join('')}</div>`;''')
-    t, n = re.subn(r'<div class="row"><label>Answers</label>.*?<span></span></div>', '''${PHOTOS.length?`<div class="row"><label>Photos</label><div class="phs">${PHOTOS.slice(0,5).map(u=>`<img src="${u}" alt=""/>`).join('')}</div><span></span></div>`:''}<div class="row"><label>FAQs</label>${e.faq?'<span></span>':faqView}<button class="lnk" onclick="tog('faq')">${e.faq?'Done':'Edit'}</button>${e.faq?faqEd:''}</div>''', t, count=1, flags=re.S)
+    t, n = re.subn(r'<div class="row"><label>Answers</label>.*?<span></span></div>', '''${PHOTOS.length?`<div class="row"><label>Photos</label>${phStrip()}<span></span></div>`:''}<div class="row"><label>FAQs</label>${e.faq?'<span></span>':faqView}<button class="lnk" onclick="tog('faq')">${e.faq?'Done':'Edit'}</button>${e.faq?faqEd:''}</div>''', t, count=1, flags=re.S)
     assert n == 1
     t = must(t, "function tog(k){S.edit[k]=!S.edit[k];render()}", "function tog(k){if(k==='faq'&&S.edit.faq){S.o.faqs=S.o.faqs.filter(f=>f[0].trim()&&f[1].trim());faqSync()}S.edit[k]=!S.edit[k];render()}")
-    t = must(t, "days:[1,1,1,1,1,1,1]});S.rs=0}", "days:[1,1,1,1,1,1,1]});S.rs=0;TS.set(x=>{x.d.brand=o.short||o.name;x.d.faqs=(o.faqs||[]).map(f=>f.slice())})}")
+    t = must(t, "days:[1,1,1,1,1,1,1]});S.rs=0}", "days:[1,1,1,1,1,1,1]});S.rs=0;TS.set(x=>{x.d.brand=o.short||o.name;x.d.outlet={name:o.short||o.name,area:o.area,addr:o.addr};x.d.faqs=(o.faqs||[]).map(f=>f.slice())})}")
     t = cut(t, '/* 03 · reservation: the real six rules */', 'function copyNum(b)', NEW_VIEWS)
     t = t.replace('__PHOTOS__', json.dumps(PHOTOS))
     t = t.replace('__HERO__', HERO)
@@ -192,7 +214,10 @@ BOOT = r'''/* setup prototypes: one location, empty to start, driven by the shar
   OUTLETS_ALL.forEach(o=>{if(o.id===PRIMARY&&done('ord.svc')){DB.svc[o.id]={set:true,del:!!sv.del,pick:!!sv.pick,prep:sv.pick?sv.prep:null,rad:sv.del?{mi:sv.mi,fee:sv.fee,min:sv.min,eta:sv.eta}:null};DB.deliveryMode[o.id]=sv.del?'radius':null;}
    else DB.svc[o.id]={set:false,del:false,pick:false,prep:null,rad:null};});
   DB.serviceSet=done('ord.svc');DB.orderingOn=TS.ready('ord')&&DB.subscribed;DB.caps.ord=DB.orderingOn;
-  BRAND.agent=d.agent.name;if(DB.agents[0])DB.agents[0].n=d.agent.name;syncMods();};
+  BRAND.agent=d.agent.name;BRAND.name=d.brand||BRAND.name;
+  const ou=OUTLETS_ALL.find(o=>o.id===PRIMARY);if(d.outlet&&ou){const a=(d.outlet.area||'').split(',')[0];ou.name=d.outlet.name+(a?' · '+a:'');ou.short=a||ou.short;}
+  if(DB.agents[0]){const A=DB.agents[0];A.n=d.agent.name;A.voice=({allie:'ishita',marcus:'sunny',leo:'sunny'})[d.agent.voice]||d.agent.voice||A.voice;if(d.agent.greet)A.greet=d.agent.greet;}
+  syncMods();};
  window.resetDash=()=>{TS.reset();initFresh();applyTS();render();};
  /* one state with everything set up and data for reservations and orders */
  window.loadReady=()=>{FULL=true;TS.fill();ROLE_OUT.owner=null;applyRole(true);loadScenario('live');applyRole();DB.k='live';
@@ -247,6 +272,8 @@ def build_dashboard(v):
     t = t[:a] + " faq:()=>sH('FAQ / Knowledge','')+TS.faqPage()," + t[b:]
     t = must(t, "<button class=\"btn btn-dark\" onclick=\"toast('Log missed booking')\">${I.plus} Log missed booking</button>", "<button class=\"btn btn-dark\" onclick=\"toast('New booking')\">${I.plus} New booking</button>")
     t = must(t, "(DB.subscribed&&TS.get().done['go.fwd'])?", "DB.subscribed?")
+    t = must(t, ":!DB.subscribed?'':!DB.orderingOn?'<span class=\"bdg new\">Set up</span>'", ":!TS.ready('ord')?'<span class=\"bdg new\">Set up</span>':!DB.subscribed?'':!DB.orderingOn?'<span class=\"bdg new\">Set up</span>'")
+    t = must(t, "b=!DB.mods.res?'<span class=\"bdg off\">Off</span>':!DB.subscribed?'':p?", "b=!DB.mods.res?'<span class=\"bdg off\">Off</span>':!TS.ready('res')?'<span class=\"bdg new\">Set up</span>':!DB.subscribed?'':p?")
     # the Orders header switches belong to the live view only
     t = must(t, "S.route==='orders'&&DB.orderingOn", "S.route==='orders'&&DB.orderingOn&&TS.get().done['go.fwd']", count=3)
     # prototype panel
