@@ -50,7 +50,9 @@ var CSS=`
 .ts-sw::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:transform .2s}
 .ts-sw[aria-checked=true]{background:var(--tk-mint)}.ts-sw[aria-checked=true]::after{transform:translateX(20px)}.ts-sw:disabled{opacity:.4;cursor:not-allowed}
 .ts-sub{margin-top:14px;padding-top:16px;border-top:1px solid var(--tk-bd)}
-.ts-suf{display:inline-flex;align-items:center;gap:6px;color:var(--tk-50);font-size:13px}
+.ts-suf{display:inline-flex;align-items:center;gap:6px;color:var(--tk-50);font-size:13px}.ts-suf .ts-in{color:var(--tk-ink)}.ts-suf .ts-in:disabled{color:var(--tk-30)}
+.ts-faq{display:flex;flex-direction:column;gap:8px;border:1.5px solid var(--tk-bd);border-radius:14px;padding:12px 14px;margin-bottom:10px}.ts-faq .ts-in{height:40px;font-weight:500}.ts-faq .ts-ta{padding:9px 14px}
+.ts-more{margin-top:14px}
 .ts-link{border:0;background:none;color:var(--tk-mint-d);font:inherit;font-weight:500;cursor:pointer;padding:0}.ts-link:hover{opacity:.7}
 .ts-bar{height:5px;border-radius:5px;background:#EAE9E4;overflow:hidden}.ts-bar i{display:block;height:100%;background:var(--tk-mint);border-radius:5px;transition:width .5s}
 .ts-busy{padding:40px 0;text-align:center}.ts-busy .ts-bar{max-width:280px;margin:16px auto 0}
@@ -90,7 +92,13 @@ html .rail-top .logo{-webkit-text-stroke:0;filter:drop-shadow(2px 2px 0 rgba(79,
 .ts-pan h2{font-size:26px;font-weight:600;letter-spacing:-.8px;margin:0}
 .ts-sc{display:flex;gap:16px;align-items:center;padding:14px 18px;border:1.5px solid var(--tk-bd);border-radius:16px;margin-top:12px}.ts-sc.done{background:var(--tk-sun);border-color:transparent}
 .ts-sc .ts-n{width:28px;height:28px;font-size:13px}.ts-sc.done .ts-n{background:var(--tk-mint);border-color:var(--tk-mint);color:#06231e}.ts-sc .t{flex:1;min-width:0;font-weight:600}
-.ts-ready{margin-top:70px;text-align:center;background:#fff;border:1.5px solid var(--tk-bd);border-radius:24px;padding:46px 32px;font-family:"Poppins",system-ui,sans-serif}.ts-ready h2{font-size:26px;font-weight:600;letter-spacing:-.8px;margin:0 0 6px}.ts-ready p{color:var(--tk-50);margin:0 0 24px}.ts-ready .ts-okc{width:60px;height:60px;border-radius:50%;background:var(--tk-mint);display:grid;place-items:center;margin:0 auto 18px;color:#06231e}
+.ts-ready{margin-top:60px;text-align:left;background:#fff;border:1.5px solid var(--tk-bd);border-radius:24px;padding:46px 32px;font-family:"Poppins",system-ui,sans-serif}.ts-ready h2{font-size:24px;font-weight:600;letter-spacing:-.7px;margin:0 0 10px;line-height:1.25}.ts-rp{color:var(--tk-50);margin:18px 0 0}
+.ts-agent{display:flex;gap:18px;align-items:flex-start}.ts-av{width:56px;height:56px;border-radius:50%;background:var(--tk-mint);color:#06231e;font-weight:700;font-size:24px;display:grid;place-items:center;flex-shrink:0}
+.ts-chips{display:flex;gap:8px;flex-wrap:wrap}.ts-chip{font-size:12.5px;background:var(--tk-sun);border-radius:999px;padding:4px 12px;color:var(--tk-50)}
+.ts-fly{transition:transform .44s cubic-bezier(.55,0,.85,.4),opacity .44s;transform-origin:0 100%;transform:translate(-18%,70vh) scale(.08);opacity:0;pointer-events:none}
+.ts-grow{animation:tsgrow .5s cubic-bezier(.2,.8,.2,1) both;transform-origin:0 100%}@keyframes tsgrow{from{transform:translate(-18%,70vh) scale(.08);opacity:0}to{transform:none;opacity:1}}
+.ts-pop{animation:tspop .45s cubic-bezier(.3,1.6,.5,1) both}@keyframes tspop{from{transform:scale(.5);opacity:0}to{transform:none;opacity:1}}
+.ts-rail{display:flex;align-items:center;gap:12px;width:calc(100% - 24px);margin:0 12px 10px;padding:10px 12px;border-radius:16px;border:1px solid rgba(79,194,180,.55);background:rgba(79,194,180,.1);color:#fff;font-family:"Poppins",system-ui,sans-serif;cursor:pointer;text-align:left}.ts-rail:hover{background:rgba(79,194,180,.18)}.ts-rail .ts-ring{width:40px;height:40px}.ts-rail b{display:block;font-size:14px;font-weight:600}.ts-rail small{color:rgba(255,255,255,.65);font-size:12px}
 .ts-skel{opacity:.5;margin-top:22px}.ts-skel .r{height:46px;border-radius:12px;background:#EFEEE9;margin-bottom:10px}.ts-skel .t{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}.ts-skel .t i{height:70px;border-radius:16px;background:#EFEEE9}
 .ts-pick{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:28px}
 .ts-pk{display:flex;flex-direction:column;gap:6px;text-align:left;padding:22px;background:#fff;border:1.5px solid var(--tk-bd);border-radius:18px;position:relative;font:inherit;color:inherit;cursor:pointer;transition:transform .2s,box-shadow .2s,border-color .2s}
@@ -106,26 +114,29 @@ html .rail-top .logo{-webkit-text-stroke:0;filter:drop-shadow(2px 2px 0 rgba(79,
 var sty=document.createElement('style');sty.textContent=CSS;(document.head||document.documentElement).appendChild(sty);
 
 /* ── model ── */
-var SVC={res:{n:'Reservations',d:'Table bookings by phone'},ord:{n:'Ordering',d:'Pickup and delivery orders by phone'},go:{n:'Go live'}};
+var SVC={kb:{n:'FAQs'},res:{n:'Reservations',d:'Table bookings by phone'},ord:{n:'Ordering',d:'Pickup and delivery orders by phone'},go:{n:'Go live'}};
 var STEPS={
- res:[['rules','Booking rules']],
- ord:[['menu','Menu'],['svc','Pickup & delivery'],['tax','Taxes'],['pay','Payments']],
+ res:[['rules','Booking rules'],['faq','FAQs']],
+ kb:[['all','FAQs']],
+ ord:[['menu','Menu'],['svc','Pickup & delivery'],['tax','Taxes'],['pay','Payments'],['faq','FAQs']],
  go:[['sub','Subscribe'],['fwd','Forward your line']]};
 var NUM='+1 (312) 555-0147';
 TS.cfg={outlets:1,price:350};
 
 function fresh(){return{
  svc:{res:true,ord:true},
- d:{brand:'ROSSA Pizzeria',faqs:[],agent:{name:'Novi'},
+ d:{brand:'ROSSA Pizzeria',faqs:[['Do you have gluten-free crusts?','Yes, on any 12-inch pizza.','general'],['Is there parking nearby?','Yes, street parking and a garage next door.','general'],['Do you have vegan options?','Yes, a vegan cheese pizza and several pastas.','general'],['Can you host a private party?','Yes, up to 40 guests.','general'],
+  ['Do you take walk-ins?','Yes, subject to availability. Booking is recommended on weekends.','res'],['How far ahead can I book?','Up to 30 days ahead.','res'],['Can I book for a large group?','Yes, up to 12 guests by phone.','res'],
+  ['Do you deliver?','Yes, within 3 miles.','ord'],['How long does pickup take?','About 20 minutes.','ord'],['Is there a delivery fee or minimum?','A $3 fee and a $15 minimum.','ord']],agent:{name:'Novi'},
   res:{perDay:50,win:30,minP:1,maxP:12,dur:90,notice:60},
   menu:{src:null,n:0},
   svc:{pick:true,prep:20,del:false,mi:3,eta:35,fee:3,min:15},
   tax:{on:true,type:'Tax',n:'Sales tax',app:'Item',base:'Subtotal − discount',calc:'Additive',vt:'%',v:10.25,delfee:false,ch:'both'},
   pay:{conn:false,pick:'store',capOn:true,cap:30,repeatOn:true,repeatN:1,fbPk:false,fbDl:false},
   fwd:'busy'},
- done:{},sub:false};}
+ done:{},sub:false,trial:false};}
 var s=fresh(),L=[];
-var UI={open:false,svc:null,step:null,stage:'form',mp:null,err:''};
+var UI={open:false,svc:null,step:null,stage:'form',mp:null,err:'',more:false};
 
 TS.get=function(){return s;};
 TS.on=function(f){L.push(f);};
@@ -137,12 +148,15 @@ window.addEventListener('message',function(e){var m=e.data;if(!m||!m.tringg)retu
  if(m.tringg==='reset'){s=fresh();UI.open=false;emit();}});
 TS.hello=function(){if(window.parent!==window){try{window.parent.postMessage({tringg:'hello'},'*');}catch(e){}}};
 
+function act(){return !!(s.sub||s.trial);}
+TS.active=act;
+TS.setPlan=function(p){TS.set(function(x){x.sub=p==='sub';x.trial=p==='trial';if(p==='none')delete x.done['go.sub'];else x.done['go.sub']=true;});};
 TS.sel=function(k){return k==='go'||!!s.svc[k];};
 TS.stat=function(k){var a=STEPS[k],d=a.filter(function(x){return s.done[k+'.'+x[0]];}).length;return{done:d,total:a.length,left:a.length-d,complete:d===a.length};};
 TS.nextStep=function(k){var x=STEPS[k].filter(function(x){return !s.done[k+'.'+x[0]];})[0];return x?x[0]:null;};
 TS.ready=function(k){return TS.sel(k)&&TS.stat(k).complete;};
-TS.live=function(k){return TS.ready(k)&&s.sub;};
-TS.allDone=function(){return ['res','ord'].every(function(k){return !TS.sel(k)||TS.stat(k).complete;})&&s.sub&&!!s.done['go.fwd'];};
+TS.live=function(k){return TS.ready(k)&&act();};
+TS.allDone=function(){return ['res','ord'].every(function(k){return !TS.sel(k)||TS.stat(k).complete;})&&act()&&!!s.done['go.fwd'];};
 TS.totals=function(){var d=0,t=0;['res','ord','go'].forEach(function(k){if(!TS.sel(k))return;var x=TS.stat(k);d+=x.done;t+=x.total;});return{done:d,total:t};};
 TS.toggle=function(k){TS.set(function(x){x.svc[k]=!x.svc[k];});};
 TS.add=function(k){if(!s.svc[k])TS.set(function(x){x.svc[k]=true;});TS.open(k);};
@@ -151,6 +165,7 @@ TS.fill=function(){TS.set(function(x){x.svc.res=true;x.svc.ord=true;['res','ord'
 
 /* ── helpers ── */
 function esc(t){return String(t==null?'':t).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function faqErr(c){return s.d.faqs.some(function(f){return (!c||(f[2]||'general')===c)&&(!String(f[0]).trim()||!String(f[1]).trim());})?'Fill in or remove the empty question':'';}
 var CHK='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>';
 var XI='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>';
 function get(p){return p.split('.').reduce(function(o,k){return o[k];},s.d);}
@@ -176,6 +191,7 @@ BODY['ord.menu']=function(){var m=s.d.menu;
   (m.n?[['Pizza',9],['Pasta',6],['Starters',7],['Salads',4],['Desserts',3],['Drinks',2]].map(function(c){return '<div class="ts-cat"><span>'+c[0]+'</span><span>'+c[1]+'</span></div>';}).join(''):'<div class="ts-cat"><span>Add items in Menu after you finish</span><span></span></div>')+'<div class="ts-sub" style="color:var(--tk-50);font-size:13px">'+esc(nm)+' · <button class="ts-link" onclick="TS.menuAgain()">Change</button></div>'};}
  return {t:'Add your menu',h:SRCS.map(function(o){return '<button class="ts-opt" onclick="TS.menuPick(\''+o[0]+'\')"><span class="ts-rad"></span><span><b>'+o[1]+(o[4]?'<span class="ts-tag">'+o[4]+'</span>':'')+'</b><span class="d">'+o[2]+'</span></span></button>';}).join('')};};
 TS.menuPick=function(k){UI.mp='busy';draw();var n=(SRCS.filter(function(x){return x[0]===k;})[0]||[])[3]||0,p=8,t=setInterval(function(){p+=26;var b=document.getElementById('ts-pb');if(b)b.style.width=Math.min(p,100)+'%';if(p>=100){clearInterval(t);if(UI.mp==='busy'&&UI.open){s.d.menu={src:k,n:n};UI.mp='review';bcast();draw();}}},k==='scratch'?60:280);};
+TS.more=function(){UI.more=!UI.more;draw();};
 TS.menuAgain=function(){UI.mp='choose';draw();};
 BODY['ord.svc']=function(){var q=s.d.svc;
  return {t:'Pickup & delivery',h:
@@ -184,25 +200,25 @@ BODY['ord.svc']=function(){var q=s.d.svc;
  (q.del?'<div class="ts-sub"><div class="ts-g2">'+fld('svc.mi','Delivery radius (mi)',{min:0.5,step:0.5})+fld('svc.eta','Delivery time (min)',{min:5,step:5})+fld('svc.fee','Delivery fee ($)',{min:0,step:0.5})+fld('svc.min','Minimum order ($)',{min:0})+'</div></div>':'')};};
 var CH={both:'Delivery + Pickup',d:'Delivery only',p:'Pickup only'};
 BODY['ord.tax']=function(){var t=s.d.tax;
+ var more='<div class="ts-sub" style="display:flex;flex-direction:column;gap:16px"><div class="ts-g2"><div class="ts-f"><span>Applied on</span>'+seg('tax.app',[['Item','Each item'],['Order','Whole order']])+'</div>'+selS('tax.base','Calculated on',[['Subtotal','Subtotal'],['Subtotal \u2212 discount','Subtotal \u2212 discount']])+'</div>'+
+  '<div class="ts-f"><span>Calculation</span>'+seg('tax.calc',[['Additive','Added on top'],['Inclusive','Already in the price']])+'</div>'+
+  tg('Also charge on the delivery fee','',sw(t.delfee,"TS.vr('tax.delfee',"+!t.delfee+")",'Charge on delivery fee'))+selS('tax.ch','Channel',[['both',CH.both],['d',CH.d],['p',CH.p]])+'</div>';
  return {t:'Taxes',h:
  tg('I charge tax','',sw(t.on,"TS.vr('tax.on',"+!t.on+")",'Charge tax'))+
- (t.on?'<div class="ts-sub" style="display:flex;flex-direction:column;gap:16px"><div class="ts-f"><span>Type</span>'+seg('tax.type',[['Tax','Tax the guest pays'],['Charge','Charge you add']])+'</div>'+
-  fld('tax.n','Name',{t:'text'})+
-  '<div class="ts-g2"><div class="ts-f"><span>Applied on</span>'+seg('tax.app',[['Item','Each item'],['Order','Whole order']])+'</div>'+selS('tax.base','Calculated on',[['Subtotal','Subtotal'],['Subtotal − discount','Subtotal − discount']])+'</div>'+
-  '<div class="ts-f"><span>Calculation</span>'+seg('tax.calc',[['Additive','Added on top'],['Inclusive','Already in the price']])+'</div>'+
-  '<div class="ts-g2"><div class="ts-f"><span>Value</span>'+seg('tax.vt',[['%','Percentage'],['flat','Flat amount']])+'</div>'+fld('tax.v',t.vt==='%'?'Percent':'Amount ($)',{min:0,step:0.25})+'</div>'+
-  tg('Also charge on the delivery fee','',sw(t.delfee,"TS.vr('tax.delfee',"+!t.delfee+")",'Charge on delivery fee'))+
-  selS('tax.ch','Channel',[['both',CH.both],['d',CH.d],['p',CH.p]])+'</div>':'')};};
+ (t.on?'<div class="ts-sub" style="display:flex;flex-direction:column;gap:16px"><div class="ts-f"><span>Type</span>'+seg('tax.type',[['Tax','Tax the guest pays'],['Charge','Charge you add']])+'</div>'+fld('tax.n','Name',{t:'text'})+
+  '<div class="ts-g2"><div class="ts-f"><span>Value</span>'+seg('tax.vt',[['%','Percentage'],['flat','Flat amount']])+'</div>'+fld('tax.v',t.vt==='%'?'Percent':'Amount ($)',{min:0,step:0.25})+'</div></div>'+
+  '<button class="ts-link ts-more" onclick="TS.more()">'+(UI.more?'Hide options':'More options')+'</button>'+(UI.more?more:''):'')};};
 BODY['ord.pay']=function(){var p=s.d.pay,qual=p.capOn||p.repeatOn,
  rs=!qual?'Delivery is paid online only.':p.capOn&&p.repeatOn?'Cash only if $'+p.cap+' or less and a repeat customer. Otherwise online.':p.capOn?'Cash if $'+p.cap+' or less. Otherwise online.':'Cash for repeat customers. Otherwise online.';
  return {t:'Payments',h:
  tg('Stripe account','',p.conn?'<span class="ts-tag" style="margin:0">Connected</span>':'<span class="ts-pl">Not connected</span><button class="ts-btn sm" onclick="TS.conn()">Connect payments</button>')+
- tg('Pickup','',seg('pay.pick',[['online','Online'],['store','At pickup'],['both','Both']],p.conn?null:['online','both']))+
+ tg('Pickup payment','',seg('pay.pick',[['online','Online'],['store','At pickup'],['both','Both']],p.conn?null:['online','both']))+
  tg('Cash on delivery: order limit','',inpS('pay.cap','$ or less',{w:'m',min:1,dis:!p.capOn})+sw(p.capOn,"TS.vr('pay.capOn',"+!p.capOn+")",'Cash order limit'))+
  tg('Cash on delivery: repeat customers','',inpS('pay.repeatN','orders',{min:1,dis:!p.repeatOn})+sw(p.repeatOn,"TS.vr('pay.repeatOn',"+!p.repeatOn+")",'Cash for repeat customers'))+
- '<div class="ts-res"><b>Result:</b> '+rs+'</div><div style="height:12px"></div>'+
- tg('Unpaid pickup: pay at pickup','',sw(p.fbPk&&p.pick==='both',"TS.vr('pay.fbPk',"+!p.fbPk+")",'Unpaid pickup',p.pick!=='both'))+
- tg('Unpaid delivery: switch to cash','',sw(p.fbDl&&qual,"TS.vr('pay.fbDl',"+!p.fbDl+")",'Unpaid delivery',!qual))};};
+ '<div class="ts-res"><b>Result:</b> '+rs+'</div>'+
+ '<button class="ts-link ts-more" onclick="TS.more()">'+(UI.more?'Hide options':'More options')+'</button>'+
+ (UI.more?'<div class="ts-sub">'+tg('Unpaid pickup: pay at pickup','',sw(p.fbPk&&p.pick==='both',"TS.vr('pay.fbPk',"+!p.fbPk+")",'Unpaid pickup',p.pick!=='both'))+
+ tg('Unpaid delivery: switch to cash','',sw(p.fbDl&&qual,"TS.vr('pay.fbDl',"+!p.fbDl+")",'Unpaid delivery',!qual))+'</div>':'')};};
 TS.conn=function(){s.d.pay.conn=true;if(s.d.pay.pick==='store')s.d.pay.pick='both';bcast();draw();};
 BODY['go.sub']=function(){var N=TS.cfg.outlets,P=TS.cfg.price;return {t:s.sub?'Subscribed':'Subscribe',h:
  '<div class="ts-price">$'+(N*P).toLocaleString()+' <small>/ month · '+N+' location'+(N>1?'s':'')+'</small></div><div style="color:var(--tk-50);margin-top:6px">Nothing is billed before you subscribe. Cancel any time.</div>'};};
@@ -212,7 +228,17 @@ BODY['go.fwd']=function(){var m=s.d.fwd,code=(m==='busy'?'*61*':'*21*')+'1312555
  '<button class="ts-opt '+(m==='all'?'on':'')+'" onclick="TS.vr(\'fwd\',\'all\')"><span class="ts-rad"></span><span><b>Every call</b></span></button>'+
  '<div style="color:var(--tk-50);font-size:13px;margin-top:6px">On your restaurant phone, dial <b style="color:var(--tk-ink);font-family:\'JetBrains Mono\',monospace">'+code+'</b></div>'};};
 TS.copy=function(b){try{navigator.clipboard.writeText('+13125550147').catch(function(){});}catch(e){}b.textContent='Copied';setTimeout(function(){if(b.isConnected)b.textContent='Copy';},1400);};
+var CATS=[['general','General'],['res','Reservations'],['ord','Ordering']];
+function faqBlock(cat,title){var rows=s.d.faqs.map(function(f,i){return [f,i];}).filter(function(x){return (x[0][2]||'general')===cat;});
+ return (title?'<div class="ts-eyebrow" style="margin:20px 0 10px">'+title+'</div>':'')+rows.map(function(x){var f=x[0],i=x[1];return '<div class="ts-faq"><input class="ts-in" value="'+esc(f[0])+'" aria-label="Question" onchange="TS.faq('+i+',0,this.value)"><textarea class="ts-ta" rows="2" aria-label="Answer" onchange="TS.faq('+i+',1,this.value)">'+esc(f[1])+'</textarea><button class="ts-link" style="color:var(--tk-50);font-size:12.5px;align-self:flex-start" onclick="TS.faqDel('+i+')">Remove</button></div>';}).join('')+'<button class="ts-btn line sm" onclick="TS.faqAdd(\''+cat+'\')">Add a question</button>';}
+TS.faq=function(i,j,v){s.d.faqs[i][j]=v;bcast();};TS.faqDel=function(i){s.d.faqs.splice(i,1);bcast();draw();};TS.faqAdd=function(c){s.d.faqs.push(['','',c]);bcast();draw();};
+BODY['res.faq']=function(){return {t:'Reservation FAQs',h:faqBlock('res')};};
+BODY['ord.faq']=function(){return {t:'Ordering FAQs',h:faqBlock('ord')};};
+BODY['kb.all']=function(){return {t:'FAQs',h:CATS.map(function(c){return faqBlock(c[0],c[1]);}).join('')};};
+TS.faqPage=function(){var g=CATS.map(function(c){var r=s.d.faqs.filter(function(f){return (f[2]||'general')===c[0];});return r.length?'<div class="eyebrow" style="margin:0 0 10px">'+c[1]+'</div>'+r.map(function(f){return '<div><div class="fl">'+esc(f[0])+'</div><div class="fh">'+esc(f[1])+'</div></div>';}).join('<div class="sep"></div>'):'';}).filter(Boolean).join('<div class="sep"></div>');
+ return '<div class="scard">'+g+'<div class="sep"></div><button class="btn btn-line btn-sm" style="align-self:flex-start" onclick="TS.open(\'kb\')">Edit FAQs</button></div>';};
 var VAL={
+ 'res.faq':function(){return faqErr('res');},'ord.faq':function(){return faqErr('ord');},'kb.all':function(){return faqErr();},
  'ord.menu':function(){return UI.mp==='review'?'':'Add your menu first';},
  'ord.svc':function(){var q=s.d.svc;return !q.pick&&!q.del?'Turn on pickup, delivery or both':(q.pick&&!(q.prep>0))?'Add a pickup prep time':(q.del&&!(q.mi>0))?'Add a delivery radius':'';},
  'ord.tax':function(){var t=s.d.tax;return t.on&&!String(t.n).trim()?'Add a name':'';},
@@ -240,14 +266,15 @@ function draw(){
  r.innerHTML='<div class="ts-ov" onmousedown="if(event.target===this)TS.close()"><div class="ts-sheet" role="dialog" aria-modal="true" aria-label="'+esc(SVC[k].n)+'">'+main+'</div></div>';
 }
 TS.open=function(k,id){
- if(k!=='go'&&!s.svc[k]){s.svc[k]=true;bcast();L.forEach(function(f){f(s);});}
- UI={open:true,svc:k,step:id||TS.nextStep(k)||STEPS[k][0][0],stage:'form',mp:null,err:''};setMp();draw();};
-function setMp(){if(UI.svc==='ord'&&UI.step==='menu')UI.mp=s.d.menu.src?'review':'choose';else UI.mp=null;}
+ if(k!=='go'&&k!=='kb'&&!s.svc[k]){s.svc[k]=true;bcast();L.forEach(function(f){f(s);});}
+ UI={open:true,svc:k,step:id||TS.nextStep(k)||STEPS[k][0][0],stage:'form',mp:null,err:'',more:false};setMp();draw();};
+function setMp(){UI.more=false;if(UI.svc==='ord'&&UI.step==='menu')UI.mp=s.d.menu.src?'review':'choose';else UI.mp=null;}
 TS.close=function(){UI.open=false;draw();};
-TS.goto=function(id){UI.step=id;UI.stage='form';UI.err='';setMp();draw();};
+TS.goto=function(id){UI.step=id;UI.stage='form';UI.err='';UI.more=false;setMp();draw();};
 TS.skip=function(){var i=idx();if(i<cur().length-1){UI.step=cur()[i+1][0];UI.err='';setMp();draw();}else TS.close();};
 TS.save=function(){var key=UI.svc+'.'+UI.step,e=VAL[key]?VAL[key]():'';if(e){UI.err=e;draw();return;}
  var k=UI.svc;
+ if(k==='kb'){bcast();TS.close();return;}
  TS.set(function(x){x.done[key]=true;if(key==='go.sub')x.sub=true;});
  var nx=TS.nextStep(k);
  if(nx){UI.step=nx;UI.err='';setMp();}else UI.stage='done';
@@ -275,8 +302,8 @@ document.addEventListener('click',function(e){var l=e.target.closest&&e.target.c
 var pill=function(k){var x=TS.stat(k);
  if(!TS.sel(k))return '<span class="ts-pl">Off</span>';
  if(!x.complete)return '<span class="ts-pl a">'+(x.done?x.done+' of '+x.total:'Not started')+'</span>';
- return s.sub?'<span class="ts-pl g">Live</span>':'<span class="ts-pl g">Ready</span>';};
-function ring(d,t){var C=2*Math.PI*21,p=t?d/t:0;return '<svg class="ts-ring" viewBox="0 0 54 54" aria-hidden="true"><circle cx="27" cy="27" r="21" fill="none" stroke="#EAE9E4" stroke-width="6"/><circle cx="27" cy="27" r="21" fill="none" stroke="#4FC2B4" stroke-width="6" stroke-linecap="round" stroke-dasharray="'+(C*p).toFixed(1)+' '+C.toFixed(1)+'" transform="rotate(-90 27 27)"/><text x="27" y="31.5" text-anchor="middle" font-size="13" font-weight="700" fill="#111" font-family="Poppins,sans-serif">'+d+'/'+t+'</text></svg>';}
+ return act()?'<span class="ts-pl g">Live</span>':'<span class="ts-pl g">Ready</span>';};
+function ring(d,t,dk){var C=2*Math.PI*21,p=t?d/t:0;return '<svg class="ts-ring" viewBox="0 0 54 54" aria-hidden="true"><circle cx="27" cy="27" r="21" fill="none" stroke="'+(dk?'#333':'#EAE9E4')+'" stroke-width="6"/><circle cx="27" cy="27" r="21" fill="none" stroke="#4FC2B4" stroke-width="6" stroke-linecap="round" stroke-dasharray="'+(C*p).toFixed(1)+' '+C.toFixed(1)+'" transform="rotate(-90 27 27)"/><text x="27" y="31.5" text-anchor="middle" font-size="13" font-weight="700" fill="'+(dk?'#fff':'#111')+'" font-family="Poppins,sans-serif">'+d+'/'+t+'</text></svg>';}
 function rowsOf(k){return STEPS[k].map(function(x,j){var dn=s.done[k+'.'+x[0]];return '<button class="ts-row '+(dn?'done':'')+'" onclick="TS.open(\''+k+'\',\''+x[0]+'\')"><span class="ts-n">'+(dn?CHK:j+1)+'</span><span class="t">'+x[1]+'</span><span class="go">'+(dn?'Edit':'Start')+'</span></button>';}).join('');}
 TS.card=function(k,o){o=o||{};var on=TS.sel(k),x=TS.stat(k),lbl=!on?'':x.complete?'Review':x.done?'Continue':'Start';
  var tog=(o.toggle)?sw(on,"TS.toggle('"+k+"')",SVC[k].n):'';
@@ -285,20 +312,25 @@ TS.card=function(k,o){o=o||{};var on=TS.sel(k),x=TS.stat(k),lbl=!on?'':x.complet
 /* lighter onboarding: choose services only */
 TS.pick=function(){return '<div class="ts-pick">'+['res','ord'].map(function(k){var on=TS.sel(k),n=STEPS[k].length;return '<button class="ts-pk '+(on?'on':'')+'" onclick="TS.toggle(\''+k+'\')" aria-pressed="'+on+'"><span class="bx">'+CHK+'</span><b>'+SVC[k].n+'</b><span class="d">'+SVC[k].d+'</span><span class="l">'+n+' step'+(n>1?'s':'')+'</span></button>';}).join('')+'</div>';};
 TS.items=function(){var a=[];['res','ord'].forEach(function(k){if(TS.sel(k)){var x=TS.stat(k);if(!x.complete)a.push({k:k,t:'Finish '+SVC[k].n.toLowerCase(),m:x.left+' step'+(x.left>1?'s':'')+' left',c:'Continue',f:"TS.open('"+k+"')"});}});
- if(!s.sub)a.push({k:'go',t:'Go live',m:a.length?'':'Everything is ready',c:'Go live',f:"TS.open('go','sub')"});
+ if(!act())a.push({k:'go',t:'Go live',m:a.length?'':'Everything is ready',c:'Go live',f:"TS.open('go','sub')"});
  else if(!s.done['go.fwd'])a.push({k:'go',t:'Forward your line',m:'',c:'Set up',f:"TS.open('go','fwd')"});
  return a;};
 TS.strip=function(only){var a=TS.items().filter(function(i){return !only||i.k===only;});if(!a.length)return '';
  return '<div class="ts-strip">'+a.map(function(i){return '<div class="ts-srow"><span class="dot"></span><span class="m"><b>'+i.t+'</b>'+(i.m?' · '+i.m:'')+'</span><button class="ts-btn sm" onclick="'+i.f+'">'+i.c+'</button></div>';}).join('')+'</div>';};
-TS.pillHTML=function(){var live=s.sub&&s.done['go.fwd'];if(live)return '';
- return s.sub?'<div class="live"><span class="d" style="background:#E9B44C"></span>Forward your line<button style="color:#fff;font-weight:600;text-decoration:underline;padding:0 6px" onclick="TS.open(\'go\',\'fwd\')">Set up</button></div>':'<div class="live"><span class="d" style="background:#E9B44C"></span>Not live<button style="color:#fff;font-weight:600;text-decoration:underline;padding:0 6px" onclick="TS.open(\'go\',\'sub\')">Go live</button></div>';};
+TS.pillHTML=function(){var live=act()&&s.done['go.fwd'];if(live)return '';
+ return act()?'<div class="live"><span class="d" style="background:#E9B44C"></span>Forward your line<button style="color:#fff;font-weight:600;text-decoration:underline;padding:0 6px" onclick="TS.open(\'go\',\'fwd\')">Set up</button></div>':'<div class="live"><span class="d" style="background:#E9B44C"></span>Not live<button style="color:#fff;font-weight:600;text-decoration:underline;padding:0 6px" onclick="TS.open(\'go\',\'sub\')">Go live</button></div>';};
 /* variant C: the overview is the setup page */
-TS.center=function(){if(TS.allDone())return '';var t=TS.totals(),left=t.total-t.done;
- return '<section class="ts-center"><div class="ts-chd"><div><h2>Set up</h2><p>'+left+' step'+(left===1?'':'s')+' left</p></div>'+ring(t.done,t.total)+'</div><div class="ts-cg">'+['res','ord'].map(function(k){return TS.card(k,{toggle:true});}).join('')+TS.goCard()+'</div></section>';};
+TS.center=function(o){o=o||{};if(TS.allDone())return '';var t=TS.totals(),left=t.total-t.done;
+ return '<section class="ts-center'+(o.grow?' ts-grow':'')+'"><div class="ts-chd"><div><h2>Set up</h2><p>'+left+' step'+(left===1?'':'s')+' left</p></div>'+ring(t.done,t.total)+(t.done>0?'<button class="ts-xb" style="align-self:center" aria-label="Collapse setup" title="Collapse" onclick="TS.collapse()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 15 6-6 6 6"/></svg></button>':'')+'</div><div class="ts-cg">'+['res','ord'].map(function(k){return TS.card(k,{toggle:true});}).join('')+TS.goCard()+'</div></section>';};
+TS.host={collapse:function(){},expand:function(){}};
+TS.collapse=function(){var el=document.querySelector('.ts-center');if(el){el.classList.add('ts-fly');setTimeout(function(){TS.host.collapse();},440);}else TS.host.collapse();};
+TS.expand=function(){TS.host.expand();};
+TS.railWidget=function(){if(TS.allDone())return '';var t=TS.totals(),left=t.total-t.done;
+ return '<button class="ts-rail ts-pop" onclick="TS.expand()" aria-label="Open setup, '+left+' steps left">'+ring(t.done,t.total,true)+'<span><b>Set up</b><small>'+left+' step'+(left===1?'':'s')+' left</small></span></button>';};
 TS.goCard=function(){var x=TS.stat('go');return '<div class="ts-card"><div class="ts-ch"><div><div class="ts-ct">Go live '+(x.complete?'<span class="ts-pl g">Live</span>':'<span class="ts-pl a">'+(x.done?x.done+' of 2':'Not started')+'</span>')+'</div></div></div><div class="ts-rows">'+rowsOf('go')+'</div></div>';};
 /* variant B: a short status list on the overview; each row leads to the tab that owns the steps */
 TS.status=function(){if(TS.allDone())return '';var rows=[['res','Reservations',"TS.nav('reservations')"],['ord','Ordering',"TS.nav('orders')"]].filter(function(r){return TS.sel(r[0]);}).map(function(r){var x=TS.stat(r[0]);return '<button class="ts-row '+(x.complete?'done':'')+'" onclick="'+r[2]+'"><span class="ts-n">'+(x.complete?CHK:'•')+'</span><span class="t">'+r[1]+(x.complete?'':' <span style="color:var(--tk-50);font-weight:400">· '+x.left+' left</span>')+'</span><span class="go">'+(x.complete?'Open':'Continue')+'</span></button>';}).join('');
- var g=!s.sub?'<button class="ts-row" onclick="TS.open(\'go\',\'sub\')"><span class="ts-n">•</span><span class="t">Go live</span><span class="go">Go live</span></button>':!s.done['go.fwd']?'<button class="ts-row" onclick="TS.open(\'go\',\'fwd\')"><span class="ts-n">•</span><span class="t">Forward your line</span><span class="go">Set up</span></button>':'';
+ var g=!act()?'<button class="ts-row" onclick="TS.open(\'go\',\'sub\')"><span class="ts-n">•</span><span class="t">Go live</span><span class="go">Go live</span></button>':!s.done['go.fwd']?'<button class="ts-row" onclick="TS.open(\'go\',\'fwd\')"><span class="ts-n">•</span><span class="t">Forward your line</span><span class="go">Set up</span></button>':'';
  return '<div class="ts-card" style="margin-bottom:20px"><div class="ts-ct">Setup</div><div class="ts-rows">'+rows+g+'</div></div>';};
 /* variant B: a module page that is the setup */
 TS.panel=function(k){var x=TS.stat(k),n=SVC[k].n,nx=TS.nextStep(k);
@@ -306,8 +338,17 @@ TS.panel=function(k){var x=TS.stat(k),n=SVC[k].n,nx=TS.nextStep(k);
  var tail='';
  return '<div class="scroll"><div class="page" style="max-width:860px"><div class="ts-pan"><div style="display:flex;gap:20px;align-items:center"><h2 style="flex:1">'+(x.complete?n+' is set up':'Set up '+n.toLowerCase())+'</h2>'+ring(x.done,x.total)+'</div>'+steps+tail+'</div>'+TS.skel(k)+'</div></div>';};
 TS.liveList=function(){return '<div style="max-width:320px;margin:0 auto 22px;text-align:left">'+['res','ord'].filter(function(k){return TS.sel(k);}).map(function(k){var r=TS.ready(k);return '<div class="ts-cat"><span>'+SVC[k].n+'</span><span>'+(r?'<span class="ts-pl g">Live</span>':'<span class="ts-pl a">Finish setup</span>')+'</span></div>';}).join('')+'</div>';};
-TS.readyPage=function(k){var m={res:['Reservations are ready','Go live to start taking bookings.'],ord:['Ordering is ready','Go live to start taking orders.']}[k];
- return '<div class="scroll"><div class="page" style="max-width:560px"><div class="ts-ready"><div class="ts-okc">'+CHK.replace('width="14" height="14"','width="28" height="28"')+'</div><h2>'+m[0]+'</h2><p>'+m[1]+'</p><div style="display:flex;gap:12px;justify-content:center"><button class="ts-btn" onclick="TS.open(\'go\',\'sub\')">Go live</button><button class="ts-btn line" onclick="TS.open(\''+k+'\')">Edit setup</button></div></div></div></div>';};
+TS.readyPage=function(k){var d=s.d,name=d.agent.name,fwd=!!s.done['go.fwd'],ac=act(),what={res:'reservations',ord:'orders'}[k];
+ var other=k==='res'?'ord':'res',otherPending=TS.sel(other)&&!TS.stat(other).complete,info;
+ if(k==='res'){var r=d.res;info=[r.minP+'\u2013'+r.maxP+' guests','Up to '+r.perDay+' a day',r.win+' days ahead'];}
+ else{var q=d.svc;info=[q.pick?'Pickup \u00b7 '+q.prep+' min':null,q.del?'Delivery \u00b7 '+q.mi+' mi':null,d.menu.n+' menu items'].filter(Boolean);}
+ var code=(d.fwd==='busy'?'*61*':'*21*')+'13125550147#';
+ var num='<div class="ts-num" style="margin:14px 0 10px"><span class="m">'+NUM+'</span><button class="ts-btn line sm" onclick="TS.copy(this)">Copy</button></div>';
+ var body=!ac?'<p class="ts-rp">Subscribe, then forward your line to this number.</p>'+num
+  :'<p class="ts-rp"><b>Forward your line to this number.</b> It answers all your calls once your restaurant line forwards to it.</p>'+num+'<p class="ts-rp" style="font-size:13px">On your restaurant phone, dial <b style="color:var(--tk-ink);font-family:\'JetBrains Mono\',monospace">'+code+'</b></p>';
+ var main=!ac?'<button class="ts-btn" onclick="TS.open(\'go\',\'sub\')">Go live</button>':'<button class="ts-btn" onclick="TS.open(\'go\',\'fwd\')">Forward your line</button>';
+ var alt=otherPending?'<button class="ts-btn line" onclick="'+(TS.variant==='B'?"TS.nav('"+(other==='res'?'reservations':'orders')+"')":"TS.open('"+other+"')")+'">Set up '+SVC[other].n.toLowerCase()+'</button>':'<button class="ts-btn line" onclick="TS.open(\''+k+'\')">Edit setup</button>';
+ return '<div class="scroll"><div class="page" style="max-width:620px"><div class="ts-ready"><div class="ts-agent"><span class="ts-av">'+esc(name[0]||'N')+'</span><div><h2>'+esc(name)+' is ready to take '+what+'</h2><div class="ts-chips">'+info.map(function(x){return '<span class="ts-chip">'+x+'</span>';}).join('')+'</div></div></div>'+body+'<div style="display:flex;gap:12px;margin-top:20px;flex-wrap:wrap">'+main+alt+'</div></div></div></div>';};
 TS.skel=function(){return '<div class="ts-skel" aria-hidden="true"><div class="t"><i></i><i></i><i></i><i></i></div><div class="r"></div><div class="r"></div><div class="r"></div></div>';};
 /* variants A and C: the module page is dimmed behind one slim row */
 TS.bar=function(k){var x=TS.stat(k),ready=x.complete;

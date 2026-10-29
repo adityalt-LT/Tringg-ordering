@@ -55,11 +55,11 @@ OB_CSS = r'''
 .btn.line:hover:not(:disabled){background:var(--panel);box-shadow:4px 5px 0 var(--ink)}
 .btn.sm:hover:not(:disabled){box-shadow:3px 4px 0 #fff,3px 4px 0 1.5px rgba(17,17,17,.16)}.btn.sm.line:hover:not(:disabled){box-shadow:3px 4px 0 var(--ink)}
 .btn:active:not(:disabled){transform:none;box-shadow:none}
-/* reading your listings */
-.rs{margin-top:36px;text-align:center}
-.callw{position:relative;width:150px;height:150px;margin:0 auto 14px;display:grid;place-items:center}
-.callw::before{content:"";position:absolute;inset:8px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#DDF2EE 55%,#BFEDE5);box-shadow:0 0 0 1px rgba(79,194,180,.25)}
-.callw svg{position:relative;overflow:visible}
+/* reading your listings: the results card, with a ringing phone while it reads */
+.avw2{position:relative;width:88px;height:88px;flex-shrink:0}
+.callw{position:absolute;inset:0;display:grid;place-items:center}
+.callw::before{content:"";position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#DDF2EE 55%,#BFEDE5);box-shadow:0 0 0 1px rgba(79,194,180,.25)}
+.callw svg{position:relative;overflow:visible;width:74px;height:62px}
 .callw .body{transform-origin:60px 78px;animation:ringshake 1.5s infinite}
 .callw .hs{transform-origin:60px 40px;animation:hsjig 1.5s infinite}
 .callw .arc{fill:none;stroke:var(--mint-d);stroke-width:3.5;stroke-linecap:round;opacity:0;animation:arcp 1.5s infinite}
@@ -67,46 +67,19 @@ OB_CSS = r'''
 @keyframes ringshake{0%,38%,100%{transform:rotate(0)}4%{transform:rotate(-5deg)}8%{transform:rotate(5deg)}12%{transform:rotate(-5deg)}16%{transform:rotate(5deg)}20%{transform:rotate(-4deg)}24%{transform:rotate(4deg)}28%{transform:rotate(-2deg)}32%{transform:rotate(2deg)}}
 @keyframes hsjig{0%,38%,100%{transform:translateY(0)}6%,14%,22%,30%{transform:translateY(-3px)}10%,18%,26%{transform:translateY(0)}}
 @keyframes arcp{0%{opacity:0}6%{opacity:.95}34%{opacity:.95}46%,100%{opacity:0}}
-.callw .okb{position:absolute;right:20px;bottom:18px;width:34px;height:34px;border-radius:50%;background:var(--mint);border:3px solid var(--canvas);display:none;place-items:center;color:#06231e}
-.rs.done .callw .body,.rs.done .callw .hs{animation:none}.rs.done .callw .arc{animation:none;opacity:0}.rs.done .callw .okb{display:grid}
-.rs-n{font-size:22px;font-weight:600;letter-spacing:-.4px}.rs-st{color:var(--ink-50);font-size:13px;margin-top:4px;height:20px}
-.rf-l{margin:30px auto 0;max-width:480px;text-align:left}
-.rf{display:flex;align-items:center;gap:14px;padding:13px 0;border-top:1px solid var(--border);opacity:0;transform:translateY(6px);transition:opacity .5s,transform .5s}
-.rf:first-child{border-top:0}.rf.act{opacity:.5;transform:none}.rf.ok{opacity:1;transform:none}
-.rf .c{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--border-s);display:grid;place-items:center;flex-shrink:0;color:transparent}.rf.ok .c{background:var(--mint);border-color:var(--mint);color:#06231e}
-.rf .l{width:64px;color:var(--ink-50);font-size:13px;flex-shrink:0}.rf .v{flex:1;font-size:14.5px;font-weight:500;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.rf.act .v::before{content:"";display:block;height:8px;width:55%;border-radius:4px;background:linear-gradient(90deg,#E8E6E0,#F7F6F2,#E8E6E0);background-size:200% 100%;animation:shim 1.2s linear infinite}
-@keyframes shim{to{background-position:-200% 0}}
+.av2{position:absolute;inset:0;border-radius:50%;background:var(--mint);color:#06231e;font-weight:700;font-size:34px;display:none;place-items:center}
+.rcard.done .av2{display:grid}.rcard.done .callw{display:none}
+.faqh{font-size:11.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-50);margin:16px 0 8px}.faqh:first-child{margin-top:0}
 .faqe{display:flex;flex-direction:column;gap:8px;border:1.5px solid var(--border);border-radius:14px;padding:12px;margin-bottom:10px}.faqe .in{height:40px}
 .enqd{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--mint-d);background:var(--mint-50);border-radius:999px;padding:6px 14px 6px 10px;margin-top:22px}
 </style>'''
-
-RESEARCH = r'''const RS=[
- ['Rating',()=>S.o.rating,'Google Maps'],
- ['Address',()=>S.o.addr,'Google Maps'],
- ['Hours',()=>hoursText(),'your website'],
- ['Menu',()=>'31 items found','your website'],
- ['FAQs',()=>S.o.faqs.length+' drafted','public reviews']];
-let rsRun=0;
-function runResearch(){const id=++rsRun;S.rs=0;const step=k=>{if(id!==rsRun||STEPS[S.i]!=='research')return;S.rs=k;rsPaint();if(k>=RS.length)return;setTimeout(()=>step(k+1),950)};setTimeout(()=>step(0),500)}
-function rsPaint(){const done=S.rs>=RS.length,card=$('#rs');if(!card)return;card.classList.toggle('done',done);
- RS.forEach((r,k)=>{const el=$('#rf'+k);if(!el)return;el.className='rf '+(S.rs>k?'ok':S.rs===k?'act':'');if(S.rs>k)el.querySelector('.v').textContent=r[1]()});
- const st=$('#rst');if(st)st.textContent=done?'Done':'Reading '+RS[Math.min(S.rs,RS.length-1)][2];
- const h=$('h1.tw');if(h&&done&&h.dataset.t!=='Here’s what I found.'){h.dataset.t='Here’s what I found.';typeHeading()}
- const b=$('#fbtn');if(b)b.disabled=!done}
-VIEWS.research=()=>{const done=S.rs>=RS.length;
- return{body:`<div class="body fade">${head(done?'Here’s what I found.':'Reading your listings…')}
- <div class="rs ${done?'done':''}" id="rs"><div class="callw"><svg viewBox="0 0 120 100" width="120" height="100" aria-hidden="true"><path class="arc a1" d="M16 30c-5 6-5 14 0 20"/><path class="arc a2" d="M7 22c-11 11-11 33 0 44"/><path class="arc a3" d="M104 30c5 6 5 14 0 20"/><path class="arc a4" d="M113 22c11 11 11 33 0 44"/><g class="body"><rect x="24" y="56" width="72" height="28" rx="9" fill="#111"/><circle cx="48" cy="66" r="2.6" fill="#4FC2B4"/><circle cx="60" cy="66" r="2.6" fill="#4FC2B4"/><circle cx="72" cy="66" r="2.6" fill="#4FC2B4"/><circle cx="48" cy="75" r="2.6" fill="#4FC2B4"/><circle cx="60" cy="75" r="2.6" fill="#4FC2B4"/><circle cx="72" cy="75" r="2.6" fill="#4FC2B4"/><g class="hs"><path d="M28 50C28 28 92 28 92 50" fill="none" stroke="#111" stroke-width="12" stroke-linecap="round"/><rect x="21" y="46" width="15" height="14" rx="6" fill="#111"/><rect x="84" y="46" width="15" height="14" rx="6" fill="#111"/></g></g></svg><span class="okb">${ic('check',18)}</span></div><div class="rs-n">${esc(S.d.brand)}</div><div class="rs-st mono" id="rst">${done?'Done':'Reading Google Maps'}</div>
-  <div class="rf-l">${RS.map((r,k)=>`<div class="rf ${S.rs>k?'ok':S.rs===k?'act':''}" id="rf${k}"><span class="c">${ic('check',12)}</span><span class="l">${r[0]}</span><span class="v">${S.rs>k?esc(r[1]()):''}</span></div>`).join('')}</div></div></div>`,foot:footer({ok:done,next:'Continue'})}};
-VIEWS_AFTER.research=()=>{rsPaint()};
-'''
 
 NEW_VIEWS = r'''
 /* FAQs live in the details step, so Enquiries are already set up */
 function faqSync(){TS.set(x=>{x.d.faqs=S.o.faqs.map(f=>f.slice())})}
 function faqSet(i,j,v){S.o.faqs[i][j]=v;faqSync()}
 function faqDel(i){S.o.faqs.splice(i,1);faqSync();render()}
-function faqAdd(){S.o.faqs.push(['','']);faqSync();render()}
+function faqAdd(c){S.o.faqs.push(['','',c||'general']);faqSync();render()}
 /* 03 · set up: Reservations and Ordering */
 const agentName=()=>TS.get().d.agent.name;
 const enqDone=`<div class="enqd">${ic('check',14)} Enquiries set up</div>`;
@@ -135,7 +108,9 @@ def build_onboarding(v):
     t = cut(t, 'const OUTLETS=[', 'const CUISINES', '''const OUTLETS=[
  {id:'rossa',name:'ROSSA Pizzeria',short:'ROSSA Pizzeria',area:'West Loop, Chicago',addr:'845 W Randolph St, Chicago, IL 60607',cuisine:'Italian',country:'United States',lat:41.88414,lng:-87.64798,tz:'America/Chicago',phone:'+1 (312) 555-0147',rating:'4.6 ★ · 2,031 reviews',
   desc:'Wood-fired Neapolitan pizza, fresh pasta and an Italian wine list.',open:'16:00',close:'23:00',
-  faqs:[['Do you have gluten-free crusts?','Yes, on any 12-inch pizza.'],['Can you host a private party?','Yes, up to 40 guests.'],['Is there parking nearby?','Yes, street parking and a garage next door.'],['Do you take reservations?','Yes, call us or book through the agent.'],['Do you have vegan options?','Yes, a vegan cheese pizza and several pastas.']]}];
+  faqs:[['Do you have gluten-free crusts?','Yes, on any 12-inch pizza.','general'],['Is there parking nearby?','Yes, street parking and a garage next door.','general'],['Do you have vegan options?','Yes, a vegan cheese pizza and several pastas.','general'],['Can you host a private party?','Yes, up to 40 guests.','general'],
+   ['Do you take walk-ins?','Yes, subject to availability. Booking is recommended on weekends.','res'],['How far ahead can I book?','Up to 30 days ahead.','res'],['Can I book for a large group?','Yes, up to 12 guests by phone.','res'],
+   ['Do you deliver?','Yes, within 3 miles.','ord'],['How long does pickup take?','About 20 minutes.','ord'],['Is there a delivery fee or minimum?','A $3 fee and a $15 minimum.','ord']]}];
 ''')
     t = must(t, "${head('Tell Tringg your restaurant.','Type its name or paste your website. I’ll pull the rest automatically.')}", "${head('Find your restaurant.')}")
     t = must(t, '''el.innerHTML=`<p class="hint">Try <button class="lnk" onclick="try1('Aladdin')">Aladdin Broasted Chicken</button> or <button class="lnk" onclick="try1('ROSSA')">ROSSA Pizzeria</button></p>`''',
@@ -151,12 +126,17 @@ def build_onboarding(v):
     t = must(t, "const chip=()=>", '''const stepper=()=>{const g=GI[STEPS[S.i]];return `<nav class="stp" aria-label="Progress">${GROUPS.map((n,k)=>`${k?`<span class="stp-l ${k<=g?'done':''}"></span>`:''}<span class="stp-s ${k<g?'done':k===g?'on':''}" ${k===g?'aria-current="step"':''}><span class="n">${k<g?ic('check',13):k+1}</span>${n}</span>`).join('')}</nav><span class="stp-m">Step ${g+1} of ${GROUPS.length} · ${GROUPS[g]}</span>`};
 const chip=()=>''')
     # reading your listings
-    t = cut(t, "const RS=[['Found your map listing'", 'const ordEdit=', RESEARCH)
+    t = must(t, "${head(done?'Here’s what I learned.':'Teaching your host…',done?'You’ll confirm each detail next. Nothing goes live until you say so.':'Learning from public listings so your first call sounds like staff.')}", "${head(done?'Here’s what I found.':'Reading your listings…')}")
+    t = must(t, '<div class="avw"><i class="ring"></i><i class="ring"></i><i class="ring"></i><div class="av">${esc((S.d.brand||\'T\')[0].toUpperCase())}</div><div class="orbit"></div></div>', '<div class="avw2"><div class="callw"><svg viewBox="0 0 120 100" aria-hidden="true"><path class="arc a1" d="M16 30c-5 6-5 14 0 20"/><path class="arc a2" d="M7 22c-11 11-11 33 0 44"/><path class="arc a3" d="M104 30c5 6 5 14 0 20"/><path class="arc a4" d="M113 22c11 11 11 33 0 44"/><g class="body"><rect x="24" y="56" width="72" height="28" rx="9" fill="#111"/><circle cx="48" cy="66" r="2.6" fill="#4FC2B4"/><circle cx="60" cy="66" r="2.6" fill="#4FC2B4"/><circle cx="72" cy="66" r="2.6" fill="#4FC2B4"/><circle cx="48" cy="75" r="2.6" fill="#4FC2B4"/><circle cx="60" cy="75" r="2.6" fill="#4FC2B4"/><circle cx="72" cy="75" r="2.6" fill="#4FC2B4"/><g class="hs"><path d="M28 50C28 28 92 28 92 50" fill="none" stroke="#111" stroke-width="12" stroke-linecap="round"/><rect x="21" y="46" width="15" height="14" rx="6" fill="#111"/><rect x="84" y="46" width="15" height="14" rx="6" fill="#111"/></g></g></svg></div><div class="av2">${esc((S.d.brand||\'T\')[0].toUpperCase())}</div></div>')
+    t = must(t, '  <div class="tick mono" aria-hidden="true"><em>now reading</em><span id="tk"></span></div>\n', '')
+    t = must(t, "foot:footer({ok:done,why:'Almost there…',next:'Review'})", "foot:footer({ok:done,next:'Continue'})")
+    t = must(t, "h.dataset.t='Here’s what I learned.'", "h.dataset.t='Here’s what I found.'")
     # details step: short heading, editable FAQs
     t = must(t, "${head('Choose the outlet you’re setting up.','Everything’s pre-filled. Just confirm it’s right.')}", "${head('Check your details.')}")
     t = must(t, "VIEWS.verify=()=>{const o=S.o,d=S.d,e=S.edit;", '''VIEWS.verify=()=>{const o=S.o,d=S.d,e=S.edit;
- const faqView=`<div class="v">${o.faqs.length?o.faqs.map(f=>`<div class="faq"><b>${esc(f[0])}</b><span>${esc(f[1])}</span></div>`).join(''):'<small>None yet</small>'}</div>`;
- const faqEd=`<div class="full">${o.faqs.map((f,i)=>`<div class="faqe"><input class="in" value="${esc(f[0])}" aria-label="Question" onchange="faqSet(${i},0,this.value)"/><textarea class="ta" rows="2" aria-label="Answer" onchange="faqSet(${i},1,this.value)">${esc(f[1])}</textarea><button class="lnk g" style="align-self:flex-start" onclick="faqDel(${i})">Remove</button></div>`).join('')}<button class="btn line sm" onclick="faqAdd()">Add a question</button></div>`;''')
+ const CATN=[['general','General'],['res','Reservations'],['ord','Ordering']],byC=c=>o.faqs.map((f,i)=>[f,i]).filter(x=>(x[0][2]||'general')===c);
+ const faqView=`<div class="v">${o.faqs.length?CATN.map(c=>byC(c[0]).length?`<div class="faqh">${c[1]}</div>`+byC(c[0]).map(x=>`<div class="faq"><b>${esc(x[0][0])}</b><span>${esc(x[0][1])}</span></div>`).join(''):'').join(''):'<small>None yet</small>'}</div>`;
+ const faqEd=`<div class="full">${CATN.map(c=>`<div class="faqh">${c[1]}</div>`+byC(c[0]).map(x=>`<div class="faqe"><input class="in" value="${esc(x[0][0])}" aria-label="Question" onchange="faqSet(${x[1]},0,this.value)"/><textarea class="ta" rows="2" aria-label="Answer" onchange="faqSet(${x[1]},1,this.value)">${esc(x[0][1])}</textarea><button class="lnk g" style="align-self:flex-start" onclick="faqDel(${x[1]})">Remove</button></div>`).join('')+`<button class="btn line sm" style="margin-bottom:14px" onclick="faqAdd('${c[0]}')">Add a question</button>`).join('')}</div>`;''')
     t, n = re.subn(r'<div class="row"><label>Answers</label>.*?<span></span></div>', '''<div class="row"><label>FAQs</label>${e.faq?'<span></span>':faqView}<button class="lnk" onclick="tog('faq')">${e.faq?'Done':'Edit'}</button>${e.faq?faqEd:''}</div>''', t, count=1, flags=re.S)
     assert n == 1
     t = must(t, "function tog(k){S.edit[k]=!S.edit[k];render()}", "function tog(k){if(k==='faq'&&S.edit.faq){S.o.faqs=S.o.faqs.filter(f=>f[0].trim()&&f[1].trim());faqSync()}S.edit[k]=!S.edit[k];render()}")
@@ -166,7 +146,8 @@ const chip=()=>''')
 
 
 # ───────────────────────── dashboard ─────────────────────────
-PROTO_PANEL = '''<div class="proto"><div class="proto-l">Prototype</div><div class="proto-seg" style="grid-template-columns:repeat(2,1fr)"><button onclick="resetDash()">Start over</button><button onclick="loadReady()">Sample data</button></div></div>'''
+PROTO_PANEL = '''<div class="proto"><div class="proto-l">Prototype</div><div class="proto-seg" style="grid-template-columns:repeat(2,1fr)"><button onclick="resetDash()">Start over</button><button onclick="loadReady()">Sample data</button></div></div>
+   <div class="proto"><div class="proto-l">Plan</div><div class="proto-seg" style="grid-template-columns:repeat(3,1fr)"><button class="${!TS.active()?'on':''}" onclick="TS.setPlan('none')">None</button><button class="${TS.get().trial?'on':''}" onclick="TS.setPlan('trial')">Trial</button><button class="${TS.get().sub?'on':''}" onclick="TS.setPlan('sub')">Paid</button></div></div>'''
 
 OVERVIEW_FRESH = r'''function vOverviewFresh(){const mo=DB.mods,G=h=>`<div class="goff">${h}</div>`,T=(ic,c,l,k)=>{const h=stat(ic,c,'0',l);return k&&!mo[k]?G(h):h;};
   return `<div class="scroll"><div class="page"><div class="lbl">${S.outlet==='all'?'All outlets':esc(ON(S.outlet).name)}</div>
@@ -180,13 +161,14 @@ OVERVIEW_FRESH = r'''function vOverviewFresh(){const mo=DB.mods,G=h=>`<div class
 BOOT = r'''/* setup prototypes: one location, empty to start, driven by the shared setup state */
 (function(){
  const PRIMARY='wl';ROLE_OUT.owner=[PRIMARY];SC.wl=.4;let FULL=false;
- function initFresh(){FULL=false;ROLE_OUT.owner=[PRIMARY];applyRole(true);loadScenario('off');applyRole();TS.cfg.outlets=1;
+ function initFresh(){FULL=false;S.setupCollapsed=false;ROLE_OUT.owner=[PRIMARY];applyRole(true);loadScenario('off');applyRole();TS.cfg.outlets=1;
   DB.k='setup';SCEN.setup={t:'Setup',h:''};DB.res=[];DB.calls=[];DB.orders=[];DB.held=[];DB.taxes=[];S.res.sel=null;S.route='overview';S.outlet=PRIMARY;S.ordOutlet=PRIMARY;S.dd=false;}
  TS.nav=r=>go(r);TS.cfg.outlets=1;
+ TS.host.collapse=()=>{S.setupCollapsed=true;render();};TS.host.expand=()=>{S.setupCollapsed=false;S.growSetup=true;go('overview');};
  window.applyTS=function(){const s=TS.get(),d=s.d,done=k=>!!s.done[k],sv=d.svc,p=d.pay,t=d.tax;
-  if(FULL){DB.subscribed=true;BRAND.agent=d.agent.name;if(DB.agents[0])DB.agents[0].n=d.agent.name;syncMods();return;}
+  if(FULL){DB.subscribed=TS.active();BRAND.agent=d.agent.name;if(DB.agents[0])DB.agents[0].n=d.agent.name;syncMods();return;}
   OUTLETS_ALL.forEach(o=>{DB.om[o.id]={res:!!s.svc.res,ord:!!s.svc.ord};});
-  MODS.res=!!s.svc.res;MODS.ord=!!s.svc.ord;DB.caps.res=!!s.svc.res;DB.subscribed=!!s.sub;
+  MODS.res=!!s.svc.res;MODS.ord=!!s.svc.ord;DB.caps.res=!!s.svc.res;DB.subscribed=TS.active();
   DB.menuState=done('ord.menu')?'live':'none';DB.menuSource=done('ord.menu')?({google:'Google profile',pos:'Your POS',web:'Website',agg:'Delivery app',upload:'Uploaded menu',scratch:'Built in Tringg'}[d.menu.src]||'Imported'):null;
   DB.taxOk=done('ord.tax');DB.taxes=done('ord.tax')&&t.on?[{id:'t1',type:t.type,n:t.n,on:t.app,base:t.base,calc:t.calc,vt:t.vt,v:t.v,ch:t.ch,delfee:!!t.delfee,outs:[PRIMARY]}]:[];
   DB.payOk=done('ord.pay');DB.stripe=p.conn?'active':'none';DB.payPick={call:p.pick!=='store',store:p.pick!=='online'};
@@ -214,7 +196,7 @@ def build_dashboard(v):
     t = DB
     t = must(t, '<script>\n', engine_tag(v) + '<script>\n')
     # one setup surface, no sidebar checklist
-    t = must(t, "function renderChk(){if(S.outlet==='all'||!DB.mods.ord)return '';", "function renderChk(){return '';")
+    t = must(t, "function renderChk(){if(S.outlet==='all'||!DB.mods.ord)return '';", "function renderChk(){if(TS.variant==='C'&&S.setupCollapsed)return TS.railWidget();return '';")
     # the phone number in the top pill picked up a phone-mockup style
     t = must(t, '.live .ph{font-family:"JetBrains Mono",monospace;font-size:13px;color:#eee}', '.live .ph{font-family:"JetBrains Mono",monospace;font-size:13px;color:#eee;width:auto;border:0;border-radius:0;background:none;box-shadow:none;overflow:visible}')
     # one global "go live" pill, on every page
@@ -244,6 +226,11 @@ def build_dashboard(v):
     t = must(t, "(one?orow('This outlet'", "(one&&OUTLETS.length>1?orow('This outlet'")
     t = must(t, "function svcShared(one){if(!one)return '';", "function svcShared(one){if(!one||OUTLETS.length<2)return '';")
     t = must(t, '/ outlet / month', "${OUTLETS.length>1?'/ outlet / month':'/ month'}")
+    a = t.index(" faq:()=>sH('FAQ / Knowledge'")
+    b = t.index("\n ord:()=>ordPage(),", a)
+    t = t[:a] + " faq:()=>sH('FAQ / Knowledge','')+TS.faqPage()," + t[b:]
+    # the Orders header switches belong to the live view only
+    t = must(t, "S.route==='orders'&&DB.orderingOn", "S.route==='orders'&&DB.orderingOn&&TS.get().done['go.fwd']", count=3)
     # prototype panel
     a = t.index('<div class="proto"><div class="proto-l">Prototype state</div>')
     b = t.index('Subscribed</button></div></div>', a) + len('Subscribed</button></div></div>')
@@ -251,11 +238,13 @@ def build_dashboard(v):
     # modules: a service that is off offers to add itself; one that isn't set up shows its steps in place
     t = must(t, '''onclick="goSet('mods')">Turn on</button>''', '''onclick="TS.add('${m}')">Add ${m==='ord'?'ordering':'reservations'}</button>''')
     t = must(t, "const VIEWS={overview:vOverview,reservations:modG(gate(vReservations,'Table requests and bookings'),'res'),orders:modG(gate(vOrders,'Phone orders'),'ord'),",
-             "const modT=(fn,m)=>()=>{if(!DB.mods[m])return greyed(fn(),m);if(!TS.ready(m))return TS.variant==='B'?TS.panel(m):TS.bar(m);if(!DB.subscribed)return TS.readyPage(m);return fn();};\nconst VIEWS={overview:vOverview,reservations:modT(vReservations,'res'),orders:modT(vOrders,'ord'),")
+             "const modT=(fn,m)=>()=>{if(!DB.mods[m])return greyed(fn(),m);if(!TS.ready(m))return TS.variant==='B'?TS.panel(m):TS.bar(m);if(!TS.active()||!TS.get().done['go.fwd'])return TS.readyPage(m);return fn();};\nconst VIEWS={overview:vOverview,reservations:modT(vReservations,'res'),orders:modT(vOrders,'ord'),")
     # overview: one setup block per variant, above the numbers
     t = must(t, "function vOverview(){\n  if(!DB.subscribed)return vOverviewFresh();", "function vOverview0(){")
-    t = cut(t, 'function vOverviewFresh(){', 'function vOverview0(){', OVERVIEW_FRESH + '''const tsBlock=()=>TS.variant==='A'?TS.strip():TS.variant==='B'?TS.status():TS.center();
-function vOverview(){const h=DB.subscribed?vOverview0():vOverviewFresh(),blk=tsBlock();return h.replace(/(<div class="lbl">[^<]*<\\/div>)/,m=>m+blk);}
+    t = cut(t, 'function vOverviewFresh(){', 'function vOverview0(){', OVERVIEW_FRESH + '''const tsBlock=()=>TS.variant==='A'?TS.strip():TS.variant==='B'?TS.status():(S.setupCollapsed?'':TS.center({grow:S.growSetup}));
+function vOverview(){
+  if(TS.variant==='C'&&!S.setupCollapsed&&TS.totals().done===0&&!TS.allDone())return `<div class="scroll"><div class="page"><div class="lbl">${S.outlet==='all'?'All outlets':esc(ON(S.outlet).name)}</div>${TS.center()}</div></div>`;
+  const h=DB.subscribed?vOverview0():vOverviewFresh(),blk=tsBlock();S.growSetup=false;return h.replace(/(<div class="lbl">[^<]*<\\/div>)/,m=>m+blk);}
 ''')
     t = must(t, '''onclick="goSet('mods')">Turn on ordering</button>''', '''onclick="TS.add('ord')">Turn on ordering</button>''')
     a = t.index("  else if(!DB.orderingOn){const st=setupSteps().filter(x=>!x.opt);const d=st.filter(x=>x.done).length;")
