@@ -70,9 +70,9 @@ OB_CSS = r'''
 .foot .why{margin-left:auto;font-size:13px;color:var(--ink-50);text-align:right}
 .foot>.btn:last-child{margin-left:auto}.foot .why+.btn{margin-left:0}
 .btn{transition:transform .15s,box-shadow .15s,background .15s,opacity .2s}
-.btn:hover:not(:disabled){transform:translate(-2px,-2px);box-shadow:4px 5px 0 #fff,4px 5px 0 1.5px rgba(17,17,17,.16);background:var(--ink)}
+.btn:hover:not(:disabled){transform:translate(-2px,-2px);box-shadow:4px 5px 0 #fff,4px 5px 0 1.5px #111;background:var(--ink)}
 .btn.line:hover:not(:disabled){background:var(--panel);box-shadow:4px 5px 0 var(--ink)}
-.btn.sm:hover:not(:disabled){box-shadow:3px 4px 0 #fff,3px 4px 0 1.5px rgba(17,17,17,.16)}.btn.sm.line:hover:not(:disabled){box-shadow:3px 4px 0 var(--ink)}
+.btn.sm:hover:not(:disabled){box-shadow:3px 4px 0 #fff,3px 4px 0 1.5px #111}.btn.sm.line:hover:not(:disabled){box-shadow:3px 4px 0 var(--ink)}
 .btn:active:not(:disabled){transform:none;box-shadow:none}
 /* reading your listings: the results card, with the Tringg hero animation */
 .avw2{position:relative;width:132px;height:118px;flex-shrink:0;margin:-6px 0 -6px -10px}
@@ -92,11 +92,11 @@ function faqDel(i){S.o.faqs.splice(i,1);faqSync();render()}
 function faqAdd(c){S.o.faqs.push(['','',c||'general']);faqSync();render()}
 /* 03 · set up: Reservations and Ordering */
 const agentName=()=>TS.get().d.agent.name;
-VIEWS.services=()=>({body:`<div class="body fade">${head(`What should ${esc(agentName())} handle?`)}
+VIEWS.services=()=>({body:`<div class="body fade">${head('What should your agent handle?')}
  <div class="ts-stk">${TS.variant==='A'?TS.list({toggle:true,go:false}):TS.pick()}</div></div>`,
  foot:footer({next:'Continue'})});
 /* 04 · meet your agent: we created one for you */
-function onName(v){S.agent.name=v.trim()||'Novi';const sq=$('#sq');if(sq)sq.textContent=S.agent.name[0];if(!S.agent.greet){const g=$('#gr');if(g)g.value=greet()}}
+function onName(v){S.agent.name=v.trim()||'Emma';const sq=$('#sq');if(sq)sq.textContent=S.agent.name[0];if(!S.agent.greet){const g=$('#gr');if(g)g.value=greet()}}
 function speak(){const v=voice();S.play=true;const p=$('#pl');if(p)p.classList.add('on');
  try{if(window.speechSynthesis){speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(greet());u.pitch=v.pitch;u.rate=v.rate;u.onend=()=>{S.play=false;const q=$('#pl');if(q)q.classList.remove('on')};speechSynthesis.speak(u);}}catch(e){}
  setTimeout(()=>{S.play=false;const q=$('#pl');if(q)q.classList.remove('on')},4200)}
@@ -149,6 +149,8 @@ const OUTLETS=[
     # four steps, one header stepper
     t = must(t, "<b>${esc(o.viaUrl?'Read '+o.viaUrl:o.name)}</b><small>${esc(o.viaUrl?'Pull name, hours and menu from this site':o.addr)}</small></button>`).join('')+'</div>'", "<b>${esc(o.viaUrl?'Read '+o.viaUrl:o.name)}</b><small>${esc(o.viaUrl?'Pull name, hours and menu from this site':o.area+' · '+o.addr)}</small></button>`).join('')+(m[0]&&!m[0].viaUrl?`<div class=\"sug-or\">Or search by website</div><button class=\"sg\" onclick=\"pickSite()\"><b>${esc(m[0].site)}</b><small>Pull name, hours and menu from this site</small></button>`:'')+'</div>'")
     t = must(t, "function pickFirst(){", "function pickSite(){const o=OUTLETS[0];S.o={...o,viaUrl:o.site};loadOutlet();next()}\nfunction pickFirst(){")
+    t = must(t, "agent:{voice:'shubh',name:'Novi',greet:''}", "agent:{voice:'allie',name:'Emma',greet:''}")
+    t = must(t, "{id:'allie',n:'Agent',t:'Female · English'", "{id:'allie',n:'Ava',t:'Female · English'")
     t = must(t, "const GROUPS=['Discover','Verify','Services','Meet your agent','Review','Go live'];", "const GROUPS=['Find','Verify','Set up','Agent','Go live'];")
     t = must(t, "const STEPS=['find','research','verify','rules','voice','review','live'];", "const STEPS=['find','research','verify','services','agent','live'];")
     t = must(t, "const GI={find:0,research:0,verify:1,rules:2,voice:3,review:4,live:5};", "const GI={find:0,research:0,verify:1,services:2,agent:3,live:4};")
@@ -162,18 +164,18 @@ const chip=()=>''')
     t = must(t, '<div class="avw"><i class="ring"></i><i class="ring"></i><i class="ring"></i><div class="av">${esc((S.d.brand||\'T\')[0].toUpperCase())}</div><div class="orbit"></div></div>', '<div class="avw2"><video src="__HERO__" autoplay muted loop playsinline aria-hidden="true"></video></div>')
     t = must(t, '  <div class="tick mono" aria-hidden="true"><em>now reading</em><span id="tk"></span></div>\n', '')
     t = must(t, "foot:footer({ok:done,why:'Almost there…',next:'Review'})", "foot:footer({ok:done,next:'Continue'})")
-    t = must(t, '<div class="rbar">', '${phStrip(true)}<div class="rbar">')
     t = must(t, "h.dataset.t='Here’s what I learned.'", "h.dataset.t='Here’s what I found.'")
-    t = must(t, "card.classList.toggle('done',done);", "card.classList.toggle('done',done);const hv=$('.avw2 video');if(hv&&done)hv.pause();const phe=$('#phs');if(phe)phe.style.opacity=S.rs>1?1:0;")
+    t = must(t, "card.classList.toggle('done',done);", "card.classList.toggle('done',done);const hv=$('.avw2 video');if(hv&&done)hv.pause();")
     t = must(t, '<div class="rlist">', '<div class="rlist">', count=1)
-    t = must(t, "const OUTLETS=[", "const PHOTOS=__PHOTOS__;const phStrip=(fade)=>PHOTOS.length?`<div class=\"phs\" ${fade?'id=\"phs\"':''} style=\"${fade?`opacity:${S.rs>1?1:0};transition:opacity .7s;`:''}grid-template-columns:repeat(${Math.min(PHOTOS.length,3)},1fr)\">${PHOTOS.slice(0,3).map(u=>`<img src=\"${u}\" alt=\"\" style=\"aspect-ratio:${PHOTOS.length<3?'4/3':'1'}\"/>`).join('')}</div>`:'';\nconst OUTLETS=[")
+    t = must(t, "const OUTLETS=[", "const PHOTOS=__PHOTOS__;const phStrip=()=>PHOTOS.length?`<div class=\"phs\" style=\"grid-template-columns:repeat(${Math.min(PHOTOS.length,3)},1fr)\">${PHOTOS.slice(0,3).map(u=>`<img src=\"${u}\" alt=\"\" style=\"aspect-ratio:${PHOTOS.length<3?'4/3':'1'}\"/>`).join('')}</div>`:'';\nconst OUTLETS=[")
     # details step: short heading, editable FAQs
     t = must(t, "${head('Choose the outlet you’re setting up.','Everything’s pre-filled. Just confirm it’s right.')}", "${head('Check your details.')}")
     t = must(t, "VIEWS.verify=()=>{const o=S.o,d=S.d,e=S.edit;", '''VIEWS.verify=()=>{const o=S.o,d=S.d,e=S.edit;
  const CATN=[['general','General'],['res','Reservation'],['ord','Ordering'],['catering','Catering'],['music','Music events']],byC=c=>o.faqs.map((f,i)=>[f,i]).filter(x=>(x[0][2]||'general')===c);
  const faqView=`<div class="v">${o.faqs.length?CATN.map(c=>byC(c[0]).length?`<div class="faqh"><span class="ts-cat2 c-${c[0]}">${c[1]}</span></div>`+byC(c[0]).map(x=>`<div class="faq"><b>${esc(x[0][0])}</b><span>${esc(x[0][1])}</span></div>`).join(''):'').join(''):'<small>None yet</small>'}</div>`;
  const faqEd=`<div class="full">${CATN.map(c=>`<div class="faqh"><span class="ts-cat2 c-${c[0]}">${c[1]}</span></div>`+byC(c[0]).map(x=>`<div class="faqe"><input class="in" value="${esc(x[0][0])}" aria-label="Question" onchange="faqSet(${x[1]},0,this.value)"/><textarea class="ta" rows="2" aria-label="Answer" onchange="faqSet(${x[1]},1,this.value)">${esc(x[0][1])}</textarea><button class="lnk g" style="align-self:flex-start" onclick="faqDel(${x[1]})">Remove</button></div>`).join('')+`<button class="btn line sm" style="margin-bottom:14px" onclick="faqAdd('${c[0]}')">Add a question</button>`).join('')}</div>`;''')
-    t, n = re.subn(r'<div class="row"><label>Answers</label>.*?<span></span></div>', '''${PHOTOS.length?`<div class="row"><label>Photos</label>${phStrip()}<span></span></div>`:''}<div class="row"><label>FAQs</label>${e.faq?'<span></span>':faqView}<button class="lnk" onclick="tog('faq')">${e.faq?'Done':'Edit'}</button>${e.faq?faqEd:''}</div>''', t, count=1, flags=re.S)
+    t = must(t, "${e.brand?brand:''}</div>", "${e.brand?brand:''}${PHOTOS.length&&!e.brand?`<div class=\"full\" style=\"margin-top:4px\">${phStrip()}</div>`:''}</div>")
+    t, n = re.subn(r'<div class="row"><label>Answers</label>.*?<span></span></div>', '''<div class="row"><label>FAQs</label>${e.faq?'<span></span>':faqView}<button class="lnk" onclick="tog('faq')">${e.faq?'Done':'Edit'}</button>${e.faq?faqEd:''}</div>''', t, count=1, flags=re.S)
     assert n == 1
     t = must(t, "function tog(k){S.edit[k]=!S.edit[k];render()}", "function tog(k){if(k==='faq'&&S.edit.faq){S.o.faqs=S.o.faqs.filter(f=>f[0].trim()&&f[1].trim());faqSync()}S.edit[k]=!S.edit[k];render()}")
     t = must(t, "days:[1,1,1,1,1,1,1]});S.rs=0}", "days:[1,1,1,1,1,1,1]});S.rs=0;TS.set(x=>{x.d.brand=o.short||o.name;x.d.outlet={name:o.short||o.name,area:o.area,addr:o.addr};x.d.faqs=(o.faqs||[]).map(f=>f.slice())})}")
@@ -256,7 +258,7 @@ def build_dashboard(v):
     assert n == 1
     t, n = re.subn(r"const orow=\(label,tp,ctl,sub\)=>.*?\n", lambda m: "const orow=(label,tp,ctl,sub)=>`<div class=\"tg\"><div class=\"tx\"><div class=\"fl\">${label}</div>${sub?`<div class=\"fh\">${sub}</div>`:tp?`<div class=\"fh fh1\">${esc(tip1(tp))}</div>`:''}</div>${ctl}</div>`;\n", t, count=1)
     assert n == 1
-    t = must(t, '</style>', '.fh1{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:560px}.btn-dark{transition:transform .15s,box-shadow .15s,background .12s}.btn-dark:hover:not(:disabled){transform:translate(-2px,-2px);box-shadow:3px 4px 0 #fff,3px 4px 0 1.5px rgba(17,17,17,.16)}</style>')
+    t = must(t, '</style>', '.fh1{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:560px}.btn-dark{transition:transform .15s,box-shadow .15s,background .12s}.btn-dark:hover:not(:disabled){transform:translate(-2px,-2px);box-shadow:3px 4px 0 #fff,3px 4px 0 1.5px #111}</style>')
     # a single outlet shows that outlet only: no all-outlets billing, team, exceptions or other-outlet notes
     t = must(t, "const nav=roleNav(S.outlet==='all'?SETNAV_ALL:SETNAV_ONE);", "const nav0=roleNav(S.outlet==='all'?SETNAV_ALL:SETNAV_ONE),nav=(S.outlet!=='all'&&OUTLETS.length>1)?nav0.map(g=>[g[0],g[1].filter(i=>!['billing','team'].includes(i[0]))]).filter(g=>g[1].length):nav0;")
     t = must(t, '<div class="scope-note">${S.outlet===\'all\'', '<div class="scope-note" ${OUTLETS.length>1?\'\':\'hidden\'}>${S.outlet===\'all\'')
@@ -271,6 +273,8 @@ def build_dashboard(v):
     b = t.index("\n ord:()=>ordPage(),", a)
     t = t[:a] + " faq:()=>sH('FAQ / Knowledge','')+TS.faqPage()," + t[b:]
     t = must(t, "<button class=\"btn btn-dark\" onclick=\"toast('Log missed booking')\">${I.plus} Log missed booking</button>", "<button class=\"btn btn-dark\" onclick=\"toast('New booking')\">${I.plus} New booking</button>")
+    t, n = re.subn(r'<div class="live"><span class="d"></span>\$\{BRAND\.agent\} is live — try it.*?\$\{I\.copy\}</button></div>', '', t, count=1, flags=re.S)
+    assert n == 1
     t = must(t, "(DB.subscribed&&TS.get().done['go.fwd'])?", "DB.subscribed?")
     t = must(t, ":!DB.subscribed?'':!DB.orderingOn?'<span class=\"bdg new\">Set up</span>'", ":!TS.ready('ord')?'<span class=\"bdg new\">Set up</span>':!DB.subscribed?'':!DB.orderingOn?'<span class=\"bdg new\">Set up</span>'")
     t = must(t, "b=!DB.mods.res?'<span class=\"bdg off\">Off</span>':!DB.subscribed?'':p?", "b=!DB.mods.res?'<span class=\"bdg off\">Off</span>':!TS.ready('res')?'<span class=\"bdg new\">Set up</span>':!DB.subscribed?'':p?")
@@ -326,6 +330,7 @@ def wrapper(v, ob, dash):
 html,body{{margin:0;height:100%;background:#F2F1ED;font-family:Poppins,system-ui,sans-serif}}
 iframe{{position:fixed;inset:0;width:100%;height:100%;border:0;background:#F2F1ED}}
 iframe[hidden]{{display:none}}
+.sw .tgl{{width:30px;height:30px;padding:0;margin-right:2px;border-radius:50%;background:#2a2a2a;color:#fff;font-size:15px;line-height:1;flex-shrink:0}}.sw.c{{padding:3px}}.sw.c>:not(.tgl){{display:none}}.sw.c .tgl{{margin:0;background:#111;border:1.5px solid #4FC2B4;color:#4FC2B4}}
 .sw{{position:fixed;right:14px;bottom:14px;z-index:1000;display:flex;gap:2px;padding:3px;border-radius:999px;background:#111;box-shadow:0 4px 14px rgba(0,0,0,.25);align-items:center}}
 .sw span{{color:#4FC2B4;font:600 11px/1 Poppins,system-ui,sans-serif;padding:0 10px 0 12px}}
 .sw button{{border:0;background:none;color:#aaa;font:600 11px/1 Poppins,system-ui,sans-serif;padding:8px 12px;border-radius:999px;cursor:pointer}}
@@ -334,7 +339,7 @@ iframe[hidden]{{display:none}}
 </style></head><body>
 <iframe id="ob" title="Onboarding"></iframe>
 <iframe id="db" title="Dashboard" hidden></iframe>
-<div class="sw" role="group" aria-label="Prototype screens"><span>{v} · {name}</span><button id="b-ob" class="on">Onboarding</button><button id="b-db">Dashboard</button><button id="b-rd" title="Everything set up, with reservations and orders">Sample data</button><button id="b-rs" title="Clear everything and start again">Start over</button></div>
+<div class="sw" id="sw" role="group" aria-label="Prototype screens"><button class="tgl" id="b-tg" aria-label="Hide or show the prototype bar" title="Hide the bar">\u203a</button><span>{v} · {name}</span><button id="b-ob" class="on">Onboarding</button><button id="b-db">Dashboard</button><button id="b-rd" title="Everything set up, with reservations and orders">Sample data</button><button id="b-rs" title="Clear everything and start again">Start over</button></div>
 <script>
 const SRC={{ob:"{b64(ob)}",db:"{b64(dash)}"}};
 const dec=b=>new TextDecoder().decode(Uint8Array.from(atob(b),c=>c.charCodeAt(0)));
@@ -347,6 +352,7 @@ window.addEventListener('message',e=>{{const m=e.data;if(!m||!m.tringg)return;
  if(m.tringg==='state'){{STATE=m.s;const o=other(e.source);if(o)o.postMessage({{tringg:'state',s:STATE}},'*');}}
  if(m.tringg==='hello'&&STATE)e.source.postMessage({{tringg:'state',s:STATE}},'*');
  if(m.tringg==='handoff'){{show('db');db.contentWindow.postMessage({{tringg:'enter'}},'*');}}}});
+document.getElementById('b-tg').onclick=()=>{{const s=document.getElementById('sw'),c=s.classList.toggle('c');document.getElementById('b-tg').textContent=c?'\\u2039':'\\u203a';document.getElementById('b-tg').title=c?'Show the bar':'Hide the bar';}};
 document.getElementById('b-ob').onclick=()=>show('ob');
 document.getElementById('b-db').onclick=()=>show('db');
 document.getElementById('b-rd').onclick=()=>{{show('db');db.contentWindow.postMessage({{tringg:'ready'}},'*');}};

@@ -25,9 +25,9 @@ var CSS=`
 .ts-foot{display:flex;align-items:center;gap:12px;padding:18px 32px 24px}
 .ts-foot .sp{flex:1}.ts-err{color:var(--tk-red);font-size:13px;font-weight:500}
 .ts-btn{height:44px;padding:0 22px;border-radius:12px;border:1.5px solid var(--tk-ink);background:var(--tk-ink);color:#fff;font:inherit;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap;text-decoration:none;transition:transform .15s,box-shadow .15s}
-.ts-btn:hover:not(:disabled){transform:translate(-2px,-2px);box-shadow:4px 5px 0 #fff,4px 5px 0 1.5px rgba(17,17,17,.16)}
+.ts-btn:hover:not(:disabled){transform:translate(-2px,-2px);box-shadow:4px 5px 0 #fff,4px 5px 0 1.5px #111}
 .ts-btn.line:hover:not(:disabled){box-shadow:4px 5px 0 var(--tk-ink)}
-.ts-btn.line{background:#fff;color:var(--tk-ink)}.ts-btn.sm{height:34px;padding:0 14px;font-size:13px;border-radius:10px}.ts-btn.sm:hover:not(:disabled){box-shadow:3px 4px 0 #fff,3px 4px 0 1.5px rgba(17,17,17,.16)}.ts-btn.sm.line:hover:not(:disabled){box-shadow:3px 4px 0 var(--tk-ink)}
+.ts-btn.line{background:#fff;color:var(--tk-ink)}.ts-btn.sm{height:34px;padding:0 14px;font-size:13px;border-radius:10px}.ts-btn.sm:hover:not(:disabled){box-shadow:3px 4px 0 #fff,3px 4px 0 1.5px #111}.ts-btn.sm.line:hover:not(:disabled){box-shadow:3px 4px 0 var(--tk-ink)}
 .ts-btn.ghost{border-color:transparent;background:none;color:var(--tk-50)}.ts-btn.ghost:hover:not(:disabled){transform:none;box-shadow:none;background:var(--tk-sun);color:var(--tk-ink)}
 .ts-btn:disabled{opacity:.35;cursor:not-allowed}
 .ts-g2{display:grid;grid-template-columns:1fr 1fr;gap:18px 16px}
@@ -151,7 +151,7 @@ function fresh(){return{
   ['Do you take walk-ins?','Yes, subject to availability. Booking is recommended on weekends.','res'],['How far ahead can I book?','Up to 30 days ahead.','res'],['Can I book for a large group?','Yes, up to 12 guests by phone.','res'],
   ['Do you deliver?','Yes, within 3 miles.','ord'],['How long does pickup take?','About 20 minutes.','ord'],['Is there a delivery fee or minimum?','A $3 fee and a $15 minimum.','ord'],
   ['Do you cater?','Yes. We cater events of 20 or more. Call us for a quote.','catering'],['How much notice do you need for catering?','At least 48 hours.','catering'],
-  ['Do you have live music?','Yes, every Friday and Saturday from 7 PM.','music'],['Can I book the restaurant for a music event?','Yes, for private events on weekdays.','music']],agent:{name:'Novi',voice:'shubh',greet:''},outlet:null,
+  ['Do you have live music?','Yes, every Friday and Saturday from 7 PM.','music'],['Can I book the restaurant for a music event?','Yes, for private events on weekdays.','music']],agent:{name:'Emma',voice:'allie',greet:''},outlet:null,
   res:{perDay:50,win:30,minP:1,maxP:12,dur:90,notice:60},
   menu:{src:null,n:0},
   svc:{pick:true,prep:20,del:false,mi:3,eta:35,fee:3,min:15},
