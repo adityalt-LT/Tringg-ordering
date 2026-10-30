@@ -15,6 +15,22 @@ here = pathlib.Path(__file__).resolve().parent
 def _uri(path, mime):
     return 'data:' + mime + ';base64,' + base64.b64encode(path.read_bytes()).decode('ascii')
 LOGO = _uri(here / 'setup' / 'assets' / 'tringg-logo.png', 'image/png')
+def _ticon():
+    import io
+    from PIL import Image
+    import numpy as np
+    im = Image.open(here / 'setup' / 'assets' / 'tringg-logo.png').convert('RGBA')
+    a = np.array(im)[:, :, 3].copy()
+    a[:, 50:] = 0; a[17:, 34:] = 0   # keep only the arch and stem: the T of the wordmark
+    ys, xs = np.where(a > 0)
+    box = (xs.min(), ys.min(), xs.max() + 1, ys.max() + 1)
+    out = np.zeros((a.shape[0], a.shape[1], 4), dtype=np.uint8)
+    out[:, :, :3] = 255; out[:, :, 3] = a
+    t = Image.fromarray(out).crop(box)
+    t = t.resize((t.width * 4, t.height * 4), Image.LANCZOS)
+    buf = io.BytesIO(); t.save(buf, 'PNG')
+    return 'data:image/png;base64,' + base64.b64encode(buf.getvalue()).decode('ascii')
+TICON = _ticon()
 HERO = _uri(here / 'setup' / 'assets' / 'tringg-hero.webm', 'video/webm')
 # real restaurant photos: drop .jpg/.png files in setup/photos and they appear in step 1 and the details step
 def _photos():
@@ -31,7 +47,7 @@ def _photos():
         print('photos skipped:', e)
     return out
 PHOTOS = _photos()
-ENGINE = (here / 'setup' / 'setup-engine.js').read_text(encoding='utf-8').replace('__LOGO_URI__', LOGO)
+ENGINE = (here / 'setup' / 'setup-engine.js').read_text(encoding='utf-8').replace('__LOGO_URI__', LOGO).replace('__TICON_URI__', TICON)
 OB = (here / 'onboarding.html').read_text(encoding='utf-8')
 DB = (here / 'tringg-ordering.html').read_text(encoding='utf-8')
 
@@ -88,8 +104,8 @@ OB_CSS = r'''
 .sug-or{padding:12px 18px 4px;margin-top:6px;border-top:1px solid var(--border);font-size:11.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-50)}
 .faqe{display:flex;flex-direction:column;gap:8px;border:1.5px solid var(--border);border-radius:14px;padding:12px;margin-bottom:10px}.faqe .in{height:40px}
 /* search complete */
-.sc{padding:0;overflow:hidden;border-color:#9BD8CF}
-.sc-h{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:26px 28px 18px;background:linear-gradient(135deg,#DDF2EE,#fff 70%)}
+.sc{padding:0;overflow:hidden}
+.sc-h{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:26px 28px 18px;background:#fff}
 .sc-e{display:block;font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--mint-d)}
 .sc-n{font-family:Georgia,'Times New Roman',serif;font-style:italic;font-size:34px;line-height:1.15;margin-top:4px;letter-spacing:-.5px}
 .sc-r{display:grid;grid-template-columns:130px 1fr auto;gap:16px;align-items:baseline;padding:16px 28px;border-top:1px solid var(--border)}
@@ -99,27 +115,26 @@ OB_CSS = r'''
 @media(max-width:640px){.sc-r{grid-template-columns:1fr auto}.sc-r label{grid-column:1/-1}}
 /* locations */
 .lc-h{display:flex;align-items:center;gap:12px;margin-bottom:12px}.lc-h .cap{margin:0}.lc-h b{font-size:15px;font-weight:600}
-.lc-n{margin-left:auto;font-size:12px;font-weight:600;color:var(--mint-d);background:var(--mint-50);border-radius:999px;padding:3px 12px}
+.lc-n{margin-left:auto;font-size:12px;font-weight:600;color:var(--ink-50);background:#EAE9E4;border-radius:999px;padding:3px 12px}
 .lc-g{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-bottom:14px}.lc-g .lc{margin:0;height:100%;justify-content:space-between}.lc-g .lc-t{flex-direction:column;align-items:flex-start;gap:12px}.lc-g .lc-go{margin:0}
-.lc.on .lc-c span:not(.k){background:#fff}
 @media(max-width:700px){.lc-g{grid-template-columns:1fr}}
 .lc{display:flex;flex-direction:column;gap:10px;width:100%;text-align:left;font:inherit;color:inherit;background:var(--panel);border:1.5px solid var(--border);border-radius:16px;padding:16px 20px;margin-bottom:10px;cursor:pointer;transition:border-color .15s,transform .15s,box-shadow .15s}
-.lc:hover{border-color:var(--ink);transform:translate(-2px,-2px);box-shadow:4px 5px 0 var(--ink)}.lc.on{border-color:var(--mint);background:var(--mint-50)}
-.lc-t{display:flex;align-items:center;gap:12px}.lc-t b{font-size:16px;font-weight:600}.lc-t small{color:var(--ink-50);font-size:13px}.lc-go{margin-left:auto;font-size:13px;font-weight:600;color:var(--mint-d);white-space:nowrap}
-.lc-c{display:flex;gap:8px;flex-wrap:wrap}.lc-c span{font-size:12px;font-weight:500;border-radius:999px;padding:3px 11px;background:var(--mint-50);color:var(--mint-d)}.lc-c span.k{background:#EAE9E4;color:#555}
+.lc:hover{border-color:var(--ink);transform:translate(-2px,-2px);box-shadow:4px 5px 0 var(--ink)}.lc.on{border-color:var(--ink);box-shadow:3px 4px 0 var(--ink)}
+.lc-t{display:flex;align-items:center;gap:12px}.lc-t b{font-size:16px;font-weight:600}.lc-t small{color:var(--ink-50);font-size:13px}.lc-go{margin-left:auto;font-size:13px;font-weight:600;color:var(--ink);white-space:nowrap}
+.lc-c{font-size:13px;color:var(--ink-50)}
 .lc-m{display:block;width:100%;text-align:center;background:none;border:1.5px dashed var(--border-s);border-radius:16px;padding:16px;font:inherit;font-size:14px;color:var(--ink-50);cursor:pointer}.lc-m:hover{border-color:var(--ink);color:var(--ink)}
 /* agent */
 .ag{padding:0;overflow:hidden}
-.ag-top{display:flex;gap:24px;align-items:center;padding:30px 32px;background:radial-gradient(70% 140% at 100% 0%,#D7F26B88 0%,transparent 60%),radial-gradient(60% 120% at 0% 100%,#FFB84D55 0%,transparent 60%),var(--mint-50);border-bottom:1px solid #CFEAE5}
-.ag-ic{position:relative;width:88px;height:88px;border-radius:26px;background:var(--mint);border:1.5px solid var(--ink);box-shadow:4px 5px 0 var(--ink);display:grid;place-items:center;flex-shrink:0}
-.ag-ic svg{width:40px;height:40px;stroke:#06231e;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;animation:agvib 1.8s ease-in-out infinite;transform-origin:50% 60%}
-.ag-ic i{position:absolute;inset:-2px;border-radius:28px;border:2px solid var(--mint);opacity:0;animation:agring 2.4s ease-out infinite}.ag-ic i:nth-child(2){animation-delay:1.2s}
+.ag-top{display:flex;gap:24px;align-items:center;padding:30px 32px;background:#fff;border-bottom:1px solid var(--border)}
+.ag-ic{position:relative;width:88px;height:88px;border-radius:26px;background:#111;display:grid;place-items:center;flex-shrink:0}
+.ag-ic img{height:44px;width:auto;display:block;animation:agvib 1.8s ease-in-out infinite;transform-origin:50% 60%}
+.ag-ic i{position:absolute;inset:-2px;border-radius:28px;border:2px solid #111;opacity:0;animation:agring 2.4s ease-out infinite}.ag-ic i:nth-child(2){animation-delay:1.2s}
 @keyframes agvib{0%,55%,100%{transform:rotate(0)}6%{transform:rotate(-14deg)}12%{transform:rotate(12deg)}18%{transform:rotate(-12deg)}24%{transform:rotate(10deg)}30%{transform:rotate(-8deg)}36%{transform:rotate(6deg)}42%{transform:rotate(0)}}
 @keyframes agring{0%{transform:scale(1);opacity:.8}100%{transform:scale(1.5);opacity:0}}
 .ag-top .nm{background:transparent}
 .ag-b{padding:26px 32px 30px;display:flex;flex-direction:column;gap:24px}
 .seg2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.seg2 button{font:inherit;font-size:14px;padding:12px 14px;border-radius:12px;border:1.5px solid var(--border);background:var(--panel);cursor:pointer;text-align:left;color:var(--ink)}
-.seg2 button b{display:block;font-weight:600}.seg2 button small{color:var(--ink-50);font-size:12.5px}.seg2 button.on{border-color:var(--mint);background:var(--mint-50)}
+.seg2 button b{display:block;font-weight:600}.seg2 button small{color:var(--ink-50);font-size:12.5px}.seg2 button.on{border-color:var(--ink);background:#fff;box-shadow:3px 4px 0 var(--ink)}
 /* voice picker */
 .vp{position:relative;flex:1;min-width:0}
 .vp-b{display:flex;align-items:center;gap:12px;width:100%;height:60px;padding:0 16px 0 10px;border:1.5px solid var(--border);border-radius:14px;background:var(--panel);font:inherit;cursor:pointer;text-align:left;color:var(--ink)}
@@ -150,7 +165,7 @@ VIEWS.research=()=>{if(S.rs<RS.length)return _res();const o=S.o,d=S.d,F=[['Brand
 VIEWS.locate=()=>({body:`<div class="body fade">${head('Choose the outlet you’re setting up.')}
  <div class="sec"><div class="lc-h"><span class="cap">Locations</span><b>Pick the one you’re setting up</b><span class="lc-n">${OUTLETS.length} found</span></div>
  <div class="lc-g">${OUTLETS.map(o=>`<button class="lc ${S.o&&S.o.id===o.id?'on':''}" onclick="pickLoc('${o.id}')"><div class="lc-t"><div><b>${esc(o.short||o.name)} · ${esc(o.area.split(',')[0])}</b><br><small>${esc(o.addr)}</small></div></div>
-  <div class="lc-c"><span>Hours found</span><span>${o.faqs.length} FAQs</span><span>Phone found</span><span class="k">${esc(o.rating)}</span></div><span class="lc-go">Review outlet →</span></button>`).join('')}</div>
+  <div class="lc-c">${esc(o.rating)}</div><span class="lc-go">Review outlet →</span></button>`).join('')}</div>
  <button class="lc-m" onclick="manual()">None of these — I’ll enter my location manually</button></div></div>`});
 function pickLoc(id){S.o=OUTLETS.find(o=>o.id===id);loadOutlet();next()}
 /* 04 · meet your agent */
@@ -168,7 +183,7 @@ const vpHTML=()=>{const cur=VOICES.find(v=>v.id===S.agent.voice)||VOICES[0],f=S.
  ${S.vo?`<div class="vp-m" role="listbox"><div class="vp-f">${[['all','All voices'],['female','Female'],['male','Male']].map(x=>`<button class="${f===x[0]?'on':''}" onclick="S.vf='${x[0]}';render()">${x[1]}</button>`).join('')}</div><div class="vp-l">${list.map(v=>`<button class="vp-i ${v.id===S.agent.voice?'on':''}" role="option" onclick="vpPick('${v.id}')">${vAv(v)}<span><b>${esc(v.n)}</b><small>${esc(v.t.toUpperCase())}</small><em>${esc(v.d)}</em></span></button>`).join('')}</div></div>`:''}</div>`};
 VIEWS.agent=()=>{const A=S.agent,n=A.name,fb=A.fb||'staff';
  return{body:`<div class="body fade">${head(`Meet ${esc(n)}.`,'We’ve created an agent for you. Take a listen and change anything.')}
- <div class="sec card ag"><div class="ag-top"><div class="ag-ic" aria-hidden="true"><i></i><i></i><svg viewBox="0 0 24 24"><rect x="4" y="8" width="16" height="12" rx="4"/><path d="M12 8V4.5"/><circle cx="12" cy="3.5" r="1.2"/><path d="M2 13v3M22 13v3"/><circle cx="9" cy="14" r="1.1" fill="#06231e"/><circle cx="15" cy="14" r="1.1" fill="#06231e"/><path d="M9.5 17.2c1.5 1 3.5 1 5 0"/></svg></div><div style="flex:1;min-width:0"><span class="cap">Your agent</span><input class="nm" id="nm" value="${esc(n)}" aria-label="Agent name" oninput="onName2(this.value)"/></div></div>
+ <div class="sec card ag"><div class="ag-top"><div class="ag-ic" aria-hidden="true"><i></i><i></i><img src="__TICON__" alt=""/></div><div style="flex:1;min-width:0"><span class="cap">Your agent</span><input class="nm" id="nm" value="${esc(n)}" aria-label="Agent name" oninput="onName2(this.value)"/></div></div>
   <div class="ag-b"><div class="field"><span>Voice</span><div class="vrow">${vpHTML()}<button class="play ${S.play?'on':''}" id="pl" onclick="speak()" aria-label="Play greeting">${ic('play',16)}<span class="wave"><s></s><s></s><s></s><s></s></span></button></div></div>
   <label class="field"><span>Greeting</span><textarea class="ta" id="gr" rows="3" oninput="S.agent.greet=this.value;agSync()">${esc(greet())}</textarea></label>
   <div class="field"><span>If a caller needs a person</span><div class="seg2"><button class="${fb==='staff'?'on':''}" onclick="S.agent.fb='staff';render()"><b>Transfer to staff</b><small>When the restaurant is open</small></button><button class="${fb==='msg'?'on':''}" onclick="S.agent.fb='msg';render()"><b>Take a message</b><small>Always, even when open</small></button></div></div></div></div></div>`,foot:footer({next:'Continue'})}};
@@ -253,7 +268,7 @@ const chip=()=>''')
     t = must(t, "days:[1,1,1,1,1,1,1]});S.rs=0}", "days:[1,1,1,1,1,1,1]});S.rs=0;TS.set(x=>{x.d.brand=o.short||o.name;x.d.outlet={name:o.short||o.name,area:o.area,addr:o.addr};x.d.faqs=(o.faqs||[]).map(f=>f.slice())})}")
     t = cut(t, '/* 03 · reservation: the real six rules */', 'function copyNum(b)', NEW_VIEWS)
     t = t.replace('__PHOTOS__', json.dumps(PHOTOS))
-    t = t.replace('__HERO__', HERO)
+    t = t.replace('__HERO__', HERO).replace('__TICON__', TICON)
     return t
 
 
