@@ -63,7 +63,7 @@ OB_CSS = r'''
 .stp{display:flex;align-items:center}
 .stp-s{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink-30);font-weight:500;white-space:nowrap}
 .stp-s .n{width:24px;height:24px;border-radius:50%;border:1.5px solid var(--border-s);display:grid;place-items:center;font-size:12px;font-weight:600;background:var(--panel)}
-.stp-s.on{color:var(--ink)}.stp-s.on .n{background:var(--mint);border-color:var(--ink);color:#06231e}
+.stp-s.on{color:var(--ink)}.stp-s.on .n{background:var(--mint);border-color:var(--ink);color:#fff}
 .stp-s.done{color:var(--ink-50)}.stp-s.done .n{background:var(--mint);border-color:var(--mint);color:#06231e}
 .stp-l{width:32px;height:1.5px;background:var(--border-s);margin:0 10px}.stp-l.done{background:var(--mint)}
 .stp-m{display:none;font-size:13px;color:var(--ink-50);font-weight:500}
@@ -73,7 +73,8 @@ OB_CSS = r'''
 .foot .why{margin-left:auto;font-size:13px;color:var(--ink-50);text-align:right}
 .foot>.btn:last-child{margin-left:auto}.foot .why+.btn{margin-left:0}
 .btn{transition:transform .15s,box-shadow .15s,background .15s,opacity .2s}
-.btn:not(.line){background:var(--mint);color:#06231e;border:1.5px solid var(--ink)}
+.btn:not(.line){background:var(--mint);color:#fff;font-weight:600;text-shadow:0 1px 0 rgba(6,35,30,.2);border:1.5px solid var(--ink)}
+.btn:not(.line):hover:not(:disabled){background:var(--mint);color:#fff}
 .btn:hover:not(:disabled){transform:translate(-2px,-2px);box-shadow:4px 5px 0 var(--ink)}
 .btn.line:hover:not(:disabled){background:var(--panel);box-shadow:4px 5px 0 var(--ink)}
 .btn.sm:hover:not(:disabled){box-shadow:3px 4px 0 var(--ink)}.btn.sm.line:hover:not(:disabled){box-shadow:3px 4px 0 var(--ink)}
@@ -99,6 +100,9 @@ OB_CSS = r'''
 /* locations */
 .lc-h{display:flex;align-items:center;gap:12px;margin-bottom:12px}.lc-h .cap{margin:0}.lc-h b{font-size:15px;font-weight:600}
 .lc-n{margin-left:auto;font-size:12px;font-weight:600;color:var(--mint-d);background:var(--mint-50);border-radius:999px;padding:3px 12px}
+.lc-g{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-bottom:14px}.lc-g .lc{margin:0;height:100%;justify-content:space-between}.lc-g .lc-t{flex-direction:column;align-items:flex-start;gap:12px}.lc-g .lc-go{margin:0}
+.lc.on .lc-c span:not(.k){background:#fff}
+@media(max-width:700px){.lc-g{grid-template-columns:1fr}}
 .lc{display:flex;flex-direction:column;gap:10px;width:100%;text-align:left;font:inherit;color:inherit;background:var(--panel);border:1.5px solid var(--border);border-radius:16px;padding:16px 20px;margin-bottom:10px;cursor:pointer;transition:border-color .15s,transform .15s,box-shadow .15s}
 .lc:hover{border-color:var(--ink);transform:translate(-2px,-2px);box-shadow:4px 5px 0 var(--ink)}.lc.on{border-color:var(--mint);background:var(--mint-50)}
 .lc-t{display:flex;align-items:center;gap:12px}.lc-t b{font-size:16px;font-weight:600}.lc-t small{color:var(--ink-50);font-size:13px}.lc-go{margin-left:auto;font-size:13px;font-weight:600;color:var(--mint-d);white-space:nowrap}
@@ -145,8 +149,8 @@ VIEWS.research=()=>{if(S.rs<RS.length)return _res();const o=S.o,d=S.d,F=[['Brand
 /* 02 · pick the outlet you are setting up */
 VIEWS.locate=()=>({body:`<div class="body fade">${head('Choose the outlet you’re setting up.')}
  <div class="sec"><div class="lc-h"><span class="cap">Locations</span><b>Pick the one you’re setting up</b><span class="lc-n">${OUTLETS.length} found</span></div>
- ${OUTLETS.map(o=>`<button class="lc ${S.o&&S.o.id===o.id?'on':''}" onclick="pickLoc('${o.id}')"><div class="lc-t"><div><b>${esc(o.short||o.name)} · ${esc(o.area.split(',')[0])}</b><br><small>${esc(o.addr)}</small></div><span class="lc-go">Review outlet →</span></div>
-  <div class="lc-c"><span>Hours found</span><span>${o.faqs.length} FAQs · ${o.faqs.filter(f=>f[2]!=='general').length} local</span><span>Phone found</span><span class="k">${esc(o.rating)}</span></div></button>`).join('')}
+ <div class="lc-g">${OUTLETS.map(o=>`<button class="lc ${S.o&&S.o.id===o.id?'on':''}" onclick="pickLoc('${o.id}')"><div class="lc-t"><div><b>${esc(o.short||o.name)} · ${esc(o.area.split(',')[0])}</b><br><small>${esc(o.addr)}</small></div></div>
+  <div class="lc-c"><span>Hours found</span><span>${o.faqs.length} FAQs</span><span>Phone found</span><span class="k">${esc(o.rating)}</span></div><span class="lc-go">Review outlet →</span></button>`).join('')}</div>
  <button class="lc-m" onclick="manual()">None of these — I’ll enter my location manually</button></div></div>`});
 function pickLoc(id){S.o=OUTLETS.find(o=>o.id===id);loadOutlet();next()}
 /* 04 · meet your agent */
@@ -164,7 +168,7 @@ const vpHTML=()=>{const cur=VOICES.find(v=>v.id===S.agent.voice)||VOICES[0],f=S.
  ${S.vo?`<div class="vp-m" role="listbox"><div class="vp-f">${[['all','All voices'],['female','Female'],['male','Male']].map(x=>`<button class="${f===x[0]?'on':''}" onclick="S.vf='${x[0]}';render()">${x[1]}</button>`).join('')}</div><div class="vp-l">${list.map(v=>`<button class="vp-i ${v.id===S.agent.voice?'on':''}" role="option" onclick="vpPick('${v.id}')">${vAv(v)}<span><b>${esc(v.n)}</b><small>${esc(v.t.toUpperCase())}</small><em>${esc(v.d)}</em></span></button>`).join('')}</div></div>`:''}</div>`};
 VIEWS.agent=()=>{const A=S.agent,n=A.name,fb=A.fb||'staff';
  return{body:`<div class="body fade">${head(`Meet ${esc(n)}.`,'We’ve created an agent for you. Take a listen and change anything.')}
- <div class="sec card ag"><div class="ag-top"><div class="ag-ic" aria-hidden="true"><i></i><i></i><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div><div style="flex:1;min-width:0"><span class="cap">Your agent</span><input class="nm" id="nm" value="${esc(n)}" aria-label="Agent name" oninput="onName2(this.value)"/></div></div>
+ <div class="sec card ag"><div class="ag-top"><div class="ag-ic" aria-hidden="true"><i></i><i></i><svg viewBox="0 0 24 24"><rect x="4" y="8" width="16" height="12" rx="4"/><path d="M12 8V4.5"/><circle cx="12" cy="3.5" r="1.2"/><path d="M2 13v3M22 13v3"/><circle cx="9" cy="14" r="1.1" fill="#06231e"/><circle cx="15" cy="14" r="1.1" fill="#06231e"/><path d="M9.5 17.2c1.5 1 3.5 1 5 0"/></svg></div><div style="flex:1;min-width:0"><span class="cap">Your agent</span><input class="nm" id="nm" value="${esc(n)}" aria-label="Agent name" oninput="onName2(this.value)"/></div></div>
   <div class="ag-b"><div class="field"><span>Voice</span><div class="vrow">${vpHTML()}<button class="play ${S.play?'on':''}" id="pl" onclick="speak()" aria-label="Play greeting">${ic('play',16)}<span class="wave"><s></s><s></s><s></s><s></s></span></button></div></div>
   <label class="field"><span>Greeting</span><textarea class="ta" id="gr" rows="3" oninput="S.agent.greet=this.value;agSync()">${esc(greet())}</textarea></label>
   <div class="field"><span>If a caller needs a person</span><div class="seg2"><button class="${fb==='staff'?'on':''}" onclick="S.agent.fb='staff';render()"><b>Transfer to staff</b><small>When the restaurant is open</small></button><button class="${fb==='msg'?'on':''}" onclick="S.agent.fb='msg';render()"><b>Take a message</b><small>Always, even when open</small></button></div></div></div></div></div>`,foot:footer({next:'Continue'})}};
@@ -217,6 +221,7 @@ const OUTLETS=[
     t = cut(t, "const VOICES=[", "const NOTICE", VOICES_JS)
     t = must(t, "function rsPaint(){const done=S.rs>=RS.length,card=$('#rcard');if(!card)return;", "function rsPaint(){const done=S.rs>=RS.length,card=$('#rcard');if(!card)return;if(done){render();return}")
     t = must(t, "S.i=2;S.fresh=true;S.edit={brand:true,hours:true}", "S.i=STEPS.indexOf('verify');S.fresh=true;S.edit={brand:true,hours:true}")
+    t = must(t, " S.fresh=false;\n if(fresh)typeHeading()", " S.fresh=false;if(!fresh)document.querySelectorAll('.fade').forEach(x=>x.classList.remove('fade'));\n if(fresh)typeHeading()")
     t = must(t, "const next=()=>go(S.i+1),back=()=>go(S.i-1);", "const next=()=>{if(STEPS[S.i]==='services'){openDash();return}go(S.i+1)},back=()=>go(S.i-1);")
     t = must(t, "const GROUPS=['Discover','Verify','Services','Meet your agent','Review','Go live'];", "const GROUPS=['Find','Verify','Agent','Set up'];")
     t = must(t, "const STEPS=['find','research','verify','rules','voice','review','live'];", "const STEPS=['find','research','locate','verify','agent','services'];")
@@ -267,7 +272,10 @@ OVERVIEW_FRESH = r'''function vOverviewFresh(){const mo=DB.mods,G=h=>`<div class
 
 BOOT = r'''/* setup prototypes: one location, empty to start, driven by the shared setup state */
 (function(){
- const PRIMARY='wl';const FRESH_OUT=['wl','wp','nv'];ROLE_OUT.owner=FRESH_OUT;SC.wl=.4;let FULL=false;TS.outletSet=id=>FULL||id===PRIMARY;TS.isFull=()=>FULL;
+ const PRIMARY='wl';const FRESH_OUT=['wl','wp','nv'];ROLE_OUT.owner=FRESH_OUT;SC.wl=.4;let FULL=false;let CUR=PRIMARY;const SNAP={};
+ const hasSvc=st=>Object.keys(st.done||{}).some(k=>/^(res|ord)\\./.test(k)&&st.done[k]);
+ TS.outletSet=id=>FULL||(id===CUR?hasSvc(TS.get()):!!SNAP[id]&&hasSvc(SNAP[id]));TS.isFull=()=>FULL;
+ TS.beforeOutlet=to=>{if(FULL||to==='all'||to===CUR)return;SNAP[CUR]=JSON.parse(JSON.stringify(TS.get()));const cur=TS.get(),n=SNAP[to]||(()=>{const f=TS.blank();f.d.agent=JSON.parse(JSON.stringify(cur.d.agent));f.d.brand=cur.d.brand;f.d.faqs=JSON.parse(JSON.stringify(cur.d.faqs));f.d.outlet={name:cur.d.outlet?cur.d.outlet.name:cur.d.brand,area:ON(to).short};f.sub=cur.sub;f.trial=cur.trial;if(cur.sub)f.done['go.sub']=true;return f;})();CUR=to;S.setupCollapsed=false;TS.swap(n);};
  function initFresh(){FULL=false;S.setupCollapsed=false;ROLE_OUT.owner=FRESH_OUT;applyRole(true);loadScenario('off');applyRole();TS.cfg.outlets=1;
   DB.k='setup';SCEN.setup={t:'Setup',h:''};DB.res=[];DB.calls=[];DB.orders=[];DB.held=[];DB.taxes=[];S.res.sel=null;S.route='overview';S.outlet=PRIMARY;S.ordOutlet=PRIMARY;S.dd=false;}
  TS.nav=r=>go(r);TS.cfg.outlets=1;
@@ -277,17 +285,17 @@ BOOT = r'''/* setup prototypes: one location, empty to start, driven by the shar
   OUTLETS_ALL.forEach(o=>{DB.om[o.id]={res:!!s.svc.res,ord:!!s.svc.ord};});
   MODS.res=!!s.svc.res;MODS.ord=!!s.svc.ord;DB.caps.res=!!s.svc.res;DB.subscribed=TS.active();
   DB.menuState=done('ord.menu')?'live':'none';DB.menuSource=done('ord.menu')?({google:'Google profile',pos:'Your POS',web:'Website',agg:'Delivery app',upload:'Uploaded menu',scratch:'Built in Tringg'}[d.menu.src]||'Imported'):null;
-  DB.taxOk=done('ord.tax');DB.taxes=done('ord.tax')&&t.on?[{id:'t1',type:t.type,n:t.n,on:t.app,base:t.base,calc:t.calc,vt:t.vt,v:t.v,ch:t.ch,delfee:!!t.delfee,outs:[PRIMARY]}]:[];
+  DB.taxOk=done('ord.tax');DB.taxes=done('ord.tax')&&t.on?[{id:'t1',type:t.type,n:t.n,on:t.app,base:t.base,calc:t.calc,vt:t.vt,v:t.v,ch:t.ch,delfee:!!t.delfee,outs:[CUR]}]:[];
   DB.payOk=done('ord.pay');DB.stripe=p.conn?'active':'none';DB.payPick={call:p.pick!=='store',store:p.pick!=='online'};
   DB.cod=Object.assign({},DB.cod,{capOn:!!p.capOn,cap:p.cap,repeatOn:!!p.repeatOn,repeatN:p.repeatN});DB.payFall={pk:!!p.fbPk&&p.pick==='both',dl:!!p.fbDl&&(!!p.capOn||!!p.repeatOn)};
-  OUTLETS_ALL.forEach(o=>{if(o.id===PRIMARY&&done('ord.svc')){DB.svc[o.id]={set:true,del:!!sv.del,pick:!!sv.pick,prep:sv.pick?sv.prep:null,rad:sv.del?{mi:sv.mi,fee:sv.fee,min:sv.min,eta:sv.eta}:null};DB.deliveryMode[o.id]=sv.del?'radius':null;}
+  OUTLETS_ALL.forEach(o=>{if(o.id===CUR&&done('ord.svc')){DB.svc[o.id]={set:true,del:!!sv.del,pick:!!sv.pick,prep:sv.pick?sv.prep:null,rad:sv.del?{mi:sv.mi,fee:sv.fee,min:sv.min,eta:sv.eta}:null};DB.deliveryMode[o.id]=sv.del?'radius':null;}
    else DB.svc[o.id]={set:false,del:false,pick:false,prep:null,rad:null};});
   DB.serviceSet=done('ord.svc');DB.orderingOn=TS.ready('ord')&&DB.subscribed;DB.caps.ord=DB.orderingOn;
   BRAND.agent=d.agent.name;BRAND.name=d.brand||BRAND.name;
-  const ou=OUTLETS_ALL.find(o=>o.id===PRIMARY);if(d.outlet&&ou){const a=(d.outlet.area||'').split(',')[0];ou.name=d.outlet.name+(a?' · '+a:'');ou.short=a||ou.short;}
+  const ou=OUTLETS_ALL.find(o=>o.id===CUR);if(d.outlet&&ou){const a=(d.outlet.area||'').split(',')[0];ou.name=d.outlet.name+(a?' · '+a:'');ou.short=a||ou.short;}
   if(DB.agents[0]){const A=DB.agents[0];A.n=d.agent.name;A.voice=({allie:'ishita',marcus:'sunny',leo:'sunny'})[d.agent.voice]||d.agent.voice||A.voice;if(d.agent.greet)A.greet=d.agent.greet;}
   syncMods();};
- window.resetDash=()=>{TS.reset();initFresh();applyTS();render();};
+ window.resetDash=()=>{TS.reset();CUR=PRIMARY;Object.keys(SNAP).forEach(k=>delete SNAP[k]);initFresh();applyTS();render();};
  /* one state with everything set up and data for reservations and orders */
  window.loadReady=()=>{FULL=true;TS.fill();ROLE_OUT.owner=null;applyRole(true);loadScenario('live');applyRole();DB.k='live';
   BRAND.agent=TS.get().d.agent.name;if(DB.agents[0])DB.agents[0].n=BRAND.agent;TS.cfg.outlets=OUTLETS.length;S.outlet=PRIMARY;S.route='overview';S.dd=false;S.res.sel='R-311';S.orders.sel=null;S.orders.tab='pending';render();};
@@ -353,7 +361,8 @@ def build_dashboard(v, w='1'):
     b = t.index('Subscribed</button></div></div>', a) + len('Subscribed</button></div></div>')
     t = t[:a] + PROTO_PANEL + t[b:]
     t = must(t, "${DB.svc[x.id].set!==true?'<span class=\"odd-new\">New</span>':''}", "${TS.outletSet(x.id)?'':'<span class=\"odd-new\">Set up</span>'}")
-    t = must(t, '</style>', '.btn-dark{background:#4FC2B4;color:#06231e;border:1.5px solid #111}.btn-dark:hover:not(:disabled){box-shadow:3px 4px 0 #111}.odd-new{background:#DDF2EE;color:#1F6E62}</style>')
+    t = must(t, "function pickOutlet(id){", "function pickOutlet(id){TS.beforeOutlet(id);")
+    t = must(t, '</style>', '.btn-dark{background:#4FC2B4;color:#fff;font-weight:600;border:1.5px solid #111}.btn-dark:hover:not(:disabled){background:#4FC2B4;color:#fff}.btn-dark:hover:not(:disabled){box-shadow:3px 4px 0 #111}.odd-new{background:#DDF2EE;color:#1F6E62}</style>')
     # modules: a service that is off offers to add itself; one that isn't set up shows its steps in place
     t = must(t, '''onclick="goSet('mods')">Turn on</button>''', '''onclick="TS.add('${m}')">Add ${m==='ord'?'ordering':'reservations'}</button>''')
     t = must(t, "const VIEWS={overview:vOverview,reservations:modG(gate(vReservations,'Table requests and bookings'),'res'),orders:modG(gate(vOrders,'Phone orders'),'ord'),",
@@ -363,9 +372,8 @@ def build_dashboard(v, w='1'):
     t = cut(t, 'function vOverviewFresh(){', 'function vOverview0(){', OVERVIEW_FRESH + '''function vOverview(){
   const first=(me().n||'').split(' ')[0];TS.cfg.user=first||'there';
   const FULL=TS.isFull(),PRIMARY='wl';
-  const other=!FULL&&S.outlet!==PRIMARY,sp=S.outlet==='all'?'Only '+esc(ON(PRIMARY).short)+' is set up. Set up the other outlets to take calls there.':esc(ON(S.outlet).name)+' isn’t set up yet.';
-  const stripe=other?`<div class="ts-stripe"><span><b>${S.outlet==='all'?'1 of '+OUTLETS.length+' outlets set up':'Not set up'}</b><br><small>${sp}</small></span><button class="ts-btn sm" onclick="${S.outlet==='all'?'':"pickOutlet('"+PRIMARY+"');"}toast('Setup for another outlet starts from the same steps')">Set up ${S.outlet==='all'?'an outlet':'this outlet'}</button></div>`:'';
-  if(other&&S.outlet!=='all')return `<div class="scroll"><div class="page">${stripe}${vOverviewFresh().replace(/<div class="lbl">[^<]*<\\/div>/,'').replace('<div class="scroll"><div class="page">','')}`;
+  const un=OUTLETS.filter(o=>!TS.outletSet(o.id)),other=!FULL&&S.outlet==='all'&&un.length>0;
+  const stripe=other?`<div class="ts-stripe"><span><b>${OUTLETS.length-un.length} of ${OUTLETS.length} outlets set up</b><br><small>Choose an outlet to set up next so it can take calls.</small></span><button class="ts-btn sm" onclick="TS.chooseOutlet(OUTLETS.filter(o=>!TS.outletSet(o.id)),'pickOutlet')">Set up an outlet</button></div>`:'';
   if(TS.totals().done===0&&!TS.allDone())return `<div class="scroll"><div class="page">${stripe}${TS.overviewTop()}</div></div>`;
   const h=DB.subscribed?vOverview0():vOverviewFresh();return h.replace(/<div class="lbl">[^<]*<\\/div>/,()=>stripe+TS.overviewTop());}
 function ovEnhance(){document.querySelectorAll('#view .ov-grid .card:not(.agent)').forEach(c=>{const h=c.querySelector('.card-h');if(!h||h.querySelector('.ov-t'))return;const k=(h.textContent||'').trim().slice(0,24);if(S.ovC&&S.ovC[k])c.classList.add('ov-c');const b=document.createElement('button');b.className='ov-t';b.setAttribute('aria-label','Collapse');b.innerHTML='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 15 6-6 6 6"/></svg>';b.onclick=e=>{e.stopPropagation();const on=c.classList.toggle('ov-c');S.ovC=S.ovC||{};S.ovC[k]=on;};h.appendChild(b);});}
