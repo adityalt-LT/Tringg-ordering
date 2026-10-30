@@ -52,6 +52,9 @@ def engine_tag(v, w='1'):
     return f'<script>window.TS_VARIANT="{v}";window.TS_WELCOME="{w}";</script><script>{ENGINE}</script>\n'
 
 
+VOICES_JS = r'''const VOICES=[{id:'allie',n:'Ava',g:'Female',t:'Female · English',d:'Warm American host, clear and friendly on the phone',pitch:1.15,rate:1},{id:'marcus',n:'Marcus',g:'Male',t:'Male · English',d:'Calm, confident American host with a steady pace',pitch:.7,rate:.95},{id:'leo',n:'Leo',g:'Male',t:'Male · English',d:'Upbeat, easygoing host for casual restaurants',pitch:.9,rate:1.1},{id:'priya',n:'Priya',g:'Female',t:'Female · Hindi',d:'Friendly bilingual host for Hindi and English callers',pitch:1.3,rate:1.08},{id:'shubh',n:'Shubh',g:'Male',t:'Male · Hindi',d:'Neutral Indian male host. Lowest pronunciation error rate',pitch:.8,rate:1}];
+'''
+
 # ───────────────────────── onboarding ─────────────────────────
 OB_CSS = r'''
 /* header stepper */
@@ -60,7 +63,7 @@ OB_CSS = r'''
 .stp{display:flex;align-items:center}
 .stp-s{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink-30);font-weight:500;white-space:nowrap}
 .stp-s .n{width:24px;height:24px;border-radius:50%;border:1.5px solid var(--border-s);display:grid;place-items:center;font-size:12px;font-weight:600;background:var(--panel)}
-.stp-s.on{color:var(--ink)}.stp-s.on .n{background:var(--ink);border-color:var(--ink);color:#fff}
+.stp-s.on{color:var(--ink)}.stp-s.on .n{background:var(--mint);border-color:var(--ink);color:#06231e}
 .stp-s.done{color:var(--ink-50)}.stp-s.done .n{background:var(--mint);border-color:var(--mint);color:#06231e}
 .stp-l{width:32px;height:1.5px;background:var(--border-s);margin:0 10px}.stp-l.done{background:var(--mint)}
 .stp-m{display:none;font-size:13px;color:var(--ink-50);font-weight:500}
@@ -70,9 +73,10 @@ OB_CSS = r'''
 .foot .why{margin-left:auto;font-size:13px;color:var(--ink-50);text-align:right}
 .foot>.btn:last-child{margin-left:auto}.foot .why+.btn{margin-left:0}
 .btn{transition:transform .15s,box-shadow .15s,background .15s,opacity .2s}
-.btn:hover:not(:disabled){transform:translate(-2px,-2px);box-shadow:4px 5px 0 #fff,4px 5px 0 1.5px #111;background:var(--ink)}
+.btn:not(.line){background:var(--mint);color:#06231e;border:1.5px solid var(--ink)}
+.btn:hover:not(:disabled){transform:translate(-2px,-2px);box-shadow:4px 5px 0 var(--ink)}
 .btn.line:hover:not(:disabled){background:var(--panel);box-shadow:4px 5px 0 var(--ink)}
-.btn.sm:hover:not(:disabled){box-shadow:3px 4px 0 #fff,3px 4px 0 1.5px #111}.btn.sm.line:hover:not(:disabled){box-shadow:3px 4px 0 var(--ink)}
+.btn.sm:hover:not(:disabled){box-shadow:3px 4px 0 var(--ink)}.btn.sm.line:hover:not(:disabled){box-shadow:3px 4px 0 var(--ink)}
 .btn:active:not(:disabled){transform:none;box-shadow:none}
 /* reading your listings: the results card, with the Tringg hero animation */
 .avw2{position:relative;width:132px;height:118px;flex-shrink:0;margin:-6px 0 -6px -10px}
@@ -82,6 +86,47 @@ OB_CSS = r'''
 .faqh{margin:16px 0 8px}.faqh:first-child{margin-top:0}
 .sug-or{padding:12px 18px 4px;margin-top:6px;border-top:1px solid var(--border);font-size:11.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-50)}
 .faqe{display:flex;flex-direction:column;gap:8px;border:1.5px solid var(--border);border-radius:14px;padding:12px;margin-bottom:10px}.faqe .in{height:40px}
+/* search complete */
+.sc{padding:0;overflow:hidden;border-color:#9BD8CF}
+.sc-h{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:26px 28px 18px;background:linear-gradient(135deg,#DDF2EE,#fff 70%)}
+.sc-e{display:block;font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--mint-d)}
+.sc-n{font-family:Georgia,'Times New Roman',serif;font-style:italic;font-size:34px;line-height:1.15;margin-top:4px;letter-spacing:-.5px}
+.sc-r{display:grid;grid-template-columns:130px 1fr auto;gap:16px;align-items:baseline;padding:16px 28px;border-top:1px solid var(--border)}
+.sc-r label{font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-50)}.sc-r span{font-size:15px}
+.sc-r em{font-style:normal;font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--mint-d);background:var(--mint-50);border-radius:999px;padding:3px 10px;white-space:nowrap}
+.sc-f{padding:14px 28px;border-top:1px solid var(--border);font-size:13px;color:var(--ink-50);background:var(--canvas)}
+@media(max-width:640px){.sc-r{grid-template-columns:1fr auto}.sc-r label{grid-column:1/-1}}
+/* locations */
+.lc-h{display:flex;align-items:center;gap:12px;margin-bottom:12px}.lc-h .cap{margin:0}.lc-h b{font-size:15px;font-weight:600}
+.lc-n{margin-left:auto;font-size:12px;font-weight:600;color:var(--mint-d);background:var(--mint-50);border-radius:999px;padding:3px 12px}
+.lc{display:flex;flex-direction:column;gap:10px;width:100%;text-align:left;font:inherit;color:inherit;background:var(--panel);border:1.5px solid var(--border);border-radius:16px;padding:16px 20px;margin-bottom:10px;cursor:pointer;transition:border-color .15s,transform .15s,box-shadow .15s}
+.lc:hover{border-color:var(--ink);transform:translate(-2px,-2px);box-shadow:4px 5px 0 var(--ink)}.lc.on{border-color:var(--mint);background:var(--mint-50)}
+.lc-t{display:flex;align-items:center;gap:12px}.lc-t b{font-size:16px;font-weight:600}.lc-t small{color:var(--ink-50);font-size:13px}.lc-go{margin-left:auto;font-size:13px;font-weight:600;color:var(--mint-d);white-space:nowrap}
+.lc-c{display:flex;gap:8px;flex-wrap:wrap}.lc-c span{font-size:12px;font-weight:500;border-radius:999px;padding:3px 11px;background:var(--mint-50);color:var(--mint-d)}.lc-c span.k{background:#EAE9E4;color:#555}
+.lc-m{display:block;width:100%;text-align:center;background:none;border:1.5px dashed var(--border-s);border-radius:16px;padding:16px;font:inherit;font-size:14px;color:var(--ink-50);cursor:pointer}.lc-m:hover{border-color:var(--ink);color:var(--ink)}
+/* agent */
+.ag{padding:0;overflow:hidden}
+.ag-top{display:flex;gap:24px;align-items:center;padding:30px 32px;background:radial-gradient(70% 140% at 100% 0%,#D7F26B88 0%,transparent 60%),radial-gradient(60% 120% at 0% 100%,#FFB84D55 0%,transparent 60%),var(--mint-50);border-bottom:1px solid #CFEAE5}
+.ag-ic{position:relative;width:88px;height:88px;border-radius:26px;background:var(--mint);border:1.5px solid var(--ink);box-shadow:4px 5px 0 var(--ink);display:grid;place-items:center;flex-shrink:0}
+.ag-ic svg{width:40px;height:40px;stroke:#06231e;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;animation:agvib 1.8s ease-in-out infinite;transform-origin:50% 60%}
+.ag-ic i{position:absolute;inset:-2px;border-radius:28px;border:2px solid var(--mint);opacity:0;animation:agring 2.4s ease-out infinite}.ag-ic i:nth-child(2){animation-delay:1.2s}
+@keyframes agvib{0%,55%,100%{transform:rotate(0)}6%{transform:rotate(-14deg)}12%{transform:rotate(12deg)}18%{transform:rotate(-12deg)}24%{transform:rotate(10deg)}30%{transform:rotate(-8deg)}36%{transform:rotate(6deg)}42%{transform:rotate(0)}}
+@keyframes agring{0%{transform:scale(1);opacity:.8}100%{transform:scale(1.5);opacity:0}}
+.ag-top .nm{background:transparent}
+.ag-b{padding:26px 32px 30px;display:flex;flex-direction:column;gap:24px}
+.seg2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.seg2 button{font:inherit;font-size:14px;padding:12px 14px;border-radius:12px;border:1.5px solid var(--border);background:var(--panel);cursor:pointer;text-align:left;color:var(--ink)}
+.seg2 button b{display:block;font-weight:600}.seg2 button small{color:var(--ink-50);font-size:12.5px}.seg2 button.on{border-color:var(--mint);background:var(--mint-50)}
+/* voice picker */
+.vp{position:relative;flex:1;min-width:0}
+.vp-b{display:flex;align-items:center;gap:12px;width:100%;height:60px;padding:0 16px 0 10px;border:1.5px solid var(--border);border-radius:14px;background:var(--panel);font:inherit;cursor:pointer;text-align:left;color:var(--ink)}
+.vp-b[aria-expanded=true]{border-color:var(--ink)}.vp-b>svg{margin-left:auto;transform:rotate(90deg);color:var(--ink-50)}
+.vp-av{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:600;font-size:15px;flex-shrink:0}
+.vp-t b,.vp-i b{display:block;font-size:15px;font-weight:600;line-height:1.2}.vp-t small,.vp-i small{display:block;font-size:11.5px;letter-spacing:.08em;color:var(--ink-50);font-weight:500;margin-top:2px}
+.vp-m{position:absolute;z-index:20;left:0;right:0;top:66px;background:var(--panel);border:1.5px solid var(--ink);border-radius:16px;box-shadow:0 18px 40px -18px rgba(0,0,0,.35);padding:12px;animation:fadein .15s ease both}
+.vp-f{display:flex;gap:8px;margin-bottom:10px}.vp-f button{font:inherit;font-size:13px;font-weight:500;border:1.5px solid var(--border);background:var(--panel);border-radius:999px;padding:5px 14px;cursor:pointer;color:var(--ink)}.vp-f button.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.vp-l{display:flex;flex-direction:column;gap:4px;max-height:300px;overflow:auto}
+.vp-i{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;font:inherit;color:var(--ink);background:none;border:1.5px solid transparent;border-radius:12px;padding:10px;cursor:pointer}.vp-i:hover{background:var(--canvas)}.vp-i.on{background:var(--mint-50);border-color:var(--mint)}
+.vp-i em{display:block;font-style:normal;font-size:13px;color:var(--ink-50);margin-top:3px}
 </style>'''
 
 NEW_VIEWS = r'''
@@ -90,25 +135,44 @@ function faqSync(){TS.set(x=>{x.d.faqs=S.o.faqs.map(f=>f.slice())})}
 function faqSet(i,j,v){S.o.faqs[i][j]=v;faqSync()}
 function faqDel(i){S.o.faqs.splice(i,1);faqSync();render()}
 function faqAdd(c){S.o.faqs.push(['','',c||'general']);faqSync();render()}
-/* 03 · set up: Reservations and Ordering */
-const agentName=()=>TS.get().d.agent.name;
-VIEWS.services=()=>({body:`<div class="body fade">${head('What should your agent handle?')}
- <div class="ts-stk">${TS.variant==='A'?TS.list({toggle:true,go:false}):TS.pick()}</div></div>`,
- foot:footer({next:'Open dashboard'})});
-/* 04 · meet your agent: we created one for you */
-function onName(v){S.agent.name=v.trim()||'Emma';const sq=$('#sq');if(sq)sq.textContent=S.agent.name[0];if(!S.agent.greet){const g=$('#gr');if(g)g.value=greet()}}
+/* search complete: what we found, one card */
+const _res=VIEWS.research;
+VIEWS.research=()=>{if(S.rs<RS.length)return _res();const o=S.o,d=S.d,F=[['Brand name',d.brand],['Cuisine',d.cuisine],['Country',d.country],['Description',d.desc]];
+ return{body:`<div class="body fade">${head('Here’s what I found.')}
+ <div class="sec card sc"><div class="sc-h"><div><span class="sc-e">Search complete</span><div class="sc-n">${esc(d.brand)}</div></div><button class="lnk" onclick="go(0)">← Search again</button></div>
+ ${F.map(f=>`<div class="sc-r"><label>${f[0]}</label><span>${esc(f[1])}</span><em>✓ Found</em></div>`).join('')}
+ <div class="sc-f">${OUTLETS.length} locations · ${o.faqs.length} FAQs found</div></div></div>`,foot:footer({next:'Continue'})}};
+/* 02 · pick the outlet you are setting up */
+VIEWS.locate=()=>({body:`<div class="body fade">${head('Choose the outlet you’re setting up.')}
+ <div class="sec"><div class="lc-h"><span class="cap">Locations</span><b>Pick the one you’re setting up</b><span class="lc-n">${OUTLETS.length} found</span></div>
+ ${OUTLETS.map(o=>`<button class="lc ${S.o&&S.o.id===o.id?'on':''}" onclick="pickLoc('${o.id}')"><div class="lc-t"><div><b>${esc(o.short||o.name)} · ${esc(o.area.split(',')[0])}</b><br><small>${esc(o.addr)}</small></div><span class="lc-go">Review outlet →</span></div>
+  <div class="lc-c"><span>Hours found</span><span>${o.faqs.length} FAQs · ${o.faqs.filter(f=>f[2]!=='general').length} local</span><span>Phone found</span><span class="k">${esc(o.rating)}</span></div></button>`).join('')}
+ <button class="lc-m" onclick="manual()">None of these — I’ll enter my location manually</button></div></div>`});
+function pickLoc(id){S.o=OUTLETS.find(o=>o.id===id);loadOutlet();next()}
+/* 04 · meet your agent */
+const VGRAD=['linear-gradient(135deg,#4FC2B4,#1F6E62)','linear-gradient(135deg,#FFB84D,#FF8F7A)','linear-gradient(135deg,#8B7CF6,#5B43B5)','linear-gradient(135deg,#FF8F7A,#C2477A)','linear-gradient(135deg,#5ED3F3,#2A5C85)'];
+const vAv=v=>`<span class="vp-av" style="background:${VGRAD[VOICES.indexOf(v)%VGRAD.length]}">${esc(v.n[0])}</span>`;
+function onName(v){S.agent.name=v.trim()||'Emma';if(!S.agent.greet){const g=$('#gr');if(g)g.value=greet()}}
 function speak(){const v=voice();S.play=true;const p=$('#pl');if(p)p.classList.add('on');
  try{if(window.speechSynthesis){speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(greet());u.pitch=v.pitch;u.rate=v.rate;u.onend=()=>{S.play=false;const q=$('#pl');if(q)q.classList.remove('on')};speechSynthesis.speak(u);}}catch(e){}
  setTimeout(()=>{S.play=false;const q=$('#pl');if(q)q.classList.remove('on')},4200)}
 function agSync(){TS.set(x=>{x.d.agent.name=S.agent.name;x.d.agent.voice=S.agent.voice;x.d.agent.greet=S.agent.greet})}
 function onName2(v){onName(v);agSync()}
-VIEWS.agent=()=>{const A=S.agent,n=A.name,caps=CAPS.filter(c=>!['create','avail','cancel'].includes(c[0])||TS.sel('res'));
+function vpPick(id){S.agent.voice=id;S.vo=false;agSync();render();speak()}
+const vpHTML=()=>{const cur=VOICES.find(v=>v.id===S.agent.voice)||VOICES[0],f=S.vf||'all',list=VOICES.filter(v=>f==='all'||v.g.toLowerCase()===f);
+ return`<div class="vp"><button class="vp-b" onclick="S.vo=!S.vo;render()" aria-expanded="${!!S.vo}" aria-haspopup="listbox">${vAv(cur)}<span class="vp-t"><b>${esc(cur.n)}</b><small>${esc(cur.t.toUpperCase())}</small></span>${ic('chev',16)}</button>
+ ${S.vo?`<div class="vp-m" role="listbox"><div class="vp-f">${[['all','All voices'],['female','Female'],['male','Male']].map(x=>`<button class="${f===x[0]?'on':''}" onclick="S.vf='${x[0]}';render()">${x[1]}</button>`).join('')}</div><div class="vp-l">${list.map(v=>`<button class="vp-i ${v.id===S.agent.voice?'on':''}" role="option" onclick="vpPick('${v.id}')">${vAv(v)}<span><b>${esc(v.n)}</b><small>${esc(v.t.toUpperCase())}</small><em>${esc(v.d)}</em></span></button>`).join('')}</div></div>`:''}</div>`};
+VIEWS.agent=()=>{const A=S.agent,n=A.name,fb=A.fb||'staff';
  return{body:`<div class="body fade">${head(`Meet ${esc(n)}.`,'We’ve created an agent for you. Take a listen and change anything.')}
- <div class="sec card pad">
-  <div class="host"><div class="sq" id="sq">${esc(n[0]||'?')}</div><div style="flex:1;min-width:0"><span class="cap">Your agent</span><input class="nm" id="nm" value="${esc(n)}" aria-label="Agent name" oninput="onName2(this.value)"/></div></div>
-  <div class="field" style="margin-top:26px"><span>Voice</span><div class="vrow"><select class="sel" onchange="S.agent.voice=this.value;agSync();speak()">${VOICES.map(v=>`<option value="${v.id}" ${A.voice===v.id?'selected':''}>${v.n} · ${v.t}</option>`).join('')}</select><button class="play ${S.play?'on':''}" id="pl" onclick="speak()" aria-label="Play greeting">${ic('play',16)}<span class="wave"><s></s><s></s><s></s><s></s></span></button></div></div>
-  <label class="field" style="margin-top:22px"><span>Greeting</span><textarea class="ta" id="gr" rows="3" oninput="S.agent.greet=this.value;agSync()">${esc(greet())}</textarea></label></div>
- <div class="sec card pad"><div class="cap cardh">What ${esc(n)} can do</div>${caps.map(([k,t,d])=>`<div class="tg"><div><b>${t}</b><span>${typeof d==='function'?d(esc(n)):d}</span></div><button class="sw" role="switch" aria-checked="${!!S.caps[k]}" aria-label="${t}" onclick="S.caps['${k}']^=1;this.setAttribute('aria-checked',!!S.caps['${k}'])"></button></div>`).join('')}</div></div>`,foot:footer({next:'Continue'})}};
+ <div class="sec card ag"><div class="ag-top"><div class="ag-ic" aria-hidden="true"><i></i><i></i><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div><div style="flex:1;min-width:0"><span class="cap">Your agent</span><input class="nm" id="nm" value="${esc(n)}" aria-label="Agent name" oninput="onName2(this.value)"/></div></div>
+  <div class="ag-b"><div class="field"><span>Voice</span><div class="vrow">${vpHTML()}<button class="play ${S.play?'on':''}" id="pl" onclick="speak()" aria-label="Play greeting">${ic('play',16)}<span class="wave"><s></s><s></s><s></s><s></s></span></button></div></div>
+  <label class="field"><span>Greeting</span><textarea class="ta" id="gr" rows="3" oninput="S.agent.greet=this.value;agSync()">${esc(greet())}</textarea></label>
+  <div class="field"><span>If a caller needs a person</span><div class="seg2"><button class="${fb==='staff'?'on':''}" onclick="S.agent.fb='staff';render()"><b>Transfer to staff</b><small>When the restaurant is open</small></button><button class="${fb==='msg'?'on':''}" onclick="S.agent.fb='msg';render()"><b>Take a message</b><small>Always, even when open</small></button></div></div></div></div></div>`,foot:footer({next:'Continue'})}};
+/* 03 · set up: Reservations and Ordering */
+const agentName=()=>TS.get().d.agent.name;
+VIEWS.services=()=>({body:`<div class="body fade">${head('What should your agent handle?')}
+ <div class="ts-stk">${TS.variant==='A'?TS.list({toggle:true,go:false}):TS.pick()}</div></div>`,
+ foot:footer({next:'Open dashboard'})});
 /* 05 · go live */
 function openDash(){try{parent.postMessage({tringg:'handoff'},'*')}catch(e){}}
 VIEWS.live=()=>{const N='+1 (312) 555-0147',A=TS.variant==='A';
@@ -150,11 +214,13 @@ const OUTLETS=[
     t = must(t, "<b>${esc(o.viaUrl?'Read '+o.viaUrl:o.name)}</b><small>${esc(o.viaUrl?'Pull name, hours and menu from this site':o.addr)}</small></button>`).join('')+'</div>'", "<b>${esc(o.viaUrl?'Read '+o.viaUrl:o.name)}</b><small>${esc(o.viaUrl?'Pull name, hours and menu from this site':o.area+' · '+o.addr)}</small></button>`).join('')+(m[0]&&!m[0].viaUrl?`<div class=\"sug-or\">Or search by website</div><button class=\"sg\" onclick=\"pickSite()\"><b>${esc(m[0].site)}</b><small>Pull name, hours and menu from this site</small></button>`:'')+'</div>'")
     t = must(t, "function pickFirst(){", "function pickSite(){const o=OUTLETS[0];S.o={...o,viaUrl:o.site};loadOutlet();next()}\nfunction pickFirst(){")
     t = must(t, "agent:{voice:'shubh',name:'Novi',greet:''}", "agent:{voice:'allie',name:'Emma',greet:''}")
-    t = must(t, "{id:'allie',n:'Agent',t:'Female · English'", "{id:'allie',n:'Ava',t:'Female · English'")
+    t = cut(t, "const VOICES=[", "const NOTICE", VOICES_JS)
+    t = must(t, "function rsPaint(){const done=S.rs>=RS.length,card=$('#rcard');if(!card)return;", "function rsPaint(){const done=S.rs>=RS.length,card=$('#rcard');if(!card)return;if(done){render();return}")
+    t = must(t, "S.i=2;S.fresh=true;S.edit={brand:true,hours:true}", "S.i=STEPS.indexOf('verify');S.fresh=true;S.edit={brand:true,hours:true}")
     t = must(t, "const next=()=>go(S.i+1),back=()=>go(S.i-1);", "const next=()=>{if(STEPS[S.i]==='services'){openDash();return}go(S.i+1)},back=()=>go(S.i-1);")
     t = must(t, "const GROUPS=['Discover','Verify','Services','Meet your agent','Review','Go live'];", "const GROUPS=['Find','Verify','Agent','Set up'];")
-    t = must(t, "const STEPS=['find','research','verify','rules','voice','review','live'];", "const STEPS=['find','research','verify','agent','services'];")
-    t = must(t, "const GI={find:0,research:0,verify:1,rules:2,voice:3,review:4,live:5};", "const GI={find:0,research:0,verify:1,agent:2,services:3};")
+    t = must(t, "const STEPS=['find','research','verify','rules','voice','review','live'];", "const STEPS=['find','research','locate','verify','agent','services'];")
+    t = must(t, "const GI={find:0,research:0,verify:1,rules:2,voice:3,review:4,live:5};", "const GI={find:0,research:0,locate:1,verify:1,agent:2,services:3};")
     t = must(t, "const head=(t,s)=>`${chip()}<h1", "const head=(t,s)=>`<h1")
     t = must(t, " $('#bar').style.width=(id==='live'?100:(GI[id]+(id==='research'?.6:.5))/6*100)+'%';\n", "")
     t = must(t, '<header class="hdr"><div class="logo">Tringg</div></header>', '<header class="hdr"><div class="logo">Tringg</div>${stepper()}<span></span></header>')
@@ -194,15 +260,15 @@ OVERVIEW_FRESH = r'''function vOverviewFresh(){const mo=DB.mods,G=h=>`<div class
   return `<div class="scroll"><div class="page"><div class="lbl">${S.outlet==='all'?'All outlets':esc(ON(S.outlet).name)}</div>
    <div class="stats">${T('cal','ic-mint','Today’s bookings','res')}${T('bagL','ic-mint','Orders today','ord')}${T('clock','ic-coral','Pending now')}${T('phoneL','ic-grey','Calls today')}</div>
    <div class="ov-grid"><div class="col"><div class="card"><div class="card-h"><div class="h2">Pending requests</div></div><div class="card-b"><div class="soft-empty">No pending requests</div></div></div></div>
-   <div class="col"><div class="card agent"><div class="agent-h"><div class="agent-av">${BRAND.agent[0]}</div><div><div class="agent-n">${esc(BRAND.agent)}</div><div class="agent-s">${['Enquiries',mo.res?'Reservation':null,mo.ord?'Ordering':null].filter(Boolean).join(' · ')}</div></div><span class="lvp">${pill('p-grey','Not live')}</span></div>
+   <div class="col"><div class="card agent"><div class="agent-h"><div class="agent-av">${BRAND.agent[0]}</div><div><div class="agent-n">${esc(BRAND.agent)}</div><div class="agent-s">${['Enquiries',mo.res?'Reservation':null,mo.ord?'Ordering':null].filter(Boolean).join(' · ')}</div></div></div>
     <div class="agent-stats"><div><div class="v">0</div><div class="l">Calls today</div></div><div><div class="v">0</div><div class="l">Avg duration</div></div><div><div class="v">0%</div><div class="l">Success rate</div></div></div></div>
     <div class="card"><div class="card-h"><div class="h3">Recent calls</div></div><div class="card-b" style="padding-top:8px"><div class="muted small">No calls yet</div></div></div></div></div></div></div>`;}
 '''
 
 BOOT = r'''/* setup prototypes: one location, empty to start, driven by the shared setup state */
 (function(){
- const PRIMARY='wl';ROLE_OUT.owner=[PRIMARY];SC.wl=.4;let FULL=false;
- function initFresh(){FULL=false;S.setupCollapsed=false;ROLE_OUT.owner=[PRIMARY];applyRole(true);loadScenario('off');applyRole();TS.cfg.outlets=1;
+ const PRIMARY='wl';const FRESH_OUT=['wl','wp','nv'];ROLE_OUT.owner=FRESH_OUT;SC.wl=.4;let FULL=false;TS.outletSet=id=>FULL||id===PRIMARY;TS.isFull=()=>FULL;
+ function initFresh(){FULL=false;S.setupCollapsed=false;ROLE_OUT.owner=FRESH_OUT;applyRole(true);loadScenario('off');applyRole();TS.cfg.outlets=1;
   DB.k='setup';SCEN.setup={t:'Setup',h:''};DB.res=[];DB.calls=[];DB.orders=[];DB.held=[];DB.taxes=[];S.res.sel=null;S.route='overview';S.outlet=PRIMARY;S.ordOutlet=PRIMARY;S.dd=false;}
  TS.nav=r=>go(r);TS.cfg.outlets=1;
  TS.host.render=()=>render();TS.host.collapse=()=>{S.setupCollapsed=true;render();};TS.host.expand=()=>{S.setupCollapsed=false;S.growSetup=true;go('overview');};
@@ -224,7 +290,7 @@ BOOT = r'''/* setup prototypes: one location, empty to start, driven by the shar
  window.resetDash=()=>{TS.reset();initFresh();applyTS();render();};
  /* one state with everything set up and data for reservations and orders */
  window.loadReady=()=>{FULL=true;TS.fill();ROLE_OUT.owner=null;applyRole(true);loadScenario('live');applyRole();DB.k='live';
-  BRAND.agent=TS.get().d.agent.name;if(DB.agents[0])DB.agents[0].n=BRAND.agent;TS.cfg.outlets=OUTLETS.length;S.outlet='all';S.route='overview';S.dd=false;S.res.sel='R-311';S.orders.sel=null;S.orders.tab='pending';render();};
+  BRAND.agent=TS.get().d.agent.name;if(DB.agents[0])DB.agents[0].n=BRAND.agent;TS.cfg.outlets=OUTLETS.length;S.outlet=PRIMARY;S.route='overview';S.dd=false;S.res.sel='R-311';S.orders.sel=null;S.orders.tab='pending';render();};
  initFresh();
  TS.on(()=>{applyTS();render();});
  window.addEventListener('message',e=>{const m=e.data;if(!m||!m.tringg)return;
@@ -286,6 +352,8 @@ def build_dashboard(v, w='1'):
     a = t.index('<div class="proto"><div class="proto-l">Prototype state</div>')
     b = t.index('Subscribed</button></div></div>', a) + len('Subscribed</button></div></div>')
     t = t[:a] + PROTO_PANEL + t[b:]
+    t = must(t, "${DB.svc[x.id].set!==true?'<span class=\"odd-new\">New</span>':''}", "${TS.outletSet(x.id)?'':'<span class=\"odd-new\">Set up</span>'}")
+    t = must(t, '</style>', '.btn-dark{background:#4FC2B4;color:#06231e;border:1.5px solid #111}.btn-dark:hover:not(:disabled){box-shadow:3px 4px 0 #111}.odd-new{background:#DDF2EE;color:#1F6E62}</style>')
     # modules: a service that is off offers to add itself; one that isn't set up shows its steps in place
     t = must(t, '''onclick="goSet('mods')">Turn on</button>''', '''onclick="TS.add('${m}')">Add ${m==='ord'?'ordering':'reservations'}</button>''')
     t = must(t, "const VIEWS={overview:vOverview,reservations:modG(gate(vReservations,'Table requests and bookings'),'res'),orders:modG(gate(vOrders,'Phone orders'),'ord'),",
@@ -294,9 +362,12 @@ def build_dashboard(v, w='1'):
     t = must(t, "function vOverview(){\n  if(!DB.subscribed)return vOverviewFresh();", "function vOverview0(){")
     t = cut(t, 'function vOverviewFresh(){', 'function vOverview0(){', OVERVIEW_FRESH + '''function vOverview(){
   const first=(me().n||'').split(' ')[0];TS.cfg.user=first||'there';
-  const lbl=`<div class="lbl">${S.outlet==='all'?'All outlets':esc(ON(S.outlet).name)}</div>`;
-  if(TS.totals().done===0&&!TS.allDone())return `<div class="scroll"><div class="page">${lbl}${TS.overviewTop()}</div></div>`;
-  const h=DB.subscribed?vOverview0():vOverviewFresh();return h.replace(/(<div class="lbl">[^<]*<\\/div>)/,m=>m+TS.overviewTop());}
+  const FULL=TS.isFull(),PRIMARY='wl';
+  const other=!FULL&&S.outlet!==PRIMARY,sp=S.outlet==='all'?'Only '+esc(ON(PRIMARY).short)+' is set up. Set up the other outlets to take calls there.':esc(ON(S.outlet).name)+' isn’t set up yet.';
+  const stripe=other?`<div class="ts-stripe"><span><b>${S.outlet==='all'?'1 of '+OUTLETS.length+' outlets set up':'Not set up'}</b><br><small>${sp}</small></span><button class="ts-btn sm" onclick="${S.outlet==='all'?'':"pickOutlet('"+PRIMARY+"');"}toast('Setup for another outlet starts from the same steps')">Set up ${S.outlet==='all'?'an outlet':'this outlet'}</button></div>`:'';
+  if(other&&S.outlet!=='all')return `<div class="scroll"><div class="page">${stripe}${vOverviewFresh().replace(/<div class="lbl">[^<]*<\\/div>/,'').replace('<div class="scroll"><div class="page">','')}`;
+  if(TS.totals().done===0&&!TS.allDone())return `<div class="scroll"><div class="page">${stripe}${TS.overviewTop()}</div></div>`;
+  const h=DB.subscribed?vOverview0():vOverviewFresh();return h.replace(/<div class="lbl">[^<]*<\\/div>/,()=>stripe+TS.overviewTop());}
 function ovEnhance(){document.querySelectorAll('#view .ov-grid .card:not(.agent)').forEach(c=>{const h=c.querySelector('.card-h');if(!h||h.querySelector('.ov-t'))return;const k=(h.textContent||'').trim().slice(0,24);if(S.ovC&&S.ovC[k])c.classList.add('ov-c');const b=document.createElement('button');b.className='ov-t';b.setAttribute('aria-label','Collapse');b.innerHTML='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 15 6-6 6 6"/></svg>';b.onclick=e=>{e.stopPropagation();const on=c.classList.toggle('ov-c');S.ovC=S.ovC||{};S.ovC[k]=on;};h.appendChild(b);});}
 ''')
     t = must(t, '''onclick="goSet('mods')">Turn on ordering</button>''', '''onclick="TS.add('ord')">Turn on ordering</button>''')
