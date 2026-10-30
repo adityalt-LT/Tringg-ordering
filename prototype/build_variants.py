@@ -187,11 +187,16 @@ VIEWS.agent=()=>{const A=S.agent,n=A.name,fb=A.fb||'staff';
   <div class="ag-b"><div class="field"><span>Voice</span><div class="vrow">${vpHTML()}<button class="play ${S.play?'on':''}" id="pl" onclick="speak()" aria-label="Play greeting">${ic('play',16)}<span class="wave"><s></s><s></s><s></s><s></s></span></button></div></div>
   <label class="field"><span>Greeting</span><textarea class="ta" id="gr" rows="3" oninput="S.agent.greet=this.value;agSync()">${esc(greet())}</textarea></label>
   <div class="field"><span>If a caller needs a person</span><div class="seg2"><button class="${fb==='staff'?'on':''}" onclick="S.agent.fb='staff';render()"><b>Transfer to staff</b><small>When the restaurant is open</small></button><button class="${fb==='msg'?'on':''}" onclick="S.agent.fb='msg';render()"><b>Take a message</b><small>Always, even when open</small></button></div></div></div></div></div>`,foot:footer({next:'Continue'})}};
+/* after the services: the outlet is created, services activate the agent */
+VIEWS.done=()=>{const n=TS.get().d.agent.name,o=TS.get().d.outlet||{};
+ return{body:`<div class="body fade">${head('Your outlet is ready.')}
+ <div class="sec card pad" style="display:flex;gap:22px;align-items:center"><div class="ag-ic" aria-hidden="true" style="width:72px;height:72px;border-radius:22px"><i></i><img src="__TICON__" alt="" style="height:36px"/></div>
+  <div><b style="font-size:17px">${esc(o.name||S.d.brand)}${o.area?' · '+esc(o.area.split(',')[0]):''}</b><p style="margin:6px 0 0;color:var(--ink-50);font-size:15px">We’ve created your outlet. Set up services to activate ${esc(n)} on your restaurant.</p></div></div></div>`,foot:footer({next:'Dashboard'})}};
 /* 03 · set up: Reservations and Ordering */
 const agentName=()=>TS.get().d.agent.name;
 VIEWS.services=()=>({body:`<div class="body fade">${head('What should your agent handle?')}
  <div class="ts-stk">${TS.variant==='A'?TS.list({toggle:true,go:false}):TS.pick()}</div></div>`,
- foot:footer({next:'Open dashboard'})});
+ foot:footer({next:'__SVCNEXT__'})});
 /* 05 · go live */
 function openDash(){try{parent.postMessage({tringg:'handoff'},'*')}catch(e){}}
 VIEWS.live=()=>{const N='+1 (312) 555-0147',A=TS.variant==='A';
@@ -237,14 +242,14 @@ const OUTLETS=[
     t = must(t, "function rsPaint(){const done=S.rs>=RS.length,card=$('#rcard');if(!card)return;", "function rsPaint(){const done=S.rs>=RS.length,card=$('#rcard');if(!card)return;if(done){render();return}")
     t = must(t, "S.i=2;S.fresh=true;S.edit={brand:true,hours:true}", "S.i=STEPS.indexOf('verify');S.fresh=true;S.edit={brand:true,hours:true}")
     t = must(t, " S.fresh=false;\n if(fresh)typeHeading()", " S.fresh=false;if(!fresh)document.querySelectorAll('.fade').forEach(x=>x.classList.remove('fade'));\n if(fresh)typeHeading()")
-    t = must(t, "const next=()=>go(S.i+1),back=()=>go(S.i-1);", "const next=()=>{if(STEPS[S.i]==='services'){openDash();return}go(S.i+1)},back=()=>go(S.i-1);")
+    t = must(t, "const next=()=>go(S.i+1),back=()=>go(S.i-1);", "const next=()=>{if(STEPS[S.i]==='__LASTID__'){openDash();return}go(S.i+1)},back=()=>go(S.i-1);")
     t = must(t, "const GROUPS=['Discover','Verify','Services','Meet your agent','Review','Go live'];", "const GROUPS=['Find','Verify','Agent','Set up'];")
-    t = must(t, "const STEPS=['find','research','verify','rules','voice','review','live'];", "const STEPS=['find','research','locate','verify','agent','services'];")
-    t = must(t, "const GI={find:0,research:0,verify:1,rules:2,voice:3,review:4,live:5};", "const GI={find:0,research:0,locate:1,verify:1,agent:2,services:3};")
+    t = must(t, "const STEPS=['find','research','verify','rules','voice','review','live'];", "const STEPS=['find','research','locate','verify','agent','services'].concat(__LAST__);")
+    t = must(t, "const GI={find:0,research:0,verify:1,rules:2,voice:3,review:4,live:5};", "const GI={find:0,research:0,locate:1,verify:1,agent:2,services:3,done:4};")
     t = must(t, "const head=(t,s)=>`${chip()}<h1", "const head=(t,s)=>`<h1")
     t = must(t, " $('#bar').style.width=(id==='live'?100:(GI[id]+(id==='research'?.6:.5))/6*100)+'%';\n", "")
     t = must(t, '<header class="hdr"><div class="logo">Tringg</div></header>', '<header class="hdr"><div class="logo">Tringg</div>${stepper()}<span></span></header>')
-    t = must(t, "const chip=()=>", '''const stepper=()=>{const g=GI[STEPS[S.i]];return `<nav class="stp" aria-label="Progress">${GROUPS.map((n,k)=>`${k?`<span class="stp-l ${k<=g?'done':''}"></span>`:''}<span class="stp-s ${k<g?'done':k===g?'on':''}" ${k===g?'aria-current="step"':''}><span class="n">${k<g?ic('check',13):k+1}</span>${n}</span>`).join('')}</nav><span class="stp-m">Step ${g+1} of ${GROUPS.length} · ${GROUPS[g]}</span>`};
+    t = must(t, "const chip=()=>", '''const stepper=()=>{const g=GI[STEPS[S.i]];return `<nav class="stp" aria-label="Progress">${GROUPS.map((n,k)=>`${k?`<span class="stp-l ${k<=g?'done':''}"></span>`:''}<span class="stp-s ${k<g?'done':k===g?'on':''}" ${k===g?'aria-current="step"':''}><span class="n">${k<g?ic('check',13):k+1}</span>${n}</span>`).join('')}</nav><span class="stp-m">Step ${Math.min(g+1,GROUPS.length)} of ${GROUPS.length} · ${GROUPS[Math.min(g,GROUPS.length-1)]}</span>`};
 const chip=()=>''')
     # reading your listings
     t = must(t, "${head(done?'Here’s what I learned.':'Teaching your host…',done?'You’ll confirm each detail next. Nothing goes live until you say so.':'Learning from public listings so your first call sounds like staff.')}", "${head(done?'Here’s what I found.':'Reading your listings…')}")
@@ -267,6 +272,8 @@ const chip=()=>''')
     t = must(t, "function tog(k){S.edit[k]=!S.edit[k];render()}", "function tog(k){if(k==='faq'&&S.edit.faq){S.o.faqs=S.o.faqs.filter(f=>f[0].trim()&&f[1].trim());faqSync()}S.edit[k]=!S.edit[k];render()}")
     t = must(t, "days:[1,1,1,1,1,1,1]});S.rs=0}", "days:[1,1,1,1,1,1,1]});S.rs=0;TS.set(x=>{x.d.brand=o.short||o.name;x.d.outlet={name:o.short||o.name,area:o.area,addr:o.addr};x.d.faqs=(o.faqs||[]).map(f=>f.slice())})}")
     t = cut(t, '/* 03 · reservation: the real six rules */', 'function copyNum(b)', NEW_VIEWS)
+    c1 = (v, w) == ('C', '1')
+    t = t.replace('__LAST__', "['done']" if c1 else '[]').replace('__LASTID__', 'done' if c1 else 'services').replace('__SVCNEXT__', 'Continue' if c1 else 'Open dashboard')
     t = t.replace('__PHOTOS__', json.dumps(PHOTOS))
     t = t.replace('__HERO__', HERO).replace('__TICON__', TICON)
     return t
