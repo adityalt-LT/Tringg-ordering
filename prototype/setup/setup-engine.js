@@ -68,6 +68,38 @@ var CSS=`
 .ts-gobtn{background:var(--tk-ink);color:#fff!important;border-radius:999px;padding:5px 14px}
 .ts-row.next{background:var(--tk-mint-50)}.ts-row.next:hover{background:var(--tk-mint-50)}
 .ts-gs{margin-top:4px}.ts-gsh{font-size:14.5px;margin:0 0 6px;color:var(--tk-ink)}
+.ts-wh{margin:2px 0 20px}.ts-wh h1{font-size:30px;font-weight:600;letter-spacing:-.9px;margin:0;line-height:1.2}.ts-wh p{color:var(--tk-50);margin:4px 0 0;font-size:15px}
+.ts-hero{position:relative;overflow:hidden;border-radius:24px;padding:30px 34px;margin-bottom:18px;color:#fff;display:flex;gap:24px;align-items:center;background:radial-gradient(110% 150% at 100% 0%,#1F6E62 0%,rgba(31,110,98,0) 58%),linear-gradient(135deg,#111 0%,#1a1a1a 60%,#12342f 100%);font-family:"Poppins",system-ui,sans-serif}
+.ts-hero-e{font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#7FE8D8;margin-bottom:6px}.ts-hero h2{font-size:28px;font-weight:600;letter-spacing:-.8px;margin:0;line-height:1.2}.ts-hero p{margin:6px 0 0;color:rgba(255,255,255,.78);font-size:14.5px;max-width:520px}
+.ts-hero-c{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}.ts-hero-c span{font-size:12.5px;border:1px solid rgba(255,255,255,.35);border-radius:999px;padding:4px 12px;color:rgba(255,255,255,.9)}
+.ts-hero-b{background:#fff;color:#111;border-color:#fff;flex-shrink:0}.ts-hero-b:hover:not(:disabled){box-shadow:4px 5px 0 #4FC2B4,4px 5px 0 1.5px #fff}
+.ts-gs2{background:#fff;border:1.5px solid var(--tk-bd);border-radius:22px;margin-bottom:20px;font-family:"Poppins",system-ui,sans-serif;color:var(--tk-ink);font-size:14px;line-height:1.5}
+.ts-gs2-h{display:flex;align-items:center;gap:16px;padding:22px 28px;cursor:pointer}.ts-gs2-t{flex:1;min-width:0}.ts-gs2-t h2{font-size:20px;font-weight:600;letter-spacing:-.4px;margin:0}
+.ts-gs2-p{display:flex;align-items:center;gap:12px;margin-top:8px;max-width:420px}.ts-gs2-p .ts-bar{flex:1}.ts-gs2-p span{font-size:12.5px;color:var(--tk-50);white-space:nowrap}
+.ts-gs2-n{display:none}.ts-gs2.closed .ts-gs2-n{display:inline-flex}.ts-gs2 #ts-gs2-x svg{transition:transform .3s}.ts-gs2.closed #ts-gs2-x svg{transform:rotate(180deg)}
+.ts-gs2-b{display:grid;grid-template-rows:1fr;transition:grid-template-rows .35s ease}.ts-gs2-b>div{overflow:hidden;min-height:0}.ts-gs2.closed .ts-gs2-b{grid-template-rows:0fr}
+.ts-cols{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:1px solid var(--tk-bd)}
+.ts-col{padding:22px 24px 18px;border-left:1px solid var(--tk-bd);display:flex;flex-direction:column;gap:6px;min-width:0}.ts-col:first-child{border-left:0}
+.ts-col-t{font-size:17px;font-weight:600;display:flex;align-items:center;gap:8px;flex-wrap:wrap}.ts-col-t .num{color:var(--tk-50);font-weight:500}
+.ts-col p{color:var(--tk-50);font-size:13.5px;margin:0;min-height:40px}.ts-col-a{display:flex;align-items:center;gap:10px;margin-top:8px;min-height:34px;flex-wrap:wrap}
+.ts-done2{display:inline-flex;align-items:center;gap:7px;background:var(--tk-mint-50);color:var(--tk-mint-d);font-weight:600;font-size:13px;border-radius:10px;padding:7px 14px}
+.ts-cnt{font-size:12.5px;color:var(--tk-50)}.ts-col-m{margin-top:auto;padding-top:10px;align-self:flex-start;border:0;background:none;font:inherit;font-size:12.5px;font-weight:600;color:var(--tk-50);cursor:pointer;display:inline-flex;gap:4px;align-items:center}.ts-col-m:hover{color:var(--tk-ink)}
+.ts-col.sel{background:var(--tk-sun)}.ts-col.sel .ts-col-m svg{transform:rotate(180deg)}
+.ts-det{background:var(--tk-sun);border-top:1px solid var(--tk-bd);padding:20px 28px 24px;animation:tsup .25s ease both;border-radius:0 0 20px 20px}.ts-det-h{display:flex;align-items:center;gap:14px;margin-bottom:12px}.ts-det-h b{flex:1;font-size:15px}.ts-det-sw{display:inline-flex;align-items:center;gap:10px;font-size:13px;color:var(--tk-50)}
+@media(max-width:1100px){.ts-cols{grid-template-columns:repeat(2,minmax(0,1fr))}.ts-col:nth-child(3){border-left:0}.ts-col:nth-child(n+3){border-top:1px solid var(--tk-bd)}}
+@media(max-width:640px){.ts-cols{grid-template-columns:1fr}.ts-col{border-left:0!important;border-top:1px solid var(--tk-bd)}.ts-col:first-child{border-top:0}.ts-hero{flex-direction:column;align-items:flex-start}}
+.ts-wl-ov{position:fixed;inset:0;z-index:950;background:rgba(17,17,17,.5);display:grid;place-items:center;padding:24px;animation:tsfade .2s ease both}
+.ts-wl{width:min(520px,100%);background:#fff;border-radius:28px;padding:64px 36px 30px;text-align:center;box-shadow:0 30px 80px -20px rgba(0,0,0,.5);animation:tsup .3s cubic-bezier(.2,.8,.2,1) both;font-family:"Poppins",system-ui,sans-serif;color:var(--tk-ink);font-size:14px;line-height:1.5}
+.ts-wl h2{font-size:26px;font-weight:600;letter-spacing:-.8px;margin:0}.ts-wl-s{color:var(--tk-50);margin:4px 0 22px}
+.ts-rd{position:relative;width:88px;height:88px;margin:0 auto 24px}.ts-rd i{position:absolute;inset:0;border-radius:50%;border:2px solid var(--tk-mint);opacity:0;animation:tsrad 2.6s ease-out infinite}.ts-rd i:nth-child(2){animation-delay:.85s}.ts-rd i:nth-child(3){animation-delay:1.7s}
+.ts-rd b{position:absolute;inset:10px;border-radius:50%;background:var(--tk-mint);color:#06231e;display:grid;place-items:center;font-size:32px;font-weight:700;box-shadow:0 0 0 6px rgba(79,194,180,.18)}
+@keyframes tsrad{0%{transform:scale(.8);opacity:.7}100%{transform:scale(2.6);opacity:0}}
+.ts-wl-g{display:grid;grid-template-columns:1fr 1fr;gap:20px;text-align:left;margin-bottom:24px}.ts-wl-g:has(>div:only-child){grid-template-columns:1fr}
+.ts-wl-l{font-size:11.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--tk-50);margin-bottom:8px}.ts-wl ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.ts-wl li{display:flex;gap:10px;align-items:center;font-size:14px}.ts-wl li span{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--tk-bd2);display:grid;place-items:center;flex-shrink:0}.ts-wl li.ok span{background:var(--tk-mint);border-color:var(--tk-mint);color:#06231e}
+@media(max-width:560px){.ts-wl-g{grid-template-columns:1fr}}
+.ov-t{margin-left:auto;border:0;background:none;color:var(--tk-50);cursor:pointer;width:30px;height:30px;border-radius:9px;display:grid;place-items:center}.ov-t:hover{background:var(--tk-sun);color:var(--tk-ink)}.ov-t svg{transition:transform .25s}
+.card.ov-c .ov-t svg{transform:rotate(180deg)}.card.ov-c .card-b{display:none}
 .ts-cpage{min-height:calc(100vh - 150px);display:flex;align-items:center;justify-content:center;position:relative;margin:0 auto;max-width:760px}
 .ts-cpage .ts-skel{position:absolute;inset:0;margin:0}
 .ts-cat2{display:inline-block;font-size:12px;font-weight:600;border-radius:999px;padding:4px 12px;background:#EAE9E4;color:#555}
@@ -181,10 +213,10 @@ TS.nextStep=function(k){var x=STEPS[k].filter(function(x){return !s.done[k+'.'+x
 TS.ready=function(k){return TS.sel(k)&&TS.stat(k).complete;};
 TS.live=function(k){return TS.ready(k)&&act();};
 TS.allDone=function(){return ['enq','res','ord'].every(function(k){return !TS.sel(k)||TS.stat(k).complete;})&&act();};
-TS.totals=function(){var d=0,t=0;['enq','res','ord','go'].forEach(function(k){if(!TS.sel(k))return;var x=TS.stat(k);d+=x.done;t+=x.total;});return{done:d,total:t};};
+TS.totals=function(){var d=0,t=0;['enq','res','ord'].forEach(function(k){if(!TS.sel(k))return;var x=TS.stat(k);d+=x.done;t+=x.total;});t+=1;if(act())d+=1;return{done:d,total:t};};
 TS.toggle=function(k){TS.set(function(x){x.svc[k]=!x.svc[k];});};
 TS.add=function(k){if(!s.svc[k])TS.set(function(x){x.svc[k]=true;});TS.open(k);};
-TS.reset=function(){TS.set(function(x){var f=fresh();Object.keys(x).forEach(function(k){delete x[k];});Object.assign(x,f);});UI.open=false;draw();};
+TS.reset=function(){TS.set(function(x){var f=fresh();Object.keys(x).forEach(function(k){delete x[k];});Object.assign(x,f);});UI.open=false;TS.ov={open:true,sel:null};TS.welcomed=false;TS.closeWelcome&&TS.closeWelcome();draw();};
 TS.fill=function(){TS.set(function(x){x.svc.res=true;x.svc.ord=true;['enq','res','ord','go'].forEach(function(k){STEPS[k].forEach(function(t){x.done[k+'.'+t[0]]=true;});});x.sub=true;x.d.menu={src:'google',n:31};x.d.pay.conn=true;x.d.pay.pick='both';});};
 
 /* ── helpers ── */
@@ -387,4 +419,42 @@ TS.goSummary=function(o){o=o||{};var rows=[['enq','Answers questions about your 
  var okN=[],waitN=[];rows.forEach(function(r){(TS.stat(r[0]).complete?okN:waitN).push(SVC[r[0]].n.toLowerCase());});
  var head=!waitN.length?'Everything is set up. Your agent goes live for all of it.':!okN.length?'Your agent will answer calls using your details. '+waitN.join(' and ')+' start once you finish setup.':'Your agent goes live for '+okN.join(' and ')+'. '+waitN.join(' and ').replace(/^./,function(c){return c.toUpperCase();})+' start'+(waitN.length>1?'':'s')+' as soon as you finish setup.';
  return '<div class="ts-gs"><p class="ts-gsh">'+head+'</p>'+rows.map(function(r){var ok=TS.stat(r[0]).complete;return '<div class="ts-cat"><span>'+SVC[r[0]].n+'</span><span>'+(ok?'<span class="ts-pl g">Active</span>':(o.finish?'<button class="ts-link" onclick="TS.open(\''+r[0]+'\')">Finish setup</button>':'<span class="ts-pl a">Finish setup</span>'))+'</span></div>';}).join('')+'</div>';};
+
+/* ───────── Overview (C): welcome note + "Let's get you started" in a row of cards ───────── */
+TS.ov={open:true,sel:null};TS.welcome=window.TS_WELCOME||'1';TS.welcomed=false;TS.cfg.user='there';
+TS.host.render=function(){};
+var COLS=[['enq','Enquiries','Answers questions about your restaurant',"TS.open('enq')"],['res','Reservations','Takes table bookings by phone',"TS.nav('reservations')"],['ord','Ordering','Takes pickup and delivery orders',"TS.nav('orders')"],['go','Go live','Subscribe so the agent answers your calls',"TS.open('go','sub')"]];
+var CHK11=CHK.replace('width="14" height="14"','width="11" height="11"');
+function goChips(){return [['sub','Subscribe']].map(function(x,j){var dn=act();return '<button class="ts-chp '+(dn?'done':'')+'" onclick="TS.open(\'go\',\'sub\')"><span class="n">'+(dn?CHK11:j+1)+'</span>'+x[1]+'</button>';}).join('');}
+function colInfo(k){var on=TS.sel(k),x=k==='go'?{done:act()?1:0,total:1,complete:act(),left:act()?0:1}:TS.stat(k);return {on:on,x:x};}
+TS.nextFn=function(){var k=TS.nextKey();if(!k)return '';var c=COLS.filter(function(c){return c[0]===k;})[0];return c?c[3]:'';};
+var NEXTT={enq:['Review your FAQs','answers from your details. Check the FAQs so they are exact.'],res:['Set up reservations','takes bookings by phone once you add your booking rules.'],ord:['Set up ordering','takes orders once you add your menu, delivery, taxes and payments.'],go:['Go live','answers your calls as soon as you subscribe.']};
+function oneLine(){var n=s.d.agent.name,ok=[],left=0;['enq','res','ord'].forEach(function(k){if(!TS.sel(k))return;if(TS.stat(k).complete)ok.push(SVC[k].n.toLowerCase());});var tt=TS.totals();left=tt.total-tt.done;
+ if(TS.allDone())return n+' is live and answering your calls.';
+ if(!ok.length)return n+' is created. Finish setup and '+n+' starts answering your calls.';
+ return n+' is ready for '+ok.join(' and ')+'. '+left+' step'+(left===1?'':'s')+' left to go live.';}
+TS.welcomeHead=function(){return '<div class="ts-wh"><h1>Welcome, '+esc(TS.cfg.user)+'!</h1><p>'+esc(oneLine())+'</p></div>';};
+TS.hero=function(){var k=TS.nextKey();if(!k)return TS.welcomeHead();var n=s.d.agent.name,tt=TS.totals(),left=tt.total-tt.done,h=NEXTT[k];
+ return '<div class="ts-hero"><div style="flex:1;min-width:0"><div class="ts-hero-e">Welcome, '+esc(TS.cfg.user)+'</div><h2>'+h[0]+'</h2><p>'+esc(n)+' '+h[1]+'</p><div class="ts-hero-c"><span>'+tt.done+' of '+tt.total+' done</span><span>'+left+' step'+(left===1?'':'s')+' left</span></div></div><button class="ts-btn ts-hero-b ts-pulse" onclick="'+TS.nextFn()+'">'+(k==='go'?'Go live':'Continue')+'</button></div>';};
+TS.started=function(){if(TS.allDone())return '';var tt=TS.totals(),nk=TS.nextKey(),sel=TS.ov.sel,open=TS.ov.open;
+ var cols=COLS.map(function(c,i){var k=c[0],ci=colInfo(k),nx=k===nk,x=ci.x,
+  act2=!ci.on?'<span class="ts-pl">Off</span><button class="ts-btn sm line" onclick="TS.add(\''+k+'\')">Add</button>':ci.x.complete?'<span class="ts-done2">'+CHK11+' Completed</span>':'<button class="ts-btn sm '+(nx?'ts-pulse':'line')+'" onclick="'+c[3]+'">'+(k==='go'?'Go live':x.done?'Continue':'Set up')+'</button>'+(x.done&&k!=='go'?'<span class="ts-cnt">'+x.done+' of '+x.total+'</span>':'');
+  return '<div class="ts-col'+(nx?' next':'')+(sel===k?' sel':'')+'"><div class="ts-col-t"><span class="num">'+(i+1)+'.</span>'+c[1]+(nx?'<span class="ts-nb">Next</span>':'')+'</div><p>'+c[2]+'</p><div class="ts-col-a">'+act2+'</div><button class="ts-col-m" onclick="TS.ovSel(\''+k+'\')" aria-expanded="'+(sel===k)+'">Steps<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></button></div>';}).join('');
+ var det='';if(sel){var ci=colInfo(sel),c=COLS.filter(function(c){return c[0]===sel;})[0];
+  det='<div class="ts-det"><div class="ts-det-h"><b>'+c[1]+' steps</b>'+((sel==='res'||sel==='ord')?'<span class="ts-det-sw">Include'+sw(ci.on,"TS.toggle('"+sel+"')",c[1])+'</span>':'')+'</div>'+(ci.on?(sel==='go'?'<div class="ts-chs" style="margin-top:0">'+goChips()+'</div>'+TS.goSummary({finish:true})+'<div class="ts-num" style="margin:16px 0 0"><span class="m">'+NUM+'</span><button class="ts-btn line sm" onclick="TS.copy(this)">Copy</button></div><div style="color:var(--tk-50);font-size:13px;margin-top:8px">Your Tringg number. Ask your network operator to forward your restaurant line to it.</div>':'<div class="ts-chs" style="margin-top:0">'+chips(sel)+'</div>'):'<div style="color:var(--tk-50)">Not included. Switch it on to set it up.</div>')+'</div>';}
+ var nk2=nk?COLS.filter(function(c){return c[0]===nk;})[0]:null;
+ return '<section class="ts-gs2'+(open?'':' closed')+'"><div class="ts-gs2-h" onclick="TS.ovToggle(event)"><div class="ts-gs2-t"><h2>Let’s get you started</h2><div class="ts-gs2-p"><div class="ts-bar"><i style="width:'+(tt.total?tt.done/tt.total*100:0)+'%"></i></div><span>'+tt.done+' of '+tt.total+' steps done</span></div></div>'+(nk2?'<button class="ts-btn sm ts-gs2-n" onclick="event.stopPropagation();'+TS.nextFn()+'">Next: '+nk2[1]+'</button>':'')+'<button class="ts-xb" aria-label="Show or hide" id="ts-gs2-x"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 15 6-6 6 6"/></svg></button></div><div class="ts-gs2-b"><div><div class="ts-cols">'+cols+'</div>'+det+'</div></div></section>';};
+TS.ovToggle=function(e){var el=document.querySelector('.ts-gs2');if(!el)return;el.classList.toggle('closed');TS.ov.open=!el.classList.contains('closed');};
+TS.ovSel=function(k){TS.ov.sel=TS.ov.sel===k?null:k;TS.host.render();};
+TS.overviewTop=function(){var top=TS.welcome==='2'&&!TS.allDone()?TS.hero():TS.welcomeHead();return top+TS.started();};
+/* a dialog for the first visit: what is done, what is left, one button */
+TS.showWelcome=function(){if(document.getElementById('ts-wl'))return;var n=s.d.agent.name,done=['Restaurant details','Agent '+n],todo=[];
+ if(TS.stat('enq').complete)done.push('Enquiries FAQs');else todo.push('Review your FAQs');
+ [['res','Reservations'],['ord','Ordering']].forEach(function(r){if(!TS.sel(r[0]))return;if(TS.stat(r[0]).complete)done.push(r[1]+' setup');else todo.push('Set up '+r[1].toLowerCase());});
+ if(act())done.push('Go live');else todo.push('Go live');
+ var li=function(a,ok){return a.map(function(x){return '<li class="'+(ok?'ok':'')+'"><span>'+(ok?CHK11:'')+'</span>'+esc(x)+'</li>';}).join('');};
+ var d=document.createElement('div');d.id='ts-wl';
+ d.innerHTML='<div class="ts-wl-ov"><div class="ts-wl" role="dialog" aria-label="Welcome"><div class="ts-rd"><i></i><i></i><i></i><b>'+esc(n[0]||'E')+'</b></div><h2>Welcome, '+esc(TS.cfg.user)+'!</h2><p class="ts-wl-s">'+esc(n)+' is created. Here is where things stand.</p><div class="ts-wl-g"><div><div class="ts-wl-l">Done</div><ul>'+li(done,true)+'</ul></div>'+(todo.length?'<div><div class="ts-wl-l">To do</div><ul>'+li(todo,false)+'</ul></div>':'')+'</div><button class="ts-btn ts-pulse" style="width:100%" onclick="TS.closeWelcome()">Let’s go</button></div></div>';
+ document.body.appendChild(d);};
+TS.closeWelcome=function(){var d=document.getElementById('ts-wl');if(d)d.remove();};
 })();

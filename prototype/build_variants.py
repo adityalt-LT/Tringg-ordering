@@ -48,8 +48,8 @@ def cut(text, start, end, new=''):
     return text[:a] + new + text[b:]
 
 
-def engine_tag(v):
-    return f'<script>window.TS_VARIANT="{v}";</script><script>{ENGINE}</script>\n'
+def engine_tag(v, w='1'):
+    return f'<script>window.TS_VARIANT="{v}";window.TS_WELCOME="{w}";</script><script>{ENGINE}</script>\n'
 
 
 # ───────────────────────── onboarding ─────────────────────────
@@ -94,7 +94,7 @@ function faqAdd(c){S.o.faqs.push(['','',c||'general']);faqSync();render()}
 const agentName=()=>TS.get().d.agent.name;
 VIEWS.services=()=>({body:`<div class="body fade">${head('What should your agent handle?')}
  <div class="ts-stk">${TS.variant==='A'?TS.list({toggle:true,go:false}):TS.pick()}</div></div>`,
- foot:footer({next:'Continue'})});
+ foot:footer({next:'Open dashboard'})});
 /* 04 · meet your agent: we created one for you */
 function onName(v){S.agent.name=v.trim()||'Emma';const sq=$('#sq');if(sq)sq.textContent=S.agent.name[0];if(!S.agent.greet){const g=$('#gr');if(g)g.value=greet()}}
 function speak(){const v=voice();S.play=true;const p=$('#pl');if(p)p.classList.add('on');
@@ -124,9 +124,9 @@ TS.hello();
 '''
 
 
-def build_onboarding(v):
+def build_onboarding(v, w='1'):
     t = OB
-    t = must(t, '<div id="app"></div>\n<script>', '<div id="app"></div>\n' + engine_tag(v) + '<script>')
+    t = must(t, '<div id="app"></div>\n<script>', '<div id="app"></div>\n' + engine_tag(v, w) + '<script>')
     t = must(t, '</style>', OB_CSS)
     t = cut(t, 'const OUTLETS=[', 'const CUISINES', '''const RFAQS=[['Do you have gluten-free crusts?','Yes, on any 12-inch pizza.','general'],['Is there parking nearby?','Yes, street parking and a garage next door.','general'],['Do you have vegan options?','Yes, a vegan cheese pizza and several pastas.','general'],['Can you host a private party?','Yes, up to 40 guests.','general'],
  ['Do you take walk-ins?','Yes, subject to availability. Booking is recommended on weekends.','res'],['How far ahead can I book?','Up to 30 days ahead.','res'],['Can I book for a large group?','Yes, up to 12 guests by phone.','res'],
@@ -151,9 +151,10 @@ const OUTLETS=[
     t = must(t, "function pickFirst(){", "function pickSite(){const o=OUTLETS[0];S.o={...o,viaUrl:o.site};loadOutlet();next()}\nfunction pickFirst(){")
     t = must(t, "agent:{voice:'shubh',name:'Novi',greet:''}", "agent:{voice:'allie',name:'Emma',greet:''}")
     t = must(t, "{id:'allie',n:'Agent',t:'Female · English'", "{id:'allie',n:'Ava',t:'Female · English'")
-    t = must(t, "const GROUPS=['Discover','Verify','Services','Meet your agent','Review','Go live'];", "const GROUPS=['Find','Verify','Set up','Agent','Go live'];")
-    t = must(t, "const STEPS=['find','research','verify','rules','voice','review','live'];", "const STEPS=['find','research','verify','services','agent','live'];")
-    t = must(t, "const GI={find:0,research:0,verify:1,rules:2,voice:3,review:4,live:5};", "const GI={find:0,research:0,verify:1,services:2,agent:3,live:4};")
+    t = must(t, "const next=()=>go(S.i+1),back=()=>go(S.i-1);", "const next=()=>{if(STEPS[S.i]==='services'){openDash();return}go(S.i+1)},back=()=>go(S.i-1);")
+    t = must(t, "const GROUPS=['Discover','Verify','Services','Meet your agent','Review','Go live'];", "const GROUPS=['Find','Verify','Agent','Set up'];")
+    t = must(t, "const STEPS=['find','research','verify','rules','voice','review','live'];", "const STEPS=['find','research','verify','agent','services'];")
+    t = must(t, "const GI={find:0,research:0,verify:1,rules:2,voice:3,review:4,live:5};", "const GI={find:0,research:0,verify:1,agent:2,services:3};")
     t = must(t, "const head=(t,s)=>`${chip()}<h1", "const head=(t,s)=>`<h1")
     t = must(t, " $('#bar').style.width=(id==='live'?100:(GI[id]+(id==='research'?.6:.5))/6*100)+'%';\n", "")
     t = must(t, '<header class="hdr"><div class="logo">Tringg</div></header>', '<header class="hdr"><div class="logo">Tringg</div>${stepper()}<span></span></header>')
@@ -204,7 +205,7 @@ BOOT = r'''/* setup prototypes: one location, empty to start, driven by the shar
  function initFresh(){FULL=false;S.setupCollapsed=false;ROLE_OUT.owner=[PRIMARY];applyRole(true);loadScenario('off');applyRole();TS.cfg.outlets=1;
   DB.k='setup';SCEN.setup={t:'Setup',h:''};DB.res=[];DB.calls=[];DB.orders=[];DB.held=[];DB.taxes=[];S.res.sel=null;S.route='overview';S.outlet=PRIMARY;S.ordOutlet=PRIMARY;S.dd=false;}
  TS.nav=r=>go(r);TS.cfg.outlets=1;
- TS.host.collapse=()=>{S.setupCollapsed=true;render();};TS.host.expand=()=>{S.setupCollapsed=false;S.growSetup=true;go('overview');};
+ TS.host.render=()=>render();TS.host.collapse=()=>{S.setupCollapsed=true;render();};TS.host.expand=()=>{S.setupCollapsed=false;S.growSetup=true;go('overview');};
  window.applyTS=function(){const s=TS.get(),d=s.d,done=k=>!!s.done[k],sv=d.svc,p=d.pay,t=d.tax;
   if(FULL){DB.subscribed=TS.active();BRAND.agent=d.agent.name;if(DB.agents[0])DB.agents[0].n=d.agent.name;syncMods();return;}
   OUTLETS_ALL.forEach(o=>{DB.om[o.id]={res:!!s.svc.res,ord:!!s.svc.ord};});
@@ -227,7 +228,7 @@ BOOT = r'''/* setup prototypes: one location, empty to start, driven by the shar
  initFresh();
  TS.on(()=>{applyTS();render();});
  window.addEventListener('message',e=>{const m=e.data;if(!m||!m.tringg)return;
-  if(m.tringg==='enter'){S.route='overview';S.outlet=PRIMARY;S.dd=false;render();scrollTo(0,0);}
+  if(m.tringg==='enter'){S.route='overview';S.outlet=PRIMARY;S.dd=false;render();scrollTo(0,0);if(TS.welcome==='3'&&!TS.welcomed&&!TS.allDone()){TS.welcomed=true;setTimeout(()=>TS.showWelcome(),350);}}
   if(m.tringg==='ready'){S.route='overview';loadReady();}});
  applyTS();TS.hello();
 })();
@@ -235,9 +236,9 @@ render();
 '''
 
 
-def build_dashboard(v):
+def build_dashboard(v, w='1'):
     t = DB
-    t = must(t, '<script>\n', engine_tag(v) + '<script>\n')
+    t = must(t, '<script>\n', engine_tag(v, w) + '<script>\n')
     # one setup surface, no sidebar checklist
     t = must(t, "function renderChk(){if(S.outlet==='all'||!DB.mods.ord)return '';", "function renderChk(){if(TS.variant==='C'&&S.setupCollapsed)return TS.railWidget();return '';")
     # the phone number in the top pill picked up a phone-mockup style
@@ -276,6 +277,7 @@ def build_dashboard(v):
     t, n = re.subn(r'<div class="live"><span class="d"></span>\$\{BRAND\.agent\} is live — try it.*?\$\{I\.copy\}</button></div>', '', t, count=1, flags=re.S)
     assert n == 1
     t = must(t, "(DB.subscribed&&TS.get().done['go.fwd'])?", "DB.subscribed?")
+    t = must(t, "  renderOverlay();\n  if(_keep)", "  renderOverlay();if(S.route==='overview')ovEnhance();\n  if(_keep)")
     t = must(t, ":!DB.subscribed?'':!DB.orderingOn?'<span class=\"bdg new\">Set up</span>'", ":!TS.ready('ord')?'<span class=\"bdg new\">Set up</span>':!DB.subscribed?'':!DB.orderingOn?'<span class=\"bdg new\">Set up</span>'")
     t = must(t, "b=!DB.mods.res?'<span class=\"bdg off\">Off</span>':!DB.subscribed?'':p?", "b=!DB.mods.res?'<span class=\"bdg off\">Off</span>':!TS.ready('res')?'<span class=\"bdg new\">Set up</span>':!DB.subscribed?'':p?")
     # the Orders header switches belong to the live view only
@@ -287,13 +289,15 @@ def build_dashboard(v):
     # modules: a service that is off offers to add itself; one that isn't set up shows its steps in place
     t = must(t, '''onclick="goSet('mods')">Turn on</button>''', '''onclick="TS.add('${m}')">Add ${m==='ord'?'ordering':'reservations'}</button>''')
     t = must(t, "const VIEWS={overview:vOverview,reservations:modG(gate(vReservations,'Table requests and bookings'),'res'),orders:modG(gate(vOrders,'Phone orders'),'ord'),",
-             "const modT=(fn,m)=>()=>{if(!DB.mods[m])return greyed(fn(),m);if(!TS.ready(m))return TS.variant==='B'?TS.panel(m):TS.bar(m);if(!TS.active()||!TS.get().done['go.fwd'])return TS.readyPage(m);return fn();};\nconst VIEWS={overview:vOverview,reservations:modT(vReservations,'res'),orders:modT(vOrders,'ord'),")
+             "const modT=(fn,m)=>()=>{if(!DB.mods[m])return greyed(fn(),m);if(!TS.ready(m))return TS.panel(m);if(!TS.active()||!TS.get().done['go.fwd'])return TS.readyPage(m);return fn();};\nconst VIEWS={overview:vOverview,reservations:modT(vReservations,'res'),orders:modT(vOrders,'ord'),")
     # overview: one setup block per variant, above the numbers
     t = must(t, "function vOverview(){\n  if(!DB.subscribed)return vOverviewFresh();", "function vOverview0(){")
-    t = cut(t, 'function vOverviewFresh(){', 'function vOverview0(){', OVERVIEW_FRESH + '''const tsBlock=()=>TS.variant==='A'?TS.strip():TS.variant==='B'?TS.status():(S.setupCollapsed?'':TS.center({grow:S.growSetup}));
-function vOverview(){
-  if(TS.variant==='C'&&!S.setupCollapsed&&TS.totals().done===0&&!TS.allDone())return `<div class="scroll"><div class="page"><div class="lbl">${S.outlet==='all'?'All outlets':esc(ON(S.outlet).name)}</div>${TS.center()}</div></div>`;
-  const h=DB.subscribed?vOverview0():vOverviewFresh(),blk=tsBlock();S.growSetup=false;return h.replace(/(<div class="lbl">[^<]*<\\/div>)/,m=>m+blk);}
+    t = cut(t, 'function vOverviewFresh(){', 'function vOverview0(){', OVERVIEW_FRESH + '''function vOverview(){
+  const first=(me().n||'').split(' ')[0];TS.cfg.user=first||'there';
+  const lbl=`<div class="lbl">${S.outlet==='all'?'All outlets':esc(ON(S.outlet).name)}</div>`;
+  if(TS.totals().done===0&&!TS.allDone())return `<div class="scroll"><div class="page">${lbl}${TS.overviewTop()}</div></div>`;
+  const h=DB.subscribed?vOverview0():vOverviewFresh();return h.replace(/(<div class="lbl">[^<]*<\\/div>)/,m=>m+TS.overviewTop());}
+function ovEnhance(){document.querySelectorAll('#view .ov-grid .card:not(.agent)').forEach(c=>{const h=c.querySelector('.card-h');if(!h||h.querySelector('.ov-t'))return;const k=(h.textContent||'').trim().slice(0,24);if(S.ovC&&S.ovC[k])c.classList.add('ov-c');const b=document.createElement('button');b.className='ov-t';b.setAttribute('aria-label','Collapse');b.innerHTML='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 15 6-6 6 6"/></svg>';b.onclick=e=>{e.stopPropagation();const on=c.classList.toggle('ov-c');S.ovC=S.ovC||{};S.ovC[k]=on;};h.appendChild(b);});}
 ''')
     t = must(t, '''onclick="goSet('mods')">Turn on ordering</button>''', '''onclick="TS.add('ord')">Turn on ordering</button>''')
     a = t.index("  else if(!DB.orderingOn){const st=setupSteps().filter(x=>!x.opt);const d=st.filter(x=>x.done).length;")
@@ -318,14 +322,17 @@ function vOverview(){
 NAMES = {'A': ('Onboarding-first', 'proto-a-onboarding-first.html'),
          'B': ('Module-first', 'proto-b-module-first.html'),
          'C': ('Overview-first', 'proto-c-overview-first.html')}
+# the current direction: overview-first, module pages like B, three welcome notes
+VARIANTS = {'C1': ('C', '1', 'C1 · Welcome header', 'proto-c1-welcome-header.html'),
+            'C2': ('C', '2', 'C2 · Hero banner', 'proto-c2-hero-banner.html'),
+            'C3': ('C', '3', 'C3 · Welcome dialog', 'proto-c3-welcome-dialog.html')}
 
 
-def wrapper(v, ob, dash):
+def wrapper(label, ob, dash):
     b64 = lambda x: base64.b64encode(x.encode('utf-8')).decode('ascii')
-    name = NAMES[v][0]
     return f'''<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Setup {v} {name}</title>
+<title>Setup {label}</title>
 <style>
 html,body{{margin:0;height:100%;background:#F2F1ED;font-family:Poppins,system-ui,sans-serif}}
 iframe{{position:fixed;inset:0;width:100%;height:100%;border:0;background:#F2F1ED}}
@@ -339,7 +346,7 @@ iframe[hidden]{{display:none}}
 </style></head><body>
 <iframe id="ob" title="Onboarding"></iframe>
 <iframe id="db" title="Dashboard" hidden></iframe>
-<div class="sw" id="sw" role="group" aria-label="Prototype screens"><button class="tgl" id="b-tg" aria-label="Hide or show the prototype bar" title="Hide the bar">\u203a</button><span>{v} · {name}</span><button id="b-ob" class="on">Onboarding</button><button id="b-db">Dashboard</button><button id="b-rd" title="Everything set up, with reservations and orders">Sample data</button><button id="b-rs" title="Clear everything and start again">Start over</button></div>
+<div class="sw" id="sw" role="group" aria-label="Prototype screens"><button class="tgl" id="b-tg" aria-label="Hide or show the prototype bar" title="Hide the bar">\u203a</button><span>{label}</span><button id="b-ob" class="on">Onboarding</button><button id="b-db">Dashboard</button><button id="b-rd" title="Everything set up, with reservations and orders">Sample data</button><button id="b-rs" title="Clear everything and start again">Start over</button></div>
 <script>
 const SRC={{ob:"{b64(ob)}",db:"{b64(dash)}"}};
 const dec=b=>new TextDecoder().decode(Uint8Array.from(atob(b),c=>c.charCodeAt(0)));
@@ -362,7 +369,7 @@ load();
 
 
 if __name__ == '__main__':
-    for v, (name, fn) in NAMES.items():
-        page = wrapper(v, build_onboarding(v), build_dashboard(v))
+    for key, (v, w, label, fn) in VARIANTS.items():
+        page = wrapper(label, build_onboarding(v, w), build_dashboard(v, w))
         (here / fn).write_text(page, encoding='utf-8')
         print('wrote', fn, len(page) // 1024, 'KB')
