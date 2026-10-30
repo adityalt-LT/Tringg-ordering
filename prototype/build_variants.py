@@ -233,7 +233,7 @@ const OUTLETS=[
 
     t = must(t, "${head('Tell Tringg your restaurant.','Type its name or paste your website. I’ll pull the rest automatically.')}", "${head('Find your restaurant.')}")
     t = must(t, '''el.innerHTML=`<p class="hint">Try <button class="lnk" onclick="try1('Aladdin')">Aladdin Broasted Chicken</button> or <button class="lnk" onclick="try1('ROSSA')">ROSSA Pizzeria</button></p>`''',
-             "el.innerHTML=''")
+             '''el.innerHTML=`<p class="hint">Try <button class="lnk" onclick="try1('ROSSA')">ROSSA Pizzeria</button></p>`''')
     t = must(t, '<p class="hint">Can’t find it? <button class="lnk" onclick="manual()">Enter it manually</button></p>', '<p class="hint mn">Can’t find it? <button class="lnk" onclick="manual()">Enter it manually</button></p>')
     t = must(t, '<input id="q" autocomplete="off" placeholder="e.g. Your restaurant name"', '<input id="q" autocomplete="off" placeholder="Restaurant name or website"')
     # four steps, one header stepper
