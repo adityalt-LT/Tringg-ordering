@@ -104,6 +104,7 @@ OB_CSS = r'''
 .sug-or{padding:12px 18px 4px;margin-top:6px;border-top:1px solid var(--border);font-size:11.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-50)}
 .faqe{display:flex;flex-direction:column;gap:8px;border:1.5px solid var(--border);border-radius:14px;padding:12px;margin-bottom:10px}.faqe .in{height:40px}
 /* search complete */
+.hint.mn{text-align:right;font-size:12.5px;margin-top:10px}
 .sc{padding:0;overflow:hidden}
 .sc-h{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:26px 28px 18px;background:#fff}
 .sc-e{display:block;font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--mint-d)}
@@ -165,7 +166,7 @@ VIEWS.research=()=>{if(S.rs<RS.length)return _res();const o=S.o,d=S.d,F=[['Brand
 VIEWS.locate=()=>({body:`<div class="body fade">${head('Choose the outlet you’re setting up.')}
  <div class="sec"><div class="lc-h"><span class="cap">Locations</span><b>Pick the one you’re setting up</b><span class="lc-n">${OUTLETS.length} found</span></div>
  <div class="lc-g">${OUTLETS.map(o=>`<button class="lc ${S.o&&S.o.id===o.id?'on':''}" onclick="pickLoc('${o.id}')"><div class="lc-t"><div><b>${esc(o.short||o.name)} · ${esc(o.area.split(',')[0])}</b><br><small>${esc(o.addr)}</small></div></div>
-  <div class="lc-c">${esc(o.rating)}</div><span class="lc-go">Review outlet →</span></button>`).join('')}</div>
+  <span class="lc-go">Review outlet →</span></button>`).join('')}</div>
  <button class="lc-m" onclick="manual()">None of these — I’ll enter my location manually</button></div></div>`});
 function pickLoc(id){S.o=OUTLETS.find(o=>o.id===id);loadOutlet();next()}
 /* 04 · meet your agent */
@@ -232,7 +233,8 @@ const OUTLETS=[
 
     t = must(t, "${head('Tell Tringg your restaurant.','Type its name or paste your website. I’ll pull the rest automatically.')}", "${head('Find your restaurant.')}")
     t = must(t, '''el.innerHTML=`<p class="hint">Try <button class="lnk" onclick="try1('Aladdin')">Aladdin Broasted Chicken</button> or <button class="lnk" onclick="try1('ROSSA')">ROSSA Pizzeria</button></p>`''',
-             '''el.innerHTML=`<p class="hint">Try <button class="lnk" onclick="try1('ROSSA')">ROSSA Pizzeria</button></p>`''')
+             "el.innerHTML=''")
+    t = must(t, '<p class="hint">Can’t find it? <button class="lnk" onclick="manual()">Enter it manually</button></p>', '<p class="hint mn">Can’t find it? <button class="lnk" onclick="manual()">Enter it manually</button></p>')
     t = must(t, '<input id="q" autocomplete="off" placeholder="e.g. Your restaurant name"', '<input id="q" autocomplete="off" placeholder="Restaurant name or website"')
     # four steps, one header stepper
     t = must(t, "<b>${esc(o.viaUrl?'Read '+o.viaUrl:o.name)}</b><small>${esc(o.viaUrl?'Pull name, hours and menu from this site':o.addr)}</small></button>`).join('')+'</div>'", "<b>${esc(o.viaUrl?'Read '+o.viaUrl:o.name)}</b><small>${esc(o.viaUrl?'Pull name, hours and menu from this site':o.area+' · '+o.addr)}</small></button>`).join('')+(m[0]&&!m[0].viaUrl?`<div class=\"sug-or\">Or search by website</div><button class=\"sg\" onclick=\"pickSite()\"><b>${esc(m[0].site)}</b><small>Pull name, hours and menu from this site</small></button>`:'')+'</div>'")
@@ -383,7 +385,7 @@ def build_dashboard(v, w='1'):
     b = t.index('Subscribed</button></div></div>', a) + len('Subscribed</button></div></div>')
     t = t[:a] + PROTO_PANEL + t[b:]
     t = must(t, "${DB.svc[x.id].set!==true?'<span class=\"odd-new\">New</span>':''}", "${TS.outletSet(x.id)?'':'<span class=\"odd-new\">Set up</span>'}")
-    t = must(t, "function pickOutlet(id){", "function pickOutlet(id){TS.beforeOutlet(id);")
+    t = must(t, "function pickOutlet(id){", "function pickOutlet(id){TS.beforeOutlet(id);S.route='overview';")
     t = must(t, '</style>', '.btn-dark{background:#4FC2B4;color:#fff;font-weight:600;border:1.5px solid #111}.btn-dark:hover:not(:disabled){background:#4FC2B4;color:#fff}.btn-dark:hover:not(:disabled){box-shadow:3px 4px 0 #111}.odd-new{background:#DDF2EE;color:#1F6E62}</style>')
     # modules: a service that is off offers to add itself; one that isn't set up shows its steps in place
     t = must(t, '''onclick="goSet('mods')">Turn on</button>''', '''onclick="TS.add('${m}')">Add ${m==='ord'?'ordering':'reservations'}</button>''')
@@ -396,6 +398,7 @@ def build_dashboard(v, w='1'):
   const FULL=TS.isFull(),PRIMARY='wl';
   const un=OUTLETS.filter(o=>!TS.outletSet(o.id)),other=!FULL&&S.outlet==='all'&&un.length>0;
   const stripe=other?`<div class="ts-stripe"><span><b>${OUTLETS.length-un.length} of ${OUTLETS.length} outlets set up</b><br><small>Choose an outlet to set up next so it can take calls.</small></span><button class="ts-btn sm" onclick="TS.chooseOutlet(OUTLETS.filter(o=>!TS.outletSet(o.id)),'pickOutlet')">Set up an outlet</button></div>`:'';
+  if(S.outlet==='all'&&!FULL){const h=DB.subscribed?vOverview0():vOverviewFresh();return h.replace(/<div class="lbl">[^<]*<\\/div>/,()=>stripe);}
   if(TS.totals().done===0&&!TS.allDone())return `<div class="scroll"><div class="page">${stripe}${TS.overviewTop()}</div></div>`;
   const h=DB.subscribed?vOverview0():vOverviewFresh();return h.replace(/<div class="lbl">[^<]*<\\/div>/,()=>stripe+TS.overviewTop());}
 function ovEnhance(){document.querySelectorAll('#view .ov-grid .card:not(.agent)').forEach(c=>{const h=c.querySelector('.card-h');if(!h||h.querySelector('.ov-t'))return;const k=(h.textContent||'').trim().slice(0,24);if(S.ovC&&S.ovC[k])c.classList.add('ov-c');const b=document.createElement('button');b.className='ov-t';b.setAttribute('aria-label','Collapse');b.innerHTML='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 15 6-6 6 6"/></svg>';b.onclick=e=>{e.stopPropagation();const on=c.classList.toggle('ov-c');S.ovC=S.ovC||{};S.ovC[k]=on;};h.appendChild(b);});}
