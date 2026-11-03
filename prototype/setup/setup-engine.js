@@ -195,7 +195,7 @@ html .rail-top .logo{filter:invert(1)}
 .ts-sqf{border:1.5px solid var(--tk-bd);border-radius:18px;padding:22px;display:flex;flex-direction:column;gap:14px}.ts-sqf label{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500}
 .ts-sqh{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.ts-sqh b{font-size:17px}.ts-sqh small{width:100%;color:var(--tk-50);font-size:12.5px}.ts-sqx{display:flex;justify-content:space-between;font-size:13px;color:var(--tk-50);gap:10px;flex-wrap:wrap}
 .ts-sqok{display:flex;gap:12px;align-items:center;border:1.5px solid var(--tk-bd);border-radius:14px;padding:12px 16px;margin-bottom:14px;font-size:14px}.ts-sqok small{display:block;color:var(--tk-50);font-size:12.5px}
-.ts-svs{margin-bottom:20px;font-family:"Poppins",system-ui,sans-serif;color:var(--tk-ink);font-size:14px;line-height:1.5}
+.ts-svs2{margin-bottom:20px}.ts-svs{margin-bottom:20px;font-family:"Poppins",system-ui,sans-serif;color:var(--tk-ink);font-size:14px;line-height:1.5}
 .ts-svs-h{display:flex;align-items:baseline;gap:12px;margin:6px 2px 12px}.ts-svs-h h3{font-size:18px;font-weight:600;letter-spacing:-.3px;margin:0}.ts-svs-h span{color:var(--tk-50);font-size:13px}
 .ts-svs-g{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
 .ts-sv{display:flex;flex-direction:column;gap:8px;text-align:left;font:inherit;color:inherit;background:#fff;border:1.5px solid var(--tk-bd);border-radius:18px;padding:20px 22px;cursor:pointer;transition:transform .15s,box-shadow .15s,border-color .15s}
@@ -561,10 +561,10 @@ TS.hero3=function(){if(TS.allDone())return TS.welcomeHead();var n=s.d.agent.name
  else if(can){h=n+' is ready to go live';t='Go live now, or set up more services first. Either way works.';b='<button class="ts-btn ts-hero-b ts-pulse" onclick="TS.open(\'go\',\'sub\')">Go live</button>';}
  else{h='Go live with '+n;t='Set up one service below and Go live unlocks. The rest can wait.';b='<button class="ts-btn ts-hero-b" disabled style="opacity:.55;cursor:not-allowed">'+LOCK+' Go live</button>';}
  return '<div class="ts-hero"><div style="flex:1;min-width:0"><div class="ts-hero-e">Welcome, '+esc(TS.cfg.user)+'</div><h2>'+h+'</h2><p>'+t+'</p><div class="ts-hero-p"><div class="ts-bar"><i style="width:'+p+'%"></i></div><span>'+p+'% set up</span></div></div><div class="ts-hero-a">'+b+'</div></div>';};
-TS.svcs3=function(){var nk=TS.nextKey();if(nk==='go')nk=null;
+TS.svcs3=function(){if(TS.ov.collapsed)return '';var grow=TS.ov.grow;TS.ov.grow=false;var tt=TS.totals(),nk=TS.nextKey();if(nk==='go')nk=null;
  var cards=['enq','res','ord'].map(function(k){var on=TS.sel(k),x=TS.stat(k),ok=on&&x.complete,st=!on?'Off':ok?'Ready':x.done?x.done+' of '+x.total+' steps':'Not started';
   var d={enq:'Answers questions about your restaurant',res:'Takes table bookings by phone',ord:'Takes pickup and delivery orders'}[k];
   return '<button class="ts-sv'+(ok?' ok':'')+(nk===k&&!ok?' nx':'')+'" onclick="'+(on?"TS.open('"+k+"')":"TS.add('"+k+"')")+'"><span class="ts-sv-t"><b>'+SVC[k].n+'</b>'+(ok?'<span class="ts-done2">'+CHK+' Ready</span>':'<span class="ts-sv-s">'+(on?st:'Off · tap to add')+'</span>')+'</span><span class="ts-sv-d">'+d+'</span></button>';}).join('');
- return '<section class="ts-svs"><div class="ts-svs-h"><h3>Set up services</h3><span>Tap a service to set it up</span></div><div class="ts-svs-g">'+cards+'</div></section>';};
+ return '<section class="ts-gs2 ts-svs2'+(grow?' ts-grow':'')+'"><div class="ts-gs2-h"><div class="ts-gs2-t"><h2>Set up services</h2><div class="ts-gs2-p"><div class="ts-bar"><i style="width:'+(tt.total?tt.done/tt.total*100:0)+'%"></i></div><span>'+TS.pct()+'% set up</span></div></div><button class="ts-xb" aria-label="Collapse to sidebar" title="Collapse to sidebar" onclick="TS.collapse()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 15 6-6 6 6"/></svg></button></div><div style="padding:0 22px 22px"><div class="ts-svs-g">'+cards+'</div></div></section>';};
 
 })();
