@@ -195,6 +195,13 @@ html .rail-top .logo{filter:invert(1)}
 .ts-sqf{border:1.5px solid var(--tk-bd);border-radius:18px;padding:22px;display:flex;flex-direction:column;gap:14px}.ts-sqf label{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500}
 .ts-sqh{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.ts-sqh b{font-size:17px}.ts-sqh small{width:100%;color:var(--tk-50);font-size:12.5px}.ts-sqx{display:flex;justify-content:space-between;font-size:13px;color:var(--tk-50);gap:10px;flex-wrap:wrap}
 .ts-sqok{display:flex;gap:12px;align-items:center;border:1.5px solid var(--tk-bd);border-radius:14px;padding:12px 16px;margin-bottom:14px;font-size:14px}.ts-sqok small{display:block;color:var(--tk-50);font-size:12.5px}
+.ts-svs{margin-bottom:20px;font-family:"Poppins",system-ui,sans-serif;color:var(--tk-ink);font-size:14px;line-height:1.5}
+.ts-svs-h{display:flex;align-items:baseline;gap:12px;margin:6px 2px 12px}.ts-svs-h h3{font-size:18px;font-weight:600;letter-spacing:-.3px;margin:0}.ts-svs-h span{color:var(--tk-50);font-size:13px}
+.ts-svs-g{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.ts-sv{display:flex;flex-direction:column;gap:8px;text-align:left;font:inherit;color:inherit;background:#fff;border:1.5px solid var(--tk-bd);border-radius:18px;padding:20px 22px;cursor:pointer;transition:transform .15s,box-shadow .15s,border-color .15s}
+.ts-sv:hover{border-color:var(--tk-ink);transform:translate(-2px,-2px);box-shadow:4px 5px 0 var(--tk-ink)}.ts-sv.nx{border-color:var(--tk-mint);box-shadow:0 0 0 4px rgba(79,194,180,.18)}.ts-sv.nx:hover{box-shadow:4px 5px 0 var(--tk-ink)}
+.ts-sv-t{display:flex;align-items:center;justify-content:space-between;gap:10px}.ts-sv-t b{font-size:17px;font-weight:600}.ts-sv-s{font-size:12.5px;color:var(--tk-50);white-space:nowrap}.ts-sv-d{color:var(--tk-50);font-size:13.5px}
+@media(max-width:820px){.ts-svs-g{grid-template-columns:1fr}}
 .ts-still{animation:none!important}
 @media(prefers-reduced-motion:reduce){.ts-sheet,.ts-ov{animation:none}}
 `;
@@ -484,7 +491,7 @@ TS.started=function(){if(TS.allDone()||TS.ov.collapsed)return '';var tt=TS.total
  return '<section class="ts-gs2'+(grow?' ts-grow':'')+'"><div class="ts-gs2-h"><div class="ts-gs2-t"><h2>Let’s get you started</h2><div class="ts-gs2-p"><div class="ts-bar"><i style="width:'+(tt.total?tt.done/tt.total*100:0)+'%"></i></div><span>'+tt.done+' of '+tt.total+' steps done</span></div></div>'+(nk2?'<button class="ts-btn sm ts-gs2-n" onclick="event.stopPropagation();'+TS.nextFn()+'">Next: '+nk2[1]+'</button>':'')+''+(tt.done>0?'<button class="ts-xb" aria-label="Collapse to sidebar" title="Collapse to sidebar" onclick="TS.collapse()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 15 6-6 6 6"/></svg></button>':'')+'</div><div class="ts-gs2-b"><div>'+(tt.done>0?'<div style="padding:0 28px">'+TS.gateNote()+'</div>':'')+'<div class="ts-cols">'+cols+'</div>'+det+'</div></div></section>';};
 TS.ovToggle=function(e){var el=document.querySelector('.ts-gs2');if(!el)return;el.classList.toggle('closed');TS.ov.open=!el.classList.contains('closed');};
 TS.ovSel=function(k){TS.ov.sel=TS.ov.sel===k?null:k;TS.host.render();};
-TS.overviewTop=function(){if(TS.setup)return TS.hero2()+(TS.setup==='strip'?TS.strip2():'');var top=TS.welcome==='2'&&!TS.allDone()?TS.hero():TS.welcomeHead();return top+TS.started();};
+TS.overviewTop=function(){if(TS.setup==='golive')return TS.hero3()+TS.svcs3();if(TS.setup)return TS.hero2()+(TS.setup==='strip'?TS.strip2():'');var top=TS.welcome==='2'&&!TS.allDone()?TS.hero():TS.welcomeHead();return top+TS.started();};
 /* a dialog for the first visit: what is done, what is left, one button */
 TS.showWelcome=function(){if(document.getElementById('ts-wl'))return;var n=s.d.agent.name,done=['Restaurant details','Agent '+n],todo=[];
  if(TS.stat('enq').complete)done.push('Enquiries FAQs');else todo.push('Review enquiries');
@@ -547,5 +554,17 @@ function drDraw(){var r=document.getElementById('ts-dr');if(!r){r=document.creat
 TS.on(function(){if(TS.dr.open)drDraw();});
 document.addEventListener('keydown',function(e){if(e.key==='Escape'&&TS.dr.open&&!UI.open)TS.drawer(false);});
 TS.railClick=function(){if(TS.setup==='drawer')TS.drawer(true);else TS.expand();};
+
+/* ───────── go-live banner + a separate "Set up services" section ───────── */
+TS.hero3=function(){if(TS.allDone())return TS.welcomeHead();var n=s.d.agent.name,can=TS.canSub(),live=act(),p=TS.pct(),h,t,b,dis='';
+ if(live){h='Forward your line';t=n+' is subscribed. Forward your restaurant line to your Tringg number and '+n+' starts answering.';b='<button class="ts-btn ts-hero-b ts-pulse" onclick="TS.open(\'go\',\'fwd\')">Forward your line</button>';}
+ else if(can){h=n+' is ready to go live';t='Go live now, or set up more services first. Either way works.';b='<button class="ts-btn ts-hero-b ts-pulse" onclick="TS.open(\'go\',\'sub\')">Go live</button>';}
+ else{h='Go live with '+n;t='Set up one service below and Go live unlocks. The rest can wait.';b='<button class="ts-btn ts-hero-b" disabled style="opacity:.55;cursor:not-allowed">'+LOCK+' Go live</button>';}
+ return '<div class="ts-hero"><div style="flex:1;min-width:0"><div class="ts-hero-e">Welcome, '+esc(TS.cfg.user)+'</div><h2>'+h+'</h2><p>'+t+'</p><div class="ts-hero-p"><div class="ts-bar"><i style="width:'+p+'%"></i></div><span>'+p+'% set up</span></div></div><div class="ts-hero-a">'+b+'</div></div>';};
+TS.svcs3=function(){var nk=TS.nextKey();if(nk==='go')nk=null;
+ var cards=['enq','res','ord'].map(function(k){var on=TS.sel(k),x=TS.stat(k),ok=on&&x.complete,st=!on?'Off':ok?'Ready':x.done?x.done+' of '+x.total+' steps':'Not started';
+  var d={enq:'Answers questions about your restaurant',res:'Takes table bookings by phone',ord:'Takes pickup and delivery orders'}[k];
+  return '<button class="ts-sv'+(ok?' ok':'')+(nk===k&&!ok?' nx':'')+'" onclick="'+(on?"TS.open('"+k+"')":"TS.add('"+k+"')")+'"><span class="ts-sv-t"><b>'+SVC[k].n+'</b>'+(ok?'<span class="ts-done2">'+CHK+' Ready</span>':'<span class="ts-sv-s">'+(on?st:'Off · tap to add')+'</span>')+'</span><span class="ts-sv-d">'+d+'</span></button>';}).join('');
+ return '<section class="ts-svs"><div class="ts-svs-h"><h3>Set up services</h3><span>Tap a service to set it up</span></div><div class="ts-svs-g">'+cards+'</div></section>';};
 
 })();

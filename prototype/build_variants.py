@@ -431,8 +431,7 @@ NAMES = {'A': ('Onboarding-first', 'proto-a-onboarding-first.html'),
 VARIANTS = {'C1': ('C', '1', 'C1 · Welcome header', 'proto-c1-welcome-header.html'),
             'C2': ('C', '2', 'C2 · Hero banner', 'proto-c2-hero-banner.html'),
             'C3': ('C', '3', 'C3 · Welcome dialog', 'proto-c3-welcome-dialog.html'),
-            'D1': ('C', '2', 'D1 · Banner + status strip', 'proto-d1-banner-strip.html', 'strip'),
-            'D2': ('C', '2', 'D2 · Banner + side drawer', 'proto-d2-banner-drawer.html', 'drawer')}
+            'E1': ('C', '3', 'E · Go-live banner + services', 'proto-e-golive-banner.html', 'golive')}
 
 
 def wrapper(label, ob, dash):
