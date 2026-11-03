@@ -64,8 +64,8 @@ def cut(text, start, end, new=''):
     return text[:a] + new + text[b:]
 
 
-def engine_tag(v, w='1'):
-    return f'<script>window.TS_VARIANT="{v}";window.TS_WELCOME="{w}";</script><script>{ENGINE}</script>\n'
+def engine_tag(v, w='1', su=''):
+    return f'<script>window.TS_VARIANT="{v}";window.TS_WELCOME="{w}";window.TS_SETUP="{su}";</script><script>{ENGINE}</script>\n'
 
 
 VOICES_JS = r'''const VOICES=[{id:'allie',n:'Ava',g:'Female',t:'Female · English',d:'Warm American host, clear and friendly on the phone',pitch:1.15,rate:1},{id:'marcus',n:'Marcus',g:'Male',t:'Male · English',d:'Calm, confident American host with a steady pace',pitch:.7,rate:.95},{id:'leo',n:'Leo',g:'Male',t:'Male · English',d:'Upbeat, easygoing host for casual restaurants',pitch:.9,rate:1.1},{id:'priya',n:'Priya',g:'Female',t:'Female · Hindi',d:'Friendly bilingual host for Hindi and English callers',pitch:1.3,rate:1.08},{id:'shubh',n:'Shubh',g:'Male',t:'Male · Hindi',d:'Neutral Indian male host. Lowest pronunciation error rate',pitch:.8,rate:1}];
@@ -213,9 +213,9 @@ TS.hello();
 '''
 
 
-def build_onboarding(v, w='1'):
+def build_onboarding(v, w='1', su=''):
     t = OB
-    t = must(t, '<div id="app"></div>\n<script>', '<div id="app"></div>\n' + engine_tag(v, w) + '<script>')
+    t = must(t, '<div id="app"></div>\n<script>', '<div id="app"></div>\n' + engine_tag(v, w, su) + '<script>')
     t = must(t, '</style>', OB_CSS)
     t = cut(t, 'const OUTLETS=[', 'const CUISINES', '''const RFAQS=[['Do you have gluten-free crusts?','Yes, on any 12-inch pizza.','general'],['Is there parking nearby?','Yes, street parking and a garage next door.','general'],['Do you have vegan options?','Yes, a vegan cheese pizza and several pastas.','general'],['Can you host a private party?','Yes, up to 40 guests.','general'],
  ['Do you take walk-ins?','Yes, subject to availability. Booking is recommended on weekends.','res'],['How far ahead can I book?','Up to 30 days ahead.','res'],['Can I book for a large group?','Yes, up to 12 guests by phone.','res'],
@@ -274,7 +274,7 @@ const chip=()=>''')
     t = must(t, "function tog(k){S.edit[k]=!S.edit[k];render()}", "function tog(k){if(k==='faq'&&S.edit.faq){S.o.faqs=S.o.faqs.filter(f=>f[0].trim()&&f[1].trim());faqSync()}S.edit[k]=!S.edit[k];render()}")
     t = must(t, "days:[1,1,1,1,1,1,1]});S.rs=0}", "days:[1,1,1,1,1,1,1]});S.rs=0;TS.set(x=>{x.d.brand=o.short||o.name;x.d.outlet={name:o.short||o.name,area:o.area,addr:o.addr};x.d.faqs=(o.faqs||[]).map(f=>f.slice())})}")
     t = cut(t, '/* 03 · reservation: the real six rules */', 'function copyNum(b)', NEW_VIEWS)
-    c1 = (v, w) == ('C', '1')
+    c1 = (v, w, su) == ('C', '1', '')
     t = t.replace('__LAST__', "['done']" if c1 else '[]').replace('__LASTID__', 'done' if c1 else 'services').replace('__SVCNEXT__', 'Continue' if c1 else 'Open dashboard')
     t = t.replace('__PHOTOS__', json.dumps(PHOTOS))
     t = t.replace('__HERO__', HERO).replace('__TICON__', TICON)
@@ -308,7 +308,7 @@ BOOT = r'''/* setup prototypes: one location, empty to start, driven by the shar
   if(FULL){DB.subscribed=TS.active();BRAND.agent=d.agent.name;if(DB.agents[0])DB.agents[0].n=d.agent.name;syncMods();return;}
   OUTLETS_ALL.forEach(o=>{DB.om[o.id]={res:!!s.svc.res,ord:!!s.svc.ord};});
   MODS.res=!!s.svc.res;MODS.ord=!!s.svc.ord;DB.caps.res=!!s.svc.res;DB.subscribed=TS.active();
-  DB.menuState=done('ord.menu')?'live':'none';DB.menuSource=done('ord.menu')?({google:'Google profile',pos:'Your POS',web:'Website',agg:'Delivery app',upload:'Uploaded menu',scratch:'Built in Tringg'}[d.menu.src]||'Imported'):null;
+  DB.menuState=done('ord.menu')?'live':'none';DB.menuSource=done('ord.menu')?({google:'Google profile',square:'Square POS',pos:'Your POS',web:'Website',agg:'Delivery app',upload:'Uploaded menu',scratch:'Built in Tringg'}[d.menu.src]||'Imported'):null;
   DB.taxOk=done('ord.tax');DB.taxes=done('ord.tax')&&t.on?[{id:'t1',type:t.type,n:t.n,on:t.app,base:t.base,calc:t.calc,vt:t.vt,v:t.v,ch:t.ch,delfee:!!t.delfee,outs:[CUR]}]:[];
   DB.payOk=done('ord.pay');DB.stripe=p.conn?'active':'none';DB.payPick={call:p.pick!=='store',store:p.pick!=='online'};
   DB.cod=Object.assign({},DB.cod,{capOn:!!p.capOn,cap:p.cap,repeatOn:!!p.repeatOn,repeatN:p.repeatN});DB.payFall={pk:!!p.fbPk&&p.pick==='both',dl:!!p.fbDl&&(!!p.capOn||!!p.repeatOn)};
@@ -319,14 +319,15 @@ BOOT = r'''/* setup prototypes: one location, empty to start, driven by the shar
   const ou=OUTLETS_ALL.find(o=>o.id===CUR);if(d.outlet&&ou){const a=(d.outlet.area||'').split(',')[0];ou.name=d.outlet.name+(a?' · '+a:'');ou.short=a||ou.short;}
   if(DB.agents[0]){const A=DB.agents[0];A.n=d.agent.name;A.voice=({allie:'ishita',marcus:'sunny',leo:'sunny'})[d.agent.voice]||d.agent.voice||A.voice;if(d.agent.greet)A.greet=d.agent.greet;}
   syncMods();};
- window.resetDash=()=>{TS.reset();CUR=PRIMARY;Object.keys(SNAP).forEach(k=>delete SNAP[k]);initFresh();applyTS();render();};
+ window.resetDash=()=>{TS.reset();TS.dr={open:false,seen:false};TS.drawer(false);CUR=PRIMARY;Object.keys(SNAP).forEach(k=>delete SNAP[k]);initFresh();applyTS();render();};
  /* one state with everything set up and data for reservations and orders */
  window.loadReady=()=>{FULL=true;TS.fill();ROLE_OUT.owner=null;applyRole(true);loadScenario('live');applyRole();DB.k='live';
   BRAND.agent=TS.get().d.agent.name;if(DB.agents[0])DB.agents[0].n=BRAND.agent;TS.cfg.outlets=OUTLETS.length;S.outlet=PRIMARY;S.route='overview';S.dd=false;S.res.sel='R-311';S.orders.sel=null;S.orders.tab='pending';render();};
  initFresh();
  TS.on(()=>{applyTS();render();});
  window.addEventListener('message',e=>{const m=e.data;if(!m||!m.tringg)return;
-  if(m.tringg==='enter'){S.route='overview';S.outlet=PRIMARY;S.dd=false;render();scrollTo(0,0);if(TS.welcome==='3'&&!TS.welcomed&&!TS.allDone()){TS.welcomed=true;setTimeout(()=>TS.showWelcome(),350);}}
+  if(m.tringg==='enter'){S.route='overview';S.outlet=PRIMARY;S.dd=false;render();scrollTo(0,0);if(TS.welcome==='3'&&!TS.welcomed&&!TS.allDone()){TS.welcomed=true;setTimeout(()=>TS.showWelcome(),350);}
+   if(TS.setup==='drawer'&&!TS.dr.seen&&!TS.allDone()){TS.dr.seen=true;setTimeout(()=>TS.drawer(true),350);}}
   if(m.tringg==='ready'){S.route='overview';loadReady();}});
  applyTS();TS.hello();
 })();
@@ -334,11 +335,11 @@ render();
 '''
 
 
-def build_dashboard(v, w='1'):
+def build_dashboard(v, w='1', su=''):
     t = DB
-    t = must(t, '<script>\n', engine_tag(v, w) + '<script>\n')
+    t = must(t, '<script>\n', engine_tag(v, w, su) + '<script>\n')
     # one setup surface, no sidebar checklist
-    t = must(t, "function renderChk(){if(S.outlet==='all'||!DB.mods.ord)return '';", "function renderChk(){if(TS.variant==='C'&&S.setupCollapsed)return TS.railWidget();return '';")
+    t = must(t, "function renderChk(){if(S.outlet==='all'||!DB.mods.ord)return '';", "function renderChk(){if(TS.variant==='C'&&(S.setupCollapsed||TS.setup==='drawer'))return TS.railWidget();return '';")
     # the phone number in the top pill picked up a phone-mockup style
     t = must(t, '.live .ph{font-family:"JetBrains Mono",monospace;font-size:13px;color:#eee}', '.live .ph{font-family:"JetBrains Mono",monospace;font-size:13px;color:#eee;width:auto;border:0;border-radius:0;background:none;box-shadow:none;overflow:visible}')
     # one global "go live" pill, on every page
@@ -429,7 +430,9 @@ NAMES = {'A': ('Onboarding-first', 'proto-a-onboarding-first.html'),
 # the current direction: overview-first, module pages like B, three welcome notes
 VARIANTS = {'C1': ('C', '1', 'C1 · Welcome header', 'proto-c1-welcome-header.html'),
             'C2': ('C', '2', 'C2 · Hero banner', 'proto-c2-hero-banner.html'),
-            'C3': ('C', '3', 'C3 · Welcome dialog', 'proto-c3-welcome-dialog.html')}
+            'C3': ('C', '3', 'C3 · Welcome dialog', 'proto-c3-welcome-dialog.html'),
+            'D1': ('C', '2', 'D1 · Banner + status strip', 'proto-d1-banner-strip.html', 'strip'),
+            'D2': ('C', '2', 'D2 · Banner + side drawer', 'proto-d2-banner-drawer.html', 'drawer')}
 
 
 def wrapper(label, ob, dash):
@@ -473,7 +476,8 @@ load();
 
 
 if __name__ == '__main__':
-    for key, (v, w, label, fn) in VARIANTS.items():
-        page = wrapper(label, build_onboarding(v, w), build_dashboard(v, w))
+    for key, (v, w, label, fn, *rest) in VARIANTS.items():
+        su = rest[0] if rest else ''
+        page = wrapper(label, build_onboarding(v, w, su), build_dashboard(v, w, su))
         (here / fn).write_text(page, encoding='utf-8')
         print('wrote', fn, len(page) // 1024, 'KB')

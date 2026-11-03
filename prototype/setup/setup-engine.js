@@ -169,6 +169,32 @@ html .rail-top .logo{filter:invert(1)}
 @media(max-width:760px){.ts-pick{grid-template-columns:1fr}}
 @media(max-width:640px){.ts-ov{padding:0;align-items:flex-end}.ts-sheet{max-width:none;border-radius:22px 22px 0 0;max-height:94vh}.ts-body,.ts-foot{padding-left:20px;padding-right:20px}.ts-hd{padding-left:20px}.ts-g2,.ts-pick{grid-template-columns:1fr}}
 .ts-pk.on.always{background:var(--tk-mint-50);border-color:var(--tk-mint);box-shadow:none;transform:none}.ts-pk.on.always .l{display:inline-flex;align-self:flex-start;background:var(--tk-mint);color:#fff;font-weight:600;font-size:12px;border-radius:999px;padding:3px 12px;margin-top:6px}
+.ts-hero-p{display:flex;align-items:center;gap:12px;margin-top:16px;max-width:340px}.ts-hero-p .ts-bar{flex:1;background:#fff}.ts-hero-p span{font-size:12.5px;font-weight:600;white-space:nowrap}
+.ts-hero-a{display:flex;flex-direction:column;gap:10px;align-items:stretch;flex-shrink:0}
+.ts-st{display:flex;align-items:stretch;gap:14px;background:#fff;border:1.5px solid #CFEAE5;border-radius:20px;padding:18px 20px;margin-bottom:8px;font-family:"Poppins",system-ui,sans-serif;color:var(--tk-ink);font-size:14px;line-height:1.4}
+.ts-st-l{flex:1;min-width:0}.ts-st-h{font-size:11.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--tk-50);margin-bottom:10px}.ts-st-n{display:flex;gap:10px}
+.ts-st-ar{display:grid;place-items:center;color:var(--tk-30)}.ts-st-c{font-family:"Poppins",system-ui,sans-serif;color:var(--tk-50);font-size:13px;margin:0 0 18px 4px}
+.ts-nd{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;padding:12px 14px;border-radius:14px;border:1.5px solid var(--tk-bd);background:#fff;position:relative}
+.ts-nd b{font-weight:600;font-size:14.5px}.ts-nd small{color:var(--tk-50);font-size:12.5px}
+.ts-ndi{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--tk-bd2);display:grid;place-items:center;margin-bottom:8px;color:var(--tk-50)}
+.ts-nd.ok .ts-ndi{background:var(--tk-mint);border-color:var(--tk-mint);color:#fff}.ts-nd.ok small{color:var(--tk-mint-d);font-weight:600}.ts-nd.part .ts-ndi{border-color:var(--tk-mint)}
+.ts-nd.go{flex:0 0 150px;border-style:dashed}.ts-nd.go.lock{background:var(--tk-sun)}.ts-nd.go.open{border-style:solid;border-color:var(--tk-mint);background:var(--tk-mint-50)}.ts-nd.go.open .ts-ndi{background:var(--tk-mint);border-color:var(--tk-mint);color:#fff}.ts-nd.go.open small{color:var(--tk-mint-d);font-weight:600}
+@media(max-width:700px){.ts-st{flex-direction:column}.ts-st-n{flex-direction:column}.ts-st-ar{transform:rotate(90deg)}.ts-nd.go{flex:1}}
+.ts-dr-bk{position:fixed;inset:0;z-index:800;background:rgba(17,17,17,.28);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);display:flex;justify-content:flex-end;animation:tsfade .2s ease both}
+.ts-dr{width:min(430px,100%);height:100%;background:#fff;box-shadow:-24px 0 60px -30px rgba(0,0,0,.4);padding:26px 28px;overflow:auto;animation:tsslide .3s cubic-bezier(.2,.8,.2,1) both;font-family:"Poppins",system-ui,sans-serif;color:var(--tk-ink);font-size:14px;line-height:1.5}
+@keyframes tsslide{from{transform:translateX(40px);opacity:0}to{transform:none;opacity:1}}
+.ts-dr-h{display:flex;align-items:center;gap:14px;margin-bottom:8px}.ts-dr-h>div{flex:1}.ts-dr-h h2{font-size:22px;font-weight:600;letter-spacing:-.5px;margin:0}.ts-dr-h p{color:var(--tk-50);margin:2px 0 0;font-size:13.5px}.ts-dr-h .ts-ring{width:46px;height:46px}.ts-dr-h .ts-xb{align-self:center}
+.ts-dr-s{font-size:11.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--tk-50);margin:22px 0 8px}
+.ts-dr-r{display:flex;align-items:center;gap:14px;padding:13px 0;border-top:1px solid var(--tk-bd)}.ts-dr-s+.ts-dr-r{border-top:0}.ts-dr-r>div{flex:1;min-width:0}.ts-dr-r b{font-weight:600;display:block}.ts-dr-r small{color:var(--tk-50);font-size:12.5px}
+.ts-dr-i{width:24px;height:24px;border-radius:50%;border:1.5px solid var(--tk-bd2);display:grid;place-items:center;flex-shrink:0;color:var(--tk-50)}.ts-dr-i.ok{background:var(--tk-mint);border-color:var(--tk-mint);color:#fff}.ts-dr-i.open{border-color:var(--tk-mint);color:var(--tk-mint-d)}.ts-dr-r.lock b{color:var(--tk-50)}
+.ts-sqL{width:34px;height:34px;border-radius:9px;background:#111;display:grid;place-items:center;flex-shrink:0}.ts-sqL i{width:16px;height:16px;border:2.5px solid #fff;border-radius:4px;display:block;position:relative}.ts-sqL i:after{content:"";position:absolute;inset:3px;background:#fff;border-radius:1px}
+.ts-sqc{display:flex;gap:14px;align-items:center;border:1.5px solid var(--tk-bd);border-radius:16px;padding:14px 18px;margin-bottom:14px}.ts-sqc b{display:block;font-weight:600}.ts-sqc span{color:var(--tk-50);font-size:13px}
+.ts-sql{list-style:none;margin:0 0 18px;padding:0;display:flex;flex-direction:column;gap:10px}.ts-sql li{display:flex;gap:10px;align-items:flex-start}.ts-sql li span{width:20px;height:20px;border-radius:50%;background:var(--tk-mint-50);color:var(--tk-mint-d);display:grid;place-items:center;flex-shrink:0;margin-top:1px}
+.ts-sqa{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-top:8px}
+.ts-btn.sqb{background:#111;color:#fff;text-shadow:none}.ts-btn.sqb:hover:not(:disabled){box-shadow:4px 5px 0 #fff,4px 5px 0 1.5px #111}
+.ts-sqf{border:1.5px solid var(--tk-bd);border-radius:18px;padding:22px;display:flex;flex-direction:column;gap:14px}.ts-sqf label{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500}
+.ts-sqh{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.ts-sqh b{font-size:17px}.ts-sqh small{width:100%;color:var(--tk-50);font-size:12.5px}.ts-sqx{display:flex;justify-content:space-between;font-size:13px;color:var(--tk-50);gap:10px;flex-wrap:wrap}
+.ts-sqok{display:flex;gap:12px;align-items:center;border:1.5px solid var(--tk-bd);border-radius:14px;padding:12px 16px;margin-bottom:14px;font-size:14px}.ts-sqok small{display:block;color:var(--tk-50);font-size:12.5px}
 .ts-still{animation:none!important}
 @media(prefers-reduced-motion:reduce){.ts-sheet,.ts-ov{animation:none}}
 `;
@@ -252,13 +278,14 @@ var inpS=function(p,suf,o){o=o||{};return '<span class="ts-suf"><input class="ts
 var BODY={};
 BODY['res.rules']=function(){return {t:'Booking rules',d:'How many bookings the agent accepts, and for how many guests.',n:'You can change these any time in Settings.',h:
  '<div class="ts-g2">'+fld('res.perDay','Max reservations a day',{min:1,max:500})+selF('res.win','Advance booking window',[[7,'7 days'],[14,'14 days'],[30,'30 days'],[60,'60 days'],[90,'90 days']])+fld('res.minP','Min party size',{min:1,max:50})+fld('res.maxP','Max party size',{min:1,max:100})+selF('res.dur','Booking length',[[60,'1 hour'],[90,'1.5 hours'],[120,'2 hours'],[150,'2.5 hours']])+selF('res.notice','Notice needed',[[0,'No notice'],[30,'30 min'],[60,'1 hour'],[120,'2 hours'],[240,'4 hours'],[1440,'1 day']])+'</div>'};};
-var SRCS=[['google','Your Google profile menu','31 items found',31,'Quickest'],['pos','Connect your POS','Toast, Square, Clover and more',42],['web','Your restaurant website','Paste your menu page',26],['agg','From a delivery app','DoorDash, Uber Eats, Grubhub',34],['upload','Upload photos or a PDF','We read and build it',28],['scratch','Start from scratch','Add items yourself',0]];
+var SRCS=[['google','Your Google profile menu','31 items found',31,'Quickest'],['square','Square POS','Sync items, prices and modifiers. Orders go to Square.',42,'Connect'],['pos','Another POS','Toast, Clover and more',42],['web','Your restaurant website','Paste your menu page',26],['agg','From a delivery app','DoorDash, Uber Eats, Grubhub',34],['upload','Upload photos or a PDF','We read and build it',28],['scratch','Start from scratch','Add items yourself',0]];
 BODY['ord.menu']=function(){var m=s.d.menu;
+ if(UI.mp&&String(UI.mp).indexOf('sq')===0)return sqBody();
  if(UI.mp==='busy')return {t:'Reading your menu',d:'',h:'<div class="ts-busy"><b>Importing…</b><div class="ts-bar"><i id="ts-pb" style="width:8%"></i></div></div>'};
  if(UI.mp==='review'){var nm=(SRCS.filter(function(x){return x[0]===m.src;})[0]||[])[1]||'Menu';return {t:(m.n?m.n+' items':'Empty menu'),d:'Imported as a draft. Publish it, or fine-tune it in Menu.',n:'Edit your menu any time in Menu.',h:
-  (m.n?[['Pizza',9],['Pasta',6],['Starters',7],['Salads',4],['Desserts',3],['Drinks',2]].map(function(c){return '<div class="ts-cat"><span>'+c[0]+'</span><span>'+c[1]+'</span></div>';}).join(''):'<div class="ts-cat"><span>Add items in Menu after you finish</span><span></span></div>')+'<div class="ts-sub" style="color:var(--tk-50);font-size:13px">'+esc(nm)+' · <button class="ts-link" onclick="TS.menuAgain()">Change</button></div>'};}
- return {t:'Add your menu',d:'The agent reads this menu to callers and builds their order from it.',n:'Edit your menu any time in Menu.',h:SRCS.map(function(o){return '<button class="ts-opt" onclick="TS.menuPick(\''+o[0]+'\')"><span class="ts-rad"></span><span><b>'+o[1]+(o[4]?'<span class="ts-tag">'+o[4]+'</span>':'')+'</b><span class="d">'+o[2]+'</span></span></button>';}).join('')};};
-TS.menuPick=function(k){UI.mp='busy';draw();var n=(SRCS.filter(function(x){return x[0]===k;})[0]||[])[3]||0,p=8,t=setInterval(function(){p+=26;var b=document.getElementById('ts-pb');if(b)b.style.width=Math.min(p,100)+'%';if(p>=100){clearInterval(t);if(UI.mp==='busy'&&UI.open){s.d.menu={src:k,n:n};UI.mp='review';bcast();draw();}}},k==='scratch'?60:280);};
+  (m.src==='square'?'<div class="ts-sqok">'+SQLOGO+'<div><b>Connected to Square · '+esc(m.loc||'')+'</b><small>'+(m.sync?'Menu stays in sync':'Menu sync off')+' · '+(m.orders?'Phone orders go to Square':'Orders stay in Tringg')+'</small></div></div>':'')+(m.n?[['Pizza',9],['Pasta',6],['Starters',7],['Salads',4],['Desserts',3],['Drinks',2]].map(function(c){return '<div class="ts-cat"><span>'+c[0]+'</span><span>'+c[1]+'</span></div>';}).join(''):'<div class="ts-cat"><span>Add items in Menu after you finish</span><span></span></div>')+'<div class="ts-sub" style="color:var(--tk-50);font-size:13px">'+esc(nm)+' · <button class="ts-link" onclick="TS.menuAgain()">Change</button></div>'};}
+ return {t:'Add your menu',d:'The agent reads this menu to callers and builds their order from it.',n:'Edit your menu any time in Menu.',h:SRCS.map(function(o){return '<button class="ts-opt" onclick="'+(o[0]==='square'?"TS.sq(\'sq1\')":"TS.menuPick(\'"+o[0]+"\')")+'"><span class="ts-rad"></span><span><b>'+o[1]+(o[4]?'<span class="ts-tag">'+o[4]+'</span>':'')+'</b><span class="d">'+o[2]+'</span></span></button>';}).join('')};};
+TS.menuPick=function(k){UI.mp='busy';draw();var n=(SRCS.filter(function(x){return x[0]===k;})[0]||[])[3]||0,p=8,t=setInterval(function(){p+=26;var b=document.getElementById('ts-pb');if(b)b.style.width=Math.min(p,100)+'%';if(p>=100){clearInterval(t);if(UI.mp==='busy'&&UI.open){s.d.menu=k==='square'?{src:k,n:n,loc:SQL[UI.sq.loc][0],sync:UI.sq.sync,orders:UI.sq.orders}:{src:k,n:n};UI.mp='review';bcast();draw();}}},k==='scratch'?60:280);};
 TS.more=function(){UI.more=!UI.more;draw();};
 TS.menuAgain=function(){UI.mp='choose';draw();};
 BODY['ord.svc']=function(){var q=s.d.svc;
@@ -397,7 +424,7 @@ TS.host={collapse:function(){},expand:function(){}};
 TS.collapse=function(){var el=document.querySelector('.ts-gs2');var go=function(){TS.ov.collapsed=true;TS.host.collapse();};if(el){el.classList.add('ts-fly');setTimeout(go,440);}else go();};
 TS.expand=function(){TS.ov.collapsed=false;TS.ov.grow=true;TS.host.expand();};
 TS.railWidget=function(){if(TS.allDone())return '';var t=TS.totals(),left=t.total-t.done;
- return '<button class="ts-rail ts-pop" onclick="TS.expand()" aria-label="Open setup, '+left+' steps left">'+ring(t.done,t.total,true)+'<span><b>Set up</b><small>'+left+' step'+(left===1?'':'s')+' left</small></span></button>';};
+ return '<button class="ts-rail ts-pop" onclick="TS.railClick()" aria-label="Open setup, '+TS.pct()+'% complete">'+ring(t.done,t.total,true)+'<span><b>Set up · '+TS.pct()+'%</b><small>'+left+' step'+(left===1?'':'s')+' left</small></span></button>';};
 TS.goCard=function(){var x=TS.stat('go');return '<div class="ts-card"><div class="ts-ch"><div><div class="ts-ct">Go live '+(x.complete?'<span class="ts-pl g">Live</span>':'<span class="ts-pl a">'+(x.done?x.done+' of 2':'Not started')+'</span>')+'</div></div></div><div class="ts-rows">'+rowsOf('go')+'</div></div>';};
 /* variant B: a short status list on the overview; each row leads to the tab that owns the steps */
 TS.status=function(){if(TS.allDone())return '';var nk=TS.nextKey();
@@ -457,7 +484,7 @@ TS.started=function(){if(TS.allDone()||TS.ov.collapsed)return '';var tt=TS.total
  return '<section class="ts-gs2'+(grow?' ts-grow':'')+'"><div class="ts-gs2-h"><div class="ts-gs2-t"><h2>Let’s get you started</h2><div class="ts-gs2-p"><div class="ts-bar"><i style="width:'+(tt.total?tt.done/tt.total*100:0)+'%"></i></div><span>'+tt.done+' of '+tt.total+' steps done</span></div></div>'+(nk2?'<button class="ts-btn sm ts-gs2-n" onclick="event.stopPropagation();'+TS.nextFn()+'">Next: '+nk2[1]+'</button>':'')+''+(tt.done>0?'<button class="ts-xb" aria-label="Collapse to sidebar" title="Collapse to sidebar" onclick="TS.collapse()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 15 6-6 6 6"/></svg></button>':'')+'</div><div class="ts-gs2-b"><div>'+(tt.done>0?'<div style="padding:0 28px">'+TS.gateNote()+'</div>':'')+'<div class="ts-cols">'+cols+'</div>'+det+'</div></div></section>';};
 TS.ovToggle=function(e){var el=document.querySelector('.ts-gs2');if(!el)return;el.classList.toggle('closed');TS.ov.open=!el.classList.contains('closed');};
 TS.ovSel=function(k){TS.ov.sel=TS.ov.sel===k?null:k;TS.host.render();};
-TS.overviewTop=function(){var top=TS.welcome==='2'&&!TS.allDone()?TS.hero():TS.welcomeHead();return top+TS.started();};
+TS.overviewTop=function(){if(TS.setup)return TS.hero2()+(TS.setup==='strip'?TS.strip2():'');var top=TS.welcome==='2'&&!TS.allDone()?TS.hero():TS.welcomeHead();return top+TS.started();};
 /* a dialog for the first visit: what is done, what is left, one button */
 TS.showWelcome=function(){if(document.getElementById('ts-wl'))return;var n=s.d.agent.name,done=['Restaurant details','Agent '+n],todo=[];
  if(TS.stat('enq').complete)done.push('Enquiries FAQs');else todo.push('Review enquiries');
@@ -469,4 +496,56 @@ TS.showWelcome=function(){if(document.getElementById('ts-wl'))return;var n=s.d.a
  document.body.appendChild(d);};
 TS.chooseOutlet=function(list,pick){var d=document.createElement('div');d.id='ts-wl';d.innerHTML='<div class="ts-wl-ov" onmousedown="if(event.target===this)TS.closeWelcome()"><div class="ts-wl" role="dialog" aria-label="Choose an outlet" style="padding-top:36px"><h2>Which outlet are you setting up?</h2><p class="ts-wl-s">Each outlet has its own setup.</p><div style="display:flex;flex-direction:column;gap:10px;margin-bottom:6px">'+list.map(function(o){return '<button class="ts-btn line" style="justify-content:space-between;height:52px" onclick="TS.closeWelcome();'+pick+'(\''+o.id+'\')"><span>'+esc(o.name)+'</span><span style="color:var(--tk-mint-d)">Set up →</span></button>';}).join('')+'</div></div></div>';document.body.appendChild(d);};
 TS.closeWelcome=function(){var d=document.getElementById('ts-wl');if(d)d.remove();};
+/* ───────── Square POS: connect, authorize, pick the location, import ───────── */
+var SQL=[['West Loop','845 W Randolph St, Chicago'],['Wicker Park','1520 N Milwaukee Ave, Chicago'],['Naperville','55 S Main St, Naperville']];
+var SQLOGO='<span class="ts-sqL" aria-hidden="true"><i></i></span>';
+TS.sq=function(step){if(!UI.sq){var a=((s.d.outlet&&s.d.outlet.area)||'').split(',')[0],i=0;SQL.forEach(function(l,j){if(l[0]===a)i=j;});UI.sq={email:'priya@rossapizza.com',loc:i,sync:true,orders:true};}UI.mp=step;UI.err='';draw();};
+TS.sqLoc=function(i){UI.sq.loc=i;draw();};
+TS.sqTog=function(k){UI.sq[k]=!UI.sq[k];draw();};
+function sqBody(){var st=UI.mp,q=UI.sq||{},LI=function(t){return '<li><span>'+CHK+'</span>'+t+'</li>';};
+ if(st==='sq1')return {t:'Connect Square',d:'Sign in to Square and Tringg reads your menu. Phone orders go straight into your POS.',n:'You stay in control. Disconnect any time in Settings › Integrations.',h:
+  '<div class="ts-sqc">'+SQLOGO+'<div><b>Square POS</b><span>Menu, prices and modifiers</span></div></div><ul class="ts-sql">'+LI('Reads your items, categories, prices and modifiers')+LI('Sends phone orders to Square, so the kitchen sees them')+LI('Keeps prices and sold-out items in sync')+'</ul>'+
+  '<div class="ts-sqa"><button class="ts-btn sqb" onclick="TS.sq(\'sq2\')">Continue with Square</button><button class="ts-link" onclick="TS.menuAgain()">Use another source</button></div>'};
+ if(st==='sq2')return {t:'Sign in to Square',d:'You are signing in on Square. Tringg never sees your password.',n:'',h:
+  '<div class="ts-sqf"><div class="ts-sqh">'+SQLOGO+'<b>Square</b></div><label>Email<input class="ts-in" value="'+esc(q.email)+'" aria-label="Square email" oninput="UI.sq.email=this.value"/></label><label>Password<input class="ts-in" type="password" value="password123" aria-label="Square password"/></label>'+
+  '<button class="ts-btn sqb" style="width:100%" onclick="TS.sq(\'sq3\')">Sign in</button><div class="ts-sqx"><button class="ts-link" onclick="TS.sq(\'sq3\')">Forgot password?</button><span>No Square account? <button class="ts-link" onclick="TS.sq(\'sq3\')">Create one</button></span></div></div>'};
+ if(st==='sq3')return {t:'Tringg wants access to your Square account',d:'Review what you are allowing.',n:'',h:
+  '<div class="ts-sqf"><div class="ts-sqh">'+SQLOGO+'<b>Square</b><small>Signed in as '+esc(q.email)+'</small></div><ul class="ts-sql">'+LI('View your items, prices and modifiers')+LI('Create and update orders')+LI('View your business locations')+'</ul>'+
+  '<div class="ts-sqa"><button class="ts-btn sqb" onclick="TS.sq(\'sq4\')">Allow</button><button class="ts-btn line" onclick="TS.menuAgain()">Cancel</button></div></div>'};
+ if(st==='sq4')return {t:'Pick the Square location',d:'Match this outlet to its location in Square.',n:'Change these any time in Settings › Integrations.',h:
+  SQL.map(function(l,i){return '<button class="ts-opt'+(q.loc===i?' on':'')+'" onclick="TS.sqLoc('+i+')"><span class="ts-rad"></span><span><b>'+l[0]+'</b><span class="d">'+l[1]+'</span></span></button>';}).join('')+
+  '<div class="ts-tg"><div><b>Keep the menu in sync</b><span class="d">Price and sold-out changes in Square update here</span></div>'+sw(q.sync,"TS.sqTog('sync')",'Keep the menu in sync')+'</div><div class="ts-tg"><div><b>Send phone orders to Square</b><span class="d">Orders appear in your POS like any other</span></div>'+sw(q.orders,"TS.sqTog('orders')",'Send phone orders to Square')+'</div>'+
+  '<div class="ts-sqa"><button class="ts-btn" onclick="TS.menuPick(\'square\')">Import menu</button></div>'};
+ return null;}
+
+/* ───────── banner-first overview: one call to action, a status strip or a side drawer ───────── */
+TS.setup=window.TS_SETUP||'';
+TS.pct=function(){var t=TS.totals();return t.total?Math.round(t.done/t.total*100):0;};
+var LOCK='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
+var ARR='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+TS.hero2=function(){var k=TS.nextKey();if(!k)return TS.welcomeHead();var n=s.d.agent.name,h=NEXTT[k],p=TS.pct(),go=TS.canSub()&&!act()&&k!=='go';
+ var cta=TS.setup==='drawer'?'TS.drawer(true)':TS.nextFn();
+ return '<div class="ts-hero"><div style="flex:1;min-width:0"><div class="ts-hero-e">Welcome, '+esc(TS.cfg.user)+'</div><h2>'+h[0]+'</h2><p>'+esc(n)+' '+h[1]+(go?' Go live is unlocked, so anything left can wait.':'')+'</p><div class="ts-hero-p"><div class="ts-bar"><i style="width:'+p+'%"></i></div><span>'+p+'% set up</span></div></div><div class="ts-hero-a"><button class="ts-btn ts-hero-b ts-pulse" onclick="'+cta+'">'+(k==='go'?'Go live':TS.setup==='drawer'?'Continue setup':'Continue')+'</button>'+(go?'<button class="ts-btn line" onclick="TS.open(\'go\',\'sub\')">Go live now</button>':'')+'</div></div>';};
+TS.strip2=function(){var ks=['enq','res','ord'].filter(function(k){return TS.sel(k);}),can=TS.canSub(),live=act();
+ var nodes=ks.map(function(k){var x=TS.stat(k),ok=x.complete,part=!ok&&x.done>0;return '<div class="ts-nd'+(ok?' ok':part?' part':'')+'"><span class="ts-ndi">'+(ok?CHK:'')+'</span><b>'+SVC[k].n+'</b><small>'+(ok?'Ready':part?x.done+' of '+x.total:'To do')+'</small></div>';}).join('');
+ var go='<div class="ts-nd go '+(live?'ok':can?'open':'lock')+'"><span class="ts-ndi">'+(live?CHK:can?ARR:LOCK)+'</span><b>Go live</b><small>'+(live?'Live':can?'Unlocked':'Locked')+'</small></div>';
+ return '<section class="ts-st" aria-label="Setup status"><div class="ts-st-l"><div class="ts-st-h">Set up any one</div><div class="ts-st-n">'+nodes+'</div></div><div class="ts-st-ar">'+ARR+'</div>'+go+'</section><p class="ts-st-c">'+(live?'Your agent is live. Finish the rest whenever you like.':can?'Go live is unlocked. Finish the rest whenever you like.':'Finish any one setup to unlock Go live. The others can wait.')+'</p>';};
+/* the drawer: setup lives on the side, the dashboard stays behind it */
+TS.dr={open:false,seen:false};
+TS.drawer=function(on){TS.dr.open=!!on;drDraw();};
+function drRow(k){var x=TS.stat(k),ok=x.complete,on=TS.sel(k);
+ var btn=!on?'<button class="ts-btn sm line" onclick="TS.add(\''+k+'\')">Add</button>':ok?'<span class="ts-done2">'+CHK+' Ready</span>':'<button class="ts-btn sm '+(TS.nextKey()===k?'':'line')+'" onclick="TS.open(\''+k+'\')">'+(x.done?'Continue':'Set up')+'</button>';
+ return '<div class="ts-dr-r"><span class="ts-dr-i'+(ok?' ok':'')+'">'+(ok?CHK:'')+'</span><div><b>'+SVC[k].n+'</b><small>'+(!on?'Off':ok?'Set up':x.done+' of '+x.total+' steps')+'</small></div>'+btn+'</div>';}
+function drDraw(){var r=document.getElementById('ts-dr');if(!r){r=document.createElement('div');r.id='ts-dr';document.body.appendChild(r);}
+ if(!TS.dr.open){r.innerHTML='';return;}
+ var n=s.d.agent.name,p=TS.pct(),t=TS.totals(),can=TS.canSub(),live=act(),fwd=!!s.done['go.fwd'];
+ var gor=live?'<div class="ts-dr-r"><span class="ts-dr-i ok">'+CHK+'</span><div><b>Go live</b><small>'+(fwd?'Live':'Subscribed. Forward your line')+'</small></div>'+(fwd?'':'<button class="ts-btn sm" onclick="TS.open(\'go\',\'fwd\')">Forward line</button>')+'</div>':
+  '<div class="ts-dr-r'+(can?'':' lock')+'"><span class="ts-dr-i'+(can?' open':'')+'">'+(can?ARR:LOCK)+'</span><div><b>Go live</b><small>'+(can?'Unlocked. Go live whenever you are ready':'Unlocks after your first setup')+'</small></div>'+(can?'<button class="ts-btn sm" onclick="TS.open(\'go\',\'sub\')">Go live</button>':'')+'</div>';
+ r.innerHTML='<div class="ts-dr-bk" onmousedown="if(event.target===this)TS.drawer(false)"><aside class="ts-dr" role="dialog" aria-label="Set up '+esc(n)+'"><div class="ts-dr-h"><div><h2>Set up '+esc(n)+'</h2><p>'+p+'% complete</p></div>'+ring(t.done,t.total)+'<button class="ts-xb" aria-label="Close" onclick="TS.drawer(false)">'+XI+'</button></div>'+
+  '<div class="ts-dr-s">Done</div><div class="ts-dr-r"><span class="ts-dr-i ok">'+CHK+'</span><div><b>Restaurant details</b></div></div><div class="ts-dr-r"><span class="ts-dr-i ok">'+CHK+'</span><div><b>Agent '+esc(n)+'</b></div></div>'+
+  '<div class="ts-dr-s">Set up any one to go live</div>'+['enq','res','ord'].map(drRow).join('')+'<div class="ts-dr-s">Then</div>'+gor+'</aside></div>';}
+TS.on(function(){if(TS.dr.open)drDraw();});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&TS.dr.open&&!UI.open)TS.drawer(false);});
+TS.railClick=function(){if(TS.setup==='drawer')TS.drawer(true);else TS.expand();};
+
 })();
