@@ -340,7 +340,7 @@ BOOT = r'''/* setup prototypes: one location, empty to start, driven by the shar
  window.resetDash=()=>{TS.reset();TS.dr={open:false,seen:false};TS.drawer(false);CUR=PRIMARY;Object.keys(SNAP).forEach(k=>delete SNAP[k]);initFresh();applyTS();render();};
  /* one state with everything set up and data for reservations and orders */
  window.loadReady=()=>{FULL=true;TS.fill();ROLE_OUT.owner=null;applyRole(true);loadScenario('live');applyRole();DB.k='live';
-  BRAND.agent=TS.get().d.agent.name;if(DB.agents[0])DB.agents[0].n=BRAND.agent;TS.cfg.outlets=OUTLETS.length;S.outlet=PRIMARY;S.route='overview';S.dd=false;S.res.sel='R-311';S.orders.sel=null;S.orders.tab='pending';render();};
+  BRAND.agent=TS.get().d.agent.name;if(DB.agents[0])DB.agents[0].n=BRAND.agent;DB.orders.forEach(o=>{if(['#2045','#2050','#2051'].includes(o.id))o.outlet='wl';});TS.cfg.outlets=OUTLETS.length;S.outlet=PRIMARY;S.route='overview';S.dd=false;S.res.sel='R-311';S.orders.sel=null;S.orders.tab='pending';render();};
  initFresh();
  TS.on(()=>{applyTS();render();});
  window.addEventListener('message',e=>{const m=e.data;if(!m||!m.tringg)return;
@@ -405,6 +405,14 @@ def build_dashboard(v, w='1', su=''):
     t = t[:a] + PROTO_PANEL + t[b:]
     t = must(t, "${DB.svc[x.id].set!==true?'<span class=\"odd-new\">New</span>':''}", "${TS.outletSet(x.id)?'':'<span class=\"odd-new\">Set up</span>'}")
     t = must(t, "function pickOutlet(id){", "function pickOutlet(id){TS.beforeOutlet(id);if(S.route!=='settings')S.route='overview';")
+    # auto-accept: visible on the Orders page (what it is, what it does), per outlet and across outlets
+    t = must(t, "&&!(ON(S.outlet).pos&&DB.posSync)?`<button class=\"pos-sw", "&&false?`<button class=\"pos-sw")
+    t = must(t, "return `<div class=\"work\">${mixBanner('ord')}${tiles}${heldStrip()}", "return `<div class=\"work\">${mixBanner('ord')}${aaStrip()}${tiles}${heldStrip()}")
+    t = must(t, "<span class=\"it-n\">${esc(o.name)} ${spill(o.state)} ", "<span class=\"it-n\">${esc(o.name)} ${spill(o.state)} ${autoPill(o)} ")
+    t = must(t, "function renderOrders(){", AA_JS + "\nfunction renderOrders(){")
+    t = must(t, "[...new Set(['menu','svc','tax','pay'])]" if False else "h+=['menu','svc','tax','pay'].filter(k=>one||['menu','tax','pay'].includes(k)).map(k=>P[k]||'').join('');", "h+=['menu','svc','acc','tax','pay'].filter(k=>one||['menu','acc','tax','pay'].includes(k)).map(k=>P[k]||'').join('');")
+    t = must(t, "const more=['acc','pre','lg'].filter(k=>one||k==='acc').map(k=>P[k]||'').join('');", "const more=['pre','lg'].filter(k=>one).map(k=>P[k]||'').join('');")
+    t = must(t, "orow('Auto-accept orders','On: orders go straight to the kitchen. Off: someone accepts each one in Orders.',otog(DB.aaDefault,'Auto-accept orders','aaGlobal()',!own))+", "(one?orow('Auto-accept at '+esc(on.short),'On: orders skip approval. Off: you accept each one in Orders.',otog(!!DB.autoAccept[o],'Auto-accept at this outlet',\"aaTog('\"+o+\"')\"))+'<div class=\"sep\"></div>':'')+orow(one?'Default for all outlets':'Auto-accept orders','On: orders go straight to the kitchen. Off: someone accepts each one in Orders.',otog(DB.aaDefault,'Auto-accept orders','aaGlobal()',!own))+")
     # settings, all outlets: every outlet row opens that outlet's Ordering settings
     t = must(t, "function ordTable(){", "function goOrd(id,sec){S.set='ord';pickOutlet(id);if(sec)setTimeout(()=>{const e=document.getElementById('ordsec-'+sec);if(e)e.scrollIntoView({block:'start',behavior:'smooth'})},80);}\nfunction ordTable(){")
     t = must(t, """return `<tr><td style="font-weight:600">${esc(x.name)}</td><td>${live?pill('p-green','Taking orders'):pill('p-amber','Setup '+(4-m.length)+' of 4')}</td><td class="small">${m.length?m.map(k=>nm[k]).join(' · '):'Nothing left'}</td></tr>`;""",
@@ -412,7 +420,7 @@ def build_dashboard(v, w='1', su=''):
     t = must(t, "<thead><tr><th>Outlet</th><th>Status</th><th>Still to do</th></tr></thead>", "<thead><tr><th>Outlet</th><th>Status</th><th>Still to do</th><th></th></tr></thead>")
     t = must(t, """<td>${pill('p-grey','Ordering off')}</td><td class="small">${isOwner()?`<button class="u-link" onclick="setOm('${x.id}','ord')">Turn on</button>`:'Ask the owner to turn it on'}</td></tr>`""", """<td>${pill('p-grey','Ordering off')}</td><td class="small">${isOwner()?`<button class="u-link" onclick="setOm('${x.id}','ord')">Turn on</button>`:'Ask the owner to turn it on'}</td><td></td></tr>`""")
     t = must(t, """<thead><tr><th>Outlet</th><th>Taxes that apply</th></tr></thead><tbody>${OUTLETS.map(x=>`<tr><td style="font-weight:600">${esc(x.name)}</td><td class="small">${txAll.filter(t=>t.outs.includes(x.id)).map(t=>esc(t.n)+' '+(t.vt==='%'?t.v+'%':'$'+t.v)).join(' · ')||'None'}</td></tr>`""", """<thead><tr><th>Outlet</th><th>Taxes that apply</th><th></th></tr></thead><tbody>${OUTLETS.map(x=>`<tr class="orow-go" onclick="goOrd('${x.id}','tax')"><td style="font-weight:600">${esc(x.name)}</td><td class="small">${txAll.filter(t=>t.outs.includes(x.id)).map(t=>esc(t.n)+' '+(t.vt==='%'?t.v+'%':'$'+t.v)).join(' · ')||'None'}</td><td style="text-align:right"><span class="u-link">Edit ›</span></td></tr>`""")
-    t = must(t, '</style>', '.orow-go{cursor:pointer}.orow-go:hover td{background:var(--sunken)}</style>')
+    t = must(t, '</style>', ''+AA_CSS+'.orow-go{cursor:pointer}.orow-go:hover td{background:var(--sunken)}</style>')
     t = must(t, '</style>', '.btn-dark{background:#4FC2B4;color:#fff;font-weight:600;border:1.5px solid #111}.btn-dark:hover:not(:disabled){background:#4FC2B4;color:#fff}.btn-dark:hover:not(:disabled){box-shadow:3px 4px 0 #111}.odd-new{background:#DDF2EE;color:#1F6E62}</style>')
     # modules: a service that is off offers to add itself; one that isn't set up shows its steps in place
     t = must(t, '''onclick="goSet('mods')">Turn on</button>''', '''onclick="TS.add('${m}')">Add ${m==='ord'?'ordering':'reservations'}</button>''')
@@ -448,6 +456,22 @@ function ovEnhance(){document.querySelectorAll('#view .ov-grid .card:not(.agent)
     t = t[:a] + BOOT + t[b:]
     return t
 
+
+AA_CSS = '.aa-s{display:flex;align-items:center;gap:16px;flex-wrap:wrap;background:var(--panel);border-radius:18px;padding:14px 20px;margin-bottom:14px;box-shadow:var(--e1);border:1.5px solid var(--border)}.aa-s.on{border-color:#BFE6E0}.aa-s.off{background:#FFF9E8;border-color:#F0D58C}.aa-i{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;flex-shrink:0;background:var(--mint-50);color:var(--mint-700)}.aa-s.off .aa-i{background:var(--cream-50);color:var(--cream-700)}.aa-i svg{width:20px;height:20px}.aa-t{flex:1;min-width:240px}.aa-t b{display:block;font-weight:600;font-size:15px}.aa-t span{display:block;font-size:13.5px;color:var(--ink-50);margin-top:2px}.aa-t span b{display:inline;color:var(--cream-700)}.aa-f{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--ink-50)}.aa-f span{background:var(--chip);border-radius:999px;padding:4px 12px;white-space:nowrap}.aa-f span.k{background:var(--mint-50);color:var(--mint-700);font-weight:600}.aa-s.off .aa-f span.k{background:var(--cream-50);color:var(--cream-700)}.aa-f i{font-style:normal;color:var(--ink-30)}'
+AA_JS = r'''
+function goAA(){go('settings');S.set='ord';render();setTimeout(()=>{const e=document.getElementById('ordsec-acc');if(e)e.scrollIntoView({behavior:'smooth',block:'start'})},80);}
+function aaTog(id){aaSet(id,!DB.autoAccept[id]);render();toast(DB.autoAccept[id]?'Auto-accept on at '+ON(id).short:'Auto-accept off at '+ON(id).short+'. Accept orders in Needs approval.');}
+function autoPill(o){return (o.auto||(DB.autoAccept[o.outlet]&&['ACCEPTED','PREPARED','DISPATCHED','DELIVERED','PICKED_UP'].includes(o.state)))?pill('p-grey','Auto-accepted'):'';}
+function aaStrip(){
+ if(S.outlet==='all'){const off=OUTLETS.filter(x=>!DB.autoAccept[x.id]),n=OUTLETS.length-off.length;
+  return `<div class="aa-s ${off.length?'off':'on'}"><div class="aa-i">${off.length?I.clock:I.check}</div><div class="aa-t"><b>Auto-accept is on at ${n} of ${OUTLETS.length} outlets</b><span>${off.length?'Orders at these outlets wait for you in Needs approval: '+off.map(x=>`<button class="u-link" onclick="pickOutlet('${x.id}')">${esc(x.short)}</button>`).join(', ')+'.':'New orders go straight to the kitchen.'}</span></div><button class="btn btn-line btn-sm" onclick="goAA()">Change in Settings</button></div>`;}
+ const id=S.outlet,on=!!DB.autoAccept[id],w=DB.orders.filter(o=>o.outlet===id&&o.state==='PLACED').length,ps=ON(id).pos&&DB.posSync?' Accepted orders are sent to '+ON(id).pos+'.':'';
+ const fl=on?['Order placed','Accepted for you','Kitchen starts']:['Order placed','You accept it','Kitchen starts'];
+ return `<div class="aa-s ${on?'on':'off'}"><div class="aa-i">${on?I.check:I.clock}</div><div class="aa-t"><b>Auto-accept is ${on?'on':'off'} at ${esc(ON(id).short)}</b><span>${on?'New orders skip approval and go straight to Active.':'New orders wait in Needs approval. Accept within 10 minutes or they expire.'}${!on&&w?' <b>'+w+' waiting now.</b>':''}${ps}</span></div>
+  <div class="aa-f">${fl.map((x,i)=>`<span class="${i===1?'k':''}">${x}</span>`).join('<i>›</i>')}</div>
+  <button class="pos-sw ${on?'on':''}" onclick="aaTog('${id}')" aria-pressed="${on}" aria-label="Auto-accept at ${esc(ON(id).short)}">Auto-accept <span class="tog ${on?'on':''}" style="width:36px;height:22px" aria-hidden="true"></span></button></div>`;}
+'''
+AA_CSS = '.aa-s{display:flex;align-items:center;gap:16px;flex-wrap:wrap;background:var(--panel);border-radius:18px;padding:14px 20px;margin-bottom:14px;box-shadow:var(--e1);border:1.5px solid var(--border)}.aa-s.on{border-color:#BFE6E0}.aa-s.off{background:#FFF9E8;border-color:#F0D58C}.aa-i{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;flex-shrink:0;background:var(--mint-50);color:var(--mint-700)}.aa-s.off .aa-i{background:var(--cream-50);color:var(--cream-700)}.aa-i svg{width:20px;height:20px}.aa-t{flex:1;min-width:240px}.aa-t b{display:block;font-weight:600;font-size:15px}.aa-t span{display:block;font-size:13.5px;color:var(--ink-50);margin-top:2px}.aa-t span b{display:inline;color:var(--cream-700)}.aa-f{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--ink-50)}.aa-f span{background:var(--chip);border-radius:999px;padding:4px 12px;white-space:nowrap}.aa-f span.k{background:var(--mint-50);color:var(--mint-700);font-weight:600}.aa-s.off .aa-f span.k{background:var(--cream-50);color:var(--cream-700)}.aa-f i{font-style:normal;color:var(--ink-30)}'
 
 # ───────────────────────── wrapper ─────────────────────────
 NAMES = {'A': ('Onboarding-first', 'proto-a-onboarding-first.html'),
