@@ -47,6 +47,7 @@ def _photos():
         print('photos skipped:', e)
     return out
 PHOTOS = _photos()
+SD_JS = (here / 'setup' / 'settings-dialog.js').read_text(encoding='utf-8')
 ENGINE = (here / 'setup' / 'setup-engine.js').read_text(encoding='utf-8').replace('__LOGO_URI__', LOGO).replace('__TICON_URI__', TICON)
 OB = (here / 'onboarding.html').read_text(encoding='utf-8')
 DB = (here / 'tringg-ordering.html').read_text(encoding='utf-8')
@@ -64,8 +65,8 @@ def cut(text, start, end, new=''):
     return text[:a] + new + text[b:]
 
 
-def engine_tag(v, w='1', su=''):
-    return f'<script>window.TS_VARIANT="{v}";window.TS_WELCOME="{w}";window.TS_SETUP="{su}";</script><script>{ENGINE}</script>\n'
+def engine_tag(v, w='1', su='', sd=''):
+    return f'<script>window.TS_VARIANT="{v}";window.TS_WELCOME="{w}";window.TS_SETUP="{su}";window.TS_SD="{sd}";</script><script>{ENGINE}</script>\n'
 
 
 VOICES_JS = r'''const VOICES=[{id:'allie',n:'Ava',g:'Female',t:'Female · English',d:'Warm American host, clear and friendly on the phone',pitch:1.15,rate:1},{id:'marcus',n:'Marcus',g:'Male',t:'Male · English',d:'Calm, confident American host with a steady pace',pitch:.7,rate:.95},{id:'leo',n:'Leo',g:'Male',t:'Male · English',d:'Upbeat, easygoing host for casual restaurants',pitch:.9,rate:1.1},{id:'priya',n:'Priya',g:'Female',t:'Female · Hindi',d:'Friendly bilingual host for Hindi and English callers',pitch:1.3,rate:1.08},{id:'shubh',n:'Shubh',g:'Male',t:'Male · Hindi',d:'Neutral Indian male host. Lowest pronunciation error rate',pitch:.8,rate:1}];
@@ -231,9 +232,9 @@ TS.hello();
 '''
 
 
-def build_onboarding(v, w='1', su=''):
+def build_onboarding(v, w='1', su='', sd=''):
     t = OB
-    t = must(t, '<div id="app"></div>\n<script>', '<div id="app"></div>\n' + engine_tag(v, w, su) + '<script>')
+    t = must(t, '<div id="app"></div>\n<script>', '<div id="app"></div>\n' + engine_tag(v, w, su, sd) + '<script>')
     t = must(t, '</style>', OB_CSS)
     t = cut(t, 'const OUTLETS=[', 'const CUISINES', '''const RFAQS=[['Do you have gluten-free crusts?','Yes, on any 12-inch pizza.','general'],['Is there parking nearby?','Yes, street parking and a garage next door.','general'],['Do you have vegan options?','Yes, a vegan cheese pizza and several pastas.','general'],['Can you host a private party?','Yes, up to 40 guests.','general'],
  ['Do you take walk-ins?','Yes, subject to availability. Booking is recommended on weekends.','res'],['How far ahead can I book?','Up to 30 days ahead.','res'],['Can I book for a large group?','Yes, up to 12 guests by phone.','res'],
@@ -348,14 +349,15 @@ BOOT = r'''/* setup prototypes: one location, empty to start, driven by the shar
    if(TS.setup==='drawer'&&!TS.dr.seen&&!TS.allDone()){TS.dr.seen=true;setTimeout(()=>TS.drawer(true),350);}}
   if(m.tringg==='ready'){S.route='overview';loadReady();}});
  applyTS();TS.hello();
+ if(window.TS_SD)setTimeout(()=>{loadReady();S.outlet='all';S.set='ord';S.sdlg=true;S.dd=false;render();},0);
 })();
 render();
 '''
 
 
-def build_dashboard(v, w='1', su=''):
+def build_dashboard(v, w='1', su='', sd=''):
     t = DB
-    t = must(t, '<script>\n', engine_tag(v, w, su) + '<script>\n')
+    t = must(t, '<script>\n', engine_tag(v, w, su, sd) + '<script>\n')
     # one setup surface, no sidebar checklist
     t = must(t, "function renderChk(){if(S.outlet==='all'||!DB.mods.ord)return '';", "function renderChk(){if(TS.variant==='C'&&(S.setupCollapsed||TS.setup==='drawer'))return TS.railWidget();return '';")
     # the phone number in the top pill picked up a phone-mockup style
@@ -399,6 +401,9 @@ def build_dashboard(v, w='1', su=''):
     t = must(t, "b=!DB.mods.res?'<span class=\"bdg off\">Off</span>':!DB.subscribed?'':p?", "b=!DB.mods.res?'<span class=\"bdg off\">Off</span>':!TS.ready('res')?'<span class=\"bdg new\">Set up</span>':!DB.subscribed?'':p?")
     # the Orders header switches belong to the live view only
     t = must(t, "S.route==='orders'&&DB.orderingOn", "S.route==='orders'&&DB.orderingOn&&TS.get().done['go.fwd']", count=3)
+    t = must(t, "function go(r){S.route=r;", "function go(r){if(window.TS_SD&&r==='settings'){S.sdlg=true;S.nav=false;S.acct=false;render();return;}S.route=r;")
+    t = must(t, "\n ord:()=>ordPage(),", "\n ord:()=>window.TS_SD?ordRows():ordPage(),")
+    t = must(t, "renderOverlay();if(S.route==='overview')ovEnhance();", "renderOverlay();if(S.route==='overview')ovEnhance();if(window.TS_SD)sdRender();")
     # prototype panel
     a = t.index('<div class="proto"><div class="proto-l">Prototype state</div>')
     b = t.index('Subscribed</button></div></div>', a) + len('Subscribed</button></div></div>')
@@ -459,7 +464,7 @@ function ovEnhance(){document.querySelectorAll('#view .ov-grid .card:not(.agent)
     # arriving from onboarding: no toast, no banner. The dashboard just opens on the right page.
     a = t.index('/* arriving from onboarding')
     b = t.index('</script>', a)
-    t = t[:a] + BOOT + t[b:]
+    t = t[:a] + BOOT.replace('\nrender();\n', '\n' + (SD_JS if sd else '') + '\nrender();\n') + t[b:]
     return t
 
 
@@ -502,10 +507,11 @@ NAMES = {'A': ('Onboarding-first', 'proto-a-onboarding-first.html'),
 VARIANTS = {'C1': ('C', '1', 'C1 · Welcome header', 'proto-c1-welcome-header.html'),
             'C2': ('C', '2', 'C2 · Hero banner', 'proto-c2-hero-banner.html'),
             'C3': ('C', '3', 'C3 · Welcome dialog', 'proto-c3-welcome-dialog.html'),
-            'E1': ('C', '3', 'E · Go-live banner + services', 'proto-e-golive-banner.html', 'golive')}
+            'E1': ('C', '3', 'E · Go-live banner + services', 'proto-e-golive-banner.html', 'golive'),
+            'E2': ('C', '3', 'E2 · Settings as dialogs', 'proto-e2-settings-dialogs.html', 'golive', '1')}
 
 
-def wrapper(label, ob, dash):
+def wrapper(label, ob, dash, start=''):
     b64 = lambda x: base64.b64encode(x.encode('utf-8')).decode('ascii')
     return f'''<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -542,12 +548,14 @@ document.getElementById('b-db').onclick=()=>show('db');
 document.getElementById('b-rd').onclick=()=>{{show('db');db.contentWindow.postMessage({{tringg:'ready'}},'*');}};
 document.getElementById('b-rs').onclick=()=>{{STATE=null;load();show('ob');}};
 load();
+{"show('db');" if start else ''}
 </script></body></html>'''
 
 
 if __name__ == '__main__':
     for key, (v, w, label, fn, *rest) in VARIANTS.items():
         su = rest[0] if rest else ''
-        page = wrapper(label, build_onboarding(v, w, su), build_dashboard(v, w, su))
+        sd = rest[1] if len(rest) > 1 else ''
+        page = wrapper(label, build_onboarding(v, w, su, sd), build_dashboard(v, w, su, sd), 'db' if sd else '')
         (here / fn).write_text(page, encoding='utf-8')
         print('wrote', fn, len(page) // 1024, 'KB')
