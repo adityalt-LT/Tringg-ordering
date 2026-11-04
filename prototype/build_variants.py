@@ -349,7 +349,8 @@ BOOT = r'''/* setup prototypes: one location, empty to start, driven by the shar
    if(TS.setup==='drawer'&&!TS.dr.seen&&!TS.allDone()){TS.dr.seen=true;setTimeout(()=>TS.drawer(true),350);}}
   if(m.tringg==='ready'){S.route='overview';loadReady();}});
  applyTS();TS.hello();
- if(window.TS_SD)setTimeout(()=>{loadReady();S.outlet='all';S.set='ord';S.sdlg=true;S.dd=false;render();},0);
+ if(/^[12]$/.test(window.TS_SD))setTimeout(()=>{loadReady();S.outlet='all';S.set='ord';S.sdlg=true;S.dd=false;render();},0);
+ if(window.TS_SD==='page')setTimeout(()=>{loadReady();S.outlet='all';S.set='ord';S.route='settings';S.dd=false;render();},0);
 })();
 render();
 '''
@@ -401,9 +402,9 @@ def build_dashboard(v, w='1', su='', sd=''):
     t = must(t, "b=!DB.mods.res?'<span class=\"bdg off\">Off</span>':!DB.subscribed?'':p?", "b=!DB.mods.res?'<span class=\"bdg off\">Off</span>':!TS.ready('res')?'<span class=\"bdg new\">Set up</span>':!DB.subscribed?'':p?")
     # the Orders header switches belong to the live view only
     t = must(t, "S.route==='orders'&&DB.orderingOn", "S.route==='orders'&&DB.orderingOn&&TS.get().done['go.fwd']", count=3)
-    t = must(t, "function go(r){S.route=r;", "function go(r){if(window.TS_SD&&r==='settings'){S.sdlg=true;S.nav=false;S.acct=false;render();return;}S.route=r;")
-    t = must(t, "\n ord:()=>ordPage(),", "\n ord:()=>window.TS_SD?ordRows():ordPage(),")
-    t = must(t, "renderOverlay();if(S.route==='overview')ovEnhance();", "renderOverlay();if(S.route==='overview')ovEnhance();if(window.TS_SD)sdRender();")
+    t = must(t, "function go(r){S.route=r;", "function go(r){if(/^[12]$/.test(window.TS_SD)&&r==='settings'){S.sdlg=true;S.nav=false;S.acct=false;render();return;}S.route=r;")
+    t = must(t, "\n ord:()=>ordPage(),", "\n ord:()=>/^[12]$/.test(window.TS_SD)?ordRows():ordPage(),")
+    t = must(t, "renderOverlay();if(S.route==='overview')ovEnhance();", "renderOverlay();if(S.route==='overview')ovEnhance();if(/^[12]$/.test(window.TS_SD))sdRender();")
     # prototype panel
     a = t.index('<div class="proto"><div class="proto-l">Prototype state</div>')
     b = t.index('Subscribed</button></div></div>', a) + len('Subscribed</button></div></div>')
@@ -464,7 +465,7 @@ function ovEnhance(){document.querySelectorAll('#view .ov-grid .card:not(.agent)
     # arriving from onboarding: no toast, no banner. The dashboard just opens on the right page.
     a = t.index('/* arriving from onboarding')
     b = t.index('</script>', a)
-    t = t[:a] + BOOT.replace('\nrender();\n', '\n' + (SD_JS if sd else '') + '\nrender();\n') + t[b:]
+    t = t[:a] + BOOT.replace('\nrender();\n', '\n' + (SD_JS if sd in ('1', '2') else '') + '\nrender();\n') + t[b:]
     return t
 
 
@@ -509,6 +510,7 @@ VARIANTS = {'C1': ('C', '1', 'C1 · Welcome header', 'proto-c1-welcome-header.ht
             'C3': ('C', '3', 'C3 · Welcome dialog', 'proto-c3-welcome-dialog.html'),
             'E1': ('C', '3', 'E · Go-live banner + services', 'proto-e-golive-banner.html', 'golive'),
             'E2': ('C', '3', 'E2a · Settings dialogs: apply to', 'proto-e2-settings-dialogs.html', 'golive', '1'),
+            'E1S': ('C', '3', 'E1 · Settings as a page', 'proto-e1-settings-page.html', 'golive', 'page'),
             'E2B': ('C', '3', 'E2b · Settings dialogs: outlet grid', 'proto-e2b-settings-grid.html', 'golive', '2')}
 
 
