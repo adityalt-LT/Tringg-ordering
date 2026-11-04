@@ -208,7 +208,7 @@ html .rail-top .logo{filter:invert(1)}
 var sty=document.createElement('style');sty.textContent=CSS;(document.head||document.documentElement).appendChild(sty);
 
 /* ── model ── */
-var SVC={kb:{n:'FAQs'},enq:{n:'Enquiries',d:'Answers questions about your restaurant'},res:{n:'Reservations',d:'Table bookings by phone'},ord:{n:'Ordering',d:'Pickup and delivery orders by phone'},go:{n:'Go live',d:'Subscribe and forward your line'}};
+var SVC={kb:{n:'FAQs'},enq:{n:'Enquiries',d:'Answers questions, like hours and menu'},res:{n:'Reservations',d:'Books tables'},ord:{n:'Ordering',d:'Takes pickup and delivery orders'},go:{n:'Go live',d:'Subscribe and forward your line'}};
 var STEPS={
  res:[['rules','Booking rules'],['faq','FAQs']],
  kb:[['all','FAQs']],
@@ -283,20 +283,20 @@ var inpS=function(p,suf,o){o=o||{};return '<span class="ts-suf"><input class="ts
 
 /* ── step bodies, same fields as Settings ── */
 var BODY={};
-BODY['res.rules']=function(){return {t:'Booking rules',d:'How many bookings the agent accepts, and for how many guests.',n:'You can change these any time in Settings.',h:
+BODY['res.rules']=function(){return {t:'Booking rules',d:'Set how many bookings Emma takes.',n:'You can change this later in Settings.',h:
  '<div class="ts-g2">'+fld('res.perDay','Max reservations a day',{min:1,max:500})+selF('res.win','Advance booking window',[[7,'7 days'],[14,'14 days'],[30,'30 days'],[60,'60 days'],[90,'90 days']])+fld('res.minP','Min party size',{min:1,max:50})+fld('res.maxP','Max party size',{min:1,max:100})+selF('res.dur','Booking length',[[60,'1 hour'],[90,'1.5 hours'],[120,'2 hours'],[150,'2.5 hours']])+selF('res.notice','Notice needed',[[0,'No notice'],[30,'30 min'],[60,'1 hour'],[120,'2 hours'],[240,'4 hours'],[1440,'1 day']])+'</div>'};};
-var SRCS=[['google','Your Google profile menu','31 items found',31,'Quickest'],['square','Square POS','Sync items, prices and modifiers. Orders go to Square.',42,'Connect'],['pos','Another POS','Toast, Clover and more',42],['web','Your restaurant website','Paste your menu page',26],['agg','From a delivery app','DoorDash, Uber Eats, Grubhub',34],['upload','Upload photos or a PDF','We read and build it',28],['scratch','Start from scratch','Add items yourself',0]];
+var SRCS=[['google','Your Google profile menu','31 items found',31,'Quickest'],['square','Square POS','Gets your menu. Sends orders to Square.',42,'Connect'],['pos','Another POS','Toast, Clover and more',42],['web','Your restaurant website','Paste your menu page',26],['agg','From a delivery app','DoorDash, Uber Eats, Grubhub',34],['upload','Upload photos or a PDF','We read and build it',28],['scratch','Start from scratch','Add items yourself',0]];
 BODY['ord.menu']=function(){var m=s.d.menu;
  if(UI.mp&&String(UI.mp).indexOf('sq')===0)return sqBody();
  if(UI.mp==='busy')return {t:'Reading your menu',d:'',h:'<div class="ts-busy"><b>Importing…</b><div class="ts-bar"><i id="ts-pb" style="width:8%"></i></div></div>'};
- if(UI.mp==='review'){var nm=(SRCS.filter(function(x){return x[0]===m.src;})[0]||[])[1]||'Menu';return {t:(m.n?m.n+' items':'Empty menu'),d:'Imported as a draft. Publish it, or fine-tune it in Menu.',n:'Edit your menu any time in Menu.',h:
-  (m.src==='square'?'<div class="ts-sqok">'+SQLOGO+'<div><b>Connected to Square · '+esc(m.loc||'')+'</b><small>'+(m.sync?'Menu stays in sync':'Menu sync off')+' · '+(m.orders?'Phone orders go to Square':'Orders stay in Tringg')+'</small></div></div>':'')+(m.n?[['Pizza',9],['Pasta',6],['Starters',7],['Salads',4],['Desserts',3],['Drinks',2]].map(function(c){return '<div class="ts-cat"><span>'+c[0]+'</span><span>'+c[1]+'</span></div>';}).join(''):'<div class="ts-cat"><span>Add items in Menu after you finish</span><span></span></div>')+'<div class="ts-sub" style="color:var(--tk-50);font-size:13px">'+esc(nm)+' · <button class="ts-link" onclick="TS.menuAgain()">Change</button></div>'};}
- return {t:'Add your menu',d:'The agent reads this menu to callers and builds their order from it.',n:'Edit your menu any time in Menu.',h:SRCS.map(function(o){return '<button class="ts-opt" onclick="'+(o[0]==='square'?"TS.sq(\'sq1\')":"TS.menuPick(\'"+o[0]+"\')")+'"><span class="ts-rad"></span><span><b>'+o[1]+(o[4]?'<span class="ts-tag">'+o[4]+'</span>':'')+'</b><span class="d">'+o[2]+'</span></span></button>';}).join('')};};
+ if(UI.mp==='review'){var nm=(SRCS.filter(function(x){return x[0]===m.src;})[0]||[])[1]||'Menu';return {t:(m.n?m.n+' items':'Empty menu'),d:'Imported as a draft. Publish it, or fine-tune it in Menu.',n:'You can edit your menu later in Menu.',h:
+  (m.src==='square'?'<div class="ts-sqok">'+SQLOGO+'<div><b>Connected to Square · '+esc(m.loc||'')+'</b><small>'+(m.sync?'Menu kept up to date':'Menu not synced')+' · '+(m.orders?'Orders go to Square':'Orders stay in Tringg')+'</small></div></div>':'')+(m.n?[['Pizza',9],['Pasta',6],['Starters',7],['Salads',4],['Desserts',3],['Drinks',2]].map(function(c){return '<div class="ts-cat"><span>'+c[0]+'</span><span>'+c[1]+'</span></div>';}).join(''):'<div class="ts-cat"><span>Add items in Menu after you finish</span><span></span></div>')+'<div class="ts-sub" style="color:var(--tk-50);font-size:13px">'+esc(nm)+' · <button class="ts-link" onclick="TS.menuAgain()">Change</button></div>'};}
+ return {t:'Add your menu',d:'Emma uses your menu to take orders.',n:'You can edit your menu later in Menu.',h:SRCS.map(function(o){return '<button class="ts-opt" onclick="'+(o[0]==='square'?"TS.sq(\'sq1\')":"TS.menuPick(\'"+o[0]+"\')")+'"><span class="ts-rad"></span><span><b>'+o[1]+(o[4]?'<span class="ts-tag">'+o[4]+'</span>':'')+'</b><span class="d">'+o[2]+'</span></span></button>';}).join('')};};
 TS.menuPick=function(k){UI.mp='busy';draw();var n=(SRCS.filter(function(x){return x[0]===k;})[0]||[])[3]||0,p=8,t=setInterval(function(){p+=26;var b=document.getElementById('ts-pb');if(b)b.style.width=Math.min(p,100)+'%';if(p>=100){clearInterval(t);if(UI.mp==='busy'&&UI.open){s.d.menu=k==='square'?{src:k,n:n,loc:SQL[UI.sq.loc][0],sync:UI.sq.sync,orders:UI.sq.orders}:{src:k,n:n};UI.mp='review';bcast();draw();}}},k==='scratch'?60:280);};
 TS.more=function(){UI.more=!UI.more;draw();};
 TS.menuAgain=function(){UI.mp='choose';draw();};
 BODY['ord.svc']=function(){var q=s.d.svc;
- return {t:'Pickup & delivery',d:'Choose how callers get their order. The agent only offers what is switched on.',n:'Change this any time in Settings \u203a Ordering \u203a Pickup & delivery.',h:
+ return {t:'Pickup & delivery',d:'Choose how customers get their order.',n:'You can change this later in Settings.',h:
  tg('Pickup','',inpS('svc.prep','min',{min:1,step:5,dis:!q.pick})+sw(q.pick,"TS.vr('svc.pick',"+!q.pick+")",'Pickup'))+
  tg('Delivery','',sw(q.del,"TS.vr('svc.del',"+!q.del+")",'Delivery'))+
  (q.del?'<div class="ts-sub"><div class="ts-g2">'+fld('svc.mi','Delivery radius (mi)',{min:0.5,step:0.5})+fld('svc.eta','Delivery time (min)',{min:5,step:5})+fld('svc.fee','Delivery fee ($)',{min:0,step:0.5})+fld('svc.min','Minimum order ($)',{min:0})+'</div></div>':'')};};
@@ -305,14 +305,14 @@ BODY['ord.tax']=function(){var t=s.d.tax;
  var more='<div class="ts-sub" style="display:flex;flex-direction:column;gap:16px"><div class="ts-g2"><div class="ts-f"><span>Applied on</span>'+seg('tax.app',[['Item','Each item'],['Order','Whole order']])+'</div>'+selS('tax.base','Calculated on',[['Subtotal','Subtotal'],['Subtotal \u2212 discount','Subtotal \u2212 discount']])+'</div>'+
   '<div class="ts-f"><span>Calculation</span>'+seg('tax.calc',[['Additive','Added on top'],['Inclusive','Already in the price']])+'</div>'+
   tg('Also charge on the delivery fee','',sw(t.delfee,"TS.vr('tax.delfee',"+!t.delfee+")",'Charge on delivery fee'))+selS('tax.ch','Channel',[['both',CH.both],['d',CH.d],['p',CH.p]])+'</div>';
- return {t:'Taxes',d:'The tax the agent adds and reads out in the order total. Switch it off if you charge none.',n:'Change this any time in Settings \u203a Ordering \u203a Taxes.',h:
+ return {t:'Taxes',d:'Add tax to orders. Turn it off if you charge none.',n:'You can change this later in Settings.',h:
  tg('I charge tax','',sw(t.on,"TS.vr('tax.on',"+!t.on+")",'Charge tax'))+
  (t.on?'<div class="ts-sub" style="display:flex;flex-direction:column;gap:16px"><div class="ts-f"><span>Type</span>'+seg('tax.type',[['Tax','Tax the guest pays'],['Charge','Charge you add']])+'</div>'+fld('tax.n','Name',{t:'text'})+
   '<div class="ts-g2"><div class="ts-f"><span>Value</span>'+seg('tax.vt',[['%','Percentage'],['flat','Flat amount']])+'</div>'+fld('tax.v',t.vt==='%'?'Percent':'Amount ($)',{min:0,step:0.25})+'</div></div>'+
   '<button class="ts-link ts-more" onclick="TS.more()">'+(UI.more?'Hide options':'More options')+'</button>'+(UI.more?more:''):'')};};
 BODY['ord.pay']=function(){var p=s.d.pay,qual=p.capOn||p.repeatOn,
  rs=!qual?'Delivery is paid online only.':p.capOn&&p.repeatOn?'Cash only if $'+p.cap+' or less and a repeat customer. Otherwise online.':p.capOn?'Cash if $'+p.cap+' or less. Otherwise online.':'Cash for repeat customers. Otherwise online.';
- return {t:'Payments',d:'How callers pay: by card through a text link, or in cash. Choose at least one.',n:'Change this any time in Settings \u203a Ordering \u203a Payments.',h:
+ return {t:'Payments',d:'How customers pay. Choose at least one.',n:'You can change this later in Settings.',h:
  tg('Stripe account','',p.conn?'<span class="ts-tag" style="margin:0">Connected</span>':'<span class="ts-pl">Not connected</span><button class="ts-btn sm" onclick="TS.conn()">Connect payments</button>')+
  tg('Pickup payment','',seg('pay.pick',[['online','Online'],['store','At pickup'],['both','Both']],p.conn?null:['online','both']))+
  tg('Cash on delivery: order limit','',inpS('pay.cap','$ or less',{w:'m',min:1,dis:!p.capOn})+sw(p.capOn,"TS.vr('pay.capOn',"+!p.capOn+")",'Cash order limit'))+
@@ -322,19 +322,19 @@ BODY['ord.pay']=function(){var p=s.d.pay,qual=p.capOn||p.repeatOn,
  (UI.more?'<div class="ts-sub">'+tg('Unpaid pickup: pay at pickup','',sw(p.fbPk&&p.pick==='both',"TS.vr('pay.fbPk',"+!p.fbPk+")",'Unpaid pickup',p.pick!=='both'))+
  tg('Unpaid delivery: switch to cash','',sw(p.fbDl&&qual,"TS.vr('pay.fbDl',"+!p.fbDl+")",'Unpaid delivery',!qual))+'</div>':'')};};
 TS.conn=function(){s.d.pay.conn=true;if(s.d.pay.pick==='store')s.d.pay.pick='both';bcast();draw();};
-BODY['go.sub']=function(){var N=TS.cfg.outlets,P=TS.cfg.price;var gate=(!s.sub&&!TS.canSub())?'<div class="ts-gate"><b>Finish one setup first</b>Your agent needs something to do. Set up Enquiries, Reservations or Ordering at least once, then come back to subscribe.<div class="r"><button class="ts-btn sm" onclick="TS.open(\'enq\')">Set up enquiries</button><button class="ts-btn sm line" onclick="TS.close();TS.nav(\'reservations\')">Reservations</button><button class="ts-btn sm line" onclick="TS.close();TS.nav(\'orders\')">Ordering</button></div></div>':'';return {t:s.sub?'Subscribed':'Subscribe',d:'Activates your agent.',n:'Manage your plan any time in Settings \u203a Billing.',h:gate+
- '<div class="ts-price">$'+(N*P).toLocaleString()+' <small>/ month · '+N+' location'+(N>1?'s':'')+'</small></div><div style="color:var(--tk-50);margin:6px 0 20px">Nothing is billed before you subscribe. Cancel any time.</div>'+TS.goSummary({finish:true})};};
-BODY['go.fwd']=function(){return {t:'Forward your line to this number',d:'This is your Tringg number. It answers every call that reaches it.',n:'You can find this number any time in Settings \u203a Phone number.',h:
+BODY['go.sub']=function(){var N=TS.cfg.outlets,P=TS.cfg.price;var gate=(!s.sub&&!TS.canSub())?'<div class="ts-gate"><b>Set up one thing first</b>Set up Enquiries, Reservations or Ordering. Then you can go live.<div class="r"><button class="ts-btn sm" onclick="TS.open(\'enq\')">Set up enquiries</button><button class="ts-btn sm line" onclick="TS.close();TS.nav(\'reservations\')">Reservations</button><button class="ts-btn sm line" onclick="TS.close();TS.nav(\'orders\')">Ordering</button></div></div>':'';return {t:s.sub?'You are live':'Go live',d:'Emma starts answering your calls.',n:'You can change your plan later in Settings.',h:gate+
+ '<div class="ts-price">$'+(N*P).toLocaleString()+' <small>/ month · '+N+' location'+(N>1?'s':'')+'</small></div><div style="color:var(--tk-50);margin:6px 0 20px">Cancel any time.</div>'+TS.goSummary({finish:true})};};
+BODY['go.fwd']=function(){return {t:'Forward your calls to this number',d:'Emma answers every call sent to this number.',n:'You can find this number later in Settings.',h:
  '<div class="ts-num"><span class="m">'+NUM+'</span><button class="ts-btn line sm" onclick="TS.copy(this)">Copy</button></div>'+
- '<div style="color:var(--tk-50);margin-top:2px">We forward all your calls. Ask your network operator to forward your restaurant line to this number.</div>'};};
+ '<div style="color:var(--tk-50);margin-top:2px">Ask your phone company to forward your restaurant line to this number.</div>'};};
 TS.copy=function(b){try{navigator.clipboard.writeText('+13125550147').catch(function(){});}catch(e){}b.textContent='Copied';setTimeout(function(){if(b.isConnected)b.textContent='Copy';},1400);};
 var CATS=[['general','General'],['res','Reservation'],['ord','Ordering'],['catering','Catering'],['music','Music events']];
 function faqBlock(cat,title){var rows=s.d.faqs.map(function(f,i){return [f,i];}).filter(function(x){return (x[0][2]||'general')===cat;});
  return (title?'<div style="margin:22px 0 10px"><span class="ts-cat2 c-'+cat+'">'+title+'</span></div>':'')+rows.map(function(x){var f=x[0],i=x[1];return '<div class="ts-faq"><input class="ts-in" value="'+esc(f[0])+'" aria-label="Question" onchange="TS.faq('+i+',0,this.value)"><textarea class="ts-ta" rows="2" aria-label="Answer" onchange="TS.faq('+i+',1,this.value)">'+esc(f[1])+'</textarea><button class="ts-link" style="color:var(--tk-50);font-size:12.5px;align-self:flex-start" onclick="TS.faqDel('+i+')">Remove</button></div>';}).join('')+'<button class="ts-btn line sm" onclick="TS.faqAdd(\''+cat+'\')">Add a question</button>';}
 TS.faq=function(i,j,v){s.d.faqs[i][j]=v;bcast();};TS.faqDel=function(i){s.d.faqs.splice(i,1);bcast();draw();};TS.faqAdd=function(c){s.d.faqs.push(['','',c]);bcast();draw();};
-BODY['res.faq']=function(){return {t:'Reservation FAQs',d:'Questions callers ask about booking a table. The agent answers from these.',n:'Add or change FAQs any time in Settings \u203a FAQ / Knowledge.',h:faqBlock('res')};};
-BODY['ord.faq']=function(){return {t:'Ordering FAQs',d:'Questions callers ask about ordering, delivery and pickup.',n:'Add or change FAQs any time in Settings \u203a FAQ / Knowledge.',h:faqBlock('ord')};};
-BODY['kb.all']=function(){return {t:'FAQs',d:'Everything the agent can answer about your restaurant, by topic.',n:'Add or change FAQs any time in Settings \u203a FAQ / Knowledge.',h:CATS.map(function(c){return faqBlock(c[0],c[1]);}).join('')};};
+BODY['res.faq']=function(){return {t:'Reservation FAQs',d:'Questions customers ask about booking. Emma answers from these.',n:'You can edit FAQs later in Settings.',h:faqBlock('res')};};
+BODY['ord.faq']=function(){return {t:'Ordering FAQs',d:'Questions customers ask about ordering.',n:'You can edit FAQs later in Settings.',h:faqBlock('ord')};};
+BODY['kb.all']=function(){return {t:'FAQs',d:'Everything Emma can answer about your restaurant.',n:'You can edit FAQs later in Settings.',h:CATS.map(function(c){return faqBlock(c[0],c[1]);}).join('')};};
 BODY['enq.faq']=BODY['kb.all'];
 TS.faqPage=function(){var g=CATS.map(function(c){var r=s.d.faqs.filter(function(f){return (f[2]||'general')===c[0];});return r.length?'<div style="margin:0 0 12px"><span class="ts-cat2 c-'+c[0]+'">'+c[1]+'</span></div>'+r.map(function(f){return '<div><div class="fl">'+esc(f[0])+'</div><div class="fh">'+esc(f[1])+'</div></div>';}).join('<div class="sep"></div>'):'';}).filter(Boolean).join('<div class="sep"></div>');
  return '<div class="scard">'+g+'<div class="sep"></div><button class="btn btn-line btn-sm" style="align-self:flex-start" onclick="TS.open(\'kb\')">Edit FAQs</button></div>';};
@@ -360,7 +360,7 @@ function draw(){
   main=head+'<div class="ts-body"><div class="ts-ok"><div class="ts-okc">'+CHK.replace('width="14" height="14"','width="28" height="28"')+'</div><h3>'+t+'</h3>'+(k==='go'?TS.liveList():'')+'<div style="display:flex;justify-content:center"><button class="ts-btn" onclick="TS.close()">Done</button></div></div></div>';
  }else{
   var b=BODY[key]();
-  var cta=key==='go.sub'?(s.sub?'Continue':'Subscribe · $'+(TS.cfg.outlets*TS.cfg.price).toLocaleString()):key==='go.fwd'?'Done':key==='ord.menu'&&UI.mp==='review'?'Publish':last?'Save':'Continue';
+  var cta=key==='go.sub'?(s.sub?'Continue':'Go live · $'+(TS.cfg.outlets*TS.cfg.price).toLocaleString()):key==='go.fwd'?'Done':key==='ord.menu'&&UI.mp==='review'?'Publish':last?'Save':'Continue';
   var dis=((key==='ord.menu'&&UI.mp!=='review')||(key==='go.sub'&&!s.sub&&!TS.canSub()))?'disabled':'';
   main=head+'<div class="ts-body"><h2 class="ts-h">'+b.t+'</h2>'+(b.d?'<p class="ts-d">'+b.d+'</p>':'')+b.h+(b.n?'<div class="ts-fn">'+b.n+'</div>':'')+'</div><div class="ts-foot">'+(i>0?'<button class="ts-btn line" onclick="TS.goto(\''+st[i-1][0]+'\')">Back</button>':'')+'<span class="sp"></span><span class="ts-err" role="alert">'+esc(UI.err)+'</span>'+'<button class="ts-btn" '+dis+' onclick="TS.save()">'+cta+'</button></div>';
  }
@@ -462,7 +462,7 @@ TS.bar=function(k){var x=TS.stat(k),n=SVC[k].n,nx=TS.nextStep(k);
 /* what goes live, from what is finished */
 TS.goSummary=function(o){o=o||{};var rows=[['enq','Answers questions about your restaurant','Review your FAQs and the agent answers from them'],['res','Takes table bookings','Finish setup and the agent takes bookings too'],['ord','Takes pickup and delivery orders','Finish setup and the agent takes orders too']].filter(function(r){return TS.sel(r[0]);});
  var okN=[],waitN=[];rows.forEach(function(r){(TS.stat(r[0]).complete?okN:waitN).push(SVC[r[0]].n.toLowerCase());});
- var head=!waitN.length?'Everything is set up. Your agent goes live for all of it.':!okN.length?'Your agent answers calls using your details. Finish setup to add '+waitN.join(' and ')+'.':'Your agent goes live for '+okN.join(' and ')+'. '+waitN.join(' and ').replace(/^./,function(c){return c.toUpperCase();})+' start'+(waitN.length>1?'':'s')+' as soon as you finish setup.';
+ var head=!waitN.length?'Everything is set up.':!okN.length?'Emma answers using your restaurant details.':'Emma goes live for '+okN.join(' and ')+'. '+waitN.join(' and ').replace(/^./,function(c){return c.toUpperCase();})+' starts when you finish setup.';
  return '<div class="ts-gs"><p class="ts-gsh">'+head+'</p>'+rows.map(function(r){var ok=TS.stat(r[0]).complete;return '<div class="ts-cat"><span>'+SVC[r[0]].n+'</span><span>'+(ok?'<span class="ts-pl g">Active</span>':(o.finish?'<button class="ts-link" onclick="TS.open(\''+r[0]+'\')">Finish setup</button>':'<span class="ts-pl a">Finish setup</span>'))+'</span></div>';}).join('')+'</div>';};
 
 /* ───────── Overview (C): welcome note + "Let's get you started" in a row of cards ───────── */
@@ -493,13 +493,13 @@ TS.ovToggle=function(e){var el=document.querySelector('.ts-gs2');if(!el)return;e
 TS.ovSel=function(k){TS.ov.sel=TS.ov.sel===k?null:k;TS.host.render();};
 TS.overviewTop=function(){if(TS.setup==='golive')return TS.hero3()+TS.svcs3();if(TS.setup)return TS.hero2()+(TS.setup==='strip'?TS.strip2():'');var top=TS.welcome==='2'&&!TS.allDone()?TS.hero():TS.welcomeHead();return top+TS.started();};
 /* a dialog for the first visit: what is done, what is left, one button */
-TS.showWelcome=function(){if(document.getElementById('ts-wl'))return;var n=s.d.agent.name,done=['Restaurant details','Agent '+n],todo=[];
- if(TS.stat('enq').complete)done.push('Enquiries FAQs');else todo.push('Review enquiries');
- [['res','Reservations'],['ord','Ordering']].forEach(function(r){if(!TS.sel(r[0]))return;if(TS.stat(r[0]).complete)done.push(r[1]+' setup');else todo.push('Set up '+r[1].toLowerCase());});
+TS.showWelcome=function(){if(document.getElementById('ts-wl'))return;var n=s.d.agent.name,done=['Restaurant saved',n+' created'],todo=[];
+ if(TS.stat('enq').complete)done.push('Enquiries');else todo.push('Set up Enquiries');
+ [['res','Reservations'],['ord','Ordering']].forEach(function(r){if(!TS.sel(r[0]))return;if(TS.stat(r[0]).complete)done.push(r[1]);else todo.push('Set up '+r[1]);});
  if(act())done.push('Go live');else todo.push('Go live');
  var li=function(a,ok){return a.map(function(x){return '<li class="'+(ok?'ok':'')+'"><span>'+(ok?CHK11:'')+'</span>'+esc(x)+'</li>';}).join('');};
  var d=document.createElement('div');d.id='ts-wl';
- d.innerHTML='<div class="ts-wl-ov"><div class="ts-wl" role="dialog" aria-label="Welcome"><div class="ts-rd"><i></i><i></i><i></i><b><img src="__TICON_URI__" alt=""/></b></div><h2>Welcome, '+esc(TS.cfg.user)+'!</h2><p class="ts-wl-s">'+esc(n)+' is created. Here is where things stand.</p><div class="ts-wl-g"><div><div class="ts-wl-l">Done</div><ul>'+li(done,true)+'</ul></div>'+(todo.length?'<div><div class="ts-wl-l">To do</div><ul>'+li(todo,false)+'</ul></div>':'')+'</div>'+TS.gateNote().replace(/<div class="r">.*?<\/div>/,'').replace('margin:0 0 18px','')+'<button class="ts-btn ts-pulse" style="width:100%" onclick="TS.closeWelcome()">Let’s go</button></div></div>';
+ d.innerHTML='<div class="ts-wl-ov"><div class="ts-wl" role="dialog" aria-label="Welcome"><div class="ts-rd"><i></i><i></i><i></i><b><img src="__TICON_URI__" alt=""/></b></div><h2>Welcome, '+esc(TS.cfg.user)+'!</h2><p class="ts-wl-s">'+esc(n)+' is ready. Here is what is left.</p><div class="ts-wl-g"><div><div class="ts-wl-l">Done</div><ul>'+li(done,true)+'</ul></div>'+(todo.length?'<div><div class="ts-wl-l">To do</div><ul>'+li(todo,false)+'</ul></div>':'')+'</div>'+TS.gateNote().replace(/<div class="r">.*?<\/div>/,'').replace('margin:0 0 18px','')+'<button class="ts-btn ts-pulse" style="width:100%" onclick="TS.closeWelcome()">Let’s go</button></div></div>';
  document.body.appendChild(d);};
 TS.chooseOutlet=function(list,pick){var d=document.createElement('div');d.id='ts-wl';d.innerHTML='<div class="ts-wl-ov" onmousedown="if(event.target===this)TS.closeWelcome()"><div class="ts-wl" role="dialog" aria-label="Choose an outlet" style="padding-top:36px"><h2>Which outlet are you setting up?</h2><p class="ts-wl-s">Each outlet has its own setup.</p><div style="display:flex;flex-direction:column;gap:10px;margin-bottom:6px">'+list.map(function(o){return '<button class="ts-btn line" style="justify-content:space-between;height:52px" onclick="TS.closeWelcome();'+pick+'(\''+o.id+'\')"><span>'+esc(o.name)+'</span><span style="color:var(--tk-mint-d)">Set up →</span></button>';}).join('')+'</div></div></div>';document.body.appendChild(d);};
 TS.closeWelcome=function(){var d=document.getElementById('ts-wl');if(d)d.remove();};
@@ -510,18 +510,18 @@ TS.sq=function(step){if(!UI.sq){var a=((s.d.outlet&&s.d.outlet.area)||'').split(
 TS.sqLoc=function(i){UI.sq.loc=i;draw();};
 TS.sqTog=function(k){UI.sq[k]=!UI.sq[k];draw();};
 function sqBody(){var st=UI.mp,q=UI.sq||{},LI=function(t){return '<li><span>'+CHK+'</span>'+t+'</li>';};
- if(st==='sq1')return {t:'Connect Square',d:'Sign in to Square and Tringg reads your menu. Phone orders go straight into your POS.',n:'You stay in control. Disconnect any time in Settings › Integrations.',h:
-  '<div class="ts-sqc">'+SQLOGO+'<div><b>Square POS</b><span>Menu, prices and modifiers</span></div></div><ul class="ts-sql">'+LI('Reads your items, categories, prices and modifiers')+LI('Sends phone orders to Square, so the kitchen sees them')+LI('Keeps prices and sold-out items in sync')+'</ul>'+
+ if(st==='sq1')return {t:'Connect Square',d:'Connect Square to get your menu and send orders to it.',n:'You can disconnect Square later in Settings.',h:
+  '<div class="ts-sqc">'+SQLOGO+'<div><b>Square POS</b><span>Menu, prices and modifiers</span></div></div><ul class="ts-sql">'+LI('Gets your menu and prices')+LI('Sends phone orders to Square')+LI('Keeps prices up to date')+'</ul>'+
   '<div class="ts-sqa"><button class="ts-btn sqb" onclick="TS.sq(\'sq2\')">Continue with Square</button><button class="ts-link" onclick="TS.menuAgain()">Use another source</button></div>'};
- if(st==='sq2')return {t:'Sign in to Square',d:'You are signing in on Square. Tringg never sees your password.',n:'',h:
+ if(st==='sq2')return {t:'Sign in to Square',d:'Tringg never sees your password.',n:'',h:
   '<div class="ts-sqf"><div class="ts-sqh">'+SQLOGO+'<b>Square</b></div><label>Email<input class="ts-in" value="'+esc(q.email)+'" aria-label="Square email" oninput="UI.sq.email=this.value"/></label><label>Password<input class="ts-in" type="password" value="password123" aria-label="Square password"/></label>'+
   '<button class="ts-btn sqb" style="width:100%" onclick="TS.sq(\'sq3\')">Sign in</button><div class="ts-sqx"><button class="ts-link" onclick="TS.sq(\'sq3\')">Forgot password?</button><span>No Square account? <button class="ts-link" onclick="TS.sq(\'sq3\')">Create one</button></span></div></div>'};
- if(st==='sq3')return {t:'Tringg wants access to your Square account',d:'Review what you are allowing.',n:'',h:
-  '<div class="ts-sqf"><div class="ts-sqh">'+SQLOGO+'<b>Square</b><small>Signed in as '+esc(q.email)+'</small></div><ul class="ts-sql">'+LI('View your items, prices and modifiers')+LI('Create and update orders')+LI('View your business locations')+'</ul>'+
+ if(st==='sq3')return {t:'Allow Tringg to use Square?',d:'',n:'',h:
+  '<div class="ts-sqf"><div class="ts-sqh">'+SQLOGO+'<b>Square</b><small>Signed in as '+esc(q.email)+'</small></div><ul class="ts-sql">'+LI('See your menu and prices')+LI('Create and update orders')+LI('See your locations')+'</ul>'+
   '<div class="ts-sqa"><button class="ts-btn sqb" onclick="TS.sq(\'sq4\')">Allow</button><button class="ts-btn line" onclick="TS.menuAgain()">Cancel</button></div></div>'};
- if(st==='sq4')return {t:'Pick the Square location',d:'Match this outlet to its location in Square.',n:'Change these any time in Settings › Integrations.',h:
+ if(st==='sq4')return {t:'Which Square location is this?',d:'',n:'You can change this later in Settings.',h:
   SQL.map(function(l,i){return '<button class="ts-opt'+(q.loc===i?' on':'')+'" onclick="TS.sqLoc('+i+')"><span class="ts-rad"></span><span><b>'+l[0]+'</b><span class="d">'+l[1]+'</span></span></button>';}).join('')+
-  '<div class="ts-tg"><div><b>Keep the menu in sync</b><span class="d">Price and sold-out changes in Square update here</span></div>'+sw(q.sync,"TS.sqTog('sync')",'Keep the menu in sync')+'</div><div class="ts-tg"><div><b>Send phone orders to Square</b><span class="d">Orders appear in your POS like any other</span></div>'+sw(q.orders,"TS.sqTog('orders')",'Send phone orders to Square')+'</div>'+
+  '<div class="ts-tg"><div><b>Keep the menu up to date</b><span class="d">Changes in Square show up here</span></div>'+sw(q.sync,"TS.sqTog('sync')",'Keep the menu in sync')+'</div><div class="ts-tg"><div><b>Send phone orders to Square</b><span class="d">Orders appear in your POS</span></div>'+sw(q.orders,"TS.sqTog('orders')",'Send phone orders to Square')+'</div>'+
   '<div class="ts-sqa"><button class="ts-btn" onclick="TS.menuPick(\'square\')">Import menu</button></div>'};
  return null;}
 
@@ -557,14 +557,14 @@ TS.railClick=function(){if(TS.setup==='drawer')TS.drawer(true);else TS.expand();
 
 /* ───────── go-live banner + a separate "Set up services" section ───────── */
 TS.hero3=function(){if(TS.allDone())return TS.welcomeHead();var n=s.d.agent.name,can=TS.canSub(),live=act(),p=TS.pct(),h,t,b,dis='';
- if(live){h='Forward your line';t=n+' is subscribed. Forward your restaurant line to your Tringg number and '+n+' starts answering.';b='<button class="ts-btn ts-hero-b ts-pulse" onclick="TS.open(\'go\',\'fwd\')">Forward your line</button>';}
- else if(can){h=n+' is ready to go live';t='Go live now, or set up more services first. Either way works.';b='<button class="ts-btn ts-hero-b ts-pulse" onclick="TS.open(\'go\',\'sub\')">Go live</button>';}
- else{h='Go live with '+n;t='Set up one service below and Go live unlocks. The rest can wait.';b='<button class="ts-btn ts-hero-b" disabled style="opacity:.55;cursor:not-allowed">'+LOCK+' Go live</button>';}
- return '<div class="ts-hero"><div style="flex:1;min-width:0"><div class="ts-hero-e">Welcome, '+esc(TS.cfg.user)+'</div><h2>'+h+'</h2><p>'+t+'</p><div class="ts-hero-p"><div class="ts-bar"><i style="width:'+p+'%"></i></div><span>'+p+'% set up</span></div></div><div class="ts-hero-a">'+b+'</div></div>';};
+ if(live){h='Last step: forward your calls';t='Send your restaurant calls to your Tringg number. '+n+' answers them.';b='<button class="ts-btn ts-hero-b ts-pulse" onclick="TS.open(\'go\',\'fwd\')">Forward calls</button>';}
+ else if(can){h=n+' is ready';t='Go live now. You can add more later.';b='<button class="ts-btn ts-hero-b ts-pulse" onclick="TS.open(\'go\',\'sub\')">Go live</button>';}
+ else{h='Start taking calls';t='Set up one thing below, then go live.';b='<button class="ts-btn ts-hero-b" disabled style="opacity:.55;cursor:not-allowed">'+LOCK+' Go live</button>';}
+ return '<div class="ts-hero"><div style="flex:1;min-width:0"><div class="ts-hero-e">Welcome, '+esc(TS.cfg.user)+'</div><h2>'+h+'</h2><p>'+t+'</p><div class="ts-hero-p"><div class="ts-bar"><i style="width:'+p+'%"></i></div><span>'+p+'% done</span></div></div><div class="ts-hero-a">'+b+'</div></div>';};
 TS.svcs3=function(){if(TS.ov.collapsed)return '';var grow=TS.ov.grow;TS.ov.grow=false;var tt=TS.totals(),nk=TS.nextKey();if(nk==='go')nk=null;
- var cards=['enq','res','ord'].map(function(k){var on=TS.sel(k),x=TS.stat(k),ok=on&&x.complete,st=!on?'Off':ok?'Ready':x.done?x.done+' of '+x.total+' steps':'Not started';
-  var d={enq:'Answers questions about your restaurant',res:'Takes table bookings by phone',ord:'Takes pickup and delivery orders'}[k];
-  return '<button class="ts-sv'+(ok?' ok':'')+(nk===k&&!ok?' nx':'')+'" onclick="'+(on?"TS.open('"+k+"')":"TS.add('"+k+"')")+'"><span class="ts-sv-t"><b>'+SVC[k].n+'</b>'+(ok?'<span class="ts-done2">'+CHK+' Ready</span>':'<span class="ts-sv-s">'+(on?st:'Off · tap to add')+'</span>')+'</span><span class="ts-sv-d">'+d+'</span></button>';}).join('');
- return '<section class="ts-gs2 ts-svs2'+(grow?' ts-grow':'')+'"><div class="ts-gs2-h"><div class="ts-gs2-t"><h2>Set up services</h2><div class="ts-gs2-p"><div class="ts-bar"><i style="width:'+(tt.total?tt.done/tt.total*100:0)+'%"></i></div><span>'+TS.pct()+'% set up</span></div></div><button class="ts-xb" aria-label="Collapse to sidebar" title="Collapse to sidebar" onclick="TS.collapse()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 15 6-6 6 6"/></svg></button></div><div style="padding:0 22px 22px"><div class="ts-svs-g">'+cards+'</div></div></section>';};
+ var cards=['enq','res','ord'].map(function(k){var on=TS.sel(k),x=TS.stat(k),ok=on&&x.complete,st=!on?'Off':ok?'Done':x.done?x.done+' of '+x.total+' done':'To do';
+  var d=SVC[k].d;
+  return '<button class="ts-sv'+(ok?' ok':'')+(nk===k&&!ok?' nx':'')+'" onclick="'+(on?"TS.open('"+k+"')":"TS.add('"+k+"')")+'"><span class="ts-sv-t"><b>'+SVC[k].n+'</b>'+(ok?'<span class="ts-done2">'+CHK+' Done</span>':'<span class="ts-sv-s">'+(on?st:'Off · Add')+'</span>')+'</span><span class="ts-sv-d">'+d+'</span></button>';}).join('');
+ return '<section class="ts-gs2 ts-svs2'+(grow?' ts-grow':'')+'"><div class="ts-gs2-h"><div class="ts-gs2-t"><h2>Set up Emma</h2><div class="ts-gs2-p"><div class="ts-bar"><i style="width:'+(tt.total?tt.done/tt.total*100:0)+'%"></i></div><span>'+TS.pct()+'% done</span></div></div><button class="ts-xb" aria-label="Collapse to sidebar" title="Collapse to sidebar" onclick="TS.collapse()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 15 6-6 6 6"/></svg></button></div><div style="padding:0 22px 22px"><div class="ts-svs-g">'+cards+'</div></div></section>';};
 
 })();

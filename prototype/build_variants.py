@@ -103,6 +103,19 @@ OB_CSS = r'''
 .faqh{margin:16px 0 8px}.faqh:first-child{margin-top:0}
 .sug-or{padding:12px 18px 4px;margin-top:6px;border-top:1px solid var(--border);font-size:11.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-50)}
 .faqe{display:flex;flex-direction:column;gap:8px;border:1.5px solid var(--border);border-radius:14px;padding:12px;margin-bottom:10px}.faqe .in{height:40px}
+/* outlet ready */
+.rdy-top{display:flex;align-items:center;gap:22px;margin-bottom:26px;font-weight:500;color:var(--ink-50)}
+.rdy-h{font-size:clamp(40px,6vw,60px);font-weight:700;letter-spacing:-2px;line-height:1.05;margin:0 0 40px}
+.rdy-l{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;position:relative}
+.rdy-l li{display:flex;gap:22px;align-items:flex-start;padding:14px 0;opacity:0;animation:rdyin .55s var(--ease,ease) both}.rdy-l li:nth-child(2){animation-delay:.25s}.rdy-l li:nth-child(3){animation-delay:.5s}
+@keyframes rdyin{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.rdy-l .n{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;font-size:20px;font-weight:700;flex-shrink:0;border:2px solid var(--border-s);color:var(--ink-30);background:var(--panel);margin-top:2px}
+.rdy-l p{margin:0;font-size:clamp(24px,3.4vw,34px);font-weight:700;letter-spacing:-.9px;line-height:1.2}
+.rdy-l small{display:block;font-size:16px;font-weight:500;letter-spacing:0;color:var(--ink-50);margin-top:8px}
+.rdy-l li.d .n{background:var(--mint);border-color:var(--mint);color:#fff}.rdy-l li.d p{color:var(--ink-50)}
+.rdy-l li.now .n{background:var(--ink);border-color:var(--ink);color:#fff}
+.rdy-l li.nx p{color:var(--ink-30)}
+.rdy-l li:not(:last-child):before{content:"";position:absolute;left:22px;width:2px;height:20px;background:var(--border-s);transform:translateY(54px)}
 /* search complete */
 .hint.mn{text-align:right;font-size:12.5px;margin-top:10px}
 .sc{padding:0;overflow:hidden}
@@ -163,11 +176,11 @@ VIEWS.research=()=>{if(S.rs<RS.length)return _res();const o=S.o,d=S.d,F=[['Brand
  ${F.map(f=>`<div class="sc-r"><label>${f[0]}</label><span>${esc(f[1])}</span><em>✓ Found</em></div>`).join('')}
  <div class="sc-f">${OUTLETS.length} locations · ${o.faqs.length} FAQs found</div></div></div>`,foot:footer({next:'Continue'})}};
 /* 02 · pick the outlet you are setting up */
-VIEWS.locate=()=>({body:`<div class="body fade">${head('Choose the outlet you’re setting up.')}
- <div class="sec"><div class="lc-h"><span class="cap">Locations</span><b>Pick the one you’re setting up</b><span class="lc-n">${OUTLETS.length} found</span></div>
+VIEWS.locate=()=>({body:`<div class="body fade">${head('Which outlet are you setting up?')}
+ <div class="sec"><div class="lc-h"><span class="cap">Locations</span><b>Pick one</b><span class="lc-n">${OUTLETS.length} found</span></div>
  <div class="lc-g">${OUTLETS.map(o=>`<button class="lc ${S.o&&S.o.id===o.id?'on':''}" onclick="pickLoc('${o.id}')"><div class="lc-t"><div><b>${esc(o.short||o.name)} · ${esc(o.area.split(',')[0])}</b><br><small>${esc(o.addr)}</small></div></div>
   <span class="lc-go">Review outlet →</span></button>`).join('')}</div>
- <button class="lc-m" onclick="manual()">None of these — I’ll enter my location manually</button></div></div>`});
+ <button class="lc-m" onclick="manual()">None of these. I’ll add it myself</button></div></div>`});
 function pickLoc(id){S.o=OUTLETS.find(o=>o.id===id);loadOutlet();next()}
 /* 04 · meet your agent */
 const VGRAD=['linear-gradient(135deg,#4FC2B4,#1F6E62)','linear-gradient(135deg,#FFB84D,#FF8F7A)','linear-gradient(135deg,#8B7CF6,#5B43B5)','linear-gradient(135deg,#FF8F7A,#C2477A)','linear-gradient(135deg,#5ED3F3,#2A5C85)'];
@@ -183,19 +196,24 @@ const vpHTML=()=>{const cur=VOICES.find(v=>v.id===S.agent.voice)||VOICES[0],f=S.
  return`<div class="vp"><button class="vp-b" onclick="S.vo=!S.vo;render()" aria-expanded="${!!S.vo}" aria-haspopup="listbox">${vAv(cur)}<span class="vp-t"><b>${esc(cur.n)}</b><small>${esc(cur.t.toUpperCase())}</small></span>${ic('chev',16)}</button>
  ${S.vo?`<div class="vp-m" role="listbox"><div class="vp-f">${[['all','All voices'],['female','Female'],['male','Male']].map(x=>`<button class="${f===x[0]?'on':''}" onclick="S.vf='${x[0]}';render()">${x[1]}</button>`).join('')}</div><div class="vp-l">${list.map(v=>`<button class="vp-i ${v.id===S.agent.voice?'on':''}" role="option" onclick="vpPick('${v.id}')">${vAv(v)}<span><b>${esc(v.n)}</b><small>${esc(v.t.toUpperCase())}</small><em>${esc(v.d)}</em></span></button>`).join('')}</div></div>`:''}</div>`};
 VIEWS.agent=()=>{const A=S.agent,n=A.name,fb=A.fb||'staff';
- return{body:`<div class="body fade">${head(`Meet ${esc(n)}.`,'We’ve created an agent for you. Take a listen and change anything.')}
+ return{body:`<div class="body fade">${head(`Meet ${esc(n)}, your agent.`,'You can change the name, voice and greeting.')}
  <div class="sec card ag"><div class="ag-top"><div class="ag-ic" aria-hidden="true"><i></i><i></i><img src="__TICON__" alt=""/></div><div style="flex:1;min-width:0"><span class="cap">Your agent</span><input class="nm" id="nm" value="${esc(n)}" aria-label="Agent name" oninput="onName2(this.value)"/></div></div>
   <div class="ag-b"><div class="field"><span>Voice</span><div class="vrow">${vpHTML()}<button class="play ${S.play?'on':''}" id="pl" onclick="speak()" aria-label="Play greeting">${ic('play',16)}<span class="wave"><s></s><s></s><s></s><s></s></span></button></div></div>
   <label class="field"><span>Greeting</span><textarea class="ta" id="gr" rows="3" oninput="S.agent.greet=this.value;agSync()">${esc(greet())}</textarea></label>
-  <div class="field"><span>If a caller needs a person</span><div class="seg2"><button class="${fb==='staff'?'on':''}" onclick="S.agent.fb='staff';render()"><b>Transfer to staff</b><small>When the restaurant is open</small></button><button class="${fb==='msg'?'on':''}" onclick="S.agent.fb='msg';render()"><b>Take a message</b><small>Always, even when open</small></button></div></div></div></div></div>`,foot:footer({next:'Continue'})}};
+  <div class="field"><span>If a caller asks for a person</span><div class="seg2"><button class="${fb==='staff'?'on':''}" onclick="S.agent.fb='staff';render()"><b>Pass the call to staff</b><small>Only when you are open</small></button><button class="${fb==='msg'?'on':''}" onclick="S.agent.fb='msg';render()"><b>Take a message</b><small>Even when you are open</small></button></div></div></div></div></div>`,foot:footer({next:'Continue'})}};
 /* after the services: the outlet is created, services activate the agent */
-VIEWS.done=()=>{const n=TS.get().d.agent.name,o=TS.get().d.outlet||{};
- return{body:`<div class="body fade">${head('Your outlet is ready.')}
- <div class="sec card pad" style="display:flex;gap:22px;align-items:center"><div class="ag-ic" aria-hidden="true" style="width:72px;height:72px;border-radius:22px"><i></i><img src="__TICON__" alt="" style="height:36px"/></div>
-  <div><b style="font-size:17px">${esc(o.name||S.d.brand)}${o.area?' · '+esc(o.area.split(',')[0]):''}</b><p style="margin:6px 0 0;color:var(--ink-50);font-size:15px">We’ve created your outlet. Set up services to activate ${esc(n)} on your restaurant.</p></div></div></div>`,foot:footer({next:'Dashboard'})}};
+VIEWS.done=()=>{const n=TS.get().d.agent.name,o=TS.get().d.outlet||{},nm=(o.name||S.d.brand)+(o.area?' · '+o.area.split(',')[0]:'');
+ return{body:`<div class="body fade rdy">
+ <div class="rdy-top"><div class="ag-ic" aria-hidden="true" style="width:64px;height:64px;border-radius:20px"><i></i><img src="__TICON__" alt="" style="height:32px"/></div><span>${esc(nm)}</span></div>
+ <h1 class="rdy-h">Your outlet is ready.</h1>
+ <ol class="rdy-l">
+  <li class="d"><span class="n">${ic('check',22)}</span><p>${esc(n)} is created and knows your restaurant.</p></li>
+  <li class="now"><span class="n">2</span><p>Now set up one thing for ${esc(n)} to do.<small>Enquiries, Reservations or Ordering.</small></p></li>
+  <li class="nx"><span class="n">3</span><p>Then go live. ${esc(n)} starts answering your calls.</p></li>
+ </ol></div>`,foot:footer({next:'Go to dashboard'})}};
 /* 03 · set up: Reservations and Ordering */
 const agentName=()=>TS.get().d.agent.name;
-VIEWS.services=()=>({body:`<div class="body fade">${head('What should your agent handle?')}
+VIEWS.services=()=>({body:`<div class="body fade">${head(`What should ${esc(agentName())} do?`)}
  <div class="ts-stk">${TS.variant==='A'?TS.list({toggle:true,go:false}):TS.pick()}</div></div>`,
  foot:footer({next:'__SVCNEXT__'})});
 /* 05 · go live */
@@ -274,7 +292,7 @@ const chip=()=>''')
     t = must(t, "function tog(k){S.edit[k]=!S.edit[k];render()}", "function tog(k){if(k==='faq'&&S.edit.faq){S.o.faqs=S.o.faqs.filter(f=>f[0].trim()&&f[1].trim());faqSync()}S.edit[k]=!S.edit[k];render()}")
     t = must(t, "days:[1,1,1,1,1,1,1]});S.rs=0}", "days:[1,1,1,1,1,1,1]});S.rs=0;TS.set(x=>{x.d.brand=o.short||o.name;x.d.outlet={name:o.short||o.name,area:o.area,addr:o.addr};x.d.faqs=(o.faqs||[]).map(f=>f.slice())})}")
     t = cut(t, '/* 03 · reservation: the real six rules */', 'function copyNum(b)', NEW_VIEWS)
-    c1 = (v, w, su) == ('C', '1', '')
+    c1 = (v, w, su) in (('C', '1', ''), ('C', '3', 'golive'))
     t = t.replace('__LAST__', "['done']" if c1 else '[]').replace('__LASTID__', 'done' if c1 else 'services').replace('__SVCNEXT__', 'Continue' if c1 else 'Open dashboard')
     t = t.replace('__PHOTOS__', json.dumps(PHOTOS))
     t = t.replace('__HERO__', HERO).replace('__TICON__', TICON)
@@ -326,7 +344,7 @@ BOOT = r'''/* setup prototypes: one location, empty to start, driven by the shar
  initFresh();
  TS.on(()=>{applyTS();render();});
  window.addEventListener('message',e=>{const m=e.data;if(!m||!m.tringg)return;
-  if(m.tringg==='enter'){S.route='overview';S.outlet=PRIMARY;S.dd=false;render();scrollTo(0,0);if(TS.welcome==='3'&&!TS.welcomed&&!TS.allDone()){TS.welcomed=true;setTimeout(()=>TS.showWelcome(),350);}
+  if(m.tringg==='enter'){S.route='overview';S.outlet=PRIMARY;S.dd=false;render();scrollTo(0,0);if(TS.welcome==='3'&&TS.setup!=='golive'&&!TS.welcomed&&!TS.allDone()){TS.welcomed=true;setTimeout(()=>TS.showWelcome(),350);}
    if(TS.setup==='drawer'&&!TS.dr.seen&&!TS.allDone()){TS.dr.seen=true;setTimeout(()=>TS.drawer(true),350);}}
   if(m.tringg==='ready'){S.route='overview';loadReady();}});
  applyTS();TS.hello();
