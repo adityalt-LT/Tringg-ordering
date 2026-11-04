@@ -208,7 +208,7 @@ VIEWS.done=()=>{const n=TS.get().d.agent.name,o=TS.get().d.outlet||{},nm=(o.name
  <h1 class="rdy-h">Your outlet is ready.</h1>
  <ol class="rdy-l">
   <li class="d"><span class="n">${ic('check',22)}</span><p>${esc(n)} is created and knows your restaurant.</p></li>
-  <li class="now"><span class="n">2</span><p>Now set up one thing for ${esc(n)} to do.<small>Enquiries, Reservations or Ordering.</small></p></li>
+  <li class="now"><span class="n">2</span><p>Set up one service to go live.<small>Enquiries, Reservations or Ordering.</small></p></li>
   <li class="nx"><span class="n">3</span><p>Then go live. ${esc(n)} starts answering your calls.</p></li>
  </ol></div>`,foot:footer({next:'Go to dashboard'})}};
 /* 03 · set up: Reservations and Ordering */
