@@ -508,7 +508,8 @@ VARIANTS = {'C1': ('C', '1', 'C1 · Welcome header', 'proto-c1-welcome-header.ht
             'C2': ('C', '2', 'C2 · Hero banner', 'proto-c2-hero-banner.html'),
             'C3': ('C', '3', 'C3 · Welcome dialog', 'proto-c3-welcome-dialog.html'),
             'E1': ('C', '3', 'E · Go-live banner + services', 'proto-e-golive-banner.html', 'golive'),
-            'E2': ('C', '3', 'E2 · Settings as dialogs', 'proto-e2-settings-dialogs.html', 'golive', '1')}
+            'E2': ('C', '3', 'E2a · Settings dialogs: apply to', 'proto-e2-settings-dialogs.html', 'golive', '1'),
+            'E2B': ('C', '3', 'E2b · Settings dialogs: outlet grid', 'proto-e2b-settings-grid.html', 'golive', '2')}
 
 
 def wrapper(label, ob, dash, start=''):

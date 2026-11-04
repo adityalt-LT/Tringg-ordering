@@ -2,20 +2,25 @@
 (function(){
 const money=n=>'$'+(Math.round(n*100)%100?(+n).toFixed(2):Math.round(n));
 const nOut=n=>n+' outlet'+(n===1?'':'s');
-let host=null;
+let host=null,host2=null;
 const hostEl=()=>{if(!host){host=document.createElement('div');host.id='sdlg';document.body.appendChild(host);}return host;};
+const host2El=()=>{if(!host2){host2=document.createElement('div');host2.id='chdlg';host2.style.cssText='position:relative;z-index:140';document.body.appendChild(host2);}return host2;};
 const ids=()=>S.outlet==='all'?OUTLETS.map(o=>o.id):[S.outlet];
+const GRID=()=>window.TS_SD==='2';
 
 /* ───────── the settings dialog ───────── */
 window.sdClose=()=>{S.sdlg=false;S.ch=null;render();};
 window.sdOutlet=id=>{TS.beforeOutlet(id);S.outlet=id;S.ch=null;render();};
-window.sdRender=()=>{const h=hostEl();
- if(!S.sdlg){h.innerHTML='';h.dataset.k='';return;}
- const old=h.querySelector('.sd .scroll'),k=S.set+'|'+S.outlet,top=old&&h.dataset.k===k?old.scrollTop:0;
+window.sdRender=()=>{const h=hostEl(),h2=host2El();
+ if(!S.sdlg){h.innerHTML='';h.dataset.sig='';h.dataset.k='';h2.innerHTML='';h2.dataset.sig='';return;}
+ const k=S.set+'|'+S.outlet;
  const sel=`<div class="sd-os"><label for="sd-o">Outlet</label><select id="sd-o" class="inp sm" onchange="sdOutlet(this.value)">${OUTLETS.length>1?`<option value="all" ${S.outlet==='all'?'selected':''}>All outlets</option>`:''}${OUTLETS.map(o=>`<option value="${o.id}" ${S.outlet===o.id?'selected':''}>${esc(o.name)}</option>`).join('')}</select></div>`;
  const inner=vSettings().replace('<nav class="snav" aria-label="Settings">','<nav class="snav" aria-label="Settings"><div class="sd-t">Settings</div>'+sel);
- h.innerHTML=`<div class="sd-bk" onmousedown="if(event.target===this)sdClose()"><div class="sd" role="dialog" aria-modal="true" aria-label="Settings"><button class="sd-x" aria-label="Close settings" onclick="sdClose()">✕</button>${inner}</div></div>${chHtml()}`;
- h.dataset.k=k;const nw=h.querySelector('.sd .scroll');if(nw)nw.scrollTop=top;};
+ const html=`<div class="sd-bk" onmousedown="if(event.target===this)sdClose()"><div class="sd" role="dialog" aria-modal="true" aria-label="Settings"><button class="sd-x" aria-label="Close settings" onclick="sdClose()">✕</button>${inner}</div></div>`;
+ if(h.dataset.sig!==html){const was=!!h.firstChild,old=h.querySelector('.sd .scroll'),top=old&&h.dataset.k===k?old.scrollTop:0;
+  h.innerHTML=was?html.replace('class="sd-bk"','class="sd-bk still"'):html;h.dataset.sig=html;h.dataset.k=k;const nw=h.querySelector('.sd .scroll');if(nw)nw.scrollTop=top;}
+ const c=chHtml();
+ if(h2.dataset.sig!==c){const was2=!!h2.firstChild,keepTop=(h2.querySelector('.ch-scroll')||{}).scrollTop||0;h2.innerHTML=c&&was2?c.replace('class="ch-bk"','class="ch-bk still"'):c;h2.dataset.sig=c;const s2=h2.querySelector('.ch-scroll');if(s2)s2.scrollTop=keepTop;}};
 document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;if(S.ch){S.ch=null;render();}else if(S.sdlg)sdClose();});
 
 /* ───────── the second dialog: change one thing ───────── */
@@ -23,9 +28,9 @@ const TITLES={pick:'Pickup',del:'Delivery',aa:'Accepting orders',pre:'Pre-orders
 const scoped=k=>!['pay','tax'].includes(k);
 window.chOpen=k=>{
  if(k==='area'){S.zoneOutlet=S.outlet;S.sdlg=false;render();openZed();return;}
- S.ch={k,scope:'all',pick:[],vals:{}};render();};
+ S.ch={k,scope:'all',pick:[],vals:{},grid:GRID()&&S.outlet==='all'&&scoped(k)};render();};
 window.chClose=()=>{S.ch=null;render();};
-const keep=()=>{if(!S.ch)return;document.querySelectorAll('#sdlg [id^=chf-]').forEach(e=>{S.ch.vals[e.id.slice(4)]=e.value;});};
+const keep=()=>{if(!S.ch)return;document.querySelectorAll('#chdlg [id^=chf-]').forEach(e=>{S.ch.vals[e.id.slice(4)]=e.value;});};
 window.chScope=v=>{keep();S.ch.scope=v;render();};
 window.chPick=id=>{keep();const p=S.ch.pick;S.ch.pick=p.includes(id)?p.filter(x=>x!==id):p.concat(id);render();};
 const targets=()=>S.outlet!=='all'?[S.outlet]:(S.ch.scope==='all'?OUTLETS.map(o=>o.id):S.ch.pick);
@@ -45,15 +50,30 @@ function chBody(k){const o=targets()[0]||OUTLETS[0].id,v=DB.svc[o]||{},r=v.rad||
 function chScope(k){if(!scoped(k))return `<div class="ch-sc"><span>Applies to every outlet.</span></div>`;
  if(S.outlet!=='all')return `<div class="ch-sc"><span>Applies to <b>${esc(ON(S.outlet).short)}</b> only.</span></div>`;
  const c=S.ch;return `<div class="ch-sc"><b>Apply to</b><label class="ch-r"><input type="radio" name="chs" ${c.scope==='all'?'checked':''} onchange="chScope('all')"> All ${OUTLETS.length} outlets</label><label class="ch-r"><input type="radio" name="chs" ${c.scope==='pick'?'checked':''} onchange="chScope('pick')"> Only some outlets</label>${c.scope==='pick'?`<div class="ch-chips">${OUTLETS.map(o=>`<button class="ch-chip ${c.pick.includes(o.id)?'on':''}" onclick="chPick('${o.id}')">${esc(o.short)}</button>`).join('')}</div>`:''}</div>`;}
-function chHtml(){if(!S.ch)return '';const k=S.ch.k,hasSave=k!=='tax';
+const GF={pick:[['on','Pickup','sel'],['prep','Ready in (min)','num']],del:[['on','Delivery','sel'],['mi','Distance (mi)','num'],['fee','Fee ($)','num'],['min','Minimum ($)','num']],aa:[['on','Auto-accept','sel']],pre:[['on','Pre-orders','sel'],['lead','Lead time (min)','num']]};
+const gval=(k,id,f)=>{const v=DB.svc[id]||{},r=v.rad||{},p=DB.pre[id]||{};return ({pickon:v.pick?'1':'0',pickprep:v.prep,delon:v.del?'1':'0',delmi:r.mi,delfee:r.fee,delmin:r.min,aaon:DB.autoAccept[id]?'1':'0',preon:p.on?'1':'0',prelead:p.lead||60})[k+f];};
+const gcell=(pre,id,f,val)=>f[2]==='sel'?`<select id="${pre}${id}-${f[0]}" class="inp sm">${id==='all'?'<option value="">Keep</option>':''}<option value="1" ${String(val)==='1'?'selected':''}>On</option><option value="0" ${String(val)==='0'?'selected':''}>Off</option></select>`:`<input id="${pre}${id}-${f[0]}" class="inp sm" type="number" min="0" step="any" placeholder="${id==='all'?'Keep':''}" value="${id==='all'?'':(val??'')}">`;
+window.chgAll=()=>{const k=S.ch.k;GF[k].forEach(f=>{const e=document.getElementById('cha-all-'+f[0]);if(!e||e.value==='')return;OUTLETS.forEach(o=>{const x=document.getElementById('chg-'+o.id+'-'+f[0]);if(x&&!x.disabled)x.value=e.value;});});toast('Filled in. Press Save to keep.');};
+function gridHtml(){const k=S.ch.k,F=GF[k];
+ return `<div class="ch-bk" onmousedown="if(event.target===this)chClose()"><div class="ch wide" role="dialog" aria-modal="true" aria-label="${TITLES[k]}"><div class="ch-h"><h3>${TITLES[k]} · all outlets</h3><button class="sd-x2" aria-label="Close" onclick="chClose()">✕</button></div>
+  <p class="ch-n2">Change any outlet, or fill the first row and press “Fill all” to change every outlet at once.</p>
+  <div class="ch-scroll"><table class="ch-t"><thead><tr><th>Outlet</th>${F.map(f=>`<th>${f[1]}</th>`).join('')}</tr></thead><tbody>
+  <tr class="ch-all"><td><b>All outlets</b><br><button class="btn btn-line btn-sm" onclick="chgAll()">Fill all</button></td>${F.map(f=>`<td>${gcell('cha-','all',f,'')}</td>`).join('')}</tr>
+  ${OUTLETS.map(o=>{const set=(DB.svc[o.id]||{}).set===true;return `<tr><td>${esc(o.short)}</td>${set?F.map(f=>`<td>${gcell('chg-',o.id,f,gval(k,o.id,f[0]))}</td>`).join(''):`<td colspan="${F.length}" class="muted">Not set up</td>`}</tr>`;}).join('')}</tbody></table></div>
+  <div class="ch-ft"><button class="btn btn-line" onclick="chClose()">Cancel</button><button class="btn btn-dark" onclick="chSave()">Save</button></div></div></div>`;}
+function chHtml(){if(!S.ch)return '';if(S.ch.grid)return gridHtml();const k=S.ch.k,hasSave=k!=='tax';
  return `<div class="ch-bk" onmousedown="if(event.target===this)chClose()"><div class="ch" role="dialog" aria-modal="true" aria-label="${TITLES[k]}"><div class="ch-h"><h3>${TITLES[k]}</h3><button class="sd-x2" aria-label="Close" onclick="chClose()">✕</button></div><div class="ch-b">${chBody(k)}</div>${hasSave?chScope(k):''}<div class="ch-ft"><button class="btn btn-line" onclick="chClose()">${hasSave?'Cancel':'Close'}</button>${hasSave?'<button class="btn btn-dark" onclick="chSave()">Save</button>':''}</div></div></div>`;}
-window.chSave=()=>{const c=S.ch,t=targets();if(!t.length){toast('Choose at least one outlet');return;}
+function applyOne(k,i,g){const s=DB.svc[i];
+ if(k==='pick'){if(!s||s.set!==true)return;s.pick=g('on')==='1';if(g('prep'))s.prep=Math.max(5,+g('prep'));}
+ if(k==='del'){if(!s||s.set!==true)return;s.del=g('on')==='1';if(s.del){s.rad=s.rad||{};s.rad.mi=+g('mi')||3;s.rad.fee=+g('fee')||0;s.rad.min=+g('min')||0;if(!DB.deliveryMode[i])DB.deliveryMode[i]='radius';}}
+ if(k==='aa')aaSet(i,g('on')==='1');
+ if(k==='pre'){const p=DB.pre[i]||(DB.pre[i]={on:false,lead:60,days:3,pk:true,dl:true});p.on=g('on')==='1';p.lead=+g('lead')||60;}}
+window.chSave=()=>{const c=S.ch;
+ if(c.grid){let n=0;OUTLETS.forEach(o=>{if(!document.getElementById('chg-'+o.id+'-on'))return;applyOne(c.k,o.id,f=>{const e=document.getElementById('chg-'+o.id+'-'+f);return e?e.value:null;});n++;});S.ch=null;render();toast('Saved for '+nOut(n));return;}
+ const t=targets();if(!t.length){toast('Choose at least one outlet');return;}
  const g=id=>{const e=document.getElementById('chf-'+id);return e?e.value:null;};
- if(c.k==='pick')t.forEach(i=>{const s=DB.svc[i];if(!s||s.set!==true)return;s.pick=g('on')==='1';if(g('prep'))s.prep=Math.max(5,+g('prep'));});
- if(c.k==='del')t.forEach(i=>{const s=DB.svc[i];if(!s||s.set!==true)return;s.del=g('on')==='1';if(s.del){s.rad=s.rad||{};s.rad.mi=+g('mi')||3;s.rad.fee=+g('fee')||0;s.rad.min=+g('min')||0;if(!DB.deliveryMode[i])DB.deliveryMode[i]='radius';}});
- if(c.k==='aa')t.forEach(i=>aaSet(i,g('on')==='1'));
- if(c.k==='pre')t.forEach(i=>{const p=DB.pre[i]||(DB.pre[i]={on:false,lead:60,days:3,pk:true,dl:true});p.on=g('on')==='1';p.lead=+g('lead')||60;});
  if(c.k==='pay'){const m=g('pay');DB.payPick={call:m!=='store',store:m!=='online'};DB.cod.cap=+g('cap')||0;}
+ else t.forEach(i=>applyOne(c.k,i,g));
  S.ch=null;render();toast('Saved'+(scoped(c.k)?' for '+(t.length===1?ON(t[0]).short:nOut(t.length)):''));};
 
 /* ───────── the Ordering page: one summary row per setting ───────── */
@@ -101,6 +121,9 @@ const css=`
 .ch-chips{display:flex;flex-wrap:wrap;gap:8px}.ch-chip{font:inherit;font-size:13px;border:1.5px solid var(--border);background:var(--panel);border-radius:999px;padding:4px 13px;cursor:pointer}.ch-chip.on{background:var(--ink);border-color:var(--ink);color:#fff}
 .ch-ft{display:flex;justify-content:flex-end;gap:10px;margin-top:14px}
 .sr-c{gap:0;padding:6px 28px}.sr{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:18px 0;border-top:1px solid var(--border)}.sr:first-child{border-top:0}.sr-t{min-width:0}.sr-t b{display:block;font-weight:600;font-size:15px}.sr-t span{display:block;color:var(--ink-50);font-size:14px;margin-top:3px}.sr-b{flex-shrink:0}
+.still,.still .sd,.still .ch{animation:none!important}
+.ch.wide{width:min(860px,100%)}.ch-n2{margin:0 0 10px;color:var(--ink-50);font-size:13.5px}.ch-scroll{max-height:min(54vh,520px);overflow:auto;border:1.5px solid var(--border);border-radius:14px}
+.ch-t{width:100%;border-collapse:collapse;font-size:14px}.ch-t th{position:sticky;top:0;background:var(--sunken);text-align:left;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-50);padding:10px 12px;white-space:nowrap;z-index:1}.ch-t td{padding:8px 12px;border-top:1px solid var(--border);vertical-align:middle;white-space:nowrap}.ch-t .inp{width:104px;max-width:none;height:38px}.ch-t tr.ch-all td{background:var(--mint-50)}
 @media(max-width:820px){.sd .sset{grid-template-columns:1fr}.sd .snav{display:none}.sr{flex-wrap:wrap}}
 `;
 const el=document.createElement('style');el.textContent=css;document.head.appendChild(el);
