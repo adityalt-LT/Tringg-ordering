@@ -47,6 +47,7 @@ def _photos():
         print('photos skipped:', e)
     return out
 PHOTOS = _photos()
+ORD_JS = (here / 'setup' / 'ordering-settings.js').read_text(encoding='utf-8')
 ENGINE = (here / 'setup' / 'setup-engine.js').read_text(encoding='utf-8').replace('__LOGO_URI__', LOGO).replace('__TICON_URI__', TICON)
 OB = (here / 'onboarding.html').read_text(encoding='utf-8')
 DB = (here / 'tringg-ordering.html').read_text(encoding='utf-8')
@@ -64,8 +65,8 @@ def cut(text, start, end, new=''):
     return text[:a] + new + text[b:]
 
 
-def engine_tag(v, w='1', su=''):
-    return f'<script>window.TS_VARIANT="{v}";window.TS_WELCOME="{w}";window.TS_SETUP="{su}";</script><script>{ENGINE}</script>\n'
+def engine_tag(v, w='1', su='', od=''):
+    return f'<script>window.TS_VARIANT="{v}";window.TS_WELCOME="{w}";window.TS_SETUP="{su}";window.TS_ORD="{od}";</script><script>{ENGINE}</script>\n'
 
 
 VOICES_JS = r'''const VOICES=[{id:'allie',n:'Ava',g:'Female',t:'Female · English',d:'Warm American host, clear and friendly on the phone',pitch:1.15,rate:1},{id:'marcus',n:'Marcus',g:'Male',t:'Male · English',d:'Calm, confident American host with a steady pace',pitch:.7,rate:.95},{id:'leo',n:'Leo',g:'Male',t:'Male · English',d:'Upbeat, easygoing host for casual restaurants',pitch:.9,rate:1.1},{id:'priya',n:'Priya',g:'Female',t:'Female · Hindi',d:'Friendly bilingual host for Hindi and English callers',pitch:1.3,rate:1.08},{id:'shubh',n:'Shubh',g:'Male',t:'Male · Hindi',d:'Neutral Indian male host. Lowest pronunciation error rate',pitch:.8,rate:1}];
@@ -231,9 +232,9 @@ TS.hello();
 '''
 
 
-def build_onboarding(v, w='1', su=''):
+def build_onboarding(v, w='1', su='', od=''):
     t = OB
-    t = must(t, '<div id="app"></div>\n<script>', '<div id="app"></div>\n' + engine_tag(v, w, su) + '<script>')
+    t = must(t, '<div id="app"></div>\n<script>', '<div id="app"></div>\n' + engine_tag(v, w, su, od) + '<script>')
     t = must(t, '</style>', OB_CSS)
     t = cut(t, 'const OUTLETS=[', 'const CUISINES', '''const RFAQS=[['Do you have gluten-free crusts?','Yes, on any 12-inch pizza.','general'],['Is there parking nearby?','Yes, street parking and a garage next door.','general'],['Do you have vegan options?','Yes, a vegan cheese pizza and several pastas.','general'],['Can you host a private party?','Yes, up to 40 guests.','general'],
  ['Do you take walk-ins?','Yes, subject to availability. Booking is recommended on weekends.','res'],['How far ahead can I book?','Up to 30 days ahead.','res'],['Can I book for a large group?','Yes, up to 12 guests by phone.','res'],
@@ -346,16 +347,17 @@ BOOT = r'''/* setup prototypes: one location, empty to start, driven by the shar
  window.addEventListener('message',e=>{const m=e.data;if(!m||!m.tringg)return;
   if(m.tringg==='enter'){S.route='overview';S.outlet=PRIMARY;S.dd=false;render();scrollTo(0,0);if(TS.welcome==='3'&&TS.setup!=='golive'&&!TS.welcomed&&!TS.allDone()){TS.welcomed=true;setTimeout(()=>TS.showWelcome(),350);}
    if(TS.setup==='drawer'&&!TS.dr.seen&&!TS.allDone()){TS.dr.seen=true;setTimeout(()=>TS.drawer(true),350);}}
-  if(m.tringg==='ready'){S.route='overview';loadReady();}});
+  if(m.tringg==='ready'){S.route='overview';loadReady();if(window.TS_ORD){ordSeed();S.route='settings';S.set='ord';S.outlet='all';render();}}});
  applyTS();TS.hello();
+ if(window.TS_ORD)setTimeout(()=>{loadReady();ordSeed();S.route='settings';S.set='ord';S.outlet='all';S.dd=false;render();},0);
 })();
 render();
 '''
 
 
-def build_dashboard(v, w='1', su=''):
+def build_dashboard(v, w='1', su='', od=''):
     t = DB
-    t = must(t, '<script>\n', engine_tag(v, w, su) + '<script>\n')
+    t = must(t, '<script>\n', engine_tag(v, w, su, od) + '<script>\n')
     # one setup surface, no sidebar checklist
     t = must(t, "function renderChk(){if(S.outlet==='all'||!DB.mods.ord)return '';", "function renderChk(){if(TS.variant==='C'&&(S.setupCollapsed||TS.setup==='drawer'))return TS.railWidget();return '';")
     # the phone number in the top pill picked up a phone-mockup style
@@ -399,12 +401,13 @@ def build_dashboard(v, w='1', su=''):
     t = must(t, "b=!DB.mods.res?'<span class=\"bdg off\">Off</span>':!DB.subscribed?'':p?", "b=!DB.mods.res?'<span class=\"bdg off\">Off</span>':!TS.ready('res')?'<span class=\"bdg new\">Set up</span>':!DB.subscribed?'':p?")
     # the Orders header switches belong to the live view only
     t = must(t, "S.route==='orders'&&DB.orderingOn", "S.route==='orders'&&DB.orderingOn&&TS.get().done['go.fwd']", count=3)
+    t = must(t, "\n ord:()=>ordPage(),", "\n ord:()=>window.TS_ORD?ordNew():ordPage(),")
     # prototype panel
     a = t.index('<div class="proto"><div class="proto-l">Prototype state</div>')
     b = t.index('Subscribed</button></div></div>', a) + len('Subscribed</button></div></div>')
     t = t[:a] + PROTO_PANEL + t[b:]
     t = must(t, "${DB.svc[x.id].set!==true?'<span class=\"odd-new\">New</span>':''}", "${TS.outletSet(x.id)?'':'<span class=\"odd-new\">Set up</span>'}")
-    t = must(t, "function pickOutlet(id){", "function pickOutlet(id){TS.beforeOutlet(id);S.route='overview';")
+    t = must(t, "function pickOutlet(id){", "function pickOutlet(id){TS.beforeOutlet(id);if(S.route!=='settings')S.route='overview';")
     t = must(t, '</style>', '.btn-dark{background:#4FC2B4;color:#fff;font-weight:600;border:1.5px solid #111}.btn-dark:hover:not(:disabled){background:#4FC2B4;color:#fff}.btn-dark:hover:not(:disabled){box-shadow:3px 4px 0 #111}.odd-new{background:#DDF2EE;color:#1F6E62}</style>')
     # modules: a service that is off offers to add itself; one that isn't set up shows its steps in place
     t = must(t, '''onclick="goSet('mods')">Turn on</button>''', '''onclick="TS.add('${m}')">Add ${m==='ord'?'ordering':'reservations'}</button>''')
@@ -437,9 +440,15 @@ function ovEnhance(){document.querySelectorAll('#view .ov-grid .card:not(.agent)
     # arriving from onboarding: no toast, no banner. The dashboard just opens on the right page.
     a = t.index('/* arriving from onboarding')
     b = t.index('</script>', a)
-    t = t[:a] + BOOT + t[b:]
+    t = t[:a] + BOOT.replace('\nrender();\n', '\n' + (ORD_JS + SEED_JS if od else '') + '\nrender();\n') + t[b:]
     return t
 
+
+SEED_JS = r'''
+window.ordSeed=()=>{const P={wp:[20,3,3,15],rn:[25,3,3,15],lp:[20,3,3,15],lk:[20,3,3,15],wl:[20,3,3,15],ls:[15,2,3,12],hp:[20,0,0,0],ev:[25,4,5,20],op:[25,4,5,20],nv:[25,4,5,20],sb:[25,5,5,25],oh:[12,0,0,0]};
+ Object.keys(P).forEach(id=>{const q=P[id];DB.svc[id]={set:true,pick:true,del:q[1]>0,prep:q[0],rad:{mi:q[1]||3,fee:q[2],min:q[3]}};DB.deliveryMode[id]=q[1]>0?(id==='sb'?null:'radius'):null;});
+ DB.paused=DB.paused||{};DB.paused.ev='Until 8:45 PM.';};
+'''
 
 # ───────────────────────── wrapper ─────────────────────────
 NAMES = {'A': ('Onboarding-first', 'proto-a-onboarding-first.html'),
@@ -449,10 +458,12 @@ NAMES = {'A': ('Onboarding-first', 'proto-a-onboarding-first.html'),
 VARIANTS = {'C1': ('C', '1', 'C1 · Welcome header', 'proto-c1-welcome-header.html'),
             'C2': ('C', '2', 'C2 · Hero banner', 'proto-c2-hero-banner.html'),
             'C3': ('C', '3', 'C3 · Welcome dialog', 'proto-c3-welcome-dialog.html'),
-            'E1': ('C', '3', 'E · Go-live banner + services', 'proto-e-golive-banner.html', 'golive')}
+            'E1': ('C', '3', 'E · Go-live banner + services', 'proto-e-golive-banner.html', 'golive'),
+            'F1': ('C', '3', 'F1 · Ordering settings: same for all', 'proto-f1-ordering-settings.html', 'golive', '1'),
+            'F2': ('C', '3', 'F2 · Ordering settings: outlet list', 'proto-f2-ordering-settings.html', 'golive', '2')}
 
 
-def wrapper(label, ob, dash):
+def wrapper(label, ob, dash, start=''):
     b64 = lambda x: base64.b64encode(x.encode('utf-8')).decode('ascii')
     return f'''<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -489,12 +500,14 @@ document.getElementById('b-db').onclick=()=>show('db');
 document.getElementById('b-rd').onclick=()=>{{show('db');db.contentWindow.postMessage({{tringg:'ready'}},'*');}};
 document.getElementById('b-rs').onclick=()=>{{STATE=null;load();show('ob');}};
 load();
+{"show('db');" if start else ''}
 </script></body></html>'''
 
 
 if __name__ == '__main__':
     for key, (v, w, label, fn, *rest) in VARIANTS.items():
         su = rest[0] if rest else ''
-        page = wrapper(label, build_onboarding(v, w, su), build_dashboard(v, w, su))
+        od = rest[1] if len(rest) > 1 else ''
+        page = wrapper(label, build_onboarding(v, w, su, od), build_dashboard(v, w, su, od), 'db' if od else '')
         (here / fn).write_text(page, encoding='utf-8')
         print('wrote', fn, len(page) // 1024, 'KB')
