@@ -1,0 +1,7 @@
+{
+  "name": "tringg-ordering-server",
+  "private": true,
+  "type": "module",
+  "scripts": { "start": "node --env-file-if-exists=.env server.js" },
+  "dependencies": { "stripe": "^18.0.0" }
+}

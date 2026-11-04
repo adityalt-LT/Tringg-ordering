@@ -1,0 +1,28 @@
+<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Stripe Connect test</title>
+<style>body{font:15px system-ui;max-width:640px;margin:24px auto;padding:0 16px}button{padding:8px 14px;margin:4px 4px 4px 0}pre{background:#f4f4f4;padding:12px;overflow:auto;border-radius:6px}h3{margin-top:28px}</style>
+<h2>Stripe Connect flow test (test mode)</h2>
+<h3>1 · Connect the brand</h3>
+<button onclick="go('/api/connect/start',{})">Connect with Stripe</button>
+<button onclick="show('/api/connect/status')">Check status</button>
+<button onclick="go('/api/connect/dashboard',{})">Open Express dashboard</button>
+<p>Test onboarding: use Stripe's "use test data" skip links; bank <code>000123456789</code> / routing <code>110000000</code>.</p>
+<h3>2 · Caller pays (direct charge)</h3>
+<label>Amount (¢) <input id="amt" type="number" value="2500"></label>
+<button onclick="pay()">Create payment link</button> <p>Test card <code>4242 4242 4242 4242</code>, any future date/CVC.</p>
+<h3>3 · Result &amp; refund</h3>
+<button onclick="result()">Show payment result</button>
+<button onclick="refund(false)">Refund whole order</button>
+<button onclick="refund(true)">Refund $5</button>
+<pre id="out">…</pre>
+<script>
+const out=t=>document.getElementById('out').textContent=typeof t==='string'?t:JSON.stringify(t,null,2);
+const call=async(u,b)=>{const r=await fetch(u,b?{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(b)}:{});return r.json()};
+const show=async u=>out(await call(u));
+const go=async(u,b)=>{const j=await call(u,b);out(j);if(j.url)location=j.url};
+const pay=()=>go('/api/pay/session',{orderId:'ORD-'+Date.now().toString().slice(-5),amountCents:+amt.value});
+const sid=new URLSearchParams(location.search).get('session');
+const result=async()=>{const j=await call('/api/pay/session?id='+sid);out(j);window.pi=j.payment_intent};
+const refund=async part=>{if(!window.pi)await result();out(await call('/api/pay/refund',{paymentIntent:window.pi,...(part?{amountCents:500}:{})}))};
+if(sid)result();
+</script>
