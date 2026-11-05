@@ -40,13 +40,15 @@ function chBody(k){const o=targets()[0]||OUTLETS[0].id,v=DB.svc[o]||{},r=v.rad||
  const num=(id,d,u,st)=>`<div class="inp-suf" style="width:132px"><input id="chf-${id}" class="inp sm" type="number" min="0" step="${st||1}" value="${g(id,d)??''}"><span>${u}</span></div>`;
  const sel=(id,d,opts)=>`<select id="chf-${id}" class="inp sm" style="width:190px">${opts.map(a=>`<option value="${a[0]}" ${String(a[0])===String(g(id,d))?'selected':''}>${a[1]}</option>`).join('')}</select>`;
  const onoff=(id,d)=>sel(id,d,[['1','On'],['0','Off']]);
- if(k==='pick')return f('Pickup',onoff('on',v.pick?'1':'0'),'Callers can order for pickup.')+f('Ready in',num('prep',v.prep,'min',5),'Callers hear this time once an order is accepted.');
- if(k==='del')return f('Delivery',onoff('on',v.del?'1':'0'),'Callers can order for delivery.')+f('Distance',num('mi',r.mi,'mi',.5))+f('Delivery fee',num('fee',r.fee,'$',.5))+f('Minimum order',num('min',r.min,'$'));
- if(k==='aa')return f('Auto-accept',onoff('on',DB.autoAccept[o]?'1':'0'),'On: new orders go straight to the kitchen. Off: someone accepts each one in Orders.');
- if(k==='pre'){const p=DB.pre[o]||(DB.pre[o]={on:false,lead:60,days:3,pk:true,dl:true});return f('Pre-orders',onoff('on',p.on?'1':'0'),'Callers can order for later today.')+f('Shortest lead time',sel('lead',p.lead,[[30,'30 min'],[60,'60 min'],[90,'90 min'],[120,'120 min']]));}
- if(k==='pay'){const pk=DB.payPick,m=pk.call&&pk.store?'both':pk.call?'online':'store';return f('How callers pay',sel('pay',m,[['online','Card, by text link'],['store','Cash, at pickup or delivery'],['both','Both']]),'The same for every outlet.')+f('Cash limit',num('cap',DB.cod.cap,'$'),'Cash is only allowed up to this order total.');}
+ if(k==='pick')return f('Pickup',onoff('on',v.pick?'1':'0'),'Customers can order for pickup.')+f('Ready in',num('prep',v.prep,'min',5),'Customers are told this time once their order is accepted.');
+ if(k==='del')return f('Delivery',onoff('on',v.del?'1':'0'),'Customers can order for delivery.')+f('Distance',num('mi',r.mi,'mi',.5))+f('Delivery fee',num('fee',r.fee,'$',.5))+f('Minimum order',num('min',r.min,'$'));
+ if(k==='aa')return f('Auto-accept',onoff('on',DB.autoAccept[o]?'1':'0'),'On: orders go straight to the kitchen. Off: you accept each order yourself.');
+ if(k==='pre'){const p=DB.pre[o]||(DB.pre[o]={on:false,lead:60,days:3,pk:true,dl:true});return f('Pre-orders',onoff('on',p.on?'1':'0'),'Customers can order for later today.')+f('Shortest lead time',sel('lead',p.lead,[[30,'30 min'],[60,'60 min'],[90,'90 min'],[120,'120 min']]));}
+ if(k==='pay'){const pk=DB.payPick,m=pk.call&&pk.store?'both':pk.call?'online':'store';return f('How customers pay',sel('pay',m,[['online','Card, by text link'],['store','Cash, at pickup or delivery'],['both','Both']]),'This is the same for all outlets.')+f('Cash limit',num('cap',DB.cod.cap,'$'),'Cash is only allowed for orders up to this amount.');}
  if(k==='tax')return DB.taxes.map(t=>`<div class="ch-f"><div><b>${esc(t.n)}</b><span>${t.vt==='%'?t.v+'%':money(t.v)} · ${t.type} · ${t.outs.length>=OUTLETS_ALL.length?'All outlets':nOut(t.outs.length)}</span></div><button class="btn btn-line btn-sm" onclick="S.ch=null;openTax('${t.id}')">Edit</button></div>`).join('')+`<div class="ch-f"><div></div><button class="btn btn-line btn-sm" onclick="S.ch=null;openTax()">${I.plus} Add tax</button></div>`;
  return '';}
+const gv=(k,id)=>{const v=DB.svc[id]||{},r=v.rad||{};if(k==='pick')return v.set!==true?'Not set up':v.pick?'Ready in '+v.prep+' min':'Pickup off';if(k==='del')return v.set!==true?'Not set up':v.del?r.mi+' mi · '+money(r.fee)+' · '+money(r.min)+' min':'No delivery';if(k==='aa')return DB.autoAccept[id]?'Automatic':'You accept';if(k==='pre')return (DB.pre[id]||{}).on?'On':'Off';return '';};
+function glimpse(k){return `<div class="ch-gl"><b>How it is set up now</b><div class="ch-gl-g">${OUTLETS.map(o=>`<div><span>${esc(o.short)}</span><em>${gv(k,o.id)}</em></div>`).join('')}</div></div>`;}
 function chScope(k){if(!scoped(k))return `<div class="ch-sc"><span>Applies to every outlet.</span></div>`;
  if(S.outlet!=='all')return `<div class="ch-sc"><span>Applies to <b>${esc(ON(S.outlet).short)}</b> only.</span></div>`;
  const c=S.ch;return `<div class="ch-sc"><b>Apply to</b><label class="ch-r"><input type="radio" name="chs" ${c.scope==='all'?'checked':''} onchange="chScope('all')"> All ${OUTLETS.length} outlets</label><label class="ch-r"><input type="radio" name="chs" ${c.scope==='pick'?'checked':''} onchange="chScope('pick')"> Only some outlets</label>${c.scope==='pick'?`<div class="ch-chips">${OUTLETS.map(o=>`<button class="ch-chip ${c.pick.includes(o.id)?'on':''}" onclick="chPick('${o.id}')">${esc(o.short)}</button>`).join('')}</div>`:''}</div>`;}
@@ -56,13 +58,13 @@ const gcell=(pre,id,f,val)=>f[2]==='sel'?`<select id="${pre}${id}-${f[0]}" class
 window.chgAll=()=>{const k=S.ch.k;GF[k].forEach(f=>{const e=document.getElementById('cha-all-'+f[0]);if(!e||e.value==='')return;OUTLETS.forEach(o=>{const x=document.getElementById('chg-'+o.id+'-'+f[0]);if(x&&!x.disabled)x.value=e.value;});});toast('Filled in. Press Save to keep.');};
 function gridHtml(){const k=S.ch.k,F=GF[k];
  return `<div class="ch-bk" onmousedown="if(event.target===this)chClose()"><div class="ch wide" role="dialog" aria-modal="true" aria-label="${TITLES[k]}"><div class="ch-h"><h3>${TITLES[k]} · all outlets</h3><button class="sd-x2" aria-label="Close" onclick="chClose()">✕</button></div>
-  <p class="ch-n2">Change any outlet, or fill the first row and press “Fill all” to change every outlet at once.</p>
+  <p class="ch-n2">Change any outlet below. Or type a value in the top row and press “Fill all” to set every outlet at once.</p>
   <div class="ch-scroll"><table class="ch-t"><thead><tr><th>Outlet</th>${F.map(f=>`<th>${f[1]}</th>`).join('')}</tr></thead><tbody>
   <tr class="ch-all"><td><b>All outlets</b><br><button class="btn btn-line btn-sm" onclick="chgAll()">Fill all</button></td>${F.map(f=>`<td>${gcell('cha-','all',f,'')}</td>`).join('')}</tr>
   ${OUTLETS.map(o=>{const set=(DB.svc[o.id]||{}).set===true;return `<tr><td>${esc(o.short)}</td>${set?F.map(f=>`<td>${gcell('chg-',o.id,f,gval(k,o.id,f[0]))}</td>`).join(''):`<td colspan="${F.length}" class="muted">Not set up</td>`}</tr>`;}).join('')}</tbody></table></div>
   <div class="ch-ft"><button class="btn btn-line" onclick="chClose()">Cancel</button><button class="btn btn-dark" onclick="chSave()">Save</button></div></div></div>`;}
 function chHtml(){if(!S.ch)return '';if(S.ch.grid)return gridHtml();const k=S.ch.k,hasSave=k!=='tax';
- return `<div class="ch-bk" onmousedown="if(event.target===this)chClose()"><div class="ch" role="dialog" aria-modal="true" aria-label="${TITLES[k]}"><div class="ch-h"><h3>${TITLES[k]}</h3><button class="sd-x2" aria-label="Close" onclick="chClose()">✕</button></div><div class="ch-b">${chBody(k)}</div>${hasSave?chScope(k):''}<div class="ch-ft"><button class="btn btn-line" onclick="chClose()">${hasSave?'Cancel':'Close'}</button>${hasSave?'<button class="btn btn-dark" onclick="chSave()">Save</button>':''}</div></div></div>`;}
+ return `<div class="ch-bk" onmousedown="if(event.target===this)chClose()"><div class="ch" role="dialog" aria-modal="true" aria-label="${TITLES[k]}"><div class="ch-h"><h3>${TITLES[k]}</h3><button class="sd-x2" aria-label="Close" onclick="chClose()">✕</button></div><div class="ch-b">${chBody(k)}</div>${S.outlet==='all'&&scoped(k)?glimpse(k):''}${hasSave?chScope(k):''}<div class="ch-ft"><button class="btn btn-line" onclick="chClose()">${hasSave?'Cancel':'Close'}</button>${hasSave?'<button class="btn btn-dark" onclick="chSave()">Save</button>':''}</div></div></div>`;}
 function applyOne(k,i,g){const s=DB.svc[i];
  if(k==='pick'){if(!s||s.set!==true)return;s.pick=g('on')==='1';if(g('prep'))s.prep=Math.max(5,+g('prep'));}
  if(k==='del'){if(!s||s.set!==true)return;s.del=g('on')==='1';if(s.del){s.rad=s.rad||{};s.rad.mi=+g('mi')||3;s.rad.fee=+g('fee')||0;s.rad.min=+g('min')||0;if(!DB.deliveryMode[i])DB.deliveryMode[i]='radius';}}
@@ -82,20 +84,19 @@ const tally=(R,fn)=>{const m=new Map();R.forEach(x=>{const k=fn(x);m.set(k,(m.ge
 window.ordRows=()=>{const one=S.outlet!=='all',R=ids().map(id=>({id,v:DB.svc[id]||{}})).filter(x=>x.v.set===true);
  if(one&&!R.length)return ordPage();
  const row=(t,val,k,btn,act)=>`<div class="sr"><div class="sr-t"><b>${t}</b><span>${val}</span></div><button class="btn btn-soft sr-b" onclick="${act||`chOpen('${k}')`}">${btn||'Change'}</button></div>`;
- const v0=R[0]?R[0].v:{};
- const pick=one?(v0.pick?'On · ready in '+v0.prep+' min':'Off'):top(tally(R,x=>x.v.pick?String(x.v.prep):'off'),k=>k==='off'?'Off':'Ready in '+k+' min');
- const rd=x=>x.v.rad||{};
- const del=one?(v0.del?'On · '+rd(R[0]).mi+' mi · '+money(rd(R[0]).fee)+' fee · '+money(rd(R[0]).min)+' minimum':'Off'):top(tally(R,x=>x.v.del?rd(x).mi+'|'+rd(x).fee+'|'+rd(x).min:'off'),k=>{if(k==='off')return 'No delivery';const a=k.split('|');return a[0]+' mi · $'+a[1]+' · $'+a[2]+' min';});
- const tx=DB.taxes.filter(t=>one?t.outs.includes(S.outlet):true).map(t=>esc(t.n)+' '+(t.vt==='%'?t.v+'%':money(t.v))+(!one&&t.outs.length<OUTLETS_ALL.length?' ('+nOut(t.outs.length)+')':'')).join(' · ')||'None';
- const pk=DB.payPick,pay=(pk.call&&pk.store?'Card or cash':pk.call?'Card, by text link':'Cash')+(DB.stripe==='active'?' · Stripe connected':'');
- const on=ids().filter(i=>DB.autoAccept[i]),off=ids().filter(i=>!DB.autoAccept[i]);
- const aa=one?(on.length?'On · orders go straight to the kitchen':'Off · you accept each order'):`On at ${on.length} of ${ids().length} outlets`+(off.length&&off.length<4?' · Off at '+off.map(i=>esc(ON(i).short)).join(', '):off.length?' · Off at '+off.length:'');
- const pre=one?((DB.pre[S.outlet]||{}).on?'On':'Off'):'On at '+ids().filter(i=>(DB.pre[i]||{}).on).length+' of '+ids().length+' outlets';
+ const v0=R[0]?R[0].v:{},rd=x=>x.v.rad||{},A=!one;
+ const mi=R[0]?rd(R[0]):{};
+ const pick=A?'Change how long pickup takes at all your outlets.':(v0.pick?'Pickup is on. Orders are ready in '+v0.prep+' min.':'Pickup is off.');
+ const del=A?'Change delivery distance, fee and minimum order at all your outlets.':(v0.del?'Delivery is on. Within '+mi.mi+' mi, '+money(mi.fee)+' fee, '+money(mi.min)+' minimum order.':'Delivery is off.');
+ const tx=A?'Change the taxes and fees added to orders at all your outlets.':(DB.taxes.filter(t=>t.outs.includes(S.outlet)).map(t=>esc(t.n)+' '+(t.vt==='%'?t.v+'%':money(t.v))).join(' · ')||'No taxes or fees.');
+ const pk=DB.payPick,pay=A?'Change how customers pay. This is the same for all your outlets.':((pk.call&&pk.store?'Customers can pay by card or cash.':pk.call?'Customers pay by card, using a text link.':'Customers pay with cash.')+(DB.stripe==='active'?' Stripe is connected.':''));
+ const aa=A?'Choose if orders are accepted automatically at your outlets.':(DB.autoAccept[S.outlet]?'Orders are accepted automatically.':'You accept each order yourself.');
+ const pre=A?'Choose if customers can order for later at your outlets.':((DB.pre[S.outlet]||{}).on?'Customers can order for later.':'Pre-orders are off.');
  return sH('Ordering','',one?'':'all')+`<div class="scard sr-c">
-  ${row('Menu',DB.menuState==='live'?'Published · shared by every outlet':'Not published','','Open menu',"sdClose();go('menu')")}
+  ${row('Menu',DB.menuState==='live'?'One menu, shared by all your outlets.':'The menu is not published yet.','','Open menu',"sdClose();go('menu')")}
   ${row('Pickup',pick,'pick')}
   ${row('Delivery',del,'del')}
-  ${one&&v0.del?row('Delivery area',DB.deliveryMode[S.outlet]==='zones'?(DB.zones[S.outlet]||[]).length+' zones':'Radius '+(rd(R[0]).mi||'—')+' mi','area','Edit area'):''}
+  ${one&&v0.del?row('Delivery area',DB.deliveryMode[S.outlet]==='zones'?'Delivery covers '+(DB.zones[S.outlet]||[]).length+' zones.':'Delivery covers '+(mi.mi||'—')+' mi around the outlet.','area','Edit area'):''}
   ${row('Taxes and fees',tx,'tax')}
   ${row('Payments',pay,'pay')}
   ${row('Accepting orders',aa,'aa')}
@@ -119,6 +120,7 @@ const css=`
 .ch-f{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 0;border-top:1px solid var(--border)}.ch-b>.ch-f:first-child{border-top:0}.ch-f b{display:block;font-weight:600;font-size:14.5px}.ch-f span{display:block;font-size:13px;color:var(--ink-50);margin-top:2px}.ch-f .inp-suf span{margin:0}
 .ch-sc{border-top:1px solid var(--border);padding-top:14px;margin-top:6px;display:flex;flex-direction:column;gap:10px;font-size:14px}.ch-r{display:flex;gap:10px;align-items:center;cursor:pointer}.ch-r input{accent-color:#1F6E62;width:17px;height:17px}
 .ch-chips{display:flex;flex-wrap:wrap;gap:8px}.ch-chip{font:inherit;font-size:13px;border:1.5px solid var(--border);background:var(--panel);border-radius:999px;padding:4px 13px;cursor:pointer}.ch-chip.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.ch-gl{border-top:1px solid var(--border);padding-top:14px;margin-top:6px}.ch-gl>b{font-size:13px;font-weight:600;color:var(--ink-50)}.ch-gl-g{display:grid;grid-template-columns:1fr 1fr;gap:4px 18px;margin-top:8px;max-height:150px;overflow:auto}.ch-gl-g div{display:flex;justify-content:space-between;gap:10px;font-size:13px;padding:3px 0}.ch-gl-g span{color:var(--ink)}.ch-gl-g em{font-style:normal;color:var(--ink-50);text-align:right}
 .ch-ft{display:flex;justify-content:flex-end;gap:10px;margin-top:14px}
 .sr-c{gap:0;padding:6px 28px}.sr{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:18px 0;border-top:1px solid var(--border)}.sr:first-child{border-top:0}.sr-t{min-width:0}.sr-t b{display:block;font-weight:600;font-size:15px}.sr-t span{display:block;color:var(--ink-50);font-size:14px;margin-top:3px}.sr-b{flex-shrink:0}
 .still,.still .sd,.still .ch{animation:none!important}
