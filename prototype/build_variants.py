@@ -322,7 +322,7 @@ BOOT = r'''/* setup prototypes: one location, empty to start, driven by the shar
  function initFresh(){FULL=false;S.setupCollapsed=false;ROLE_OUT.owner=FRESH_OUT;applyRole(true);loadScenario('off');applyRole();TS.cfg.outlets=1;
   DB.k='setup';SCEN.setup={t:'Setup',h:''};DB.res=[];DB.calls=[];DB.orders=[];DB.held=[];DB.taxes=[];S.res.sel=null;S.route='overview';S.outlet=PRIMARY;S.ordOutlet=PRIMARY;S.dd=false;}
  TS.nav=r=>go(r);TS.cfg.outlets=1;
- TS.host.render=()=>render();TS.host.collapse=()=>{S.setupCollapsed=true;render();};TS.host.expand=()=>{S.setupCollapsed=false;S.growSetup=true;go('overview');};
+ TS.host.render=()=>render();TS.host.phone=()=>{if(S.outlet==='all')S.outlet=CUR;S.set='phone';S.sdlg=true;S.ch=null;render();};TS.host.collapse=()=>{S.setupCollapsed=true;render();};TS.host.expand=()=>{S.setupCollapsed=false;S.growSetup=true;go('overview');};
  window.applyTS=function(){const s=TS.get(),d=s.d,done=k=>!!s.done[k],sv=d.svc,p=d.pay,t=d.tax;
   if(FULL){DB.subscribed=TS.active();BRAND.agent=d.agent.name;if(DB.agents[0])DB.agents[0].n=d.agent.name;syncMods();return;}
   OUTLETS_ALL.forEach(o=>{DB.om[o.id]={res:!!s.svc.res,ord:!!s.svc.ord};});
@@ -350,7 +350,7 @@ BOOT = r'''/* setup prototypes: one location, empty to start, driven by the shar
   if(m.tringg==='ready'){S.route='overview';loadReady();}});
  applyTS();TS.hello();
  if(window.TS_FLOW)setTimeout(()=>TS.set(x=>{x.done['enq.faq']=true;}),0);
- if(/^[12]$/.test(window.TS_SD))setTimeout(()=>{loadReady();S.outlet='all';S.set='ord';S.sdlg=true;S.dd=false;render();},0);
+ if(/^[12]$/.test(window.TS_SD)&&!window.TS_FLOW)setTimeout(()=>{loadReady();S.outlet='all';S.set='ord';S.sdlg=true;S.dd=false;render();},0);
  if(window.TS_SD==='page')setTimeout(()=>{loadReady();S.outlet='all';S.set='ord';S.route='settings';S.dd=false;render();},0);
 })();
 render();
@@ -438,7 +438,7 @@ def build_dashboard(v, w='1', su='', sd='', dash='', enq='', flow=''):
     # modules: a service that is off offers to add itself; one that isn't set up shows its steps in place
     t = must(t, '''onclick="goSet('mods')">Turn on</button>''', '''onclick="TS.add('${m}')">Add ${m==='ord'?'ordering':'reservations'}</button>''')
     t = must(t, "const VIEWS={overview:vOverview,reservations:modG(gate(vReservations,'Table requests and bookings'),'res'),orders:modG(gate(vOrders,'Phone orders'),'ord'),",
-             "const modT=(fn,m)=>()=>{if(!DB.mods[m])return greyed(fn(),m);if(!TS.ready(m))return TS.panel(m);if(!TS.active()||!TS.get().done['go.fwd'])return TS.readyPage(m);return fn();};\nconst VIEWS={overview:vOverview,reservations:modT(vReservations,'res'),orders:modT(vOrders,'ord'),")
+             "const modT=(fn,m)=>()=>{if(!DB.mods[m])return greyed(fn(),m);if(!TS.ready(m))return TS.panel(m);if(!TS.active()||(!window.TS_FLOW&&!TS.get().done['go.fwd']))return TS.readyPage(m);return fn();};\nconst VIEWS={overview:vOverview,reservations:modT(vReservations,'res'),orders:modT(vOrders,'ord'),")
     # overview: one setup block per variant, above the numbers
     t = must(t, "function vOverview(){\n  if(!DB.subscribed)return vOverviewFresh();", "function vOverview0(){")
     t = cut(t, 'function vOverviewFresh(){', 'function vOverview0(){', OVERVIEW_FRESH + '''function vOverview(){
@@ -466,11 +466,14 @@ function ovEnhance(){document.querySelectorAll('#view .ov-grid .card:not(.agent)
     # arriving from onboarding: no toast, no banner. The dashboard just opens on the right page.
     a = t.index('/* arriving from onboarding')
     b = t.index('</script>', a)
-    t = t[:a] + BOOT.replace('\nrender();\n', '\n' + (SD_JS if sd in ('1', '2') else '') + '\nrender();\n') + t[b:]
+    t = t[:a] + BOOT.replace('\nrender();\n', '\n' + (SD_JS if sd in ('1', '2') else '') + (FLOW_JS if flow else '') + '\nrender();\n') + t[b:]
     return t
 
 
 AA_CSS = '.ps-g{display:grid;grid-template-columns:1fr 1fr;gap:14px}.ps{border:1.5px solid var(--border);border-radius:18px;padding:18px 20px;display:flex;flex-direction:column;gap:14px;background:var(--panel)}.ps.off{background:var(--sunken)}.ps-h{display:flex;align-items:center;gap:12px}.ps-h>div{flex:1;min-width:0}.ps-h b{display:block;font-size:16px;font-weight:600}.ps-h small{color:var(--ink-50);font-size:12.5px}.ps-ic{width:38px;height:38px;border-radius:12px;background:var(--mint-50);color:var(--mint-700);display:grid;place-items:center}.ps.off .ps-ic{background:var(--chip);color:var(--ink-50)}.ps-ic svg{width:20px;height:20px}.ps-f{display:flex;align-items:center;justify-content:space-between;gap:12px}.ps-f label{font-weight:500}.ps-n{color:var(--ink-50);font-size:13px}.ps-kv{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.ps-kv>div{background:var(--sunken);border-radius:12px;padding:10px 12px}.ps-kv span{display:block;font-size:12px;color:var(--ink-50)}.ps-kv b{font-size:15px;font-weight:600}.ps-p select{width:auto!important;min-width:160px;padding-right:34px}.ps-p{display:flex;align-items:center;justify-content:space-between;gap:10px;border-top:1px solid var(--border);padding-top:12px;font-size:13px;color:var(--ink-50)}@media(max-width:900px){.ps-g{grid-template-columns:1fr}}.ol-sum{font-size:15px}.ol-sum b{font-size:22px;font-weight:600;letter-spacing:-.5px}.ol-w{color:var(--cream-700);font-weight:500}.ol-bar{display:flex;gap:4px}.ol-bar i{flex:1;height:8px;border-radius:99px;background:var(--sage-500)}.ol-bar i.a{background:var(--cream-500)}.ol-bar i.x{background:var(--ink-15)}.ol-todo{display:flex;align-items:center;gap:14px;background:#FFF9E8;border:1.5px solid #F0D58C;border-radius:14px;padding:12px 16px}.ol-todo>div{flex:1}.ol-todo b{display:block;font-weight:600}.ol-todo span{font-size:13px;color:var(--ink-50)}.ol-grid{display:flex;flex-wrap:wrap;gap:8px}.ol-c{display:inline-flex;align-items:center;gap:8px;font:inherit;font-size:13.5px;font-weight:500;border:1.5px solid var(--border);background:var(--panel);border-radius:999px;padding:6px 14px 6px 11px;cursor:pointer;color:var(--ink)}.ol-c:hover{border-color:var(--ink)}.ol-c i{width:9px;height:9px;border-radius:50%;background:var(--sage-500)}.ol-c.a i{background:var(--cream-500)}.ol-c.x i{background:var(--ink-15)}.tx-chips{display:flex;flex-wrap:wrap;gap:8px;padding:0 0 14px}.tx-chip{font:inherit;font-size:13px;border:1.5px solid var(--border);background:var(--panel);border-radius:999px;padding:4px 13px;cursor:pointer}.tx-chip:hover{border-color:var(--ink)}.aa-s{display:flex;align-items:center;gap:16px;flex-wrap:wrap;background:var(--panel);border-radius:18px;padding:14px 20px;margin-bottom:14px;box-shadow:var(--e1);border:1.5px solid var(--border)}.aa-s.on{border-color:#BFE6E0}.aa-s.off{background:#FFF9E8;border-color:#F0D58C}.aa-i{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;flex-shrink:0;background:var(--mint-50);color:var(--mint-700)}.aa-s.off .aa-i{background:var(--cream-50);color:var(--cream-700)}.aa-i svg{width:20px;height:20px}.aa-t{flex:1;min-width:240px}.aa-t b{display:block;font-weight:600;font-size:15px}.aa-t span{display:block;font-size:13.5px;color:var(--ink-50);margin-top:2px}.aa-t span b{display:inline;color:var(--cream-700)}.aa-f{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--ink-50)}.aa-f span{background:var(--chip);border-radius:999px;padding:4px 12px;white-space:nowrap}.aa-f span.k{background:var(--mint-50);color:var(--mint-700);font-weight:600}.aa-s.off .aa-f span.k{background:var(--cream-50);color:var(--cream-700)}.aa-f i{font-style:normal;color:var(--ink-30)}'
+FLOW_JS = r'''
+SET.phone0=SET.phone;SET.phone=()=>(window.TS_FLOW&&S.outlet!=='all')?TS.phonePage():SET.phone0();
+'''
 AA_JS = r'''
 
 function psTiles(o,v,mode,z,pauseCtl){const r=v.rad||{};
@@ -515,6 +518,7 @@ VARIANTS = {'C1': ('C', '1', 'C1 · Welcome header', 'proto-c1-welcome-header.ht
             'G1': ('C', '1', 'G1 · One sentence', 'proto-g1-one-sentence.html', '', '', '1', 'Common questions'),
             'G2': ('C', '1', 'G2 · Sentence + live call', 'proto-g2-live-call.html', '', '', '2', 'Questions & answers'),
             'H1': ('C', '1', 'H · Go live flow', 'proto-h-golive-flow.html', '', '', '2', 'Questions & answers', '1'),
+            'H2': ('C', '1', 'H2 · Go live flow + settings dialogs', 'proto-h2-golive-settings.html', '', '1', '2', 'Questions & answers', '1'),
             'E2B': ('C', '3', 'E2b · Settings dialogs: outlet grid', 'proto-e2b-settings-grid.html', 'golive', '2')}
 
 

@@ -265,6 +265,13 @@ select.ts-in{appearance:auto;height:46px}
 .co-sp{width:16px;height:16px;border-radius:50%;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;animation:cosp .7s linear infinite}@keyframes cosp{to{transform:rotate(360deg)}}
 .co-ok{text-align:center;padding:60px 10px}.co-okc{width:64px;height:64px;border-radius:50%;background:#2e9e6a;color:#fff;display:grid;place-items:center;margin:0 auto 18px}.co-ok h2{margin:0 0 6px}.co-ok p{color:#777;margin:0}
 @media(max-width:820px){.co-g{grid-template-columns:1fr;gap:30px}}
+
+.fp-hero{position:relative;background:#111;color:#fff;border-radius:22px;padding:24px 28px 26px;overflow:hidden}.fp-hero:after{content:"";position:absolute;right:-60px;top:-80px;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,rgba(79,194,180,.35),rgba(79,194,180,0) 70%)}
+.fp-top{display:flex;gap:12px;align-items:center;font-size:12px;letter-spacing:.1em;color:#9a9a96;margin-bottom:12px}.fp-act{border:1px solid #2f5f58;background:#173a35;color:#7FE8D8;border-radius:999px;padding:3px 12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase}.fp-act.no{border-color:#555;background:#222;color:#bbb}
+.fp-num{font-family:"JetBrains Mono",monospace;font-size:40px;letter-spacing:-.5px;font-weight:500}.fp-sub{color:#bdbdb8;margin-top:8px;font-size:14px}.fp-copy{position:absolute;right:24px;top:22px;z-index:1}
+.fp-row{display:grid;grid-template-columns:1fr 1fr;gap:20px}.fp-ag{display:flex;align-items:center;gap:12px;border:1.5px solid var(--border);border-radius:14px;padding:12px 14px;background:var(--panel)}.fp-ag span{width:36px;height:36px;border-radius:50%;background:var(--mint-50);color:var(--mint-700);display:grid;place-items:center;font-weight:600}.fp-ag b{display:block;font-size:15px}.fp-ag small{color:var(--ink-50);font-size:12.5px}
+.fp-ok{display:flex;align-items:center;gap:10px;margin-top:18px;background:var(--mint-50);color:var(--mint-700);border-radius:12px;padding:12px 16px;font-weight:500}.fp-ok i{display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--mint-500);color:#fff}
+@media(max-width:820px){.fp-row{grid-template-columns:1fr}.fp-num{font-size:28px}}
 .ts-still{animation:none!important}
 @media(prefers-reduced-motion:reduce){.ts-sheet,.ts-ov{animation:none}}
 `;
@@ -431,6 +438,7 @@ function draw(){
  var had=!!r.querySelector('.ts-sheet');r.innerHTML='<div class="ts-ov'+(had?' ts-still':'')+'" onmousedown="if(event.target===this)TS.close()"><div class="ts-sheet'+(had?' ts-still':'')+'" role="dialog" aria-modal="true" aria-label="'+esc(SVC[k].n)+'">'+main+'</div></div>';
 }
 TS.open=function(k,id){
+ if(TS.flow&&k==='go'&&id==='fwd'&&TS.host.phone){UI.open=false;draw();TS.host.phone();return;}
  if(k!=='go'&&k!=='kb'&&k!=='enq'&&!s.svc[k]){s.svc[k]=true;bcast();L.forEach(function(f){f(s);});}
  UI={open:true,svc:k,step:id||TS.nextStep(k)||STEPS[k][0][0],stage:'form',mp:null,err:'',more:false};setMp();draw();};
 function setMp(){UI.more=false;if(UI.svc==='ord'&&UI.step==='menu')UI.mp=s.d.menu.src?'review':'choose';else UI.mp=null;}
@@ -634,18 +642,18 @@ TS.svcs3=function(){if(TS.ov.collapsed)return '';var grow=TS.ov.grow;TS.ov.grow=
 /* ───────── a livelier first page, and a calmer review of the answers ───────── */
 TS.dash=window.TS_DASH||'';
 var SUG=[['Do you have outdoor seating?','general'],['Is the restaurant wheelchair accessible?','general'],['Do you allow pets?','general'],['Do you have a kids menu or high chairs?','general'],['Do you have vegetarian or halal options?','general'],['What payment methods do you accept?','general'],['Do you have Wi-Fi?','general'],['Is there a dress code?','general']];
-function sugLeft(){var have=s.d.faqs.map(function(f){return String(f[0]).toLowerCase();});return SUG.filter(function(q){return have.indexOf(q[0].toLowerCase())<0;}).slice(0,5);}
-function faqReview(){
+function sugLeft(){var have=s.d.faqs.map(function(f){return String(f[0]).toLowerCase();});return (UI.fqc&&SUGC[UI.fqc]||SUG).filter(function(q){return have.indexOf(q[0].toLowerCase())<0;}).slice(0,5);}
+function faqReview(only){UI.fqc=only||null;
  var rows=function(c){return s.d.faqs.map(function(f,i){return [f,i];}).filter(function(x){return (x[0][2]||'general')===c;});};
- var body='<div class="fq-src"><span>'+CHK+'</span>'+s.d.faqs.filter(function(f){return !f[3];}).length+' answers found on your website</div>';
- CATS.forEach(function(c){var r=rows(c[0]);if(!r.length)return;
+ var body='<div class="fq-src"><span>'+CHK+'</span>'+s.d.faqs.filter(function(f){return !f[3]&&(!only||(f[2]||'general')===only);}).length+' answers found on your website</div>';
+ CATS.forEach(function(c){if(only&&c[0]!==only)return;var r=rows(c[0]);if(!r.length)return;
   body+='<div class="fq-cat">'+c[1]+'</div>'+r.map(function(x){var f=x[0],i=x[1];
    if(UI.fqe===i)return '<div class="fq-r ed"><input class="ts-in" value="'+esc(f[0])+'" placeholder="Question" aria-label="Question" onchange="TS.faq('+i+',0,this.value)"><textarea class="ts-ta" rows="2" placeholder="Answer" aria-label="Answer" onchange="TS.faq('+i+',1,this.value)">'+esc(f[1])+'</textarea><div class="fq-ea"><button class="ts-btn sm" onclick="TS.fqEdit(null)">Done</button><button class="ts-link" style="color:var(--tk-50)" onclick="TS.faqDel('+i+');UI.fqe=null">Remove</button></div></div>';
    return '<div class="fq-r"><div><b>'+esc(f[0])+(f[3]?' <em class="fq-you">Added by you</em>':'')+'</b><span>'+esc(f[1])+'</span></div><button class="fq-e" onclick="TS.fqEdit('+i+')" aria-label="Edit '+esc(f[0])+'">Edit</button></div>';}).join('');});
  var sg=sugLeft();
  if(sg.length)body+='<div class="fq-cat gap">Callers often ask these. We did not find them.</div>'+sg.map(function(q,k){return '<div class="fq-r sug"><div><b>'+q[0]+'</b><input class="ts-in" id="fqs-'+k+'" placeholder="Type your answer" aria-label="Answer to '+esc(q[0])+'" onkeydown="if(event.key===\'Enter\')TS.fqAddSug('+k+')"></div><button class="ts-btn sm line" onclick="TS.fqAddSug('+k+')">Add</button></div>';}).join('');
- body+='<button class="ts-link fq-add" onclick="TS.faqAdd(\'general\');UI.fqe=s.d.faqs.length-1;draw()">+ Add your own question</button>';
- return {t:'Review your answers',d:'Callers will hear these answers from '+s.d.agent.name+'. Check them and fix anything that is wrong.',n:'You can edit these later in Settings.',h:body};}
+ body+='<button class="ts-link fq-add" onclick="TS.faqAdd(\''+(only||'general')+'\');UI.fqe=s.d.faqs.length-1;draw()">+ Add your own question</button>';
+ return {t:only==='res'?'Reservation answers':only==='ord'?'Ordering answers':'Review your answers',d:'Callers will hear these answers from '+s.d.agent.name+'. Check them and fix anything that is wrong.',n:'You can edit these later in Settings.',h:body};}
 TS.fqEdit=function(i){UI.fqe=i;draw();};
 TS.fqAddSug=function(k){var q=sugLeft()[k],e=document.getElementById('fqs-'+k),v=e?e.value.trim():'';if(!q)return;if(!v){UI.err='Type an answer first.';draw();return;}
  UI.err='';s.d.faqs.push([q[0],v,q[1],'you']);bcast();draw();};
@@ -679,7 +687,7 @@ TS.dashAnim=function(){if(!TS.dash)return;
   if(!TS.seen[t]){TS.seen[t]=1;
    if(!(window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches)){var i=0,step=function(){if(!h.isConnected)return;i++;h.innerHTML=t.slice(0,i).split('*').map(function(p,j){return j%2?'<mark class="dh-mk">'+esc(p)+'</mark>':esc(p);}).join('')+(i<t.length?'<span class="dh-c"></span>':'');if(i<t.length)setTimeout(step,24);};h.innerHTML='<span class="dh-c"></span>';setTimeout(step,250);}}}
  var pv=document.getElementById('dhpv');TS.pvTok=(TS.pvTok||0)+1;
- if(pv){var tok=TS.pvTok,qa=s.d.faqs.filter(function(f){return f[0]&&f[1];}).slice(0,6),k=0,n=s.d.agent.name;
+ if(pv){var tok=TS.pvTok,qa=(pv.dataset.script&&SCRIPTS[pv.dataset.script])||s.d.faqs.filter(function(f){return f[0]&&f[1];}).slice(0,6),k=0,n=s.d.agent.name;
   var alive=function(){return pv.isConnected&&tok===TS.pvTok;};
   var run=function(){if(!alive()||!qa.length)return;var f=qa[k%qa.length];k++;pv.innerHTML='';
    var a=document.createElement('div');a.className='dh-bub c';a.innerHTML='<span class="dots"><i></i><i></i><i></i></span>';pv.appendChild(a);
@@ -736,5 +744,44 @@ TS.fwdNudge=function(){if(!TS.flow)return;var el=document.getElementById('fwdn')
  var html='<div class="fwdn-t"><b>Forward your line so '+esc(s.d.agent.name)+' can answer your calls</b><span>Your Tringg number is <code>'+NUM+'</code></span></div><button class="ts-btn sm" onclick="TS.open(\'go\',\'fwd\')">How to forward</button><button class="ts-btn sm line" onclick="TS.fwQuick()">I have forwarded my line</button>';
  if(!el){var top=document.getElementById('top');if(!top)return;el=document.createElement('div');el.id='fwdn';top.insertAdjacentElement('afterend',el);}
  if(el.dataset.h!==html){el.innerHTML=html;el.dataset.h=html;}};
+
+/* ───────── Reservations and Ordering get the same first page; forwarding lives in Settings › Phone number ───────── */
+var SUGC={res:[['Do you take bookings for large groups?','res'],['Do you need a deposit for big parties?','res'],['Do you hold my table if I am late?','res'],['Can I cancel or change my booking?','res'],['Can I book a table for a birthday?','res']],
+ ord:[['How long does delivery take?','ord'],['Can I order for later today?','ord'],['Do you accept cash on delivery?','ord'],['Can I add notes to my order?','ord'],['Can I change my order after I place it?','ord']]};
+var SCRIPTS={res:[['Table for 4 on Friday at 7?','Friday at 7 PM for 4 is open. What name should I put it under?'],['Can I bring a birthday cake?','Yes, you can. We will keep it in the kitchen until dessert.'],['Do you have a table tonight?','We have 8:15 PM for two. Shall I book it?']],
+ ord:[['One large pepperoni for pickup, please.','One large pepperoni for pickup. Ready in 20 minutes, $18.40. Anything else?'],['Can you add garlic knots?','Added garlic knots. Your total is $23.90. Card or pay at pickup?'],['Do you deliver to 55 Main Street?','Yes, we do. The delivery fee is $3 and it takes about 35 minutes.']]};
+function fmtH2(x){return x.split('*').map(function(p,i){return i%2?'<mark class="dh-mk">'+esc(p)+'</mark>':esc(p);}).join('');}
+function dhPage(o){TS.seen=TS.seen||{};var f=TS.seen[o.h]?'':' dh-fresh',bars='',n=s.d.agent.name;for(var q=0;q<30;q++)bars+='<i style="--d:'+((q*37)%100)/100+'s;--h:'+(6+((q*53)%22))+'px"></i>';
+ var stp=o.steps.map(function(x,i){return '<li class="'+x[0]+'"'+(x[2]?' onclick="TS.open(\''+o.k+'\',\''+x[2]+'\')" style="cursor:pointer"':'')+'><span class="n">'+(x[0]==='done'?'✓':i+1)+'</span>'+x[1]+'</li>';}).join('');
+ return '<section class="dh dh2'+f+'" data-st="mod"><div class="dh2-bg" aria-hidden="true"><i></i><i></i></div><div class="dh-l"><span class="dh-pill"><em>'+(o.tick?'✓':'•')+'</em>'+o.pill+'</span><h1 class="dh-h" data-t="'+esc(o.h)+'">'+fmtH2(o.h)+'</h1><p class="dh-s">'+o.sub+'</p><div class="dh-a">'+o.cta+'</div><ol class="dh-steps">'+stp+'</ol></div>'+
+  '<div class="dh-phone" aria-label="What a call will sound like"><div class="ph-top"><span class="ph-av"><img src="__TICON_URI__" alt=""></span><div><b>'+esc(n)+'</b><small>Answering a call</small></div><span class="ph-live"><i></i>Live</span></div><div class="ph-wave" aria-hidden="true">'+bars+'</div><div class="dh-pv-b" id="dhpv" data-script="'+o.k+'"></div><div class="ph-foot">An example of what callers will hear.</div></div></section>';}
+TS.modPage=function(k){var n=s.d.agent.name,x=TS.stat(k),nx=TS.nextStep(k),
+ T={res:['Set up bookings so '+n+' can *take tables* for you.','Tell '+n+' how many guests you seat and how far ahead people can book.','Set up reservations'],ord:['Set up ordering so '+n+' can *take orders* for you.','Add your menu, delivery, taxes and payments. Then '+n+' takes pickup and delivery orders.','Set up ordering']}[k];
+ var steps=STEPS[k].map(function(t){var dn=!!s.done[k+'.'+t[0]];return [dn?'done':t[0]===nx?'on':'',t[1],t[0]];});
+ return '<div class="scroll"><div class="page" style="max-width:1120px">'+dhPage({k:k,pill:x.done+' of '+x.total+' steps done',tick:x.done>0,h:T[0],sub:T[1],steps:steps,cta:'<button class="ts-btn ts-pulse dh-b" onclick="TS.open(\''+k+'\')">'+(x.done?'Continue setup':T[2])+'</button>'})+'</div></div>';};
+TS.modReady=function(k){var n=s.d.agent.name,what={res:'bookings',ord:'orders'}[k],steps=STEPS[k].map(function(t){return ['done',t[1],t[0]];});
+ return '<div class="scroll"><div class="page" style="max-width:1120px">'+dhPage({k:k,pill:'Setup complete',tick:true,h:SVC[k].n+' are ready. Go live to *start taking '+what+'*.',sub:'Subscribe and '+n+' starts picking up the phone.',steps:steps,cta:'<button class="ts-btn ts-pulse dh-b" onclick="TS.open(\'go\',\'sub\')">Go live</button><button class="ts-btn line" onclick="TS.open(\''+k+'\')">Edit setup</button>'})+'</div></div>';};
+var _panel=TS.panel,_ready=TS.readyPage;
+TS.panel=function(k){return TS.dash?TS.modPage(k):_panel(k);};
+TS.readyPage=function(k){return TS.dash?TS.modReady(k):_ready(k);};
+/* the review sheet also serves Reservations and Ordering answers */
+if(TS.dash){BODY['res.faq']=function(){return faqReview('res');};BODY['ord.faq']=function(){return faqReview('ord');};}
+/* forwarding: send the merchant to the outlet's Phone number setting, so they learn where it lives */
+TS.host.phone=function(){};
+TS.setCar=function(v){s.d.carrier=v;bcast();if(UI.open)draw();if(TS.host.render)TS.host.render();};
+TS.fwConfirm=function(){if(String(s.d.rest||'').replace(/\D/g,'').length<10){s.d.fwerr='Enter your restaurant number first.';bcast();if(TS.host.render)TS.host.render();return;}
+ TS.set(function(x){x.d.fwt=true;x.d.fwerr='';x.done['go.fwd']=true;});};
+TS.fwUndo=function(){TS.set(function(x){x.d.fwt=false;delete x.done['go.fwd'];});};
+TS.phonePage=function(){var n=s.d.agent.name,car=s.d.carrier||CAR[0][0],row=CAR.filter(function(c){return c[0]===car;})[0]||CAR[0],on=row[1].replace('{n}',nDigits()),off=row[2],dn=!!s.done['go.fwd'],ac=act(),o={};try{o=ON(S.outlet)||{};}catch(err){}
+ var codes=row[1]?'<div class="fw-c"><div><b>Turn forwarding on</b><span>Dial this from your restaurant phone</span></div><code>'+on+'</code><button class="ts-btn line sm" onclick="TS.copyTxt(this,\''+on+'\')">Copy</button></div><div class="fw-c"><div><b>Turn it off any time</b><span>Calls ring your phone again</span></div><code>'+off+'</code><button class="ts-btn line sm" onclick="TS.copyTxt(this,\''+off+'\')">Copy</button></div>'
+  :'<div class="fw-o">This phone does not use dial codes. Ask your phone provider, or open its online portal, and set <b>call forwarding</b> to <b>'+NUM+'</b>.</div>';
+ return '<div class="spage-h"><div><div class="h1-lg">Phone number</div><p class="desc" style="margin-top:6px">Callers keep dialling your usual number. It forwards to '+esc(n)+', who answers.</p></div><div class="scope">Outlet · '+esc(o.short||'')+'</div></div>'+
+ '<div class="fp-hero"><div class="fp-top"><span class="fp-act'+(ac?'':' no')+'">'+(ac?'Active':'Not live yet')+'</span><span>TRINGG NUMBER FOR THIS OUTLET</span></div><div class="fp-num">'+NUM+'</div><div class="fp-sub">Forward your restaurant line to this number.</div><button class="ts-btn line sm fp-copy" onclick="TS.copy(this)">Copy</button></div>'+
+ '<div class="scard"><div class="scard-h"><div><div class="h2">Your restaurant number</div><div class="fh">The number on Google, your menus and your signs.</div></div></div><div class="fp-row"><div><label class="fl" for="fp-num">Restaurant number</label><input id="fp-num" class="inp" type="tel" placeholder="(555) 000-0000" value="'+esc(s.d.rest||'')+'" oninput="TS.setRest(this.value)"></div><div><div class="fl">Linked agent</div><div class="fp-ag"><span>'+esc(n[0]||'E')+'</span><div><b>'+esc(n)+'</b><small>'+(ac?'Live. Answers calls for this outlet.':'Ready. Starts when you go live.')+'</small></div></div></div></div></div>'+
+ '<div class="scard" id="fp-fwd"><div class="scard-h"><div><div class="h2">Forward your line to '+esc(n)+'</div><div class="fh">Do this once from your restaurant phone.</div></div><div class="r">'+(dn?'<span class="pill p-green"><span class="d"></span>Forwarding confirmed</span>':'<span class="pill p-amber"><span class="d"></span>Not confirmed yet</span>')+'</div></div>'+
+ '<div class="fw-s"><span>1</span>Your phone provider</div><select class="inp" onchange="TS.setCar(this.value)" aria-label="Phone provider" style="max-width:360px">'+CAR.map(function(c){return '<option '+(c[0]===car?'selected':'')+'>'+esc(c[0])+'</option>';}).join('')+'</select>'+
+ '<div class="fw-s"><span>2</span>Dial this on your restaurant phone</div>'+codes+
+ '<div class="fw-s"><span>3</span>Check it works</div><div class="fh">Call your restaurant number from another phone. If '+esc(n)+' answers, forwarding is on.</div>'+
+ (dn?'<div class="fp-ok"><i>'+CHK+'</i> You have confirmed your line is forwarded. <button class="ts-link" onclick="TS.fwUndo()">Undo</button></div>':'<div style="display:flex;align-items:center;gap:14px;margin-top:18px;flex-wrap:wrap"><button class="ts-btn" onclick="TS.fwConfirm()">I have forwarded my line</button>'+(s.d.fwerr?'<span class="ts-err" role="alert">'+esc(s.d.fwerr)+'</span>':'<span class="fh">Tick this off when you are done. The reminder at the top of the page will go away.</span>')+'</div>')+'</div>';};
 
 })();
