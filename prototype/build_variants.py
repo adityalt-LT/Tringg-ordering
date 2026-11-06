@@ -65,8 +65,8 @@ def cut(text, start, end, new=''):
     return text[:a] + new + text[b:]
 
 
-def engine_tag(v, w='1', su='', sd=''):
-    return f'<script>window.TS_VARIANT="{v}";window.TS_WELCOME="{w}";window.TS_SETUP="{su}";window.TS_SD="{sd}";</script><script>{ENGINE}</script>\n'
+def engine_tag(v, w='1', su='', sd='', dash='', enq=''):
+    return f'<script>window.TS_VARIANT="{v}";window.TS_WELCOME="{w}";window.TS_SETUP="{su}";window.TS_SD="{sd}";window.TS_DASH="{dash}";window.TS_ENQ="{enq}";</script><script>{ENGINE}</script>\n'
 
 
 VOICES_JS = r'''const VOICES=[{id:'allie',n:'Ava',g:'Female',t:'Female · English',d:'Warm American host, clear and friendly on the phone',pitch:1.15,rate:1},{id:'marcus',n:'Marcus',g:'Male',t:'Male · English',d:'Calm, confident American host with a steady pace',pitch:.7,rate:.95},{id:'leo',n:'Leo',g:'Male',t:'Male · English',d:'Upbeat, easygoing host for casual restaurants',pitch:.9,rate:1.1},{id:'priya',n:'Priya',g:'Female',t:'Female · Hindi',d:'Friendly bilingual host for Hindi and English callers',pitch:1.3,rate:1.08},{id:'shubh',n:'Shubh',g:'Male',t:'Male · Hindi',d:'Neutral Indian male host. Lowest pronunciation error rate',pitch:.8,rate:1}];
@@ -232,9 +232,9 @@ TS.hello();
 '''
 
 
-def build_onboarding(v, w='1', su='', sd=''):
+def build_onboarding(v, w='1', su='', sd='', dash='', enq=''):
     t = OB
-    t = must(t, '<div id="app"></div>\n<script>', '<div id="app"></div>\n' + engine_tag(v, w, su, sd) + '<script>')
+    t = must(t, '<div id="app"></div>\n<script>', '<div id="app"></div>\n' + engine_tag(v, w, su, sd, dash, enq) + '<script>')
     t = must(t, '</style>', OB_CSS)
     t = cut(t, 'const OUTLETS=[', 'const CUISINES', '''const RFAQS=[['Do you have gluten-free crusts?','Yes, on any 12-inch pizza.','general'],['Is there parking nearby?','Yes, street parking and a garage next door.','general'],['Do you have vegan options?','Yes, a vegan cheese pizza and several pastas.','general'],['Can you host a private party?','Yes, up to 40 guests.','general'],
  ['Do you take walk-ins?','Yes, subject to availability. Booking is recommended on weekends.','res'],['How far ahead can I book?','Up to 30 days ahead.','res'],['Can I book for a large group?','Yes, up to 12 guests by phone.','res'],
@@ -308,7 +308,7 @@ OVERVIEW_FRESH = r'''function vOverviewFresh(){const mo=DB.mods,G=h=>`<div class
   return `<div class="scroll"><div class="page"><div class="lbl">${S.outlet==='all'?'All outlets':esc(ON(S.outlet).name)}</div>
    <div class="stats">${T('cal','ic-mint','Today’s bookings','res')}${T('bagL','ic-mint','Orders today','ord')}${T('clock','ic-coral','Pending now')}${T('phoneL','ic-grey','Calls today')}</div>
    <div class="ov-grid"><div class="col"><div class="card"><div class="card-h"><div class="h2">Pending requests</div></div><div class="card-b"><div class="soft-empty">No pending requests</div></div></div></div>
-   <div class="col"><div class="card agent"><div class="agent-h"><div class="agent-av">${BRAND.agent[0]}</div><div><div class="agent-n">${esc(BRAND.agent)}</div><div class="agent-s">${['Enquiries',mo.res?'Reservation':null,mo.ord?'Ordering':null].filter(Boolean).join(' · ')}</div></div></div>
+   <div class="col"><div class="card agent"><div class="agent-h"><div class="agent-av">${BRAND.agent[0]}</div><div><div class="agent-n">${esc(BRAND.agent)}</div><div class="agent-s">${[window.TS_ENQ||'Enquiries',mo.res?'Reservation':null,mo.ord?'Ordering':null].filter(Boolean).join(' · ')}</div></div></div>
     <div class="agent-stats"><div><div class="v">0</div><div class="l">Calls today</div></div><div><div class="v">0</div><div class="l">Avg duration</div></div><div><div class="v">0%</div><div class="l">Success rate</div></div></div></div>
     <div class="card"><div class="card-h"><div class="h3">Recent calls</div></div><div class="card-b" style="padding-top:8px"><div class="muted small">No calls yet</div></div></div></div></div></div></div>`;}
 '''
@@ -356,9 +356,9 @@ render();
 '''
 
 
-def build_dashboard(v, w='1', su='', sd=''):
+def build_dashboard(v, w='1', su='', sd='', dash='', enq=''):
     t = DB
-    t = must(t, '<script>\n', engine_tag(v, w, su, sd) + '<script>\n')
+    t = must(t, '<script>\n', engine_tag(v, w, su, sd, dash, enq) + '<script>\n')
     # one setup surface, no sidebar checklist
     t = must(t, "function renderChk(){if(S.outlet==='all'||!DB.mods.ord)return '';", "function renderChk(){if(TS.variant==='C'&&(S.setupCollapsed||TS.setup==='drawer'))return TS.railWidget();return '';")
     # the phone number in the top pill picked up a phone-mockup style
@@ -397,7 +397,7 @@ def build_dashboard(v, w='1', su='', sd=''):
     t, n = re.subn(r'<div class="live"><span class="d"></span>\$\{BRAND\.agent\} is live — try it.*?\$\{I\.copy\}</button></div>', '', t, count=1, flags=re.S)
     assert n == 1
     t = must(t, "(DB.subscribed&&TS.get().done['go.fwd'])?", "DB.subscribed?")
-    t = must(t, "  renderOverlay();\n  if(_keep)", "  renderOverlay();if(S.route==='overview')ovEnhance();\n  if(_keep)")
+    t = must(t, "  renderOverlay();\n  if(_keep)", "  renderOverlay();if(S.route==='overview')ovEnhance();if(window.TS&&TS.dashAnim)TS.dashAnim();\n  if(_keep)")
     t = must(t, ":!DB.subscribed?'':!DB.orderingOn?'<span class=\"bdg new\">Set up</span>'", ":!TS.ready('ord')?'<span class=\"bdg new\">Set up</span>':!DB.subscribed?'':!DB.orderingOn?'<span class=\"bdg new\">Set up</span>'")
     t = must(t, "b=!DB.mods.res?'<span class=\"bdg off\">Off</span>':!DB.subscribed?'':p?", "b=!DB.mods.res?'<span class=\"bdg off\">Off</span>':!TS.ready('res')?'<span class=\"bdg new\">Set up</span>':!DB.subscribed?'':p?")
     # the Orders header switches belong to the live view only
@@ -511,6 +511,8 @@ VARIANTS = {'C1': ('C', '1', 'C1 · Welcome header', 'proto-c1-welcome-header.ht
             'E1': ('C', '3', 'E · Go-live banner + services', 'proto-e-golive-banner.html', 'golive'),
             'E2': ('C', '3', 'E2a · Settings dialogs: apply to', 'proto-e2-settings-dialogs.html', 'golive', '1'),
             'E1S': ('C', '3', 'E1 · Settings as a page', 'proto-e1-settings-page.html', 'golive', 'page'),
+            'G1': ('C', '1', 'G1 · One sentence', 'proto-g1-one-sentence.html', '', '', '1', 'Common questions'),
+            'G2': ('C', '1', 'G2 · Sentence + live call', 'proto-g2-live-call.html', '', '', '2', 'Questions & answers'),
             'E2B': ('C', '3', 'E2b · Settings dialogs: outlet grid', 'proto-e2b-settings-grid.html', 'golive', '2')}
 
 
@@ -559,6 +561,8 @@ if __name__ == '__main__':
     for key, (v, w, label, fn, *rest) in VARIANTS.items():
         su = rest[0] if rest else ''
         sd = rest[1] if len(rest) > 1 else ''
-        page = wrapper(label, build_onboarding(v, w, su, sd), build_dashboard(v, w, su, sd), 'db' if sd else '')
+        dash = rest[2] if len(rest) > 2 else ''
+        enq = rest[3] if len(rest) > 3 else ''
+        page = wrapper(label, build_onboarding(v, w, su, sd, dash, enq), build_dashboard(v, w, su, sd, dash, enq), 'db' if (sd or dash) else '')
         (here / fn).write_text(page, encoding='utf-8')
         print('wrote', fn, len(page) // 1024, 'KB')

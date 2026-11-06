@@ -202,13 +202,37 @@ html .rail-top .logo{filter:invert(1)}
 .ts-sv:hover{border-color:var(--tk-ink);transform:translate(-2px,-2px);box-shadow:4px 5px 0 var(--tk-ink)}.ts-sv.nx{border-color:var(--tk-mint);box-shadow:0 0 0 4px rgba(79,194,180,.18)}.ts-sv.nx:hover{box-shadow:4px 5px 0 var(--tk-ink)}
 .ts-sv-t{display:flex;align-items:center;justify-content:space-between;gap:10px}.ts-sv-t b{font-size:17px;font-weight:600}.ts-sv-s{font-size:12.5px;color:var(--tk-50);white-space:nowrap}.ts-sv-d{color:var(--tk-50);font-size:13.5px}
 @media(max-width:820px){.ts-svs-g{grid-template-columns:1fr}}
+
+.dh{font-family:"Poppins",system-ui,sans-serif;color:#111;margin:6px 0 28px}
+.dh1{padding:34px 4px 18px;max-width:920px}
+.dh-ic{width:58px;height:58px;border-radius:18px;background:#111;display:grid;place-items:center;margin-bottom:26px}.dh-ic img{height:28px;animation:tsvib 1.8s ease-in-out infinite;transform-origin:50% 60%}
+.dh-h{font-size:clamp(32px,4.4vw,54px);font-weight:700;letter-spacing:-1.8px;line-height:1.08;margin:0;min-height:2.16em}
+.dh-s{font-size:18px;color:#6B6B6B;margin:16px 0 0;max-width:540px;line-height:1.5}
+.dh-a{display:flex;align-items:center;gap:18px;margin-top:28px;flex-wrap:wrap}.dh-b{height:52px;padding:0 30px;font-size:16px;border-radius:14px}.dh-m{color:#6B6B6B;font-size:14px}
+.dh-later{margin-top:26px;color:#6B6B6B;font-size:14px}.dh-later button{border:0;background:none;font:inherit;font-weight:600;color:var(--tk-mint-d);cursor:pointer;text-decoration:underline;text-underline-offset:3px;padding:0}
+.dh-c{display:inline-block;width:3px;height:.9em;background:#4FC2B4;margin-left:3px;vertical-align:-.08em;animation:dhc .8s steps(1) infinite}@keyframes dhc{50%{opacity:0}}
+.dh-fresh .dh-s,.dh-fresh .dh-a,.dh-fresh .dh-later,.dh-fresh .dh-prev,.dh-fresh .dh-ic{animation:dhin .6s both}.dh-fresh .dh-s{animation-delay:.9s}.dh-fresh .dh-a{animation-delay:1.2s}.dh-fresh .dh-later{animation-delay:1.5s}.dh-fresh .dh-prev{animation-delay:.6s}
+@keyframes dhin{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.dh2{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:48px;align-items:center;padding:30px 4px 18px}
+.dh-prev{background:#fff;border:1.5px solid #CFEAE5;border-radius:24px;padding:18px 20px 22px;box-shadow:0 20px 50px -30px rgba(31,110,98,.5);min-height:300px;display:flex;flex-direction:column}
+.dh-pv-h{display:flex;align-items:center;gap:10px;margin-bottom:18px;font-size:14px}.dh-pv-h i{width:9px;height:9px;border-radius:50%;background:#4FC2B4;animation:dhd 1.4s infinite}.dh-pv-h small{margin-left:auto;color:#6B6B6B}
+.dh-pv-b{display:flex;flex-direction:column;gap:12px;flex:1}
+.dh-bub{max-width:88%;padding:12px 16px;border-radius:18px;font-size:15px;line-height:1.4;animation:dhin .35s both}.dh-bub.c{background:#EAE9E4;border-bottom-left-radius:6px;align-self:flex-start}.dh-bub.e{background:#DDF2EE;color:#0f4f45;border-bottom-right-radius:6px;align-self:flex-end}
+.dots{display:inline-flex;gap:4px}.dots i{width:6px;height:6px;border-radius:50%;background:#999;animation:dhd 1s infinite}.dots i:nth-child(2){animation-delay:.15s}.dots i:nth-child(3){animation-delay:.3s}@keyframes dhd{0%,60%,100%{opacity:.3}30%{opacity:1}}
+@media(max-width:900px){.dh2{grid-template-columns:1fr}}
+.fq-src{display:flex;align-items:center;gap:8px;color:var(--tk-mint-d);font-weight:600;font-size:13.5px;margin-bottom:6px}.fq-src span{display:grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--tk-mint-50)}
+.fq-cat{font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--tk-50);margin:22px 0 4px}.fq-cat.gap{margin-top:30px;padding-top:20px;border-top:1.5px dashed var(--tk-bd2);text-transform:none;letter-spacing:0;font-size:15px;color:var(--tk-ink)}
+.fq-r{display:flex;gap:16px;align-items:flex-start;padding:14px 0;border-bottom:1px solid var(--tk-bd)}.fq-r>div{flex:1;min-width:0}.fq-r b{display:block;font-weight:600;font-size:14.5px}.fq-r span{display:block;color:var(--tk-50);font-size:14px;margin-top:3px}
+.fq-e{border:0;background:none;font:inherit;font-size:13px;font-weight:600;color:var(--tk-50);cursor:pointer;opacity:.5;transition:opacity .15s;padding:2px 6px}.fq-r:hover .fq-e,.fq-e:focus{opacity:1}.fq-e:hover{color:var(--tk-ink)}
+.fq-r.ed{flex-direction:column;gap:8px}.fq-ea{display:flex;gap:14px;align-items:center}.fq-r.sug{align-items:flex-end}.fq-r.sug .ts-in{margin-top:8px}.fq-add{margin-top:18px;font-size:14px}.fq-you{font-style:normal;font-weight:600;font-size:11px;letter-spacing:.04em;color:var(--tk-mint-d);background:var(--tk-mint-50);border-radius:999px;padding:2px 8px;margin-left:6px;vertical-align:1px}.dh2 .dh-h{font-size:clamp(30px,3.5vw,46px)}
 .ts-still{animation:none!important}
 @media(prefers-reduced-motion:reduce){.ts-sheet,.ts-ov{animation:none}}
 `;
 var sty=document.createElement('style');sty.textContent=CSS;(document.head||document.documentElement).appendChild(sty);
 
 /* ── model ── */
-var SVC={kb:{n:'FAQs'},enq:{n:'Enquiries',d:'Answers questions, like hours and menu'},res:{n:'Reservations',d:'Books tables'},ord:{n:'Ordering',d:'Takes pickup and delivery orders'},go:{n:'Go live',d:'Subscribe and forward your line'}};
+var ENQ=window.TS_ENQ||'Enquiries';
+var SVC={kb:{n:'FAQs'},enq:{n:ENQ,d:'Answers questions, like hours and menu'},res:{n:'Reservations',d:'Books tables'},ord:{n:'Ordering',d:'Takes pickup and delivery orders'},go:{n:'Go live',d:'Subscribe and forward your line'}};
 var STEPS={
  res:[['rules','Booking rules'],['faq','FAQs']],
  kb:[['all','FAQs']],
@@ -322,7 +346,7 @@ BODY['ord.pay']=function(){var p=s.d.pay,qual=p.capOn||p.repeatOn,
  (UI.more?'<div class="ts-sub">'+tg('Unpaid pickup: pay at pickup','',sw(p.fbPk&&p.pick==='both',"TS.vr('pay.fbPk',"+!p.fbPk+")",'Unpaid pickup',p.pick!=='both'))+
  tg('Unpaid delivery: switch to cash','',sw(p.fbDl&&qual,"TS.vr('pay.fbDl',"+!p.fbDl+")",'Unpaid delivery',!qual))+'</div>':'')};};
 TS.conn=function(){s.d.pay.conn=true;if(s.d.pay.pick==='store')s.d.pay.pick='both';bcast();draw();};
-BODY['go.sub']=function(){var N=TS.cfg.outlets,P=TS.cfg.price;var gate=(!s.sub&&!TS.canSub())?'<div class="ts-gate"><b>Set up one service to go live</b>Choose Enquiries, Reservations or Ordering and set it up. Then you can go live.<div class="r"><button class="ts-btn sm" onclick="TS.open(\'enq\')">Set up enquiries</button><button class="ts-btn sm line" onclick="TS.close();TS.nav(\'reservations\')">Reservations</button><button class="ts-btn sm line" onclick="TS.close();TS.nav(\'orders\')">Ordering</button></div></div>':'';return {t:s.sub?'You are live':'Go live',d:'Emma starts answering your calls.',n:'You can change your plan later in Settings.',h:gate+
+BODY['go.sub']=function(){var N=TS.cfg.outlets,P=TS.cfg.price;var gate=(!s.sub&&!TS.canSub())?'<div class="ts-gate"><b>Set up one service to go live</b>Choose '+ENQ+', Reservations or Ordering and set it up. Then you can go live.<div class="r"><button class="ts-btn sm" onclick="TS.open(\'enq\')">Set up enquiries</button><button class="ts-btn sm line" onclick="TS.close();TS.nav(\'reservations\')">Reservations</button><button class="ts-btn sm line" onclick="TS.close();TS.nav(\'orders\')">Ordering</button></div></div>':'';return {t:s.sub?'You are live':'Go live',d:'Emma starts answering your calls.',n:'You can change your plan later in Settings.',h:gate+
  '<div class="ts-price">$'+(N*P).toLocaleString()+' <small>/ month · '+N+' location'+(N>1?'s':'')+'</small></div><div style="color:var(--tk-50);margin:6px 0 20px">Cancel any time.</div>'+TS.goSummary({finish:true})};};
 BODY['go.fwd']=function(){return {t:'Forward your calls to this number',d:'Emma answers every call sent to this number.',n:'You can find this number later in Settings.',h:
  '<div class="ts-num"><span class="m">'+NUM+'</span><button class="ts-btn line sm" onclick="TS.copy(this)">Copy</button></div>'+
@@ -356,11 +380,11 @@ function draw(){
  var dots=st.length>1?'<div class="ts-dots">'+st.map(function(x,j){var open=st.slice(0,j).every(function(y){return s.done[k+'.'+y[0]];});return '<button class="'+(s.done[k+'.'+x[0]]?'done ':'')+(j===i&&UI.stage==='form'?'on':'')+'" aria-label="'+x[1]+'" title="'+x[1]+'" '+(open?'':'disabled ')+'onclick="TS.goto(\''+x[0]+'\')"></button>';}).join('')+'<span>'+(UI.stage==='form'?'Step '+(i+1)+' of '+st.length:'')+'</span></div>':'';
  var head='<div class="ts-hd"><div><div class="ts-eyebrow">'+SVC[k].n+'</div>'+dots+'</div><button class="ts-xb" aria-label="Close" onclick="TS.close()">'+XI+'</button></div>';
  if(UI.stage==='done'){
-  var t={enq:'Enquiries are set up',res:'Reservations are set up',ord:'Ordering is set up',go:'You’re live'}[k]||'Saved';
+  var t={enq:ENQ+' are set up',res:'Reservations are set up',ord:'Ordering is set up',go:'You’re live'}[k]||'Saved';
   main=head+'<div class="ts-body"><div class="ts-ok"><div class="ts-okc">'+CHK.replace('width="14" height="14"','width="28" height="28"')+'</div><h3>'+t+'</h3>'+(k==='go'?TS.liveList():'')+'<div style="display:flex;justify-content:center"><button class="ts-btn" onclick="TS.close()">Done</button></div></div></div>';
  }else{
   var b=BODY[key]();
-  var cta=key==='go.sub'?(s.sub?'Continue':'Go live · $'+(TS.cfg.outlets*TS.cfg.price).toLocaleString()):key==='go.fwd'?'Done':key==='ord.menu'&&UI.mp==='review'?'Publish':last?'Save':'Continue';
+  var cta=key==='go.sub'?(s.sub?'Continue':'Go live · $'+(TS.cfg.outlets*TS.cfg.price).toLocaleString()):key==='go.fwd'?'Done':key==='ord.menu'&&UI.mp==='review'?'Publish':key==='enq.faq'&&TS.dash?'Looks good':last?'Save':'Continue';
   var dis=((key==='ord.menu'&&UI.mp!=='review')||(key==='go.sub'&&!s.sub&&!TS.canSub()))?'disabled':'';
   main=head+'<div class="ts-body"><h2 class="ts-h">'+b.t+'</h2>'+(b.d?'<p class="ts-d">'+b.d+'</p>':'')+b.h+(b.n?'<div class="ts-fn">'+b.n+'</div>':'')+'</div><div class="ts-foot">'+(i>0?'<button class="ts-btn line" onclick="TS.goto(\''+st[i-1][0]+'\')">Back</button>':'')+'<span class="sp"></span><span class="ts-err" role="alert">'+esc(UI.err)+'</span>'+'<button class="ts-btn" '+dis+' onclick="TS.save()">'+cta+'</button></div>';
  }
@@ -435,7 +459,7 @@ TS.railWidget=function(){if(TS.allDone())return '';var t=TS.totals(),left=t.tota
 TS.goCard=function(){var x=TS.stat('go');return '<div class="ts-card"><div class="ts-ch"><div><div class="ts-ct">Go live '+(x.complete?'<span class="ts-pl g">Live</span>':'<span class="ts-pl a">'+(x.done?x.done+' of 2':'Not started')+'</span>')+'</div></div></div><div class="ts-rows">'+rowsOf('go')+'</div></div>';};
 /* variant B: a short status list on the overview; each row leads to the tab that owns the steps */
 TS.status=function(){if(TS.allDone())return '';var nk=TS.nextKey();
- var rows=[['enq','Enquiries',"TS.open('enq')"],['res','Reservations',"TS.nav('reservations')"],['ord','Ordering',"TS.nav('orders')"]].filter(function(r){return TS.sel(r[0]);}).map(function(r){var x=TS.stat(r[0]),nx=r[0]===nk;return '<button class="ts-row '+(x.complete?'done':'')+(nx?' next':'')+'" onclick="'+r[2]+'"><span class="ts-n">'+(x.complete?CHK:'\u2022')+'</span><span class="t">'+r[1]+(x.complete?'':' <span style="color:var(--tk-50);font-weight:400">\u00b7 '+x.left+' left</span>')+(nx?'<span class="ts-nb">Next</span>':'')+'</span><span class="go'+(nx?' ts-gobtn ts-pulse':'')+'">'+(x.complete?'Open':'Continue')+'</span></button>';}).join('');
+ var rows=[['enq',ENQ,"TS.open('enq')"],['res','Reservations',"TS.nav('reservations')"],['ord','Ordering',"TS.nav('orders')"]].filter(function(r){return TS.sel(r[0]);}).map(function(r){var x=TS.stat(r[0]),nx=r[0]===nk;return '<button class="ts-row '+(x.complete?'done':'')+(nx?' next':'')+'" onclick="'+r[2]+'"><span class="ts-n">'+(x.complete?CHK:'\u2022')+'</span><span class="t">'+r[1]+(x.complete?'':' <span style="color:var(--tk-50);font-weight:400">\u00b7 '+x.left+' left</span>')+(nx?'<span class="ts-nb">Next</span>':'')+'</span><span class="go'+(nx?' ts-gobtn ts-pulse':'')+'">'+(x.complete?'Open':'Continue')+'</span></button>';}).join('');
  var g=!act()?'<button class="ts-row'+(nk==='go'?' next':'')+'" onclick="TS.open(\'go\',\'sub\')"><span class="ts-n">\u2022</span><span class="t">Go live'+(nk==='go'?'<span class="ts-nb">Next</span>':'')+'</span><span class="go'+(nk==='go'?' ts-gobtn ts-pulse':'')+'">Go live</span></button>':'';
  return '<div class="ts-card" style="margin-bottom:20px"><div class="ts-ct">Finish setting up</div><div class="ts-cd">Pick up where onboarding left off.</div><div class="ts-rows">'+rows+g+'</div></div>';};
 /* variant B: a module page that is the setup */
@@ -491,10 +515,10 @@ TS.started=function(){if(TS.allDone()||TS.ov.collapsed)return '';var tt=TS.total
  return '<section class="ts-gs2'+(grow?' ts-grow':'')+'"><div class="ts-gs2-h"><div class="ts-gs2-t"><h2>Let’s get you started</h2><div class="ts-gs2-p"><div class="ts-bar"><i style="width:'+(tt.total?tt.done/tt.total*100:0)+'%"></i></div><span>'+tt.done+' of '+tt.total+' steps done</span></div></div>'+(nk2?'<button class="ts-btn sm ts-gs2-n" onclick="event.stopPropagation();'+TS.nextFn()+'">Next: '+nk2[1]+'</button>':'')+''+(tt.done>0?'<button class="ts-xb" aria-label="Collapse to sidebar" title="Collapse to sidebar" onclick="TS.collapse()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 15 6-6 6 6"/></svg></button>':'')+'</div><div class="ts-gs2-b"><div>'+(tt.done>0?'<div style="padding:0 28px">'+TS.gateNote()+'</div>':'')+'<div class="ts-cols">'+cols+'</div>'+det+'</div></div></section>';};
 TS.ovToggle=function(e){var el=document.querySelector('.ts-gs2');if(!el)return;el.classList.toggle('closed');TS.ov.open=!el.classList.contains('closed');};
 TS.ovSel=function(k){TS.ov.sel=TS.ov.sel===k?null:k;TS.host.render();};
-TS.overviewTop=function(){if(TS.setup==='golive')return TS.hero3()+TS.svcs3();if(TS.setup)return TS.hero2()+(TS.setup==='strip'?TS.strip2():'');var top=TS.welcome==='2'&&!TS.allDone()?TS.hero():TS.welcomeHead();return top+TS.started();};
+TS.overviewTop=function(){if(TS.dash)return TS.dashTop();if(TS.setup==='golive')return TS.hero3()+TS.svcs3();if(TS.setup)return TS.hero2()+(TS.setup==='strip'?TS.strip2():'');var top=TS.welcome==='2'&&!TS.allDone()?TS.hero():TS.welcomeHead();return top+TS.started();};
 /* a dialog for the first visit: what is done, what is left, one button */
 TS.showWelcome=function(){if(document.getElementById('ts-wl'))return;var n=s.d.agent.name,done=['Restaurant saved',n+' created'],todo=[];
- if(TS.stat('enq').complete)done.push('Enquiries');else todo.push('Set up Enquiries');
+ if(TS.stat('enq').complete)done.push(ENQ);else todo.push('Set up '+ENQ);
  [['res','Reservations'],['ord','Ordering']].forEach(function(r){if(!TS.sel(r[0]))return;if(TS.stat(r[0]).complete)done.push(r[1]);else todo.push('Set up '+r[1]);});
  if(act())done.push('Go live');else todo.push('Go live');
  var li=function(a,ok){return a.map(function(x){return '<li class="'+(ok?'ok':'')+'"><span>'+(ok?CHK11:'')+'</span>'+esc(x)+'</li>';}).join('');};
@@ -566,5 +590,52 @@ TS.svcs3=function(){if(TS.ov.collapsed)return '';var grow=TS.ov.grow;TS.ov.grow=
   var d=SVC[k].d;
   return '<button class="ts-sv'+(ok?' ok':'')+(nk===k&&!ok?' nx':'')+'" onclick="'+(on?"TS.open('"+k+"')":"TS.add('"+k+"')")+'"><span class="ts-sv-t"><b>'+SVC[k].n+'</b>'+(ok?'<span class="ts-done2">'+CHK+' Done</span>':'<span class="ts-sv-s">'+(on?st:'Off · Add')+'</span>')+'</span><span class="ts-sv-d">'+d+'</span></button>';}).join('');
  return '<section class="ts-gs2 ts-svs2'+(grow?' ts-grow':'')+'"><div class="ts-gs2-h"><div class="ts-gs2-t"><h2>Set up Emma</h2><div class="ts-gs2-p"><div class="ts-bar"><i style="width:'+(tt.total?tt.done/tt.total*100:0)+'%"></i></div><span>'+TS.pct()+'% done</span></div></div><button class="ts-xb" aria-label="Collapse to sidebar" title="Collapse to sidebar" onclick="TS.collapse()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 15 6-6 6 6"/></svg></button></div><div style="padding:0 22px 22px"><div class="ts-svs-g">'+cards+'</div></div></section>';};
+
+/* ───────── a livelier first page, and a calmer review of the answers ───────── */
+TS.dash=window.TS_DASH||'';
+var SUG=[['Do you have outdoor seating?','general'],['Is the restaurant wheelchair accessible?','general'],['Do you allow pets?','general'],['Do you have a kids menu or high chairs?','general'],['Do you have vegetarian or halal options?','general'],['What payment methods do you accept?','general'],['Do you have Wi-Fi?','general'],['Is there a dress code?','general']];
+function sugLeft(){var have=s.d.faqs.map(function(f){return String(f[0]).toLowerCase();});return SUG.filter(function(q){return have.indexOf(q[0].toLowerCase())<0;}).slice(0,5);}
+function faqReview(){
+ var rows=function(c){return s.d.faqs.map(function(f,i){return [f,i];}).filter(function(x){return (x[0][2]||'general')===c;});};
+ var body='<div class="fq-src"><span>'+CHK+'</span>'+s.d.faqs.filter(function(f){return !f[3];}).length+' answers found on your website</div>';
+ CATS.forEach(function(c){var r=rows(c[0]);if(!r.length)return;
+  body+='<div class="fq-cat">'+c[1]+'</div>'+r.map(function(x){var f=x[0],i=x[1];
+   if(UI.fqe===i)return '<div class="fq-r ed"><input class="ts-in" value="'+esc(f[0])+'" placeholder="Question" aria-label="Question" onchange="TS.faq('+i+',0,this.value)"><textarea class="ts-ta" rows="2" placeholder="Answer" aria-label="Answer" onchange="TS.faq('+i+',1,this.value)">'+esc(f[1])+'</textarea><div class="fq-ea"><button class="ts-btn sm" onclick="TS.fqEdit(null)">Done</button><button class="ts-link" style="color:var(--tk-50)" onclick="TS.faqDel('+i+');UI.fqe=null">Remove</button></div></div>';
+   return '<div class="fq-r"><div><b>'+esc(f[0])+(f[3]?' <em class="fq-you">Added by you</em>':'')+'</b><span>'+esc(f[1])+'</span></div><button class="fq-e" onclick="TS.fqEdit('+i+')" aria-label="Edit '+esc(f[0])+'">Edit</button></div>';}).join('');});
+ var sg=sugLeft();
+ if(sg.length)body+='<div class="fq-cat gap">Callers often ask these. We did not find them.</div>'+sg.map(function(q,k){return '<div class="fq-r sug"><div><b>'+q[0]+'</b><input class="ts-in" id="fqs-'+k+'" placeholder="Type your answer" aria-label="Answer to '+esc(q[0])+'" onkeydown="if(event.key===\'Enter\')TS.fqAddSug('+k+')"></div><button class="ts-btn sm line" onclick="TS.fqAddSug('+k+')">Add</button></div>';}).join('');
+ body+='<button class="ts-link fq-add" onclick="TS.faqAdd(\'general\');UI.fqe=s.d.faqs.length-1;draw()">+ Add your own question</button>';
+ return {t:'Review your answers',d:'Callers will hear these answers from '+s.d.agent.name+'. Check them and fix anything that is wrong.',n:'You can edit these later in Settings.',h:body};}
+TS.fqEdit=function(i){UI.fqe=i;draw();};
+TS.fqAddSug=function(k){var q=sugLeft()[k],e=document.getElementById('fqs-'+k),v=e?e.value.trim():'';if(!q)return;if(!v){UI.err='Type an answer first.';draw();return;}
+ UI.err='';s.d.faqs.push([q[0],v,q[1],'you']);bcast();draw();};
+if(TS.dash){BODY['enq.faq']=faqReview;}
+/* the first page: one bold sentence that types itself, one button */
+TS.dashTop=function(){var n=s.d.agent.name,enq=TS.stat('enq').complete,live=act(),fwd=!!s.done['go.fwd'],st,h,sub,cta,later='';
+ if(!enq){st='review';h='Review your answers so '+n+' can speak for you.';sub=n+' will answer callers using what we found on your website. It takes about 2 minutes.';
+  cta='<button class="ts-btn ts-pulse dh-b" onclick="TS.open(\'enq\')">Review answers</button><span class="dh-m">'+s.d.faqs.filter(function(f){return !f[3];}).length+' answers found</span>';}
+ else if(!live){st='golive';h=n+' is ready to answer your calls.';sub='Go live and '+n+' starts picking up the phone.';
+  cta='<button class="ts-btn ts-pulse dh-b" onclick="TS.open(\'go\',\'sub\')">Go live</button>';
+  later='<div class="dh-later">Also set up <button onclick="TS.nav(\'reservations\')">Reservations</button> or <button onclick="TS.nav(\'orders\')">Ordering</button> when you are ready.</div>';}
+ else if(!fwd){st='fwd';h='Last step: forward your calls.';sub='Send your restaurant calls to your Tringg number. '+n+' answers them.';
+  cta='<button class="ts-btn ts-pulse dh-b" onclick="TS.open(\'go\',\'fwd\')">Forward calls</button>';}
+ else return TS.welcomeHead();
+ TS.seen=TS.seen||{};var fresh=TS.seen[h]?'':' dh-fresh';
+ var left='<div class="dh-l"><div class="dh-ic" aria-hidden="true"><img src="__TICON_URI__" alt=""></div><h1 class="dh-h" data-t="'+esc(h)+'">'+esc(h)+'</h1><p class="dh-s">'+sub+'</p><div class="dh-a">'+cta+'</div>'+later+'</div>';
+ if(TS.dash==='2')return '<section class="dh dh2'+fresh+'" data-st="'+st+'">'+left+'<div class="dh-prev" aria-label="What a call will sound like"><div class="dh-pv-h"><i></i><b>'+esc(n)+' on a call</b><small>using your answers</small></div><div class="dh-pv-b" id="dhpv"></div></div></section>';
+ return '<section class="dh dh1'+fresh+'" data-st="'+st+'">'+left+'</section>';};
+TS.dashAnim=function(){if(!TS.dash)return;
+ var h=document.querySelector('.dh-h');
+ if(h){var t=h.dataset.t;TS.seen=TS.seen||{};
+  if(!TS.seen[t]){TS.seen[t]=1;
+   if(!(window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches)){var i=0,step=function(){if(!h.isConnected)return;i++;h.innerHTML=esc(t.slice(0,i))+(i<t.length?'<span class="dh-c"></span>':'');if(i<t.length)setTimeout(step,24);};h.innerHTML='<span class="dh-c"></span>';setTimeout(step,250);}}}
+ var pv=document.getElementById('dhpv');TS.pvTok=(TS.pvTok||0)+1;
+ if(pv){var tok=TS.pvTok,qa=s.d.faqs.filter(function(f){return f[0]&&f[1];}).slice(0,6),k=0,n=s.d.agent.name;
+  var alive=function(){return pv.isConnected&&tok===TS.pvTok;};
+  var run=function(){if(!alive()||!qa.length)return;var f=qa[k%qa.length];k++;pv.innerHTML='';
+   var a=document.createElement('div');a.className='dh-bub c';a.innerHTML='<span class="dots"><i></i><i></i><i></i></span>';pv.appendChild(a);
+   setTimeout(function(){if(!alive())return;a.textContent=f[0];var b=document.createElement('div');b.className='dh-bub e';b.innerHTML='<span class="dots"><i></i><i></i><i></i></span>';pv.appendChild(b);
+    setTimeout(function(){if(!alive())return;b.textContent=f[1];setTimeout(run,4200);},1100);},1000);};
+  setTimeout(run,TS.seen&&Object.keys(TS.seen).length>1?200:1400);}};
 
 })();
