@@ -272,6 +272,27 @@ select.ts-in{appearance:auto;height:46px}
 .fp-row{display:grid;grid-template-columns:1fr 1fr;gap:20px}.fp-ag{display:flex;align-items:center;gap:12px;border:1.5px solid var(--border);border-radius:14px;padding:12px 14px;background:var(--panel)}.fp-ag span{width:36px;height:36px;border-radius:50%;background:var(--mint-50);color:var(--mint-700);display:grid;place-items:center;font-weight:600}.fp-ag b{display:block;font-size:15px}.fp-ag small{color:var(--ink-50);font-size:12.5px}
 .fp-ok{display:flex;align-items:center;gap:10px;margin-top:18px;background:var(--mint-50);color:var(--mint-700);border-radius:12px;padding:12px 16px;font-weight:500}.fp-ok i{display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--mint-500);color:#fff}
 @media(max-width:820px){.fp-row{grid-template-columns:1fr}.fp-num{font-size:28px}}
+
+.dh-art{position:relative;min-height:470px;border-radius:30px;overflow:hidden;background:#fff;border:1.5px solid #E6E4DE;box-shadow:0 30px 70px -40px rgba(17,17,17,.45)}
+.dh-art [data-s]{opacity:0;transform:translateY(8px);transition:opacity .45s ease,transform .45s ease}.dh-art [data-s].in{opacity:1;transform:none}
+.dh-art.enq{background:linear-gradient(180deg,#fff 0%,#FFF6F3 100%)}
+.enq .a-rg{position:absolute;left:50%;top:42%;border-radius:50%;transform:translate(-50%,-50%)}.enq .a-rg1{width:200px;height:200px;background:rgba(127,216,216,.22);border:1.5px solid rgba(79,194,180,.4);animation:artp 3.4s ease-in-out infinite}.enq .a-rg2{width:330px;height:330px;background:rgba(255,160,150,.1);border:1.5px solid rgba(255,140,130,.28)}.enq .a-rg3{width:470px;height:470px;border:1.5px solid rgba(255,140,130,.16)}
+@keyframes artp{0%,100%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-50%) scale(1.07)}}@keyframes artspin{to{transform:rotate(360deg)}}
+.enq .a-dt{position:absolute;border-radius:50%;background:#9a9a9a}.enq .a-d1{width:14px;height:14px;left:14%;top:26%}.enq .a-d2{width:22px;height:22px;right:9%;top:50%;background:#8b8b8b}.enq .a-d3{width:10px;height:10px;left:30%;top:60%}
+.enq .a-orb{position:absolute;left:50%;top:42%;width:0;height:0;animation:artspin 30s linear infinite}.enq .a-orb b{position:absolute;width:44px;height:44px;margin:-22px 0 0 -22px;border-radius:50%;background:#111;color:#fff;display:grid;place-items:center;transform:rotate(var(--a)) translateY(-138px) rotate(calc(var(--a) * -1))}.enq .a-orb b>i{display:grid;place-items:center;animation:artspin 30s linear infinite reverse}
+.enq .a-core{position:absolute;left:50%;top:42%;width:112px;height:112px;margin:-56px 0 0 -56px;border-radius:50%;background:#7FD8D8;border:3px solid #111;display:grid;place-items:center;box-shadow:0 0 0 12px rgba(127,216,216,.25);color:#111}
+.enq .a-core span{grid-area:1/1;font-size:62px;font-weight:700;line-height:1;transition:opacity .35s,transform .35s;display:grid;place-items:center}.enq .a-core .a-a{opacity:0;transform:scale(.4)}.dh-art.ans .a-core .a-q{opacity:0;transform:scale(.4)}.dh-art.ans .a-core .a-a{opacity:1;transform:none}
+.enq .a-qa{position:absolute;left:18px;right:18px;bottom:16px;height:118px}.enq .a-qa>div{position:absolute;inset:0;display:flex;flex-direction:column;gap:9px;opacity:0;transform:translateY(10px);transition:opacity .4s,transform .4s}.enq .a-qa>div.in{opacity:1;transform:none}
+.enq .a-qb{align-self:flex-start;background:#fff;border:1.5px solid #E6E4DE;border-radius:16px 16px 16px 4px;padding:10px 14px;font-size:14.5px;max-width:86%}.enq .a-ab{align-self:flex-end;background:#111;color:#fff;border-radius:16px 16px 4px 16px;padding:10px 14px;font-size:14.5px;max-width:90%;opacity:0;transform:translateY(6px);transition:opacity .4s .1s,transform .4s .1s}.enq .a-qa>div.ans .a-ab{opacity:1;transform:none}
+.dh-art.res{padding:26px 22px;background:#fff}.res .a-tabs{display:flex;gap:10px;margin-bottom:18px;opacity:.55}.res .a-tabs span{border:1.5px solid #E6E4DE;border-radius:14px;padding:11px 15px;font-size:13.5px;color:#9a9a96;white-space:nowrap}
+.res .a-card{background:#0d0d0d;border:3px solid #7FD8D8;border-radius:22px;padding:18px 20px 20px;color:#fff}.res .a-hd{display:flex;align-items:center;gap:10px}.res .a-hd b{font-size:17px}.res .a-hd small{display:block;color:#9a9a96;font-size:12.5px;margin-top:1px}.res .a-ok{margin-left:auto;font-style:normal;background:#7FD8D8;color:#06231e;font-weight:600;font-size:13px;border-radius:9px;padding:6px 13px}
+.res .a-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}.res .a-f{background:#1b1b1b;border-radius:13px;padding:12px 14px}.res .a-f.a-wide{grid-column:1/-1}.res .a-f small{display:block;color:#9a9a96;font-size:11.5px;margin-bottom:2px}.res .a-f b{font-size:15.5px;font-weight:600}
+.res .a-tl{border-top:1px solid #2a2a2a;padding-top:14px;display:flex;flex-direction:column;gap:10px}.res .a-t{display:flex;gap:10px;align-items:center;font-size:13.5px;color:#cfcfca}.res .a-t i{width:18px;height:18px;border-radius:50%;background:#7FD8D8;display:grid;place-items:center;color:#06231e;font-size:10.5px;font-style:normal;font-weight:700}
+.dh-art.ord{background:#fff}.ord .a-bk{position:absolute;left:50%;transform:translateX(-50%);border-radius:22px 22px 0 0;display:block}.ord .a-b1{top:34px;width:62%;height:90px;background:#d9d9d6}.ord .a-b2{top:52px;width:78%;height:90px;background:#a3a3a0}
+.ord .a-card{position:absolute;left:20px;right:20px;top:86px;bottom:0;background:#0d0d0d;border-radius:24px 24px 0 0;padding:20px 22px;color:#fff}.ord .a-hd{display:flex;align-items:center;gap:10px}.ord .a-hd b{font-size:19px;font-weight:600}.ord .a-hd small{display:block;color:#a9a9a5;font-size:12.5px}.ord .a-ok{margin-left:auto;font-style:normal;background:#7FD8D8;color:#06231e;font-weight:600;font-size:13px;border-radius:9px;padding:6px 13px}
+.ord .a-items{margin:16px 0 4px;display:flex;flex-direction:column;gap:9px}.ord .a-items>div{display:flex;justify-content:space-between;font-size:14.5px}.ord .a-items b{font-weight:600}.ord .a-items .a-mod{color:#7FD8D8;font-size:13px}.ord .a-tot{display:flex;justify-content:space-between;border-top:1px solid #2a2a2a;margin-top:12px;padding-top:12px;font-size:16px;font-weight:600}
+.ord .a-meta{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}.ord .a-meta>div{background:#1b1b1b;border-radius:12px;padding:10px 12px}.ord .a-meta small{display:block;color:#9a9a96;font-size:11.5px}.ord .a-meta b{font-size:14px}
+.dh-tip{display:flex;align-items:center;gap:14px;background:#fff;border:1.5px solid #CFEAE5;border-radius:16px;padding:12px 16px;margin:0 0 18px;font-family:"Poppins",system-ui,sans-serif;font-size:14px}.dh-tip>div{flex:1}.dh-tip b{display:block;font-weight:600}.dh-tip span{color:#6B6B6B;font-size:13px}
 .ts-still{animation:none!important}
 @media(prefers-reduced-motion:reduce){.ts-sheet,.ts-ov{animation:none}}
 `;
@@ -783,5 +804,66 @@ TS.phonePage=function(){var n=s.d.agent.name,car=s.d.carrier||CAR[0][0],row=CAR.
  '<div class="fw-s"><span>2</span>Dial this on your restaurant phone</div>'+codes+
  '<div class="fw-s"><span>3</span>Check it works</div><div class="fh">Call your restaurant number from another phone. If '+esc(n)+' answers, forwarding is on.</div>'+
  (dn?'<div class="fp-ok"><i>'+CHK+'</i> You have confirmed your line is forwarded. <button class="ts-link" onclick="TS.fwUndo()">Undo</button></div>':'<div style="display:flex;align-items:center;gap:14px;margin-top:18px;flex-wrap:wrap"><button class="ts-btn" onclick="TS.fwConfirm()">I have forwarded my line</button>'+(s.d.fwerr?'<span class="ts-err" role="alert">'+esc(s.d.fwerr)+'</span>':'<span class="fh">Tick this off when you are done. The reminder at the top of the page will go away.</span>')+'</div>')+'</div>';};
+
+/* ───────── one animation per use case, and a first page that follows what is actually set up ───────── */
+var ICO={clock:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+ pin:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.2 7-11a7 7 0 0 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.4"/></svg>',
+ leaf:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19c0-8 5-13 14-14 0 9-5 14-13 14z"/><path d="M5 19l7-7"/></svg>',
+ chat:'<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h16a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H9l-5 4V5a1 1 0 0 1 0-1z"/></svg>',
+ p:'<b style="font-size:18px;font-weight:700">P</b>'};
+function dhArt(kind){
+ if(kind==='enq'){var qa=s.d.faqs.filter(function(f){return f[0]&&f[1];}).slice(0,3),ang=[0,72,144,216,288],ic=['clock','pin','p','leaf','chat'];
+  return '<div class="dh-art enq" data-art="enq" aria-label="Emma answering questions"><i class="a-rg a-rg3"></i><i class="a-rg a-rg2"></i><i class="a-rg a-rg1"></i><i class="a-dt a-d1"></i><i class="a-dt a-d2"></i><i class="a-dt a-d3"></i>'+
+   '<div class="a-orb">'+ang.map(function(a,i){return '<b style="--a:'+a+'deg"><i>'+ICO[ic[i]]+'</i></b>';}).join('')+'</div>'+
+   '<div class="a-core"><span class="a-q">?</span><span class="a-a">'+CHK.replace('width="14" height="14"','width="46" height="46"').replace('stroke-width="3"','stroke-width="3.4"')+'</span></div>'+
+   '<div class="a-qa">'+qa.map(function(f){return '<div><span class="a-qb">'+esc(f[0])+'</span><span class="a-ab">'+esc(f[1])+'</span></div>';}).join('')+'</div></div>';}
+ if(kind==='res')return '<div class="dh-art res" data-art="res" aria-label="A booking being taken"><div class="a-tabs"><span>Fri 7 Mar</span><span>First visit</span><span>Confirmed</span></div>'+
+   '<div class="a-card"><div class="a-hd"><div><b>Voice booking</b><small>(212) 555-3562</small></div><em class="a-ok" data-s="7">Confirmed</em></div>'+
+   '<div class="a-grid"><div class="a-f" data-s="1"><small>Time</small><b>20:00 · Fri</b></div><div class="a-f" data-s="2"><small>Party size</small><b>4 guests</b></div><div class="a-f a-wide" data-s="3"><small>Special request</small><b>Birthday dinner, window table</b></div></div>'+
+   '<div class="a-tl"><div class="a-t" data-s="4"><i>✓</i>Booking started by '+esc(s.d.agent.name)+' · 7:36 PM</div><div class="a-t" data-s="5"><i>✓</i>Table held for 4</div><div class="a-t" data-s="6"><i>✓</i>Text confirmation sent</div></div></div></div>';
+ return '<div class="dh-art ord" data-art="ord" aria-label="An order being taken"><i class="a-bk a-b1"></i><i class="a-bk a-b2"></i><div class="a-card"><div class="a-hd"><div><b>Emily Carter</b><small>Phone order · pickup</small></div><em class="a-ok" data-s="8">Sent to kitchen</em></div>'+
+  '<div class="a-items"><div data-s="1"><span>1× Large pepperoni</span><b>$18.40</b></div><div data-s="2"><span>1× Garlic knots</span><b>$5.50</b></div><div data-s="3"><span>2× Lemonade</span><b>$6.00</b></div><div class="a-mod" data-s="4"><span>No onions · extra crispy</span></div></div>'+
+  '<div class="a-tot" data-s="5"><span>Total</span><b>$29.90</b></div><div class="a-meta"><div data-s="6"><small>Ready in</small><b>20 min</b></div><div data-s="6"><small>Payment</small><b>Card</b></div><div data-s="7"><small>Sent by</small><b>Print · text</b></div></div></div></div>';}
+function dhPage(o){TS.seen=TS.seen||{};var f=TS.seen[o.h]?'':' dh-fresh';
+ var stp=o.steps.map(function(x,i){return '<li class="'+x[0]+'"'+(x[2]?' onclick="TS.open(\''+o.k+'\',\''+x[2]+'\')" style="cursor:pointer"':'')+'><span class="n">'+(x[0]==='done'?'✓':i+1)+'</span>'+x[1]+'</li>';}).join('');
+ return '<section class="dh dh2'+f+'" data-st="mod"><div class="dh2-bg" aria-hidden="true"><i></i><i></i></div><div class="dh-l"><span class="dh-pill"><em>'+(o.tick?'✓':'•')+'</em>'+o.pill+'</span><h1 class="dh-h" data-t="'+esc(o.h)+'">'+fmtH2(o.h)+'</h1><p class="dh-s">'+o.sub+'</p><div class="dh-a">'+o.cta+'</div><ol class="dh-steps">'+stp+'</ol></div>'+dhArt(o.k)+'</section>';}
+/* the first page follows what is set up, whichever service came first */
+function joinList(a){return a.length<2?a.join(''):a.slice(0,-1).join(', ')+' and '+a[a.length-1];}
+TS.dashTop=function(){var n=s.d.agent.name,live=act(),fwd=!!s.done['go.fwd'],enq=TS.stat('enq').complete,st,h,sub,cta,later='',
+  rdy=['enq','res','ord'].filter(function(k){return TS.sel(k)&&TS.stat(k).complete;}),nice={enq:'your answers',res:'reservations',ord:'ordering'},
+  more=['enq','res','ord'].filter(function(k){return TS.sel(k)&&!TS.stat(k).complete;}).map(function(k){return k==='enq'?'<button onclick="TS.open(\'enq\')">Review your answers</button>':'<button onclick="TS.nav(\''+(k==='res'?'reservations':'orders')+'\')">Set up '+(k==='res'?'Reservations':'Ordering')+'</button>';}),
+  moreTxt=more.length?'<div class="dh-later">Also: '+more.join(' · ')+'</div>':'';
+ if(!live&&!rdy.length){st='review';h='Review your answers so '+n+' can speak for you.';sub=n+' will answer callers using what we found on your website. It takes about 2 minutes.';
+  cta='<button class="ts-btn ts-pulse dh-b" onclick="TS.open(\'enq\')">Review answers</button><span class="dh-m">'+s.d.faqs.filter(function(f){return !f[3];}).length+' answers found</span>';}
+ else if(!live){st='golive';h=n+' is ready to answer your calls.';sub=n+' is set up for '+joinList(rdy.map(function(k){return nice[k];}))+'. Go live and she starts picking up the phone.';
+  cta='<button class="ts-btn ts-pulse dh-b" onclick="TS.open(\'go\',\'sub\')">Go live</button>';later=moreTxt;}
+ else if(!fwd){st='fwd';h='Last step: forward your calls.';sub='Send your restaurant calls to your Tringg number. '+n+' answers them.';
+  cta='<button class="ts-btn ts-pulse dh-b" onclick="TS.open(\'go\',\'fwd\')">Forward calls</button>';later=moreTxt;}
+ else return TS.welcomeHead()+(!enq&&TS.sel('enq')?'<div class="dh-tip"><div><b>Check what '+esc(n)+' tells callers.</b><span>She uses the answers we found on your website.</span></div><button class="ts-btn sm line" onclick="TS.open(\'enq\')">Review answers</button></div>':'');
+ TS.seen=TS.seen||{};var fresh=TS.seen[h]?'':' dh-fresh';
+ var left='<div class="dh-l"><div class="dh-ic" aria-hidden="true"><img src="__TICON_URI__" alt=""></div><h1 class="dh-h" data-t="'+esc(h)+'">'+esc(h)+'</h1><p class="dh-s">'+sub+'</p><div class="dh-a">'+cta+'</div>'+later+'</div>';
+ if(TS.dash==='2'){
+  var hm=st==='review'?h.replace('speak for you','*speak for you*'):st==='golive'?h.replace(n,'*'+n+'*'):h.replace('forward your calls','*forward your calls*');
+  var f2=TS.seen[hm]?'':' dh-fresh',pill=st==='review'?s.d.faqs.filter(function(f){return !f[3];}).length+' answers found on your website':st==='golive'?(enq?'Answers reviewed':'Setup complete for '+joinList(rdy.map(function(k){return nice[k];}))):'You are subscribed',
+   first=st==='review'?'Review answers':enq?'Review answers':'Set up',
+   stp=function(k,l){var cur={review:0,golive:1,fwd:2}[st];return '<li class="'+(k<cur?'done':k===cur?'on':'')+'"><span class="n">'+(k<cur?'✓':k+1)+'</span>'+l+'</li>';},bars='';for(var q=0;q<30;q++)bars+='<i style="--d:'+((q*37)%100)/100+'s;--h:'+(6+((q*53)%22))+'px"></i>';
+  var phone='<div class="dh-phone" aria-label="What a call will sound like"><div class="ph-top"><span class="ph-av"><img src="__TICON_URI__" alt=""></span><div><b>'+esc(n)+'</b><small>Answering a call</small></div><span class="ph-live"><i></i>Live</span></div><div class="ph-wave" aria-hidden="true">'+bars+'</div><div class="dh-pv-b" id="dhpv"></div><div class="ph-foot">Callers hear the answers you approve.</div></div>';
+  return '<section class="dh dh2'+(st==='review'?'':' compact')+f2+'" data-st="'+st+'"><div class="dh2-bg" aria-hidden="true"><i></i><i></i></div>'+
+   '<div class="dh-l"><span class="dh-pill"><em>✓</em>'+pill+'</span><h1 class="dh-h" data-t="'+esc(hm)+'">'+fmtH2(hm)+'</h1><p class="dh-s">'+sub+'</p><div class="dh-a">'+cta.replace(/<span class="dh-m">.*?<\/span>/,'')+'</div>'+
+   '<ol class="dh-steps">'+stp(0,first)+stp(1,'Go live')+stp(2,'Forward calls')+'</ol>'+later+'</div>'+(st==='review'?dhArt('enq'):phone)+'</section>';}
+ return '<section class="dh dh1'+fresh+'" data-st="'+st+'">'+left+'</section>';};
+/* run the animation inside the card: fields and lines appear one after another, then it starts over */
+var _da=TS.dashAnim;
+TS.dashAnim=function(){_da();var art=document.querySelector('.dh-art');if(!art)return;
+ var tok=TS.pvTok,kind=art.dataset.art,alive=function(){return art.isConnected&&tok===TS.pvTok;};
+ if(kind==='enq'){var pairs=[].slice.call(art.querySelectorAll('.a-qa>div')),k=0;
+  var run=function(){if(!alive()||!pairs.length)return;pairs.forEach(function(p){p.classList.remove('in','ans');});art.classList.remove('ans');var p=pairs[k%pairs.length];k++;
+   setTimeout(function(){if(!alive())return;p.classList.add('in');},250);
+   setTimeout(function(){if(!alive())return;p.classList.add('ans');art.classList.add('ans');},1500);
+   setTimeout(run,5200);};run();return;}
+ var els=[].slice.call(art.querySelectorAll('[data-s]')),max=Math.max.apply(null,els.map(function(e){return +e.dataset.s;}));
+ var cycle=function(){if(!alive())return;els.forEach(function(e){e.classList.remove('in');});var i=0;
+  var step=function(){if(!alive())return;i++;els.forEach(function(e){if(+e.dataset.s===i)e.classList.add('in');});if(i<max)setTimeout(step,i===1?600:760);else setTimeout(cycle,4200);};setTimeout(step,500);};
+ cycle();};
 
 })();

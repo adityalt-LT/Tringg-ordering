@@ -447,7 +447,7 @@ def build_dashboard(v, w='1', su='', sd='', dash='', enq='', flow=''):
   const un=OUTLETS.filter(o=>!TS.outletSet(o.id)),other=!FULL&&S.outlet==='all'&&un.length>0;
   const stripe=other?`<div class="ts-stripe"><span><b>${OUTLETS.length-un.length} of ${OUTLETS.length} outlets set up</b><br><small>Choose an outlet to set up next so it can take calls.</small></span><button class="ts-btn sm" onclick="TS.chooseOutlet(OUTLETS.filter(o=>!TS.outletSet(o.id)),'pickOutlet')">Set up an outlet</button></div>`:'';
   if(S.outlet==='all'&&!FULL){const h=DB.subscribed?vOverview0():vOverviewFresh();return h.replace(/<div class="lbl">[^<]*<\\/div>/,()=>stripe);}
-  if(TS.totals().done===0&&!TS.allDone())return `<div class="scroll"><div class="page">${stripe}${TS.overviewTop()}</div></div>`;
+  if((window.TS_DASH?!TS.active():TS.totals().done===0)&&!TS.allDone())return `<div class="scroll"><div class="page">${stripe}${TS.overviewTop()}</div></div>`;
   const h=DB.subscribed?vOverview0():vOverviewFresh();return h.replace(/<div class="lbl">[^<]*<\\/div>/,()=>stripe+TS.overviewTop());}
 function ovEnhance(){document.querySelectorAll('#view .ov-grid .card:not(.agent)').forEach(c=>{const h=c.querySelector('.card-h');if(!h||h.querySelector('.ov-t'))return;const k=(h.textContent||'').trim().slice(0,24);if(S.ovC&&S.ovC[k])c.classList.add('ov-c');const b=document.createElement('button');b.className='ov-t';b.setAttribute('aria-label','Collapse');b.innerHTML='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 15 6-6 6 6"/></svg>';b.onclick=e=>{e.stopPropagation();const on=c.classList.toggle('ov-c');S.ovC=S.ovC||{};S.ovC[k]=on;};h.appendChild(b);});}
 ''')
