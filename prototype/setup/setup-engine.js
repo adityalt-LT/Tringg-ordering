@@ -93,10 +93,10 @@ var CSS=`
 .ts-wl-ov{position:fixed;inset:0;z-index:950;background:rgba(17,17,17,.5);display:grid;place-items:center;padding:24px;animation:tsfade .2s ease both}
 .ts-wl{width:min(520px,100%);background:#fff;border-radius:28px;padding:64px 36px 30px;text-align:center;box-shadow:0 30px 80px -20px rgba(0,0,0,.5);animation:tsup .3s cubic-bezier(.2,.8,.2,1) both;font-family:"Poppins",system-ui,sans-serif;color:var(--tk-ink);font-size:14px;line-height:1.5}
 .ts-wl h2{font-size:26px;font-weight:600;letter-spacing:-.8px;margin:0}.ts-wl-s{color:var(--tk-50);margin:4px 0 22px}
-.ts-rd{position:relative;width:88px;height:88px;margin:0 auto 24px}.ts-rd i{position:absolute;inset:0;border-radius:28%;border:2px solid #111;opacity:0;animation:tsrad 2.6s ease-out infinite}.ts-rd i:nth-child(2){animation-delay:.85s}.ts-rd i:nth-child(3){animation-delay:1.7s}
+.ts-rd{position:relative;width:88px;height:88px;margin:8px auto 34px}.ts-rd i{position:absolute;inset:0;border-radius:28%;border:2px solid #111;opacity:0;animation:tsrad 2.6s ease-out infinite}.ts-rd i:nth-child(2){animation-delay:.85s}.ts-rd i:nth-child(3){animation-delay:1.7s}
 .ts-rd b img{height:30px;display:block;animation:tsvib 1.8s ease-in-out infinite;transform-origin:50% 60%}@keyframes tsvib{0%,55%,100%{transform:rotate(0)}6%{transform:rotate(-14deg)}12%{transform:rotate(12deg)}18%{transform:rotate(-12deg)}24%{transform:rotate(10deg)}30%{transform:rotate(-8deg)}36%{transform:rotate(6deg)}42%{transform:rotate(0)}}
 .ts-rd b{position:absolute;inset:10px;border-radius:24%;background:#111;color:#fff;display:grid;place-items:center;font-size:32px;font-weight:700;box-shadow:none}
-@keyframes tsrad{0%{transform:scale(.8);opacity:.7}100%{transform:scale(2.6);opacity:0}}
+@keyframes tsrad{0%{transform:scale(.8);opacity:.7}100%{transform:scale(1.9);opacity:0}}
 .ts-wl-g{display:grid;grid-template-columns:1fr 1fr;gap:20px;text-align:left;margin-bottom:24px}.ts-wl-g:has(>div:only-child){grid-template-columns:1fr}
 .ts-wl-l{font-size:11.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--tk-50);margin-bottom:8px}.ts-wl ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
 .ts-wl li{display:flex;gap:10px;align-items:center;font-size:14px}.ts-wl li span{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--tk-bd2);display:grid;place-items:center;flex-shrink:0}.ts-wl li.ok span{background:var(--tk-mint);border-color:var(--tk-mint);color:#06231e}
@@ -246,6 +246,25 @@ html .rail-top .logo{filter:invert(1)}
 .dh2 .dh-h{font-size:clamp(32px,3.5vw,47px);min-height:0}.dh2 .dh-s{font-size:18px;max-width:500px}.dh2 .dh-b{height:54px;padding:0 34px;font-size:16.5px}
 .dh-fresh .dh-pill,.dh-fresh .dh-steps,.dh-fresh .dh-phone{animation:dhin .7s both}.dh-fresh .dh-pill{animation-delay:.1s}.dh-fresh .dh-steps{animation-delay:1.6s}.dh-fresh .dh-phone{animation-delay:.5s}
 @media(max-width:1000px){.dh2{grid-template-columns:1fr;gap:36px;min-height:0}.dh-phone{min-height:400px}}
+
+.fw-n{margin:0 0 6px}.fw-n small{display:block;color:var(--tk-50);font-size:12px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:2px}
+.fw-s{display:flex;align-items:center;gap:10px;font-weight:600;font-size:14.5px;margin:22px 0 8px}.fw-s span{width:24px;height:24px;border-radius:50%;background:var(--tk-ink);color:#fff;display:grid;place-items:center;font-size:12px}
+.fw-h{color:var(--tk-50);font-size:13px;margin-top:6px}.fw-o{background:var(--tk-sun);border-radius:14px;padding:14px 16px;font-size:14px}
+.fw-c{display:flex;align-items:center;gap:14px;background:var(--tk-sun);border-radius:14px;padding:12px 16px;margin-bottom:8px}.fw-c>div{flex:1;min-width:0}.fw-c b{display:block;font-weight:600;font-size:14px}.fw-c span{display:block;color:var(--tk-50);font-size:12.5px}.fw-c code{font-family:"JetBrains Mono",monospace;font-size:14px;background:#fff;border:1.5px solid var(--tk-bd);border-radius:10px;padding:6px 10px}
+select.ts-in{appearance:auto;height:46px}
+.fw-tick{display:flex;align-items:center;gap:12px;width:100%;margin-top:22px;padding:14px 16px;border:1.5px solid var(--tk-bd2);border-radius:14px;background:#fff;font:inherit;font-weight:600;cursor:pointer;text-align:left;transition:all .15s}.fw-tick i{width:24px;height:24px;border-radius:7px;border:1.5px solid var(--tk-bd2);display:grid;place-items:center;color:transparent}.fw-tick.on{border-color:var(--tk-mint);background:var(--tk-mint-50)}.fw-tick.on i{background:var(--tk-mint);border-color:var(--tk-mint);color:#fff}
+#fwdn{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:11px 26px;background:#FFF6DD;border-bottom:1.5px solid #F0D58C;font-family:"Poppins",system-ui,sans-serif;font-size:14px}.fwdn-t{flex:1;min-width:260px}.fwdn-t b{display:block;font-weight:600}.fwdn-t span{color:#6B6B6B;font-size:13px}.fwdn-t code{font-family:"JetBrains Mono",monospace;font-size:12.5px;color:#111}
+#ts-co{position:fixed;inset:0;z-index:1000;background:#fff;overflow:auto;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:#1a1a1a;animation:tsfade .2s ease both}
+.co{max-width:1040px;margin:0 auto;padding:0 28px 60px}.co-bar{display:flex;align-items:center;justify-content:space-between;height:68px}.co-back{border:0;background:none;font:inherit;font-size:14px;color:#555;cursor:pointer}.co-proto{font-size:12.5px;color:#8a6a12;background:#FFF1CF;border-radius:999px;padding:4px 12px}
+.co-g{display:grid;grid-template-columns:1fr 1fr;gap:80px;margin-top:20px}.co-sub{color:#666;font-size:15px}.co-price{font-size:38px;font-weight:600;margin:6px 0 30px}.co-price small{font-size:15px;color:#777;font-weight:400}
+.co-item{display:flex;align-items:center;gap:14px;padding:14px 0;border-top:1px solid #e6e6e6}.co-item>div{flex:1}.co-item b{display:block;font-weight:600;font-size:15px}.co-item span{color:#777;font-size:13.5px}.co-item em{font-style:normal;font-weight:500}.co-ic{width:44px;height:44px;border-radius:10px;background:#111;display:grid;place-items:center}.co-ic img{height:22px}
+.co-tot{display:flex;justify-content:space-between;padding:9px 0;color:#555;font-size:14.5px;border-top:1px solid #f0f0f0}.co-tot.b{color:#1a1a1a;font-weight:600;border-top:1px solid #e6e6e6;margin-top:6px;padding-top:14px}
+.co-r h2{font-size:18px;font-weight:600;margin:6px 0 18px}.co-r label{display:block;font-size:13.5px;color:#555;margin-bottom:16px}.co-r input,.co-r select{display:block;width:100%;box-sizing:border-box;margin-top:6px;height:44px;border:1px solid #d0d0d0;border-radius:8px;padding:0 12px;font:inherit;font-size:15px;color:#1a1a1a;background:#fff}
+.co-card{margin-top:6px}.co-card>input{border-radius:8px 8px 0 0;margin:0}.co-2{display:grid;grid-template-columns:1fr 1fr}.co-2 input{margin:0;border-radius:0 0 0 8px;border-top:0}.co-2 input+input{border-radius:0 0 8px 0;border-left:0}
+.co-pay{width:100%;height:50px;border:0;border-radius:8px;background:#1a1a1a;color:#fff;font:inherit;font-size:16px;font-weight:600;cursor:pointer;margin-top:6px;display:flex;align-items:center;justify-content:center;gap:10px}.co-pay:disabled{opacity:.8;cursor:default}.co-fine{text-align:center;color:#888;font-size:12.5px;margin-top:12px}
+.co-sp{width:16px;height:16px;border-radius:50%;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;animation:cosp .7s linear infinite}@keyframes cosp{to{transform:rotate(360deg)}}
+.co-ok{text-align:center;padding:60px 10px}.co-okc{width:64px;height:64px;border-radius:50%;background:#2e9e6a;color:#fff;display:grid;place-items:center;margin:0 auto 18px}.co-ok h2{margin:0 0 6px}.co-ok p{color:#777;margin:0}
+@media(max-width:820px){.co-g{grid-template-columns:1fr;gap:30px}}
 .ts-still{animation:none!important}
 @media(prefers-reduced-motion:reduce){.ts-sheet,.ts-ov{animation:none}}
 `;
@@ -405,9 +424,9 @@ function draw(){
   main=head+'<div class="ts-body"><div class="ts-ok"><div class="ts-okc">'+CHK.replace('width="14" height="14"','width="28" height="28"')+'</div><h3>'+t+'</h3>'+(k==='go'?TS.liveList():'')+'<div style="display:flex;justify-content:center"><button class="ts-btn" onclick="TS.close()">Done</button></div></div></div>';
  }else{
   var b=BODY[key]();
-  var cta=key==='go.sub'?(s.sub?'Continue':'Go live · $'+(TS.cfg.outlets*TS.cfg.price).toLocaleString()):key==='go.fwd'?'Done':key==='ord.menu'&&UI.mp==='review'?'Publish':key==='enq.faq'&&TS.dash?'Looks good':last?'Save':'Continue';
+  var cta=key==='go.sub'?(s.sub?'Continue':(TS.flow?'Continue to checkout':'Go live · $'+(TS.cfg.outlets*TS.cfg.price).toLocaleString())):key==='go.fwd'?(TS.flow?(s.d.fwt?'Done':'Save and close'):'Done'):key==='ord.menu'&&UI.mp==='review'?'Publish':key==='enq.faq'&&TS.dash?'Looks good':last?'Save':'Continue';
   var dis=((key==='ord.menu'&&UI.mp!=='review')||(key==='go.sub'&&!s.sub&&!TS.canSub()))?'disabled':'';
-  main=head+'<div class="ts-body"><h2 class="ts-h">'+b.t+'</h2>'+(b.d?'<p class="ts-d">'+b.d+'</p>':'')+b.h+(b.n?'<div class="ts-fn">'+b.n+'</div>':'')+'</div><div class="ts-foot">'+(i>0?'<button class="ts-btn line" onclick="TS.goto(\''+st[i-1][0]+'\')">Back</button>':'')+'<span class="sp"></span><span class="ts-err" role="alert">'+esc(UI.err)+'</span>'+'<button class="ts-btn" '+dis+' onclick="TS.save()">'+cta+'</button></div>';
+  main=head+'<div class="ts-body"><h2 class="ts-h">'+b.t+'</h2>'+(b.d?'<p class="ts-d">'+b.d+'</p>':'')+b.h+(b.n?'<div class="ts-fn">'+b.n+'</div>':'')+'</div><div class="ts-foot">'+(i>0&&!(TS.flow&&key==='go.fwd')?'<button class="ts-btn line" onclick="TS.goto(\''+st[i-1][0]+'\')">Back</button>':'')+'<span class="sp"></span><span class="ts-err" role="alert">'+esc(UI.err)+'</span>'+'<button class="ts-btn" '+dis+' onclick="TS.save()">'+cta+'</button></div>';
  }
  var had=!!r.querySelector('.ts-sheet');r.innerHTML='<div class="ts-ov'+(had?' ts-still':'')+'" onmousedown="if(event.target===this)TS.close()"><div class="ts-sheet'+(had?' ts-still':'')+'" role="dialog" aria-modal="true" aria-label="'+esc(SVC[k].n)+'">'+main+'</div></div>';
 }
@@ -418,7 +437,7 @@ function setMp(){UI.more=false;if(UI.svc==='ord'&&UI.step==='menu')UI.mp=s.d.men
 TS.close=function(){UI.open=false;draw();};
 TS.goto=function(id){UI.step=id;UI.stage='form';UI.err='';UI.more=false;setMp();draw();};
 TS.skip=function(){var i=idx();if(i<cur().length-1){UI.step=cur()[i+1][0];UI.err='';setMp();draw();}else TS.close();};
-TS.save=function(){var key=UI.svc+'.'+UI.step,e=VAL[key]?VAL[key]():'';if(e){UI.err=e;draw();return;}
+TS.save=function(){if(TS.flow&&UI.svc==='go'&&UI.step==='sub'&&!s.sub){TS.close();TS.checkout();return;}if(TS.flow&&UI.svc==='go'&&UI.step==='fwd'&&!s.d.fwt){TS.close();return;}var key=UI.svc+'.'+UI.step,e=VAL[key]?VAL[key]():'';if(e){UI.err=e;draw();return;}
  var k=UI.svc;
  if(k==='kb'){bcast();TS.close();return;}
  TS.set(function(x){x.done[key]=true;if(key==='go.sub')x.sub=true;});
@@ -667,5 +686,55 @@ TS.dashAnim=function(){if(!TS.dash)return;
    setTimeout(function(){if(!alive())return;a.textContent=f[0];var b=document.createElement('div');b.className='dh-bub e';b.innerHTML='<span class="dots"><i></i><i></i><i></i></span>';pv.appendChild(b);
     setTimeout(function(){if(!alive())return;b.textContent=f[1];setTimeout(run,4200);},1100);},1000);};
   setTimeout(run,TS.seen&&Object.keys(TS.seen).length>1?200:1400);}};
+
+/* ───────── go live: checkout, "you are subscribed" popup, forwarding steps and a reminder ───────── */
+TS.flow=window.TS_FLOW||'';
+var CAR=[['AT&T','*21*{n}#','#21#'],['Verizon','*72{n}','*73'],['T-Mobile','**21*{n}#','##21#'],['Other or office phone system','','']];
+function nDigits(){return NUM.replace(/\D/g,'');}
+TS.setRest=function(v){s.d.rest=v;bcast();};
+TS.setCar=function(v){s.d.carrier=v;bcast();draw();};
+TS.copyTxt=function(b,t){try{navigator.clipboard.writeText(t).catch(function(){});}catch(e){}var o=b.textContent;b.textContent='Copied';setTimeout(function(){if(b.isConnected)b.textContent=o;},1400);};
+TS.fwTick=function(){s.d.fwt=!s.d.fwt;UI.err='';bcast();draw();};
+TS.fwQuick=function(){if(String(s.d.rest||'').replace(/\D/g,'').length>=10){TS.set(function(x){x.d.fwt=true;x.done['go.fwd']=true;});}else{TS.open('go','fwd');}};
+function fwBody(){var name=s.d.agent.name,car=s.d.carrier||CAR[0][0],row=CAR.filter(function(c){return c[0]===car;})[0]||CAR[0];
+ var on=row[1].replace('{n}',nDigits()),off=row[2];
+ var codes=row[1]?'<div class="fw-c"><div><b>Turn forwarding on</b><span>Dial this from your restaurant phone</span></div><code>'+on+'</code><button class="ts-btn line sm" onclick="TS.copyTxt(this,\''+on+'\')">Copy</button></div><div class="fw-c"><div><b>Turn it off any time</b><span>Calls ring your phone again</span></div><code>'+off+'</code><button class="ts-btn line sm" onclick="TS.copyTxt(this,\''+off+'\')">Copy</button></div>'
+  :'<div class="fw-o">This phone does not use dial codes. Ask your phone provider, or open its online portal, and set <b>call forwarding</b> to <b>'+NUM+'</b>.</div>';
+ return {t:'Forward your line to '+esc(name),d:'Customers keep calling your restaurant number. It will ring '+esc(name)+' instead.',n:'You can find these steps again in Settings.',h:
+  '<div class="ts-num fw-n"><div><small>Your Tringg number</small><span class="m">'+NUM+'</span></div><button class="ts-btn line sm" onclick="TS.copy(this)">Copy</button></div>'+
+  '<div class="fw-s"><span>1</span>Your restaurant number</div><input class="ts-in" id="fw-num" type="tel" placeholder="(555) 000-0000" value="'+esc(s.d.rest||'')+'" oninput="TS.setRest(this.value)" aria-label="Restaurant number"><div class="fw-h">The number your customers already call.</div>'+
+  '<div class="fw-s"><span>2</span>Your phone provider</div><select class="ts-in" onchange="TS.setCar(this.value)" aria-label="Phone provider">'+CAR.map(function(c){return '<option '+(c[0]===car?'selected':'')+'>'+esc(c[0])+'</option>';}).join('')+'</select>'+
+  '<div class="fw-s"><span>3</span>Dial this on your restaurant phone</div>'+codes+
+  '<div class="fw-s"><span>4</span>Check it works</div><div class="fw-h">Call your restaurant number from another phone. If '+esc(name)+' answers, forwarding is on.</div>'+
+  '<button class="fw-tick'+(s.d.fwt?' on':'')+'" onclick="TS.fwTick()" aria-pressed="'+!!s.d.fwt+'"><i>'+CHK+'</i> I have forwarded my line</button>'+
+  '<button class="ts-link" style="display:block;margin-top:12px;color:var(--tk-50)" onclick="TS.close()">Do this later</button>'};}
+if(TS.flow){BODY['go.fwd']=fwBody;VAL['go.fwd']=function(){return String(s.d.rest||'').replace(/\D/g,'').length<10?'Enter your restaurant number first.':'';};}
+/* a plain checkout page (a stand-in for the hosted payment page) */
+TS.checkout=function(){var old=document.getElementById('ts-co');if(old)old.remove();var price=(TS.cfg.outlets*TS.cfg.price).toLocaleString()+'.00',d=document.createElement('div');d.id='ts-co';
+ d.innerHTML='<div class="co"><div class="co-bar"><button class="co-back" onclick="TS.coClose()">← Back to Tringg</button><span class="co-proto">Prototype checkout. Nothing is charged.</span></div>'+
+  '<div class="co-g"><div class="co-l"><div class="co-sub">Subscribe to Tringg</div><div class="co-price">$'+price+' <small>per month</small></div>'+
+  '<div class="co-item"><span class="co-ic"><img src="__TICON_URI__" alt=""></span><div><b>Tringg phone agent</b><span>'+TS.cfg.outlets+' location · billed monthly</span></div><em>$'+price+'</em></div>'+
+  '<div class="co-tot"><span>Subtotal</span><span>$'+price+'</span></div><div class="co-tot"><span>Tax</span><span>$0.00</span></div><div class="co-tot b"><span>Total due today</span><span>$'+price+'</span></div></div>'+
+  '<div class="co-r" id="co-r"><h2>Pay with card</h2><label>Email<input value="priya@rossapizza.com" aria-label="Email"></label>'+
+  '<label>Card information<div class="co-card"><input value="4242 4242 4242 4242" aria-label="Card number"><div class="co-2"><input value="12 / 29" aria-label="Expiry"><input value="123" aria-label="Security code"></div></div></label>'+
+  '<label>Name on card<input value="Priya Raman" aria-label="Name on card"></label><label>Country<select aria-label="Country"><option>United States</option></select></label>'+
+  '<button class="co-pay" onclick="TS.coPay(this)">Pay $'+price+'</button><p class="co-fine">A test card is filled in for you.</p></div></div></div>';
+ document.body.appendChild(d);};
+TS.coClose=function(){var d=document.getElementById('ts-co');if(d)d.remove();};
+TS.coPay=function(b){b.disabled=true;b.innerHTML='<span class="co-sp"></span> Processing…';
+ setTimeout(function(){var r=document.getElementById('co-r');if(r)r.innerHTML='<div class="co-ok"><div class="co-okc">'+CHK.replace('width="14" height="14"','width="30" height="30"')+'</div><h2>Payment successful</h2><p>Taking you back to Tringg…</p></div>';
+  setTimeout(function(){TS.coClose();TS.set(function(x){x.sub=true;x.done['go.sub']=true;});setTimeout(TS.paidDialog,350);},1300);},1500);};
+TS.paidDialog=function(){var n=s.d.agent.name,d=document.createElement('div');d.id='ts-wl';
+ d.innerHTML='<div class="ts-wl-ov"><div class="ts-wl" role="dialog" aria-label="Subscription active"><div class="ts-rd"><i></i><i></i><i></i><b>'+CHK.replace('width="14" height="14"','width="28" height="28"')+'</b></div><h2>Your subscription is active</h2><p class="ts-wl-s">Last step: forward your line to your Tringg number so '+esc(n)+' can answer your calls.</p>'+
+  '<div class="ts-num" style="margin:0 0 18px"><span class="m">'+NUM+'</span><button class="ts-btn line sm" onclick="TS.copy(this)">Copy</button></div>'+
+  '<button class="ts-btn" style="width:100%" onclick="TS.closeWelcome();TS.open(\'go\',\'fwd\')">Forward my line</button><button class="ts-link" style="display:block;margin:14px auto 0;color:var(--tk-50)" onclick="TS.closeWelcome()">Explore the dashboard first</button>'+
+  '<p style="color:var(--tk-50);font-size:12.5px;margin:14px 0 0">We will keep a reminder at the top of every page until you forward your line.</p></div></div>';
+ document.body.appendChild(d);};
+/* the reminder: on every page until the merchant says it is done */
+TS.fwdNudge=function(){if(!TS.flow)return;var el=document.getElementById('fwdn'),show=act()&&!s.done['go.fwd'];
+ if(!show){if(el)el.remove();return;}
+ var html='<div class="fwdn-t"><b>Forward your line so '+esc(s.d.agent.name)+' can answer your calls</b><span>Your Tringg number is <code>'+NUM+'</code></span></div><button class="ts-btn sm" onclick="TS.open(\'go\',\'fwd\')">How to forward</button><button class="ts-btn sm line" onclick="TS.fwQuick()">I have forwarded my line</button>';
+ if(!el){var top=document.getElementById('top');if(!top)return;el=document.createElement('div');el.id='fwdn';top.insertAdjacentElement('afterend',el);}
+ if(el.dataset.h!==html){el.innerHTML=html;el.dataset.h=html;}};
 
 })();

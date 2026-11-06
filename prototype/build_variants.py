@@ -65,8 +65,8 @@ def cut(text, start, end, new=''):
     return text[:a] + new + text[b:]
 
 
-def engine_tag(v, w='1', su='', sd='', dash='', enq=''):
-    return f'<script>window.TS_VARIANT="{v}";window.TS_WELCOME="{w}";window.TS_SETUP="{su}";window.TS_SD="{sd}";window.TS_DASH="{dash}";window.TS_ENQ="{enq}";</script><script>{ENGINE}</script>\n'
+def engine_tag(v, w='1', su='', sd='', dash='', enq='', flow=''):
+    return f'<script>window.TS_VARIANT="{v}";window.TS_WELCOME="{w}";window.TS_SETUP="{su}";window.TS_SD="{sd}";window.TS_DASH="{dash}";window.TS_ENQ="{enq}";window.TS_FLOW="{flow}";</script><script>{ENGINE}</script>\n'
 
 
 VOICES_JS = r'''const VOICES=[{id:'allie',n:'Ava',g:'Female',t:'Female · English',d:'Warm American host, clear and friendly on the phone',pitch:1.15,rate:1},{id:'marcus',n:'Marcus',g:'Male',t:'Male · English',d:'Calm, confident American host with a steady pace',pitch:.7,rate:.95},{id:'leo',n:'Leo',g:'Male',t:'Male · English',d:'Upbeat, easygoing host for casual restaurants',pitch:.9,rate:1.1},{id:'priya',n:'Priya',g:'Female',t:'Female · Hindi',d:'Friendly bilingual host for Hindi and English callers',pitch:1.3,rate:1.08},{id:'shubh',n:'Shubh',g:'Male',t:'Male · Hindi',d:'Neutral Indian male host. Lowest pronunciation error rate',pitch:.8,rate:1}];
@@ -232,9 +232,9 @@ TS.hello();
 '''
 
 
-def build_onboarding(v, w='1', su='', sd='', dash='', enq=''):
+def build_onboarding(v, w='1', su='', sd='', dash='', enq='', flow=''):
     t = OB
-    t = must(t, '<div id="app"></div>\n<script>', '<div id="app"></div>\n' + engine_tag(v, w, su, sd, dash, enq) + '<script>')
+    t = must(t, '<div id="app"></div>\n<script>', '<div id="app"></div>\n' + engine_tag(v, w, su, sd, dash, enq, flow) + '<script>')
     t = must(t, '</style>', OB_CSS)
     t = cut(t, 'const OUTLETS=[', 'const CUISINES', '''const RFAQS=[['Do you have gluten-free crusts?','Yes, on any 12-inch pizza.','general'],['Is there parking nearby?','Yes, street parking and a garage next door.','general'],['Do you have vegan options?','Yes, a vegan cheese pizza and several pastas.','general'],['Can you host a private party?','Yes, up to 40 guests.','general'],
  ['Do you take walk-ins?','Yes, subject to availability. Booking is recommended on weekends.','res'],['How far ahead can I book?','Up to 30 days ahead.','res'],['Can I book for a large group?','Yes, up to 12 guests by phone.','res'],
@@ -349,6 +349,7 @@ BOOT = r'''/* setup prototypes: one location, empty to start, driven by the shar
    if(TS.setup==='drawer'&&!TS.dr.seen&&!TS.allDone()){TS.dr.seen=true;setTimeout(()=>TS.drawer(true),350);}}
   if(m.tringg==='ready'){S.route='overview';loadReady();}});
  applyTS();TS.hello();
+ if(window.TS_FLOW)setTimeout(()=>TS.set(x=>{x.done['enq.faq']=true;}),0);
  if(/^[12]$/.test(window.TS_SD))setTimeout(()=>{loadReady();S.outlet='all';S.set='ord';S.sdlg=true;S.dd=false;render();},0);
  if(window.TS_SD==='page')setTimeout(()=>{loadReady();S.outlet='all';S.set='ord';S.route='settings';S.dd=false;render();},0);
 })();
@@ -356,9 +357,9 @@ render();
 '''
 
 
-def build_dashboard(v, w='1', su='', sd='', dash='', enq=''):
+def build_dashboard(v, w='1', su='', sd='', dash='', enq='', flow=''):
     t = DB
-    t = must(t, '<script>\n', engine_tag(v, w, su, sd, dash, enq) + '<script>\n')
+    t = must(t, '<script>\n', engine_tag(v, w, su, sd, dash, enq, flow) + '<script>\n')
     # one setup surface, no sidebar checklist
     t = must(t, "function renderChk(){if(S.outlet==='all'||!DB.mods.ord)return '';", "function renderChk(){if(TS.variant==='C'&&(S.setupCollapsed||TS.setup==='drawer'))return TS.railWidget();return '';")
     # the phone number in the top pill picked up a phone-mockup style
@@ -397,7 +398,7 @@ def build_dashboard(v, w='1', su='', sd='', dash='', enq=''):
     t, n = re.subn(r'<div class="live"><span class="d"></span>\$\{BRAND\.agent\} is live — try it.*?\$\{I\.copy\}</button></div>', '', t, count=1, flags=re.S)
     assert n == 1
     t = must(t, "(DB.subscribed&&TS.get().done['go.fwd'])?", "DB.subscribed?")
-    t = must(t, "  renderOverlay();\n  if(_keep)", "  renderOverlay();if(S.route==='overview')ovEnhance();if(window.TS&&TS.dashAnim)TS.dashAnim();\n  if(_keep)")
+    t = must(t, "  renderOverlay();\n  if(_keep)", "  renderOverlay();if(S.route==='overview')ovEnhance();if(window.TS&&TS.dashAnim)TS.dashAnim();if(window.TS&&TS.fwdNudge)TS.fwdNudge();\n  if(_keep)")
     t = must(t, ":!DB.subscribed?'':!DB.orderingOn?'<span class=\"bdg new\">Set up</span>'", ":!TS.ready('ord')?'<span class=\"bdg new\">Set up</span>':!DB.subscribed?'':!DB.orderingOn?'<span class=\"bdg new\">Set up</span>'")
     t = must(t, "b=!DB.mods.res?'<span class=\"bdg off\">Off</span>':!DB.subscribed?'':p?", "b=!DB.mods.res?'<span class=\"bdg off\">Off</span>':!TS.ready('res')?'<span class=\"bdg new\">Set up</span>':!DB.subscribed?'':p?")
     # the Orders header switches belong to the live view only
@@ -513,6 +514,7 @@ VARIANTS = {'C1': ('C', '1', 'C1 · Welcome header', 'proto-c1-welcome-header.ht
             'E1S': ('C', '3', 'E1 · Settings as a page', 'proto-e1-settings-page.html', 'golive', 'page'),
             'G1': ('C', '1', 'G1 · One sentence', 'proto-g1-one-sentence.html', '', '', '1', 'Common questions'),
             'G2': ('C', '1', 'G2 · Sentence + live call', 'proto-g2-live-call.html', '', '', '2', 'Questions & answers'),
+            'H1': ('C', '1', 'H · Go live flow', 'proto-h-golive-flow.html', '', '', '2', 'Questions & answers', '1'),
             'E2B': ('C', '3', 'E2b · Settings dialogs: outlet grid', 'proto-e2b-settings-grid.html', 'golive', '2')}
 
 
@@ -563,6 +565,7 @@ if __name__ == '__main__':
         sd = rest[1] if len(rest) > 1 else ''
         dash = rest[2] if len(rest) > 2 else ''
         enq = rest[3] if len(rest) > 3 else ''
-        page = wrapper(label, build_onboarding(v, w, su, sd, dash, enq), build_dashboard(v, w, su, sd, dash, enq), 'db' if (sd or dash) else '')
+        flow = rest[4] if len(rest) > 4 else ''
+        page = wrapper(label, build_onboarding(v, w, su, sd, dash, enq, flow), build_dashboard(v, w, su, sd, dash, enq, flow), 'db' if (sd or dash) else '')
         (here / fn).write_text(page, encoding='utf-8')
         print('wrote', fn, len(page) // 1024, 'KB')
