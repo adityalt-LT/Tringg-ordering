@@ -292,6 +292,13 @@ select.ts-in{appearance:auto;height:46px}
 .ord .a-card{position:absolute;left:20px;right:20px;top:86px;bottom:0;background:#0d0d0d;border-radius:24px 24px 0 0;padding:20px 22px;color:#fff}.ord .a-hd{display:flex;align-items:center;gap:10px}.ord .a-hd b{font-size:19px;font-weight:600}.ord .a-hd small{display:block;color:#a9a9a5;font-size:12.5px}.ord .a-ok{margin-left:auto;font-style:normal;background:#7FD8D8;color:#06231e;font-weight:600;font-size:13px;border-radius:9px;padding:6px 13px}
 .ord .a-items{margin:16px 0 4px;display:flex;flex-direction:column;gap:9px}.ord .a-items>div{display:flex;justify-content:space-between;font-size:14.5px}.ord .a-items b{font-weight:600}.ord .a-items .a-mod{color:#7FD8D8;font-size:13px}.ord .a-tot{display:flex;justify-content:space-between;border-top:1px solid #2a2a2a;margin-top:12px;padding-top:12px;font-size:16px;font-weight:600}
 .ord .a-meta{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}.ord .a-meta>div{background:#1b1b1b;border-radius:12px;padding:10px 12px}.ord .a-meta small{display:block;color:#9a9a96;font-size:11.5px}.ord .a-meta b{font-size:14px}
+
+.dh-next{margin:6px 0 26px;font-family:"Poppins",system-ui,sans-serif;color:#111}.dh-nx-h{display:flex;align-items:baseline;gap:12px;margin:0 2px 12px}.dh-nx-h h3{font-size:18px;font-weight:600;margin:0}.dh-nx-h span{color:#6B6B6B;font-size:13px}
+.dh-nx-g{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px}
+.dh-nx{display:flex;gap:18px;align-items:center;background:#fff;border:1.5px solid #E6E4DE;border-radius:22px;padding:14px;cursor:pointer;transition:transform .15s,box-shadow .15s,border-color .15s}.dh-nx:hover{transform:translate(-2px,-2px);box-shadow:4px 5px 0 #111;border-color:#111}
+.dh-nx-art{width:176px;height:196px;border-radius:16px;overflow:hidden;flex-shrink:0;position:relative;background:#fff;border:1px solid #EEEDE8}.dh-nx-art .dh-art{position:absolute;left:0;top:0;width:430px;min-height:470px;transform:scale(.41);transform-origin:0 0;border:0;box-shadow:none;pointer-events:none}
+.dh-nx-t b{display:block;font-size:16.5px;font-weight:600}.dh-nx-t span{display:block;color:#6B6B6B;font-size:13.5px;margin:4px 0 12px}
+@media(max-width:700px){.dh-nx-g{grid-template-columns:1fr}}
 .dh-tip{display:flex;align-items:center;gap:14px;background:#fff;border:1.5px solid #CFEAE5;border-radius:16px;padding:12px 16px;margin:0 0 18px;font-family:"Poppins",system-ui,sans-serif;font-size:14px}.dh-tip>div{flex:1}.dh-tip b{display:block;font-weight:600}.dh-tip span{color:#6B6B6B;font-size:13px}
 .ts-still{animation:none!important}
 @media(prefers-reduced-motion:reduce){.ts-sheet,.ts-ov{animation:none}}
@@ -836,10 +843,10 @@ TS.dashTop=function(){var n=s.d.agent.name,live=act(),fwd=!!s.done['go.fwd'],enq
  if(!live&&!rdy.length){st='review';h='Review your answers so '+n+' can speak for you.';sub=n+' will answer callers using what we found on your website. It takes about 2 minutes.';
   cta='<button class="ts-btn ts-pulse dh-b" onclick="TS.open(\'enq\')">Review answers</button><span class="dh-m">'+s.d.faqs.filter(function(f){return !f[3];}).length+' answers found</span>';}
  else if(!live){st='golive';h=n+' is ready to answer your calls.';sub=n+' is set up for '+joinList(rdy.map(function(k){return nice[k];}))+'. Go live and she starts picking up the phone.';
-  cta='<button class="ts-btn ts-pulse dh-b" onclick="TS.open(\'go\',\'sub\')">Go live</button>';later=moreTxt;}
+  cta='<button class="ts-btn ts-pulse dh-b" onclick="TS.open(\'go\',\'sub\')">Go live</button>';later='';}
  else if(!fwd){st='fwd';h='Last step: forward your calls.';sub='Send your restaurant calls to your Tringg number. '+n+' answers them.';
-  cta='<button class="ts-btn ts-pulse dh-b" onclick="TS.open(\'go\',\'fwd\')">Forward calls</button>';later=moreTxt;}
- else return TS.welcomeHead()+(!enq&&TS.sel('enq')?'<div class="dh-tip"><div><b>Check what '+esc(n)+' tells callers.</b><span>She uses the answers we found on your website.</span></div><button class="ts-btn sm line" onclick="TS.open(\'enq\')">Review answers</button></div>':'');
+  cta='<button class="ts-btn ts-pulse dh-b" onclick="TS.open(\'go\',\'fwd\')">Forward calls</button>';later='';}
+ else return TS.welcomeHead()+TS.dhNext();
  TS.seen=TS.seen||{};var fresh=TS.seen[h]?'':' dh-fresh';
  var left='<div class="dh-l"><div class="dh-ic" aria-hidden="true"><img src="__TICON_URI__" alt=""></div><h1 class="dh-h" data-t="'+esc(h)+'">'+esc(h)+'</h1><p class="dh-s">'+sub+'</p><div class="dh-a">'+cta+'</div>'+later+'</div>';
  if(TS.dash==='2'){
@@ -850,11 +857,15 @@ TS.dashTop=function(){var n=s.d.agent.name,live=act(),fwd=!!s.done['go.fwd'],enq
   var phone='<div class="dh-phone" aria-label="What a call will sound like"><div class="ph-top"><span class="ph-av"><img src="__TICON_URI__" alt=""></span><div><b>'+esc(n)+'</b><small>Answering a call</small></div><span class="ph-live"><i></i>Live</span></div><div class="ph-wave" aria-hidden="true">'+bars+'</div><div class="dh-pv-b" id="dhpv"></div><div class="ph-foot">Callers hear the answers you approve.</div></div>';
   return '<section class="dh dh2'+(st==='review'?'':' compact')+f2+'" data-st="'+st+'"><div class="dh2-bg" aria-hidden="true"><i></i><i></i></div>'+
    '<div class="dh-l"><span class="dh-pill"><em>✓</em>'+pill+'</span><h1 class="dh-h" data-t="'+esc(hm)+'">'+fmtH2(hm)+'</h1><p class="dh-s">'+sub+'</p><div class="dh-a">'+cta.replace(/<span class="dh-m">.*?<\/span>/,'')+'</div>'+
-   '<ol class="dh-steps">'+stp(0,first)+stp(1,'Go live')+stp(2,'Forward calls')+'</ol>'+later+'</div>'+(st==='review'?dhArt('enq'):phone)+'</section>';}
- return '<section class="dh dh1'+fresh+'" data-st="'+st+'">'+left+'</section>';};
+   '<ol class="dh-steps">'+stp(0,first)+stp(1,'Go live')+stp(2,'Forward calls')+'</ol>'+later+'</div>'+(st==='review'?dhArt('enq'):phone)+'</section>'+(st==='review'?'':TS.dhNext());}
+ return '<section class="dh dh1'+fresh+'" data-st="'+st+'">'+left+'</section>'+(st==='review'?'':TS.dhNext());};
+
+TS.dhNext=function(){var n=s.d.agent.name,items=[['enq','Review your answers','Check what '+n+' tells callers.',"TS.open('enq')",'Review'],['res','Set up reservations','Let '+n+' take table bookings.',"TS.nav('reservations')",'Set up'],['ord','Set up ordering','Let '+n+' take pickup and delivery orders.',"TS.nav('orders')",'Set up']].filter(function(x){return TS.sel(x[0])&&!TS.stat(x[0]).complete;});
+ if(!items.length)return '';
+ return '<section class="dh-next"><div class="dh-nx-h"><h3>Still to do</h3><span>'+items.length+' left</span></div><div class="dh-nx-g">'+items.map(function(x){var st=TS.stat(x[0]);return '<div class="dh-nx" onclick="'+x[3]+'" role="button" tabindex="0"><div class="dh-nx-art">'+dhArt(x[0])+'</div><div class="dh-nx-t"><b>'+x[1]+'</b><span>'+x[2]+(x[0]!=='enq'&&st.done?' '+st.done+' of '+st.total+' steps done.':'')+'</span><button class="ts-btn sm line" onclick="event.stopPropagation();'+x[3]+'">'+(st.done?'Continue':x[4])+'</button></div></div>';}).join('')+'</div></section>';};
 /* run the animation inside the card: fields and lines appear one after another, then it starts over */
 var _da=TS.dashAnim;
-TS.dashAnim=function(){_da();var art=document.querySelector('.dh-art');if(!art)return;
+TS.dashAnim=function(){_da();[].slice.call(document.querySelectorAll('.dh-art')).forEach(function(art){
  var tok=TS.pvTok,kind=art.dataset.art,alive=function(){return art.isConnected&&tok===TS.pvTok;};
  if(kind==='enq'){var pairs=[].slice.call(art.querySelectorAll('.a-qa>div')),k=0;
   var run=function(){if(!alive()||!pairs.length)return;pairs.forEach(function(p){p.classList.remove('in','ans');});art.classList.remove('ans');var p=pairs[k%pairs.length];k++;
@@ -864,6 +875,6 @@ TS.dashAnim=function(){_da();var art=document.querySelector('.dh-art');if(!art)r
  var els=[].slice.call(art.querySelectorAll('[data-s]')),max=Math.max.apply(null,els.map(function(e){return +e.dataset.s;}));
  var cycle=function(){if(!alive())return;els.forEach(function(e){e.classList.remove('in');});var i=0;
   var step=function(){if(!alive())return;i++;els.forEach(function(e){if(+e.dataset.s===i)e.classList.add('in');});if(i<max)setTimeout(step,i===1?600:760);else setTimeout(cycle,4200);};setTimeout(step,500);};
- cycle();};
+ cycle();});};
 
 })();
