@@ -63,7 +63,7 @@ function gridHtml(){const k=S.ch.k,F=GF[k];
   <tr class="ch-all"><td><b>All outlets</b><br><button class="btn btn-line btn-sm" onclick="chgAll()">Fill all</button></td>${F.map(f=>`<td>${gcell('cha-','all',f,'')}</td>`).join('')}</tr>
   ${OUTLETS.map(o=>{const set=(DB.svc[o.id]||{}).set===true;return `<tr><td>${esc(o.short)}</td>${set?F.map(f=>`<td>${gcell('chg-',o.id,f,gval(k,o.id,f[0]))}</td>`).join(''):`<td colspan="${F.length}" class="muted">Not set up</td>`}</tr>`;}).join('')}</tbody></table></div>
   <div class="ch-ft"><button class="btn btn-line" onclick="chClose()">Cancel</button><button class="btn btn-dark" onclick="chSave()">Save</button></div></div></div>`;}
-function chHtml(){if(!S.ch)return '';if(S.ch.j)return JR.dlg();if(S.ch.grid)return gridHtml();const k=S.ch.k,hasSave=k!=='tax';
+function chHtml(){if(!S.ch)return '';if(S.ch.jr)return JR.dlg();if(S.ch.grid)return gridHtml();const k=S.ch.k,hasSave=k!=='tax';
  return `<div class="ch-bk" onmousedown="if(event.target===this)chClose()"><div class="ch" role="dialog" aria-modal="true" aria-label="${TITLES[k]}"><div class="ch-h"><h3>${TITLES[k]}</h3><button class="sd-x2" aria-label="Close" onclick="chClose()">✕</button></div><div class="ch-b">${chBody(k)}</div>${S.outlet==='all'&&scoped(k)?glimpse(k):''}${hasSave?chScope(k):''}<div class="ch-ft"><button class="btn btn-line" onclick="chClose()">${hasSave?'Cancel':'Close'}</button>${hasSave?'<button class="btn btn-dark" onclick="chSave()">Save</button>':''}</div></div></div>`;}
 function applyOne(k,i,g){const s=DB.svc[i];
  if(k==='pick'){if(!s||s.set!==true)return;s.pick=g('on')==='1';if(g('prep'))s.prep=Math.max(5,+g('prep'));}
@@ -102,6 +102,7 @@ window.ordRows=()=>{const one=S.outlet!=='all',R=ids().map(id=>({id,v:DB.svc[id]
   ${row('Accepting orders',aa,'aa')}
   ${row('Pre-orders',pre,'pre')}</div>`;};
 
+window.CHP={chBody,chScope,targets,applyOne};
 const css=`
 #sdlg{position:relative;z-index:100}
 .sd-bk,.ch-bk{position:fixed;inset:0;display:grid;place-items:center;padding:24px;animation:sdf .18s ease both}
