@@ -327,13 +327,13 @@ BOOT = r'''/* setup prototypes: one location, empty to start, driven by the shar
   if(FULL){DB.subscribed=TS.active();BRAND.agent=d.agent.name;if(DB.agents[0])DB.agents[0].n=d.agent.name;syncMods();return;}
   OUTLETS_ALL.forEach(o=>{DB.om[o.id]={res:!!s.svc.res,ord:!!s.svc.ord};});
   MODS.res=!!s.svc.res;MODS.ord=!!s.svc.ord;DB.caps.res=!!s.svc.res;DB.subscribed=TS.active();
-  DB.menuState=done('ord.menu')?'live':'none';DB.menuSource=done('ord.menu')?({google:'Google profile',square:'Square POS',pos:'Your POS',web:'Website',agg:'Delivery app',upload:'Uploaded menu',scratch:'Built in Tringg'}[d.menu.src]||'Imported'):null;
-  DB.taxOk=done('ord.tax');DB.taxes=done('ord.tax')&&t.on?[{id:'t1',type:t.type,n:t.n,on:t.app,base:t.base,calc:t.calc,vt:t.vt,v:t.v,ch:t.ch,delfee:!!t.delfee,outs:[CUR]}]:[];
-  DB.payOk=done('ord.pay');DB.stripe=p.conn?'active':'none';DB.payPick={call:p.pick!=='store',store:p.pick!=='online'};
-  DB.cod=Object.assign({},DB.cod,{capOn:!!p.capOn,cap:p.cap,repeatOn:!!p.repeatOn,repeatN:p.repeatN});DB.payFall={pk:!!p.fbPk&&p.pick==='both',dl:!!p.fbDl&&(!!p.capOn||!!p.repeatOn)};
-  OUTLETS_ALL.forEach(o=>{if(o.id===CUR&&done('ord.svc')){DB.svc[o.id]={set:true,del:!!sv.del,pick:!!sv.pick,prep:sv.pick?sv.prep:null,rad:sv.del?{mi:sv.mi,fee:sv.fee,min:sv.min,eta:sv.eta}:null};DB.deliveryMode[o.id]=sv.del?'radius':null;}
+  if(!window.TS_JOURNEY)DB.menuState=done('ord.menu')?'live':'none';if(!window.TS_JOURNEY)DB.menuSource=done('ord.menu')?({google:'Google profile',square:'Square POS',pos:'Your POS',web:'Website',agg:'Delivery app',upload:'Uploaded menu',scratch:'Built in Tringg'}[d.menu.src]||'Imported'):null;
+  if(!window.TS_JOURNEY)DB.taxOk=done('ord.tax');if(!window.TS_JOURNEY)DB.taxes=done('ord.tax')&&t.on?[{id:'t1',type:t.type,n:t.n,on:t.app,base:t.base,calc:t.calc,vt:t.vt,v:t.v,ch:t.ch,delfee:!!t.delfee,outs:[CUR]}]:[];
+  if(!window.TS_JOURNEY)DB.payOk=done('ord.pay');if(!window.TS_JOURNEY)DB.stripe=p.conn?'active':'none';if(!window.TS_JOURNEY)DB.payPick={call:p.pick!=='store',store:p.pick!=='online'};
+  if(!window.TS_JOURNEY)DB.cod=Object.assign({},DB.cod,{capOn:!!p.capOn,cap:p.cap,repeatOn:!!p.repeatOn,repeatN:p.repeatN});if(!window.TS_JOURNEY)DB.payFall={pk:!!p.fbPk&&p.pick==='both',dl:!!p.fbDl&&(!!p.capOn||!!p.repeatOn)};
+  if(!window.TS_JOURNEY)OUTLETS_ALL.forEach(o=>{if(o.id===CUR&&done('ord.svc')){DB.svc[o.id]={set:true,del:!!sv.del,pick:!!sv.pick,prep:sv.pick?sv.prep:null,rad:sv.del?{mi:sv.mi,fee:sv.fee,min:sv.min,eta:sv.eta}:null};DB.deliveryMode[o.id]=sv.del?'radius':null;}
    else DB.svc[o.id]={set:false,del:false,pick:false,prep:null,rad:null};});
-  DB.serviceSet=done('ord.svc');DB.orderingOn=TS.ready('ord')&&DB.subscribed;DB.caps.ord=DB.orderingOn;
+  if(!window.TS_JOURNEY)DB.serviceSet=done('ord.svc');DB.orderingOn=(window.TS_JOURNEY&&window.JR?JR.anyLiveAny():TS.ready('ord'))&&DB.subscribed;DB.caps.ord=DB.orderingOn;
   BRAND.agent=d.agent.name;BRAND.name=d.brand||BRAND.name;
   const ou=OUTLETS_ALL.find(o=>o.id===CUR);if(d.outlet&&ou){const a=(d.outlet.area||'').split(',')[0];ou.name=d.outlet.name+(a?' · '+a:'');ou.short=a||ou.short;}
   if(DB.agents[0]){const A=DB.agents[0];A.n=d.agent.name;A.voice=({allie:'ishita',marcus:'sunny',leo:'sunny'})[d.agent.voice]||d.agent.voice||A.voice;if(d.agent.greet)A.greet=d.agent.greet;}
@@ -467,6 +467,9 @@ function ovEnhance(){document.querySelectorAll('#view .ov-grid .card:not(.agent)
         t = must(t, "if(n[0]==='reservations'){const p=", "if(n[0]==='menu'&&window.JR)b=JR.badge();\n    if(n[0]==='reservations'){const p=")
         t = must(t, "if(/^[12]$/.test(window.TS_SD))sdRender();", "if(/^[12]$/.test(window.TS_SD))sdRender();if(window.JR)JR.bar();")
         t = must(t, '</style>', JR_CSS + '</style>')
+        t = must(t, "function render(){\n  syncMods();", "function render(){\n  if(window.JR)JR.sync();syncMods();")
+        t = must(t, "Usually under a minute. Everything lands as a draft you can edit.</div></div>", "This can take a few minutes, and sometimes a few hours. You do not have to wait here. We will tell you when it is ready.</div><div><button class=\"btn btn-dark\" onclick=\"JR.go()\">Continue setup</button></div></div>")
+        t = must(t, "buildDraft(src);render();}else if(S.route==='menu')render();},150);}", "buildDraft(src);render();}else if(S.route==='menu')render();},2200);}")
     # arriving from onboarding: no toast, no banner. The dashboard just opens on the right page.
     a = t.index('/* arriving from onboarding')
     b = t.index('</script>', a)

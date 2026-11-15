@@ -34,7 +34,7 @@ const keep=()=>{if(!S.ch)return;document.querySelectorAll('#chdlg [id^=chf-]').f
 window.chScope=v=>{keep();S.ch.scope=v;render();};
 window.chPick=id=>{keep();const p=S.ch.pick;S.ch.pick=p.includes(id)?p.filter(x=>x!==id):p.concat(id);render();};
 const targets=()=>S.outlet!=='all'?[S.outlet]:(S.ch.scope==='all'?OUTLETS.map(o=>o.id):S.ch.pick);
-function chBody(k){const o=targets()[0]||OUTLETS[0].id,v=DB.svc[o]||{},r=v.rad||{mi:3,fee:3,min:15},V=S.ch.vals;
+function chBody(k){const o=targets()[0]||OUTLETS[0].id,v=(window.TS_JOURNEY&&(DB.svc[o]||{}).set!==true)?{pick:true,prep:20,del:false}:(DB.svc[o]||{}),r=v.rad||{mi:3,fee:3,min:15},V=S.ch.vals;
  const g=(id,d)=>V[id]!==undefined?V[id]:d;
  const f=(l,c,n)=>`<div class="ch-f"><div><b>${l}</b>${n?`<span>${n}</span>`:''}</div>${c}</div>`;
  const num=(id,d,u,st)=>`<div class="inp-suf" style="width:132px"><input id="chf-${id}" class="inp sm" type="number" min="0" step="${st||1}" value="${g(id,d)??''}"><span>${u}</span></div>`;
@@ -63,9 +63,11 @@ function gridHtml(){const k=S.ch.k,F=GF[k];
   <tr class="ch-all"><td><b>All outlets</b><br><button class="btn btn-line btn-sm" onclick="chgAll()">Fill all</button></td>${F.map(f=>`<td>${gcell('cha-','all',f,'')}</td>`).join('')}</tr>
   ${OUTLETS.map(o=>{const set=(DB.svc[o.id]||{}).set===true;return `<tr><td>${esc(o.short)}</td>${set?F.map(f=>`<td>${gcell('chg-',o.id,f,gval(k,o.id,f[0]))}</td>`).join(''):`<td colspan="${F.length}" class="muted">Not set up</td>`}</tr>`;}).join('')}</tbody></table></div>
   <div class="ch-ft"><button class="btn btn-line" onclick="chClose()">Cancel</button><button class="btn btn-dark" onclick="chSave()">Save</button></div></div></div>`;}
-function chHtml(){if(!S.ch)return '';if(S.ch.jr)return JR.dlg();if(S.ch.grid)return gridHtml();const k=S.ch.k,hasSave=k!=='tax';
- return `<div class="ch-bk" onmousedown="if(event.target===this)chClose()"><div class="ch" role="dialog" aria-modal="true" aria-label="${TITLES[k]}"><div class="ch-h"><h3>${TITLES[k]}</h3><button class="sd-x2" aria-label="Close" onclick="chClose()">✕</button></div><div class="ch-b">${chBody(k)}</div>${S.outlet==='all'&&scoped(k)?glimpse(k):''}${hasSave?chScope(k):''}<div class="ch-ft"><button class="btn btn-line" onclick="chClose()">${hasSave?'Cancel':'Close'}</button>${hasSave?'<button class="btn btn-dark" onclick="chSave()">Save</button>':''}</div></div></div>`;}
+function chHtml(){if(!S.ch)return '';if(S.ch.grid)return gridHtml();const k=S.ch.k,hasSave=k!=='tax';
+ const JN=!!window.TS_JOURNEY,where=S.outlet==='all'?'All outlets':ON(S.outlet).short;
+ return `<div class="ch-bk" onmousedown="if(event.target===this)chClose()"><div class="ch${JN?' jr':''}" role="dialog" aria-modal="true" aria-label="${TITLES[k]}"><div class="ch-h">${JN?`<div><small>Ordering · ${esc(where)}</small><h3>${TITLES[k]}</h3></div>`:`<h3>${TITLES[k]}</h3>`}<button class="sd-x2" aria-label="Close" onclick="chClose()">✕</button></div><div class="ch-b">${chBody(k)}</div>${S.outlet==='all'&&scoped(k)?glimpse(k):''}${hasSave?chScope(k):''}<div class="ch-ft"><button class="btn btn-line" onclick="chClose()">${hasSave?'Cancel':'Close'}</button>${hasSave?'<button class="btn btn-dark" onclick="chSave()">Save</button>':''}${JN&&k==='tax'?`<button class="btn btn-dark" onclick="JR.confirmTax()">${DB.taxes.length?'Taxes look right':'We charge no tax'}</button>`:''}</div></div></div>`;}
 function applyOne(k,i,g){const s=DB.svc[i];
+ if(window.TS_JOURNEY&&s&&(k==='pick'||k==='del')&&s.set!==true)Object.assign(s,{set:true,pick:true,prep:20,del:false,rad:{mi:3,fee:3,min:15}});
  if(k==='pick'){if(!s||s.set!==true)return;s.pick=g('on')==='1';if(g('prep'))s.prep=Math.max(5,+g('prep'));}
  if(k==='del'){if(!s||s.set!==true)return;s.del=g('on')==='1';if(s.del){s.rad=s.rad||{};s.rad.mi=+g('mi')||3;s.rad.fee=+g('fee')||0;s.rad.min=+g('min')||0;if(!DB.deliveryMode[i])DB.deliveryMode[i]='radius';}}
  if(k==='aa')aaSet(i,g('on')==='1');
@@ -74,7 +76,7 @@ window.chSave=()=>{const c=S.ch;
  if(c.grid){let n=0;OUTLETS.forEach(o=>{if(!document.getElementById('chg-'+o.id+'-on'))return;applyOne(c.k,o.id,f=>{const e=document.getElementById('chg-'+o.id+'-'+f);return e?e.value:null;});n++;});S.ch=null;render();toast('Saved for '+nOut(n));return;}
  const t=targets();if(!t.length){toast('Choose at least one outlet');return;}
  const g=id=>{const e=document.getElementById('chf-'+id);return e?e.value:null;};
- if(c.k==='pay'){const m=g('pay');DB.payPick={call:m!=='store',store:m!=='online'};DB.cod.cap=+g('cap')||0;}
+ if(c.k==='pay'){const m=g('pay');DB.payPick={call:m!=='store',store:m!=='online'};DB.cod.cap=+g('cap')||0;DB.payOk=true;}
  else t.forEach(i=>applyOne(c.k,i,g));
  S.ch=null;render();toast('Saved'+(scoped(c.k)?' for '+(t.length===1?ON(t[0]).short:nOut(t.length)):''));};
 
