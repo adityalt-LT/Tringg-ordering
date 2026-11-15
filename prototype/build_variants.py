@@ -65,8 +65,8 @@ def cut(text, start, end, new=''):
     return text[:a] + new + text[b:]
 
 
-def engine_tag(v, w='1', su='', sd='', dash='', enq='', flow=''):
-    return f'<script>window.TS_VARIANT="{v}";window.TS_WELCOME="{w}";window.TS_SETUP="{su}";window.TS_SD="{sd}";window.TS_DASH="{dash}";window.TS_ENQ="{enq}";window.TS_FLOW="{flow}";</script><script>{ENGINE}</script>\n'
+def engine_tag(v, w='1', su='', sd='', dash='', enq='', flow='', jr=''):
+    return f'<script>window.TS_VARIANT="{v}";window.TS_WELCOME="{w}";window.TS_SETUP="{su}";window.TS_SD="{sd}";window.TS_DASH="{dash}";window.TS_ENQ="{enq}";window.TS_FLOW="{flow}";window.TS_JOURNEY="{jr}";</script><script>{ENGINE}</script>\n'
 
 
 VOICES_JS = r'''const VOICES=[{id:'allie',n:'Ava',g:'Female',t:'Female · English',d:'Warm American host, clear and friendly on the phone',pitch:1.15,rate:1},{id:'marcus',n:'Marcus',g:'Male',t:'Male · English',d:'Calm, confident American host with a steady pace',pitch:.7,rate:.95},{id:'leo',n:'Leo',g:'Male',t:'Male · English',d:'Upbeat, easygoing host for casual restaurants',pitch:.9,rate:1.1},{id:'priya',n:'Priya',g:'Female',t:'Female · Hindi',d:'Friendly bilingual host for Hindi and English callers',pitch:1.3,rate:1.08},{id:'shubh',n:'Shubh',g:'Male',t:'Male · Hindi',d:'Neutral Indian male host. Lowest pronunciation error rate',pitch:.8,rate:1}];
@@ -357,9 +357,9 @@ render();
 '''
 
 
-def build_dashboard(v, w='1', su='', sd='', dash='', enq='', flow=''):
+def build_dashboard(v, w='1', su='', sd='', dash='', enq='', flow='', jr=''):
     t = DB
-    t = must(t, '<script>\n', engine_tag(v, w, su, sd, dash, enq, flow) + '<script>\n')
+    t = must(t, '<script>\n', engine_tag(v, w, su, sd, dash, enq, flow, jr) + '<script>\n')
     # one setup surface, no sidebar checklist
     t = must(t, "function renderChk(){if(S.outlet==='all'||!DB.mods.ord)return '';", "function renderChk(){if(TS.variant==='C'&&(S.setupCollapsed||TS.setup==='drawer'))return TS.railWidget();return '';")
     # the phone number in the top pill picked up a phone-mockup style
@@ -463,10 +463,14 @@ function ovEnhance(){document.querySelectorAll('#view .ov-grid .card:not(.agent)
     t = must(t, '''font-weight:600">—</div>''', '''font-weight:600">0</div>''', count=3)
     t = must(t, "${live?'16 min':'—'}", "${live?'16 min':'0 min'}")
     t = must(t, "${live&&n?'81%':'—'}", "${live&&n?'81%':'0%'}")
+    if jr:
+        t = must(t, "if(n[0]==='reservations'){const p=", "if(n[0]==='menu'&&window.JR)b=JR.badge();\n    if(n[0]==='reservations'){const p=")
+        t = must(t, "if(/^[12]$/.test(window.TS_SD))sdRender();", "if(/^[12]$/.test(window.TS_SD))sdRender();if(window.JR)JR.bar();")
+        t = must(t, '</style>', JR_CSS + '</style>')
     # arriving from onboarding: no toast, no banner. The dashboard just opens on the right page.
     a = t.index('/* arriving from onboarding')
     b = t.index('</script>', a)
-    t = t[:a] + BOOT.replace('\nrender();\n', '\n' + (SD_JS if sd in ('1', '2') else '') + (FLOW_JS if flow else '') + '\nrender();\n') + t[b:]
+    t = t[:a] + BOOT.replace('\nrender();\n', '\n' + (SD_JS if sd in ('1', '2') else '') + (FLOW_JS if flow else '') + (JR_JS + '\nJR.init();\n' if jr else '') + '\nrender();\n') + t[b:]
     return t
 
 
@@ -474,6 +478,8 @@ AA_CSS = '.ps-g{display:grid;grid-template-columns:1fr 1fr;gap:14px}.ps{border:1
 FLOW_JS = r'''
 SET.phone0=SET.phone;SET.phone=()=>(window.TS_FLOW&&S.outlet!=='all')?TS.phonePage():SET.phone0();
 '''
+JR_JS = (here / 'setup' / 'journey.js').read_text(encoding='utf-8')
+JR_CSS = (here / 'setup' / 'journey.css').read_text(encoding='utf-8')
 AA_JS = r'''
 
 function psTiles(o,v,mode,z,pauseCtl){const r=v.rad||{};
@@ -519,6 +525,7 @@ VARIANTS = {'C1': ('C', '1', 'C1 · Welcome header', 'proto-c1-welcome-header.ht
             'G2': ('C', '1', 'G2 · Sentence + live call', 'proto-g2-live-call.html', '', '', '2', 'Questions & answers'),
             'H1': ('C', '1', 'H · Go live flow', 'proto-h-golive-flow.html', '', '', '2', 'Questions & answers', '1'),
             'H2': ('C', '1', 'H2 · Go live flow + settings dialogs', 'proto-h2-golive-settings.html', '', '1', '2', 'Questions & answers', '1'),
+            'H3': ('C', '1', 'H3 · Ordering setup journey', 'proto-h3-ordering-journey.html', '', '1', '2', 'Questions & answers', '1', '1'),
             'E2B': ('C', '3', 'E2b · Settings dialogs: outlet grid', 'proto-e2b-settings-grid.html', 'golive', '2')}
 
 
@@ -570,6 +577,7 @@ if __name__ == '__main__':
         dash = rest[2] if len(rest) > 2 else ''
         enq = rest[3] if len(rest) > 3 else ''
         flow = rest[4] if len(rest) > 4 else ''
-        page = wrapper(label, build_onboarding(v, w, su, sd, dash, enq, flow), build_dashboard(v, w, su, sd, dash, enq, flow), 'db' if (sd or dash) else '')
+        jr = rest[5] if len(rest) > 5 else ''
+        page = wrapper(label, build_onboarding(v, w, su, sd, dash, enq, flow), build_dashboard(v, w, su, sd, dash, enq, flow, jr), 'db' if (sd or dash) else '')
         (here / fn).write_text(page, encoding='utf-8')
         print('wrote', fn, len(page) // 1024, 'KB')
