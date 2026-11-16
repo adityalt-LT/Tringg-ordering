@@ -63,15 +63,17 @@ function ordersPage(fn){if(anyLive()&&!(H4()&&S.outlet==='all'&&!SO()&&OUTLETS.s
  if(hasDel())list.push(['area','Delivery area',needArea().length===0]);
  const steps=list.map(s=>[s[2]?'done':(s[0]===ns?'on':''),s[1],s[0]]),n=list.filter(s=>s[2]).length,r=ns==='live';
  const where=S.outlet==='all'||SO()?'':' at '+esc(nm(S.outlet));
- const h=r?'Ordering is ready'+where+'. *Start taking orders*.':'Set up ordering so Emma can *take orders* for you.';
- const sub=r?(act()?'Everything is set. Press start and Emma takes orders.':'Everything is set. Go live, then start taking orders.'):(S.outlet!=='all'&&!SO()&&!sharedDone()?'The menu and settings are created once, in All outlets.':'Add your menu, then set pickup, delivery, taxes and payments.');
+ const inh=S.outlet!=='all'&&!SO()&&O(S.outlet).inherited&&!O(S.outlet).live,srcN=inh?nm(O(S.outlet).inherited):'';
+ const h=r?'Ordering is ready'+where+'. *Start taking orders*.':inh?nm(S.outlet)+' inherited your *ordering setup*.':'Set up ordering so Emma can *take orders* for you.';
+ const sub=inh&&!r?'It uses the menu, pickup and delivery, taxes and payments from '+esc(srcN)+'. Only its delivery area is left.':r?(act()?'Everything is set. Press start and Emma takes orders.':'Everything is set. Go live, then start taking orders.'):(S.outlet!=='all'&&!SO()&&!sharedDone()?'The menu and settings are created once, in All outlets.':'Add your menu, then set pickup, delivery, taxes and payments.');
  const cta=r?(act()?'Start taking orders':'Go live'):(!J().started?(S.outlet!=='all'&&!SO()?'Set up in all outlets':'Set up ordering'):'Continue setup');
  return '<div class="scroll"><div class="page" style="max-width:1120px">'+TS.dhPage({k:'ord',pill:n+' of '+list.length+' steps done',tick:n>0,h:h,sub:sub,steps:steps,cta:'<button class="ts-btn ts-pulse dh-b" onclick="JR.go()">'+cta+'</button>'})+(H4()&&S.outlet==='all'&&!SO()?outletCards():'')+'</div></div>';}
 
 /* ───── Settings › Ordering ───── */
 const chip=(cls,t)=>'<span class="jr-st '+cls+'">'+t+'</span>';
 const done=d=>chip(d?'d':'',d?'Done':'To do');
-const doneS=d=>H4()&&S.outlet!=='all'&&!SO()&&d?chip('d','Same as all outlets'):done(d);
+const H5=()=>window.TS_JOURNEY==='3';
+const doneS=d=>(H4()||H5())&&S.outlet!=='all'&&!SO()&&d?chip('d','Same as all outlets'):done(d);
 const top=labels=>{const m=new Map();labels.forEach(l=>m.set(l,(m.get(l)||0)+1));const a=[...m.entries()];
  if(a.length===1)return labels.length===1||labels.length<OUTLETS.length?a[0][0]:a[0][0]+' at all outlets';return a.map(e=>e[0]+' at '+e[1]+' outlet'+(e[1]>1?'s':'')).join(' · ');};
 function page(){const one=S.outlet!=='all'&&!SO(),I_=ids(),set=I_.filter(svcSet),unset=I_.length-set.length;
@@ -86,8 +88,8 @@ function page(){const one=S.outlet!=='all'&&!SO(),I_=ids(),set=I_.filter(svcSet)
  const p=need(svcDone(),'pick'),d=need(svcDone(),'del');
  let areaRow='';
  if(hasDel()){const dl=I_.filter(delOn);
-  areaRow=row('Delivery area',one?(O(S.outlet).area?'Drawn. Callers outside it are offered pickup.':'Draw how far '+esc(nm(S.outlet))+' delivers.'):'Each outlet draws its own delivery area.',done(dl.every(id=>O(id).area)),one?(O(S.outlet).area?'Change area':'Draw area'):'',"JR.area('"+S.outlet+"')",
-   one?'':'<div class="jr-chips">'+dl.map(id=>'<button class="jr-oc '+(O(id).area?'d':'')+'" onclick="JR.area(\''+id+'\')"><b>'+esc(nm(id))+'</b><span>'+(O(id).area?'Drawn':'Draw area')+'</span></button>').join('')+'</div>');}
+  const oneA=one||SO();areaRow=row('Delivery area',oneA?(O(S.outlet).area?'Drawn. Callers outside it are offered pickup.':'Draw how far '+esc(nm(S.outlet))+' delivers.'):'Each outlet draws its own delivery area.',done(dl.every(id=>O(id).area)),oneA?(O(S.outlet).area?'Change area':'Draw area'):'',"JR.area('"+S.outlet+"')",
+   oneA?'':'<div class="jr-chips">'+dl.map(id=>'<button class="jr-oc '+(O(id).area?'d':'')+'" onclick="JR.area(\''+id+'\')"><b>'+esc(nm(id))+'</b><span>'+(O(id).area?'Drawn':'Draw area')+'</span></button>').join('')+'</div>');}
  const tx=one?(DB.taxes.filter(t=>t.outs.includes(S.outlet)).map(t=>esc(t.n)+' '+(t.vt==='%'?t.v+'%':money(t.v))).join(' · ')||'No taxes or fees yet.'):(DB.taxes.length?DB.taxes.length+' tax'+(DB.taxes.length>1?'es':'')+' and fees added. Some can be for only some outlets.':taxDone()?'No tax is added to orders.':'No taxes or fees yet. Add them for all outlets, or only some.');
  const pky=DB.payPick,pay=payDone()?((pky.call&&pky.store?'Customers can pay by card or cash.':pky.call?'Customers pay by card, using a text link.':'Customers pay with cash.')+(DB.stripe==='active'?' Stripe is connected.':'')):'Choose how customers pay. This is the same for all outlets.';
  const A=S.outlet==='all',aaT=A?'Choose if orders are accepted automatically at your outlets.':(DB.autoAccept[S.outlet]?'Orders are accepted automatically.':'You accept each order yourself.');
@@ -102,6 +104,27 @@ function page(){const one=S.outlet!=='all'&&!SO(),I_=ids(),set=I_.filter(svcSet)
 
 /* sidebar */
 function badge(){if(S.menu&&S.menu.flow==='extracting')return '<span class="bdg imp" title="Menu import in progress"><i></i></span>';return DB.menuState==='draft'?'<span class="bdg new">Review</span>':'';}
+const canAdd=()=>H5()&&typeof isOwner==='function'&&isOwner();
+function renderAdd(){let el=document.getElementById('jradd');if(!S.addO){if(el)el.remove();return;}
+ if(!el){el=document.createElement('div');el.id='jradd';el.style.cssText='position:relative;z-index:150';document.body.appendChild(el);}
+ const src=OUTLETS[0],has=svcSet(src.id)&&menuDone();
+ el.innerHTML='<div class="ch-bk" onmousedown="if(event.target===this)JR.addClose()"><div class="ch jr" role="dialog" aria-modal="true" aria-label="Add an outlet"><div class="ch-h"><div><small>New outlet</small><h3>Add an outlet</h3></div><button class="sd-x2" aria-label="Close" onclick="JR.addClose()">✕</button></div><div class="ch-b">'+
+  '<div class="ch-f"><div><b>Outlet name</b></div><input id="jra-n" class="inp sm" style="width:260px;flex:0 0 260px" value="'+esc(S.addO.name)+'"></div><div class="ch-f"><div><b>Area</b><span>Shown in the outlet list.</span></div><input id="jra-a" class="inp sm" style="width:260px;flex:0 0 260px" placeholder="e.g. Naperville" value="'+esc(S.addO.area)+'"></div></div>'+
+  '<div class="ch-sc"><div>'+(has?'<b>It inherits from '+esc(src.short)+'</b><br>Menu, pickup and delivery, taxes, payments and accepting orders. You only add its delivery area, then start taking orders.':'<b>Nothing to inherit yet</b><br>Finish the ordering setup first and new outlets will copy it.')+'</div></div><div class="ch-ft"><button class="btn btn-line" onclick="JR.addClose()">Cancel</button><button class="btn btn-dark" onclick="JR.addCreate()">Add outlet</button></div></div></div>';}
+function addOutlet(){S.dd=false;renderRail();S.addO={name:'ROSSA ',area:''};renderAdd();}
+function addClose(){S.addO=null;renderAdd();}
+function addCreate(){const n=(document.getElementById('jra-n').value||'').trim(),a=(document.getElementById('jra-a').value||'').trim();if(!n){toast('Add a name');return;}
+ const sp=OUTLETS_ALL.find(o=>!OUTLETS.some(x=>x.id===o.id)&&!o.isNew);if(!sp){toast('No more outlets in this demo');return;}
+ const src=OUTLETS[0].id,id=sp.id,cl=x=>JSON.parse(JSON.stringify(x));
+ sp.name=n;sp.short=a||n.replace(/^ROSSA\s+/i,'');OUTLETS.push(sp);ROLE_OUT.owner=[...(ROLE_OUT.owner||[]),id];
+ if(svcSet(src)){DB.svc[id]=cl(DB.svc[src]);DB.deliveryMode[id]=null;DB.zones[id]=[];}
+ DB.items.forEach(i=>i.pg.forEach(g=>{if(g.outs.includes(src)&&!g.outs.includes(id))g.outs.push(id);}));
+ (DB.wins||[]).forEach(w=>{if(w.outs&&w.outs.includes(src)&&!w.outs.includes(id))w.outs.push(id);});
+ DB.taxes.forEach(t=>{if(t.outs.includes(src)&&!t.outs.includes(id))t.outs.push(id);});
+ DB.autoAccept[id]=DB.autoAccept[src];if(DB.pre[src])DB.pre[id]=cl(DB.pre[src]);
+ const inherited=svcSet(src)&&menuDone();
+ S.addO=null;renderAdd();mut(j=>{const o=ensure(j,id);o.area=false;if(inherited)o.inherited=src;});
+ S.outlet=id;S.dd=false;S.route='orders';render();toast(sp.short+' added.'+(inherited?' It inherits the setup from '+nm(src)+'.':''));}
 function init(){
  TS.beforeOutlet=()=>{};
  if(H4()&&!SO())S.outlet='all';
@@ -113,4 +136,4 @@ function init(){
  const st=window.saveTaxW;window.saveTaxW=function(){const was=S.menu.drawer;st();if(was==='tax'&&S.menu.drawer!=='tax'&&S.sdlg){S.set='ord';chOpen('tax');}};
  const zs=window.zedSave;window.zedSave=function(){const o=S.zed&&S.zed.o;zs();if(o&&!S.zed){mut(j=>{ensure(j,o).area=true;});S.set='ord';S.sdlg=true;render();toast('Delivery area saved for '+nm(o)+'.');}};
  const zc=window.zedCancel;window.zedCancel=function(){zc();S.set='ord';S.sdlg=true;render();};}
-return {init,sync,anyLiveAny:()=>OUTLETS.some(o=>O(o.id).live),ordersPage,page,go,start,area,open,badge,confirmTax,confirmPay,bar:()=>{const e=document.getElementById('jrbar');if(e)e.remove();}};})();
+return {init,sync,canAdd,addOutlet,addClose,addCreate,anyLiveAny:()=>OUTLETS.some(o=>O(o.id).live),ordersPage,page,go,start,area,open,badge,confirmTax,confirmPay,bar:()=>{const e=document.getElementById('jrbar');if(e)e.remove();}};})();

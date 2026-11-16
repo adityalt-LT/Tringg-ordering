@@ -315,7 +315,7 @@ OVERVIEW_FRESH = r'''function vOverviewFresh(){const mo=DB.mods,G=h=>`<div class
 
 BOOT = r'''/* setup prototypes: one location, empty to start, driven by the shared setup state */
 (function(){
- const PRIMARY='wl';const FRESH_OUT=['wl','wp','nv'];ROLE_OUT.owner=FRESH_OUT;SC.wl=.4;let FULL=false;let CUR=PRIMARY;const SNAP={};
+ const PRIMARY='wl';const FRESH_OUT=window.TS_JOURNEY==='3'?['wl']:['wl','wp','nv'];ROLE_OUT.owner=FRESH_OUT;SC.wl=.4;let FULL=false;let CUR=PRIMARY;const SNAP={};
  const hasSvc=st=>Object.keys(st.done||{}).some(k=>/^(res|ord)\\./.test(k)&&st.done[k]);
  TS.outletSet=id=>FULL||(id===CUR?hasSvc(TS.get()):!!SNAP[id]&&hasSvc(SNAP[id]));TS.isFull=()=>FULL;
  TS.beforeOutlet=to=>{if(FULL||to==='all'||to===CUR)return;SNAP[CUR]=JSON.parse(JSON.stringify(TS.get()));const cur=TS.get(),n=SNAP[to]||(()=>{const f=TS.blank();f.d.agent=JSON.parse(JSON.stringify(cur.d.agent));f.d.brand=cur.d.brand;f.d.faqs=JSON.parse(JSON.stringify(cur.d.faqs));f.d.outlet={name:cur.d.outlet?cur.d.outlet.name:cur.d.brand,area:ON(to).short};f.sub=cur.sub;f.trial=cur.trial;if(cur.sub)f.done['go.sub']=true;return f;})();CUR=to;S.setupCollapsed=false;TS.swap(n);};
@@ -469,6 +469,9 @@ function ovEnhance(){document.querySelectorAll('#view .ov-grid .card:not(.agent)
         t = must(t, '</style>', JR_CSS + '</style>')
         t = must(t, "if(one&&v.set===false)return h+", "if(!window.TS_JOURNEY&&one&&v.set===false)return h+")
         t = must(t, "const more=['acc','pre','lg']", "window.ORD_P=P;const more=['acc','pre','lg']")
+        if jr == '3':
+            t = must(t, "const isBrand=()=>S.outlet==='all';", "const isBrand=()=>S.outlet==='all'||OUTLETS.length===1;")
+            t = must(t, "${TS.outletSet(x.id)?'':'<span class=\"odd-new\">Set up</span>'}</button>`).join('')).join('')}</div>`;", "${TS.outletSet(x.id)?'':'<span class=\"odd-new\">Set up</span>'}</button>`).join('')).join('')}${window.JR&&JR.canAdd()?'<button class=\"odi odi-add\" onclick=\"JR.addOutlet()\">+ Add new outlet</button>':''}</div>`;")
         t = must(t, "function render(){\n  syncMods();", "function render(){\n  if(window.JR)JR.sync();syncMods();")
         t = must(t, "Usually under a minute. Everything lands as a draft you can edit.</div></div>", "This can take a few minutes, and sometimes a few hours. You do not have to wait here. We will tell you when it is ready.</div><div><button class=\"btn btn-dark\" onclick=\"JR.go()\">Continue setup</button></div></div>")
         t = must(t, "buildDraft(src);render();}else if(S.route==='menu')render();},150);}", "buildDraft(src);render();}else if(S.route==='menu')render();},2200);}")
@@ -532,6 +535,7 @@ VARIANTS = {'C1': ('C', '1', 'C1 · Welcome header', 'proto-c1-welcome-header.ht
             'H2': ('C', '1', 'H2 · Go live flow + settings dialogs', 'proto-h2-golive-settings.html', '', '1', '2', 'Questions & answers', '1'),
             'H3': ('C', '1', 'H3 · Ordering setup journey', 'proto-h3-ordering-journey.html', '', '1', '2', 'Questions & answers', '1', '1'),
             'H4': ('C', '1', 'H4 · Ordering setup in All outlets', 'proto-h4-ordering-all-outlets.html', '', '1', '2', 'Questions & answers', '1', '2'),
+            'H5': ('C', '1', 'H5 · One outlet first, new outlets inherit', 'proto-h5-one-outlet-inherit.html', '', '1', '2', 'Questions & answers', '1', '3'),
             'E2B': ('C', '3', 'E2b · Settings dialogs: outlet grid', 'proto-e2b-settings-grid.html', 'golive', '2')}
 
 
