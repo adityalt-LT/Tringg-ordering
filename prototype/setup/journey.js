@@ -40,12 +40,13 @@ function area(id){id=id||needArea()[0]||ids().filter(delOn)[0];if(!id)return;S.z
 function go(id){id=id||nextStep();mut(j=>{j.started=true;});
  if(id==='menu'){toAll();S.sdlg=false;S.ch=null;window.go('menu');return;}
  if(id==='svc'){open('pick');return;}
- if(id==='tax'||id==='pay'){open(id);return;}
+ if(id==='tax'||id==='pay'){open(id==='pay'?'payx':id);return;}
  if(id==='area'){area();return;}
  if(id==='live')start();}
 function start(){const t=ids().filter(id=>ready(id)&&!O(id).live);if(!t.length){go(nextStep());return;}
  if(!act()){S.sdlg=false;S.ch=null;TS.open('go','sub');return;}
  mut(j=>{t.forEach(id=>{ensure(j,id).live=true;});});toast(t.length===1?nm(t[0])+' is taking orders.':t.length+' outlets are taking orders.');S.sdlg=false;S.ch=null;window.go('orders');}
+function confirmPay(){DB.payOk=true;S.ch=null;toast('Payments saved.');render();}
 function confirmTax(){DB.taxOk=true;S.ch=null;toast(DB.taxes.length?'Taxes confirmed.':'No tax will be added.');render();}
 
 /* ───── Orders page while ordering is being set up ───── */
@@ -83,13 +84,13 @@ function page(){const one=S.outlet!=='all'&&!SO(),I_=ids(),set=I_.filter(svcSet)
  const pky=DB.payPick,pay=payDone()?((pky.call&&pky.store?'Customers can pay by card or cash.':pky.call?'Customers pay by card, using a text link.':'Customers pay with cash.')+(DB.stripe==='active'?' Stripe is connected.':'')):'Choose how customers pay. This is the same for all outlets.';
  const A=S.outlet==='all',aaT=A?'Choose if orders are accepted automatically at your outlets.':(DB.autoAccept[S.outlet]?'Orders are accepted automatically.':'You accept each order yourself.');
  const preT=A?'Choose if customers can order for later at your outlets.':((DB.pre[S.outlet]||{}).on?'Customers can order for later.':'Pre-orders are off.');
- const tb=need(taxDone(),'tax',one?'View taxes':'Change'),pb=need(payDone(),'pay');
+ const tb=need(taxDone(),'tax',one?'View taxes':'Change'),pb=need(payDone(),'payx');
  return sH('Ordering','',one?'':'all')+'<div class="jr-g">Needed to take orders</div><div class="scard sr-c">'+menuRow+
   row('Pickup',set.length?pk+(one?'':'.')+sfx:'Not set up yet.',done(svcDone()),p[0],p[1])+
   row('Delivery',set.length?dv+(one?'':'.')+sfx:'Not set up yet.',done(svcDone()),d[0],d[1])+areaRow+
   row('Taxes and fees',tx,done(taxDone()),tb[0],tb[1])+
   row('Payments',pay,done(payDone()),pb[0],pb[1])+'</div>'+
-  '<div class="jr-g">More settings</div><div class="scard sr-c">'+row('Accepting orders',aaT,'','Change',"chOpen('aa')")+row('Pre-orders',preT,'','Change',"chOpen('pre')")+'</div>';}
+  '<div class="jr-g">More settings</div><div class="scard sr-c">'+row('Accepting orders',aaT,'','Change',"chOpen('accx')")+row('Pre-orders',preT,'','Change',"chOpen('pre')")+(one&&svcSet(S.outlet)?row('Large orders and menu link','Hand big orders to your team, and share a link to your menu.','','Change',"chOpen('lgx')"):'')+'</div>';}
 
 /* sidebar */
 function badge(){if(S.menu&&S.menu.flow==='extracting')return '<span class="bdg imp" title="Menu import in progress"><i></i></span>';return DB.menuState==='draft'?'<span class="bdg new">Review</span>':'';}
@@ -103,4 +104,4 @@ function init(){
  const st=window.saveTaxW;window.saveTaxW=function(){const was=S.menu.drawer;st();if(was==='tax'&&S.menu.drawer!=='tax'&&S.sdlg){S.set='ord';chOpen('tax');}};
  const zs=window.zedSave;window.zedSave=function(){const o=S.zed&&S.zed.o;zs();if(o&&!S.zed){mut(j=>{ensure(j,o).area=true;});S.set='ord';S.sdlg=true;render();toast('Delivery area saved for '+nm(o)+'.');}};
  const zc=window.zedCancel;window.zedCancel=function(){zc();S.set='ord';S.sdlg=true;render();};}
-return {init,sync,anyLiveAny:()=>OUTLETS.some(o=>O(o.id).live),ordersPage,page,go,start,area,open,badge,confirmTax,bar:()=>{const e=document.getElementById('jrbar');if(e)e.remove();}};})();
+return {init,sync,anyLiveAny:()=>OUTLETS.some(o=>O(o.id).live),ordersPage,page,go,start,area,open,badge,confirmTax,confirmPay,bar:()=>{const e=document.getElementById('jrbar');if(e)e.remove();}};})();
