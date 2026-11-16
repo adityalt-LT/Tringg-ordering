@@ -349,7 +349,7 @@ BOOT = r'''/* setup prototypes: one location, empty to start, driven by the shar
    if(TS.setup==='drawer'&&!TS.dr.seen&&!TS.allDone()){TS.dr.seen=true;setTimeout(()=>TS.drawer(true),350);}}
   if(m.tringg==='ready'){S.route='overview';loadReady();}});
  applyTS();TS.hello();
- if(window.TS_FLOW)setTimeout(()=>TS.set(x=>{x.done['enq.faq']=true;}),0);
+ if(window.TS_FLOW&&!window.TS_JOURNEY)setTimeout(()=>TS.set(x=>{x.done['enq.faq']=true;}),0);
  if(/^[12]$/.test(window.TS_SD)&&!window.TS_FLOW)setTimeout(()=>{loadReady();S.outlet='all';S.set='ord';S.sdlg=true;S.dd=false;render();},0);
  if(window.TS_SD==='page')setTimeout(()=>{loadReady();S.outlet='all';S.set='ord';S.route='settings';S.dd=false;render();},0);
 })();
