@@ -444,9 +444,9 @@ def build_dashboard(v, w='1', su='', sd='', dash='', enq='', flow='', jr=''):
     t = cut(t, 'function vOverviewFresh(){', 'function vOverview0(){', OVERVIEW_FRESH + '''function vOverview(){
   const first=(me().n||'').split(' ')[0];TS.cfg.user=first||'there';
   const FULL=TS.isFull(),PRIMARY='wl';
-  const un=OUTLETS.filter(o=>!TS.outletSet(o.id)),other=!FULL&&S.outlet==='all'&&un.length>0;
+  const un=OUTLETS.filter(o=>!TS.outletSet(o.id)),other=!FULL&&S.outlet==='all'&&un.length>0&&window.TS_JOURNEY!=='2';
   const stripe=other?`<div class="ts-stripe"><span><b>${OUTLETS.length-un.length} of ${OUTLETS.length} outlets set up</b><br><small>Choose an outlet to set up next so it can take calls.</small></span><button class="ts-btn sm" onclick="TS.chooseOutlet(OUTLETS.filter(o=>!TS.outletSet(o.id)),'pickOutlet')">Set up an outlet</button></div>`:'';
-  if(S.outlet==='all'&&!FULL){const h=DB.subscribed?vOverview0():vOverviewFresh();return h.replace(/<div class="lbl">[^<]*<\\/div>/,()=>stripe);}
+  if(S.outlet==='all'&&!FULL&&window.TS_JOURNEY!=='2'){const h=DB.subscribed?vOverview0():vOverviewFresh();return h.replace(/<div class="lbl">[^<]*<\\/div>/,()=>stripe);}
   if((window.TS_DASH?!TS.active():TS.totals().done===0)&&!TS.allDone())return `<div class="scroll"><div class="page">${stripe}${TS.overviewTop()}</div></div>`;
   const h=DB.subscribed?vOverview0():vOverviewFresh();return h.replace(/<div class="lbl">[^<]*<\\/div>/,()=>stripe+TS.overviewTop());}
 function ovEnhance(){document.querySelectorAll('#view .ov-grid .card:not(.agent)').forEach(c=>{const h=c.querySelector('.card-h');if(!h||h.querySelector('.ov-t'))return;const k=(h.textContent||'').trim().slice(0,24);if(S.ovC&&S.ovC[k])c.classList.add('ov-c');const b=document.createElement('button');b.className='ov-t';b.setAttribute('aria-label','Collapse');b.innerHTML='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 15 6-6 6 6"/></svg>';b.onclick=e=>{e.stopPropagation();const on=c.classList.toggle('ov-c');S.ovC=S.ovC||{};S.ovC[k]=on;};h.appendChild(b);});}
@@ -531,6 +531,7 @@ VARIANTS = {'C1': ('C', '1', 'C1 · Welcome header', 'proto-c1-welcome-header.ht
             'H1': ('C', '1', 'H · Go live flow', 'proto-h-golive-flow.html', '', '', '2', 'Questions & answers', '1'),
             'H2': ('C', '1', 'H2 · Go live flow + settings dialogs', 'proto-h2-golive-settings.html', '', '1', '2', 'Questions & answers', '1'),
             'H3': ('C', '1', 'H3 · Ordering setup journey', 'proto-h3-ordering-journey.html', '', '1', '2', 'Questions & answers', '1', '1'),
+            'H4': ('C', '1', 'H4 · Ordering setup in All outlets', 'proto-h4-ordering-all-outlets.html', '', '1', '2', 'Questions & answers', '1', '2'),
             'E2B': ('C', '3', 'E2b · Settings dialogs: outlet grid', 'proto-e2b-settings-grid.html', 'golive', '2')}
 
 
