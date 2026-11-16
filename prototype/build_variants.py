@@ -444,9 +444,9 @@ def build_dashboard(v, w='1', su='', sd='', dash='', enq='', flow='', jr=''):
     t = cut(t, 'function vOverviewFresh(){', 'function vOverview0(){', OVERVIEW_FRESH + '''function vOverview(){
   const first=(me().n||'').split(' ')[0];TS.cfg.user=first||'there';
   const FULL=TS.isFull(),PRIMARY='wl';
-  const un=OUTLETS.filter(o=>!TS.outletSet(o.id)),other=!FULL&&S.outlet==='all'&&un.length>0&&window.TS_JOURNEY!=='2';
+  const un=OUTLETS.filter(o=>!TS.outletSet(o.id)),other=!FULL&&S.outlet==='all'&&un.length>0&&(window.TS_JOURNEY!=='2'&&window.TS_JOURNEY!=='3');
   const stripe=other?`<div class="ts-stripe"><span><b>${OUTLETS.length-un.length} of ${OUTLETS.length} outlets set up</b><br><small>Choose an outlet to set up next so it can take calls.</small></span><button class="ts-btn sm" onclick="TS.chooseOutlet(OUTLETS.filter(o=>!TS.outletSet(o.id)),'pickOutlet')">Set up an outlet</button></div>`:'';
-  if(S.outlet==='all'&&!FULL&&window.TS_JOURNEY!=='2'){const h=DB.subscribed?vOverview0():vOverviewFresh();return h.replace(/<div class="lbl">[^<]*<\\/div>/,()=>stripe);}
+  if(S.outlet==='all'&&!FULL&&(window.TS_JOURNEY!=='2'&&window.TS_JOURNEY!=='3')){const h=DB.subscribed?vOverview0():vOverviewFresh();return h.replace(/<div class="lbl">[^<]*<\\/div>/,()=>stripe);}
   if((window.TS_DASH?!TS.active():TS.totals().done===0)&&!TS.allDone())return `<div class="scroll"><div class="page">${stripe}${TS.overviewTop()}</div></div>`;
   const h=DB.subscribed?vOverview0():vOverviewFresh();return h.replace(/<div class="lbl">[^<]*<\\/div>/,()=>stripe+TS.overviewTop());}
 function ovEnhance(){document.querySelectorAll('#view .ov-grid .card:not(.agent)').forEach(c=>{const h=c.querySelector('.card-h');if(!h||h.querySelector('.ov-t'))return;const k=(h.textContent||'').trim().slice(0,24);if(S.ovC&&S.ovC[k])c.classList.add('ov-c');const b=document.createElement('button');b.className='ov-t';b.setAttribute('aria-label','Collapse');b.innerHTML='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 15 6-6 6 6"/></svg>';b.onclick=e=>{e.stopPropagation();const on=c.classList.toggle('ov-c');S.ovC=S.ovC||{};S.ovC[k]=on;};h.appendChild(b);});}
@@ -470,6 +470,7 @@ function ovEnhance(){document.querySelectorAll('#view .ov-grid .card:not(.agent)
         t = must(t, "if(one&&v.set===false)return h+", "if(!window.TS_JOURNEY&&one&&v.set===false)return h+")
         t = must(t, "const more=['acc','pre','lg']", "window.ORD_P=P;const more=['acc','pre','lg']")
         if jr == '3':
+            t = must(t, "${OUTLETS.length>1?`<button class=\"odi ${S.outlet==='all'?'on':''}\" onclick=\"pickOutlet('all')\">", "${(OUTLETS.length>1||window.TS_JOURNEY==='3')?`<button class=\"odi ${S.outlet==='all'?'on':''}\" onclick=\"pickOutlet('all')\">")
             t = must(t, "const isBrand=()=>S.outlet==='all';", "const isBrand=()=>S.outlet==='all'||OUTLETS.length===1;")
             t = must(t, "${TS.outletSet(x.id)?'':'<span class=\"odd-new\">Set up</span>'}</button>`).join('')).join('')}</div>`;", "${TS.outletSet(x.id)?'':'<span class=\"odd-new\">Set up</span>'}</button>`).join('')).join('')}${window.JR&&JR.canAdd()?'<button class=\"odi odi-add\" onclick=\"JR.addOutlet()\">+ Add new outlet</button>':''}</div>`;")
         t = must(t, "function render(){\n  syncMods();", "function render(){\n  if(window.JR)JR.sync();syncMods();")

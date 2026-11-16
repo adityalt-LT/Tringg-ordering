@@ -3,7 +3,7 @@
    An outlet that delivers also needs its delivery area. Everything else already exists in the dashboard. */
 window.JR=(function(){
 const money=n=>'$'+(Math.round(n*100)%100?(+n).toFixed(2):Math.round(n));
-const nm=id=>(ON(id)||{}).short||id;
+const nm=id=>id==='all'?(OUTLETS[0]||{}).short:((ON(id)||{}).short||id);
 const SO=()=>OUTLETS.length<2;
 const jr=d=>d.jr||(d.jr={started:false,outl:{}});
 const J=()=>jr(TS.get().d);
@@ -36,7 +36,7 @@ function nextStep(){const f=S.menu&&S.menu.flow==='extracting',dr=DB.menuState==
 function toAll(){if(!SO()&&S.outlet!=='all')S.outlet='all';}
 function openSettings(){S.set='ord';S.sdlg=true;S.ch=null;S.nav=false;render();}
 function open(k){toAll();openSettings();setTimeout(()=>chOpen(k),60);}
-function area(id){id=id||needArea()[0]||ids().filter(delOn)[0];if(!id)return;S.zoneOutlet=id;S.sdlg=false;S.ch=null;render();openZed();}
+function area(id){if(id==='all')id=null;id=id||needArea()[0]||ids().filter(delOn)[0];if(!id)return;S.zoneOutlet=id;S.sdlg=false;S.ch=null;render();openZed();}
 function go(id){id=id||nextStep();mut(j=>{j.started=true;});
  if(id==='menu'){toAll();S.sdlg=false;S.ch=null;window.go('menu');return;}
  if(id==='svc'){open('pick');return;}
@@ -90,7 +90,7 @@ function page(){const one=S.outlet!=='all'&&!SO(),I_=ids(),set=I_.filter(svcSet)
  if(hasDel()){const dl=I_.filter(delOn);
   const oneA=one||SO();areaRow=row('Delivery area',oneA?(O(S.outlet).area?'Drawn. Callers outside it are offered pickup.':'Draw how far '+esc(nm(S.outlet))+' delivers.'):'Each outlet draws its own delivery area.',done(dl.every(id=>O(id).area)),oneA?(O(S.outlet).area?'Change area':'Draw area'):'',"JR.area('"+S.outlet+"')",
    oneA?'':'<div class="jr-chips">'+dl.map(id=>'<button class="jr-oc '+(O(id).area?'d':'')+'" onclick="JR.area(\''+id+'\')"><b>'+esc(nm(id))+'</b><span>'+(O(id).area?'Drawn':'Draw area')+'</span></button>').join('')+'</div>');}
- const tx=one?(DB.taxes.filter(t=>t.outs.includes(S.outlet)).map(t=>esc(t.n)+' '+(t.vt==='%'?t.v+'%':money(t.v))).join(' · ')||'No taxes or fees yet.'):(DB.taxes.length?DB.taxes.length+' tax'+(DB.taxes.length>1?'es':'')+' and fees added. Some can be for only some outlets.':taxDone()?'No tax is added to orders.':'No taxes or fees yet. Add them for all outlets, or only some.');
+ const tx=one?(DB.taxes.filter(t=>t.outs.includes(S.outlet)).map(t=>esc(t.n)+' '+(t.vt==='%'?t.v+'%':money(t.v))).join(' · ')||'No taxes or fees yet.'):(DB.taxes.length?DB.taxes.length+' tax'+(DB.taxes.length>1?'es':'')+' and fees added. Some can be for only some outlets.':taxDone()?'No tax is added to orders.':(SO()?'No taxes or fees yet. Add the tax your restaurant charges.':'No taxes or fees yet. Add them for all outlets, or only some.'));
  const pky=DB.payPick,pay=payDone()?((pky.call&&pky.store?'Customers can pay by card or cash.':pky.call?'Customers pay by card, using a text link.':'Customers pay with cash.')+(DB.stripe==='active'?' Stripe is connected.':'')):'Choose how customers pay. This is the same for all outlets.';
  const A=S.outlet==='all',aaT=A?'Choose if orders are accepted automatically at your outlets.':(DB.autoAccept[S.outlet]?'Orders are accepted automatically.':'You accept each order yourself.');
  const preT=A?'Choose if customers can order for later at your outlets.':((DB.pre[S.outlet]||{}).on?'Customers can order for later.':'Pre-orders are off.');
@@ -127,7 +127,7 @@ function addCreate(){const n=(document.getElementById('jra-n').value||'').trim()
  S.outlet=id;S.dd=false;S.route='orders';render();toast(sp.short+' added.'+(inherited?' It inherits the setup from '+nm(src)+'.':''));}
 function init(){
  TS.beforeOutlet=()=>{};
- if(H4()&&!SO())S.outlet='all';
+ if(H4()&&!SO()||H5())S.outlet='all';
  Object.keys(DB.svc).forEach(k=>{DB.svc[k]={set:false,del:false,pick:false,prep:null,rad:null};DB.deliveryMode[k]=null;});DB.taxes=[];DB.taxOk=false;DB.payOk=false;
  const o0=VIEWS.orders;VIEWS.orders=()=>DB.mods.ord?ordersPage(o0):o0();
  window.ordRows=()=>page();
