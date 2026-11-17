@@ -757,7 +757,7 @@ const setupSteps=()=>[
  {k:'menu',t:'Add your menu',s:'Import from Google, your POS, your website or a delivery app, or build it here.',done:DB.menuState==='live',go:()=>go('menu')},
  {k:'pay',t:'Set up payments',s:'Pickup can be paid on the call or at pickup; delivery is always paid on the call, which needs Stripe.',done:DB.stripe==='active'||(DB.payAfter&&!DB.payBefore),go:()=>goSet('ord-pay')},
  {k:'svc',t:'Delivery & pickup',s:'Draw delivery zones, and set fees and pickup prep times for each outlet.',done:DB.serviceSet,go:()=>goSet('ord-delivery')},
- {k:'cap',t:'Turn on Ordering for Allie',s:'Agents → Edit → Capabilities. Allie starts taking orders on her next call.',done:DB.orderingOn,go:()=>openAgent('tools')}];
+ {k:'cap',t:'Turn on Ordering for Allie',s:'Agents → Edit → Capabilities. Allie starts taking orders on her next call.',done:DB.orderingOn,go:()=>openAgent()}];
 
 /* ── shell ── */
 const NAV=[['overview','Overview','grid'],['reservations','Reservations','res'],['orders','Orders','bag'],['calls','Calls','phone'],['menu','Menu','menu'],['agents','Agents','agent']];
@@ -1523,7 +1523,7 @@ const SET={
  team:()=>sH('Users & roles','Who can see and act on orders.','all')+`<div class="scard"><div class="tblw"><table class="tbl"><thead><tr><th>Permission</th><th>Owner</th><th>Manager</th><th>Staff</th></tr></thead><tbody>${[['View orders, reservations and calls',1,1,1],['Accept, decline and advance orders',1,1,1],['Turn menu items on or off',1,1,1],['Delivery zones and prep times',1,1,0],['Payments, payouts and Stripe',1,0,0],['Billing and team',1,0,0]].map(r=>`<tr><td>${r[0]}</td>${[1,2,3].map(i=>`<td>${r[i]?'<span style="color:var(--sage-700)">'+I.check+'</span>':'<span class="muted">—</span>'}</td>`).join('')}</tr>`).join('')}</tbody></table></div></div>`,
  billing:()=>sH('Billing','One subscription covers everything.','all')+`<div class="scard"><div class="scard-h"><div><div class="eyebrow">Tringg subscription</div><div class="h1" style="margin-top:4px">$350 <span class="small muted" style="font-weight:400">/ outlet / month</span></div></div><div class="r">${pill('p-green','Active')}</div></div>
    <div class="dchips">${['Enquiries','Reservations','Ordering'].map(x=>`<span class="tag" style="background:var(--mint-50);color:var(--mint-700);border-color:transparent">✓ ${x}</span>`).join('')}</div>
-   <div class="small muted">Nothing is sold per module. Don’t want reservations or ordering? Switch that capability off for the agent in <button class="u-link" onclick="openAgent('tools')">Agents › Tools</button>.</div></div>`
+   <div class="small muted">Nothing is sold per module. Don’t want reservations or ordering? Switch that capability off for the agent in <button class="u-link" onclick="openAgent()">Agents</button>.</div></div>`
 };
 function fbChk(){const d=s=>s.replace(/\D/g,'');$('fberr').textContent=d($('rn1').value)&&d($('rn1').value)===d($('fb1').value)?'That’s your restaurant number. Use a different line.':'';}
 
@@ -1627,7 +1627,6 @@ function doRefund(){const m=S.modal,o=DB.orders.find(x=>x.id===m.id);
 
 /* ════════ AGENTS · list + detail, Advanced settings tabs (Guardrails & Transfers) ════════ */
 const ACT={now:'Transfer now',tmsg:'Transfer; message if unanswered',msg:'Take a message only',cont:'Answer and continue'};
-const AG_TABS=[['tools','Tools'],['behav','Behaviour'],['gt','Guardrails & Transfers'],['nums','Numbers']];
 const AG_SUB=[['ag-rules','Transfer rules'],['ag-guard','Guardrails']];
 const SVC=[['res','Reservations'],['ord','Ordering'],['ev','Events']];
 const svcOn=k=>k==='gen'||k==='cus'||!!DB.caps[k];
@@ -1665,7 +1664,7 @@ function initScrollSpy(sc,ids,cb){const f=()=>{let cur=ids[0];const top=sc.getBo
 function agBind(){const sc=$('ag-scroll');if(!sc)return;
   if(S.agent.st!=null)sc.scrollTop=S.agent.st;
   const d=$('ag-detail');d.oninput=d.onchange=()=>{$('ag-save').disabled=false;};
-  if(S.agent.tab==='gt')initScrollSpy(sc,AG_SUB.map(x=>x[0]),cur=>document.querySelectorAll('[data-sec]').forEach(b=>b.classList.toggle('on',b.dataset.sec===cur)));
+  initScrollSpy(sc,AG_SUB.map(x=>x[0]),cur=>document.querySelectorAll('[data-sec]').forEach(b=>b.classList.toggle('on',b.dataset.sec===cur)));
 }
 function agNum(id,v){gtRule(id).n=Math.max(1,+v||1);}
 function agTog(id){const r=gtRule(id);r.on=!r.on;agRefresh();}
@@ -1694,19 +1693,14 @@ function tGT(){
    ${GT.gl.map((g,i)=>`<div class="cap-row" style="align-items:flex-end"><div class="tx"><div class="frow"><div class="field"><label class="xs muted" for="gn${i}">Never</label><input class="inp" id="gn${i}" style="max-width:none;height:40px" value="${esc(g.never)}" oninput="GT.gl[${i}].never=this.value"></div><div class="field"><label class="xs muted" for="gs${i}">Say instead</label><input class="inp" id="gs${i}" style="max-width:none;height:40px" value="${esc(g.say)}" oninput="GT.gl[${i}].say=this.value"></div></div></div><button class="btn btn-soft btn-sm" style="margin-bottom:3px" aria-label="Delete guardrail" onclick="GT.gl.splice(${i},1);agRefresh()">${I.x}</button></div>`).join('')}
    <button class="btn btn-soft" style="align-self:flex-start" onclick="GT.gl.push({never:'',say:''});agRefresh()">${I.plus} Add guardrail</button>`)}
 </div>`;}
-function tTools(){const noMenu=DB.menuState!=='live';
-  const row=(t,s,on,fn,dis)=>`<div class="cap-row"><div class="tx"><div class="t">${t}</div><div class="s">${s}</div></div><button class="tog ${on?'on':''}" ${dis?'disabled':''} aria-label="${t}" onclick="${fn||''}"></button></div>`;
-  return `<div style="display:flex;flex-direction:column;gap:10px;padding-top:16px">${row('Enquiries','Hours, location, menu, FAQ',true,'',true)}${row('Reservations','Book, change, cancel',DB.caps.res,'DB.caps.res=!DB.caps.res;agRefresh()')}${row('Ordering',noMenu?'Add a menu first':'Pickup and delivery',DB.caps.ord,"DB.caps.ord=!DB.caps.ord;DB.orderingOn=DB.caps.ord;agRefresh()",noMenu)}${row('Events','Private event enquiries',DB.caps.ev,'DB.caps.ev=!DB.caps.ev;agRefresh()')}</div>`;}
-const tBehav=()=>`<div style="display:flex;flex-direction:column;gap:16px;padding-top:16px"><div class="field"><label class="fl" for="gr">Greeting</label><textarea class="inp" id="gr">Thanks for calling ROSSA {outlet}, this is Allie. How can I help?</textarea></div><div class="field"><span class="fl">Languages</span><div class="dchips"><button class="on" onclick="this.classList.toggle('on')">English</button><button class="on" onclick="this.classList.toggle('on')">Spanish</button></div></div></div>`;
-const tNums=()=>`<div class="tblw" style="padding-top:12px"><table class="tbl"><thead><tr><th>Outlet</th><th>Tringg number</th></tr></thead><tbody>${OUTLETS.map(o=>`<tr><td style="font-weight:600">${o.name}</td><td class="num mono">${o.num}</td></tr>`).join('')}</tbody></table></div>`;
 function vAgents(){const caps=[['Enquiries',true],['Reservations',DB.caps.res],['Ordering',DB.caps.ord],['Events',DB.caps.ev]].filter(c=>c[1]).map(c=>c[0]==='Reservations'?'Reservation':c[0]).join(' · ');
-  const body={tools:tTools,behav:tBehav,gt:tGT,nums:tNums}[S.agent.tab]();
+  const body=tGT();
   return `<div class="work" style="flex-direction:row;align-items:stretch"><div class="card" style="width:380px;flex-shrink:0;padding:20px;display:flex;flex-direction:column;gap:14px"><div class="lhead" style="margin:0"><div class="h3">Agents <span class="muted">1</span></div></div>
    <button class="it" style="border:1.5px solid var(--ink);background:var(--panel)"><span class="av">A</span><span class="it-m" style="flex:1"><span class="it-n">${BRAND.agent} ${pill('p-green','Live')}</span><span class="small muted" style="display:block">${caps} · ${OUTLETS.length} outlets</span></span></button></div>
    <div class="scroll" id="ag-scroll" style="display:flex;flex-direction:column;gap:20px" ><div id="ag-detail" style="display:flex;flex-direction:column;gap:20px">
    <div class="card card-p" style="display:flex;flex-direction:column;gap:16px"><div class="agent-h"><div class="agent-av dust">A</div><div><div class="agent-n" style="display:flex;gap:10px;align-items:center">${BRAND.agent} ${pill('p-green','Live — taking calls')}</div><div class="agent-s">${OUTLETS.length} outlets · ${DB.k==='live'?142:DB.calls.length} calls today</div></div></div>
     <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn btn-line" onclick="toast('Playing a sample call')">${I.play} Listen</button><button class="btn btn-line" onclick="toast('Manage outlets')">Manage outlets</button><button class="btn btn-red" onclick="toast('Agent paused')">Pause</button><button class="btn btn-dark" id="ag-save" disabled onclick="this.disabled=true;toast('Agent saved')">Save changes</button></div></div>
-   <div class="card card-p"><div class="eyebrow">Advanced settings</div><div class="utabs" style="margin-top:12px">${AG_TABS.map(t=>`<button class="utab ${S.agent.tab===t[0]?'on':''}" onclick="S.agent.tab='${t[0]}';S.agent.st=0;render()">${t[1]}</button>`).join('')}</div>${body}</div></div></div></div>`;}
+   <div class="card card-p"><div class="h2">Guardrails & Transfers</div>${body}</div></div></div></div>`;}
 
 const VIEWS={overview:vOverview,reservations:vReservations,orders:vOrders,calls:vCalls,menu:vMenu,agents:vAgents,settings:vSettings};
 /* ── module slice: Overview only ── */
