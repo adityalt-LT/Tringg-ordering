@@ -758,7 +758,7 @@ const EV_FU=['Not contacted','Contacted','Closed'];
 const EV_FUCLS={'Not contacted':'p-amber','Contacted':'p-mint','Closed':'p-grey'};
 const evAvail=(on,from,to,x)=>Object.fromEntries(DAYS.map(d=>[d,Object.assign({on:on.includes(d),from,to},(x||{})[d]||{})]));
 const evPr0=()=>({model:'none',day:DAYS.map(d=>({d,amt:''})),tier:[],pp:[],fee:{room:'',fb:''}});
-function mkEvSpaces(){
+function mkEvSpaces(first){
   const K={wp:1,rn:1.2,lp:.9},r50=n=>Math.round(n/50)*50,out=[];
   ['wp','rn','lp'].forEach(o=>{const k=K[o],sh=ON(o).short;
     const room=evPr0();room.model='day';room.day=DAYS.map(d=>({d,amt:r50(({Mon:1200,Tue:1200,Wed:1200,Thu:1200,Fri:2500,Sat:3200,Sun:1800})[d]*k)}));
@@ -778,14 +778,14 @@ function mkEvSpaces(){
       minG:60,maxG:140,stand:180,avail:evAvail(['Sun','Mon','Tue'],'4:00 PM','11:00 PM'),durMin:3,durMax:5,pricing:buy,
       dep:{type:'pct',val:50,refund:false},menu:{from:40,entree:2,app:3,dessert:1,drink:3},rules:rules('Outside cakes are welcome at no fee for buyouts.','No fee')});
   });
-  return out;}
+  return out.filter(s=>first?s.id==='sp-wp-1':['sp-wp-1','sp-wp-2','sp-wp-3','sp-rn-2'].includes(s.id));}
 const EV_SET0=()=>({large:9,event:30,maxParty:150,
   say:{minSpend:true,deposit:false,capacity:true,tours:true},
   q:[{k:'name',l:'Name',req:true,lock:true},{k:'phone',l:'Phone number',req:true,lock:true},{k:'email',l:'Email',req:true},{k:'type',l:'Event type',req:true},{k:'date',l:'Preferred date',req:true},{k:'time',l:'Start time',req:true},{k:'guests',l:'Number of guests',req:true},{k:'space',l:'Preferred space',req:false},{k:'budget',l:'Budget',req:false},{k:'notes',l:'Notes',req:false}],
   cq:[{t:'Does anyone in your group have dietary or accessibility needs?',req:false}],
   notify:{wp:{name:'Maria Santos',phone:'+1 (312) 555-0141',email:'maria@rossapizza.com',via:'sms'},rn:{name:'Daniel Okafor',phone:'+1 (312) 555-0155',email:'daniel@rossapizza.com',via:'both'},lp:{name:'Priya Shah',phone:'+1 (312) 555-0166',email:'priya@rossapizza.com',via:'email'}},
   after:{day:'Next business day',time:'10:00 AM'}});
-const EV={state:'day1',mode:null,view:'spaces',sel:null,w:null,delArm:false,tour:null,paused:false,spaces:[],set:EV_SET0(),sw:null};
+const EV={demo:false,state:'day1',mode:null,view:'spaces',sel:null,w:null,delArm:false,tour:null,paused:false,spaces:[],set:EV_SET0(),sw:null};
 const EVFIRST={wp:'Maria',rn:'Daniel',lp:'Priya'};
 function mkEvCalls(){
   const c=(id,name,outlet,min,label,o)=>Object.assign({id,name,ini:name.split(' ').map(x=>x[0]).join('').slice(0,2),av:['','mint','cream','coral'][id.length%4],outlet,phone:'+1 (312) 555-0'+String(100+(id.charCodeAt(5)*37+id.charCodeAt(4)*11)%800),kind:'event',st:'done',min,dur:'3:'+String(10+(id.charCodeAt(5)*3)%49).padStart(2,'0'),topic:label+' · Lead captured',tags:[label,'Lead captured'],
@@ -807,7 +807,7 @@ function mkEvCalls(){
     e.notif=e.ah?'Sent to '+mgr+' ('+vt+') '+clock(x.min)+'. After hours: callback promised by Mon 09/28, '+EV.set.after.time:'Sent to '+mgr+' ('+vt+') '+clock(x.min);
     x.tr=[['ai','Thanks for calling ROSSA '+ON(x.outlet).short+', this is Allie. How can I help?'],['cl','Hi, I’m planning a '+e.etype+' for about '+e.guests+' people on '+e.date+'.'],['ai','Happy to help. I can’t confirm the date or give a final quote, but I’ll take the details and our event manager will follow up. What time are you thinking?'],['cl',e.time+'.'],['ai','Thanks. I’ve passed this to '+EVFIRST[x.outlet]+'. You’ll hear back from the team soon.']];});
   return L;}
-function evMerge(base){const out=base.slice();if(EV.state!=='live')return out;mkEvCalls().forEach(e=>{const k=out.findIndex(x=>x.min>e.min);if(k<0)out.push(e);else out.splice(k,0,e);});return out;}
+function evMerge(base){const out=base.slice();if(EV.state!=='live'||!EV.demo)return out;mkEvCalls().forEach(e=>{const k=out.findIndex(x=>x.min>e.min);if(k<0)out.push(e);else out.splice(k,0,e);});return out;}
 const callDate=c=>{if(c.min<=1230)return 'Sep 28';const n=Math.ceil((c.min-1230)/1440);return 'Sep '+(28-n);};
 
 /* ── scenarios ── */
@@ -1789,12 +1789,13 @@ function evSeed(){EV.spaces=mkEvSpaces();EV.set=EV_SET0();EV.sw=clone(EV.set);}
 function evRebuildCalls(){DB.calls=evMerge(DB.calls.filter(c=>!c.ev));S.calls.sel=null;if(EV.state!=='live'&&S.calls.tab.startsWith('e-'))S.calls.tab='all';}
 const EV_TABIDS=()=>CTABS.filter(t=>t[3]).map(t=>t[0]);
 function evStart(m){if(!canEd())return;EV.state='live';EV.mode=m;EV.paused=false;EV.sel=null;EV.w=null;EV.set=EV_SET0();EV.sw=clone(EV.set);
-  if(m==='spaces'){EV.spaces=mkEvSpaces();EV.view='spaces';EV.tour={s:0};}else{EV.spaces=[];EV.view='spaces';EV.tour={s:1};S.route='settings';S.set='ev-notify';}
+  EV.demo=false;
+  if(m==='spaces'){EV.spaces=mkEvSpaces(true);EV.view='spaces';EV.tour={s:0};}else{EV.spaces=[];EV.view='spaces';EV.tour={s:1};S.route='settings';S.set='ev-notify';}
   evRebuildCalls();render();toast(m==='spaces'?'Events is on · add your first space':'Events is on · capturing inquiries only');}
 function setEvState(k){if(k===EV.state)return;
-  if(k==='live'){EV.state='live';EV.mode='spaces';EV.spaces=mkEvSpaces();EV.set=EV_SET0();EV.sw=clone(EV.set);EV.view='spaces';}
-  else{EV.state='day1';EV.mode=null;EV.spaces=[];EV.set=EV_SET0();EV.sw=null;EV.view='spaces';EV.paused=false;}
-  EV.sel=null;EV.w=null;EV.tour=null;evRebuildCalls();go('events');toast('Events: '+(k==='live'?'Live · 9 spaces, 10 inquiry calls':'Day 1 · onboarding'));}
+  if(k==='live'){EV.state='live';EV.demo=true;EV.mode='spaces';EV.spaces=mkEvSpaces(false);EV.set=EV_SET0();EV.sw=clone(EV.set);EV.view='spaces';}
+  else{EV.state='day1';EV.demo=false;EV.mode=null;EV.spaces=[];EV.set=EV_SET0();EV.sw=null;EV.view='spaces';EV.paused=false;}
+  EV.sel=null;EV.w=null;EV.tour=null;evRebuildCalls();go('events');toast('Events: '+(k==='live'?'Live · 4 spaces, 10 inquiry calls':'Day 1 · onboarding'));}
 function setRole(r){S.role=r;EV.delArm=false;render();toast('Viewing as '+r+(r==='Staff'?' · read-only for Events':''));}
 
 /* ── shell: secondary sidebar + scroll-spy ── */
