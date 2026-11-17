@@ -42,6 +42,7 @@ button,input,select,textarea{font-family:inherit;letter-spacing:inherit}
 .odi:hover,.odi.on{background:#242424;color:#fff}
 .odi .d{width:7px;height:7px;border-radius:50%;background:#444}
 .odi.on .d{background:var(--mint-500)}
+.rail-nav .nav:not(.on){opacity:.35;pointer-events:none}
 .rail-nav{flex:1;overflow-y:auto;padding:14px 10px;display:flex;flex-direction:column;gap:4px;border-top:1px solid var(--rail-line)}
 .nav{display:flex;align-items:center;gap:14px;padding:11px 14px;border-radius:12px;color:var(--rail-tx);background:none;border:0;cursor:pointer;font-size:14.5px;font-weight:400;text-align:left;width:100%}
 .nav:hover{background:#1d1d1d;color:#fff}
@@ -455,7 +456,6 @@ body:has(.pubbar) .toast-w{bottom:calc(92px + env(safe-area-inset-bottom,0px))}
 .outlet-dd{max-height:min(60vh,420px);overflow-y:auto}
 .modal{max-height:calc(100vh - 32px);overflow-y:auto}
 
-.rail-nav .nav:not(.on){opacity:.35;pointer-events:none}
 /* overlays */
 .scrim{position:fixed;inset:0;background:rgba(17,17,17,.3);z-index:150}
 .drawer{position:fixed;top:0;right:0;bottom:0;width:480px;max-width:100%;background:var(--panel);z-index:160;display:flex;flex-direction:column;box-shadow:var(--e3);padding-top:env(safe-area-inset-top,0px)}
@@ -727,7 +727,7 @@ function loadScenario(k){
    autoAccept:Object.fromEntries(OUTLETS.map(o=>[o.id,!['lp','ls'].includes(o.id)])),orders:k==='live'?mkOrders():[],calls:mkCalls(k),res:clone(RES),
    items:clone(MENU.items),cats:clone(MENU.cats),groups:clone(MENU.groups),wins:clone(MENU.wins),taxes:clone(MENU.taxes),pending:0,snap:null,zones:Object.fromEntries(OUTLETS.map(o=>[o.id,o.isNew?[]:ZONES[o.id]?clone(ZONES[o.id]):[]])),deliveryMode:Object.fromEntries(OUTLETS.map(o=>[o.id,o.isNew?null:['wp','lp'].includes(o.id)?'zones':'radius'])),
    svc:Object.fromEntries(OUTLETS.map(o=>[o.id,o.isNew?{set:false,del:false,pick:false,prep:null,rad:null}:{set:true,del:o.id!=='oh',pick:true,prep:o.id==='oh'?12:20,rad:{mi:3,fee:3,min:15}}])),
-      caps:{enq:true,res:true,ord:k!=='off'}};
+      caps:{enq:true,res:true,ord:k!=='off',ev:true}};
 }
 /* delivery zones (polygon coordinates in map units, map is 600×380, outlet at its centre) */
 const ZONES={
@@ -740,7 +740,7 @@ const ZONES={
 const S={route:'overview',outlet:'all',dd:false,nav:false,acct:false,spec:false,modal:null,
  orders:{tab:'pending',sel:null,q:'',ful:'all',pay:'all'},calls:{tab:'all',sel:null,q:''},res:{tab:'inbox',sel:'R-311'},
  menu:{tab:'items',cat:'pz',flow:null,files:[],src:null,pct:0,f:'all',q:'',sel:[],drawer:null,gsel:'g1',ao:'wp',aq:'',af:'all',cut:0,ret:false},
- set:'ord-controls',zoneOutlet:'wp',zoneSel:'A',test:null,agentEdit:false};
+ set:'ord-controls',zoneOutlet:'wp',zoneSel:'A',test:null,agent:{tab:'gt',st:null,nr:null}};
 let scen='live';try{const k=localStorage.getItem('tringg-proto-v2');if(k&&SCEN[k])scen=k;}catch(e){}
 loadScenario(scen);
 const hash=location.hash.slice(1);if(['overview','reservations','orders','calls','menu','agents','settings'].includes(hash))S.route=hash;
@@ -757,7 +757,7 @@ const setupSteps=()=>[
  {k:'menu',t:'Add your menu',s:'Import from Google, your POS, your website or a delivery app, or build it here.',done:DB.menuState==='live',go:()=>go('menu')},
  {k:'pay',t:'Set up payments',s:'Pickup can be paid on the call or at pickup; delivery is always paid on the call, which needs Stripe.',done:DB.stripe==='active'||(DB.payAfter&&!DB.payBefore),go:()=>goSet('ord-pay')},
  {k:'svc',t:'Delivery & pickup',s:'Draw delivery zones, and set fees and pickup prep times for each outlet.',done:DB.serviceSet,go:()=>goSet('ord-delivery')},
- {k:'cap',t:'Turn on Ordering for Allie',s:'Agents → Edit → Capabilities. Allie starts taking orders on her next call.',done:DB.orderingOn,go:()=>{S.agentEdit=true;go('agents');}}];
+ {k:'cap',t:'Turn on Ordering for Allie',s:'Agents → Edit → Capabilities. Allie starts taking orders on her next call.',done:DB.orderingOn,go:()=>openAgent('tools')}];
 
 /* ── shell ── */
 const NAV=[['overview','Overview','grid'],['reservations','Reservations','res'],['orders','Orders','bag'],['calls','Calls','phone'],['menu','Menu','menu'],['agents','Agents','agent']];
@@ -802,6 +802,7 @@ function render(){
   renderRail();renderTop();$('view').innerHTML=(VIEWS[S.route]||VIEWS.overview)();
   if(S.route==='orders'&&DB.orderingOn)renderOrders();
   if(S.route==='calls')renderCalls();
+  if(S.route==='agents')agBind();
   if(S.route==='settings'&&S.set==='ord-delivery')bindMap();
   renderOverlay();
 }
@@ -810,7 +811,7 @@ document.addEventListener('click',e=>{
   if(S.acct&&!e.target.closest('.acct')){S.acct=false;renderRail();}
   if(S.dd&&!e.target.closest('.outlet-btn')&&!e.target.closest('.outlet-dd')){S.dd=false;renderRail();}
 });
-document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;if(S.op){S.op=null;renderOverlay();return;}if(S.modal)S.modal=null;else if(S.spec){S.spec=false;renderTop();}else if(S.menu.drawer){closeDrawer();return;}else if(S.agentEdit)S.agentEdit=false;renderOverlay();});
+document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;if(S.op){S.op=null;renderOverlay();return;}if(S.modal)S.modal=null;else if(S.spec){S.spec=false;renderTop();}else if(S.menu.drawer){closeDrawer();return;}renderOverlay();});
 
 /* ════════ OVERVIEW ════════ */
 const SC={all:1,wp:.41,rn:.34,lp:.25};
@@ -1426,15 +1427,6 @@ function doDelete(){const m=S.modal;
   S.modal=null;renderOverlay();render();}
 
 /* ════════ AGENTS ════════ */
-function vAgents(){const caps=[['Enquiries',true],['Reservations',DB.caps.res],['Ordering',DB.caps.ord]];
-  return `<div class="scroll"><div class="page"><div class="row-h"><div><div class="eyebrow">Voice</div><div class="h1" style="margin-top:2px">Agents</div><p class="desc" style="margin-top:4px">Create and assign voice agents for each outlet. Choose what each agent handles. Pause an agent to stop AI answers; calls still forward.</p></div><div class="r"><button class="btn btn-dark" onclick="toast('New agent')">${I.plus} New Agent</button></div></div>
-  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:20px"><div class="card" style="overflow:hidden"><div class="agent"><div class="agent-h"><div class="agent-av dust">A</div><div><div class="agent-n" style="display:flex;gap:10px;align-items:center">${BRAND.agent} ${pill('p-green','Live')}</div><div class="agent-s">AI Agent · ${caps.filter(c=>c[1]).map(c=>c[0]==='Reservations'?'Reservation':c[0]).join(' · ')}</div></div></div>
-   <div class="agent-stats"><div><div class="v">${OUTLETS.length}</div><div class="l">Outlets</div></div><div><div class="v">${DB.k==='live'?142:DB.calls.length}</div><div class="l">Calls</div></div><div><div class="v">${DB.k==='live'?'81%':'67%'}</div><div class="l">Success</div></div></div>
-   <div class="sep" style="margin:18px 0"></div><div class="eyebrow" style="font-size:12px;margin-bottom:8px">Capabilities</div><div class="dchips">${caps.map(c=>`<span class="tag" style="${c[1]?'background:var(--mint-50);color:var(--mint-700);border-color:transparent':'color:var(--ink-30)'}">${c[1]?'✓':'—'} ${c[0]}</span>`).join('')}</div>
-   ${!DB.caps.ord?`<div class="banner b-grey" style="margin-top:14px;font-size:13px">${I.bag}<div>Ordering is off. Turn it on in Edit once your menu and payments are ready.</div></div>`:''}
-   <div class="eyebrow" style="font-size:12px;margin:16px 0 8px">Assigned outlets</div><div class="dchips">${OUTLETS.map(o=>`<span class="tag">${o.name}</span>`).join('')}</div></div>
-   <div style="display:flex;gap:10px;padding:16px 24px;border-top:1px solid var(--border);flex-wrap:wrap"><button class="btn btn-soft" onclick="S.agentEdit=true;renderOverlay()">${I.gear} Edit</button><button class="btn btn-soft" onclick="toast('Manage outlets')">Manage outlets</button><button class="btn btn-soft" onclick="toast('Playing a sample call')">${I.play} Listen</button></div></div></div></div></div>`;}
-
 /* ════════ SETTINGS ════════
    All-outlets view holds the ordering settings (with per-outlet rows) so owners don't hop between outlets.
    Single-outlet view keeps what is truly per location: phone, basic info, hours, FAQ. */
@@ -1531,7 +1523,7 @@ const SET={
  team:()=>sH('Users & roles','Who can see and act on orders.','all')+`<div class="scard"><div class="tblw"><table class="tbl"><thead><tr><th>Permission</th><th>Owner</th><th>Manager</th><th>Staff</th></tr></thead><tbody>${[['View orders, reservations and calls',1,1,1],['Accept, decline and advance orders',1,1,1],['Turn menu items on or off',1,1,1],['Delivery zones and prep times',1,1,0],['Payments, payouts and Stripe',1,0,0],['Billing and team',1,0,0]].map(r=>`<tr><td>${r[0]}</td>${[1,2,3].map(i=>`<td>${r[i]?'<span style="color:var(--sage-700)">'+I.check+'</span>':'<span class="muted">—</span>'}</td>`).join('')}</tr>`).join('')}</tbody></table></div></div>`,
  billing:()=>sH('Billing','One subscription covers everything.','all')+`<div class="scard"><div class="scard-h"><div><div class="eyebrow">Tringg subscription</div><div class="h1" style="margin-top:4px">$350 <span class="small muted" style="font-weight:400">/ outlet / month</span></div></div><div class="r">${pill('p-green','Active')}</div></div>
    <div class="dchips">${['Enquiries','Reservations','Ordering'].map(x=>`<span class="tag" style="background:var(--mint-50);color:var(--mint-700);border-color:transparent">✓ ${x}</span>`).join('')}</div>
-   <div class="small muted">Nothing is sold per module. Don’t want reservations or ordering? Switch that capability off for the agent in <button class="u-link" onclick="S.agentEdit=true;go('agents')">Agents › Edit</button>.</div></div>`
+   <div class="small muted">Nothing is sold per module. Don’t want reservations or ordering? Switch that capability off for the agent in <button class="u-link" onclick="openAgent('tools')">Agents › Tools</button>.</div></div>`
 };
 function fbChk(){const d=s=>s.replace(/\D/g,'');$('fberr').textContent=d($('rn1').value)&&d($('rn1').value)===d($('fb1').value)?'That’s your restaurant number. Use a different line.':'';}
 
@@ -1612,17 +1604,6 @@ function renderOverlay(){const _db=document.querySelector('#overlay .drawer-b'),
    ${sp[2]?`<div class="vs"><div class="h"></div><div class="h">Maple</div><div class="h">Tringg</div>${sp[2].map(r=>`<div style="font-weight:600">${r[0]}</div><div>${r[1]}</div><div>${r[2]}</div>`).join('')}</div>`:''}
    ${sp[1].map(i=>`<div class="spec"><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">${pill(STAG[i[0]][0],STAG[i[0]][1])}<b style="font-size:14px;font-weight:600">${i[1]}</b></div><p>${i[2]}</p></div>`).join('')}
    <div class="xs muted">Maple details from docs.maple.inc (search snippets) and press releases, Sep 2026.</div></div></aside>`;}
-  if(S.agentEdit){const noMenu=DB.menuState!=='live';h+=`<div class="scrim" onclick="S.agentEdit=false;renderOverlay()"></div><aside class="drawer" aria-label="Edit agent"><div class="drawer-h"><div><div class="eyebrow">Edit agent</div><div class="h2" style="margin-top:4px">${BRAND.agent}</div></div><button class="x" aria-label="Close" onclick="S.agentEdit=false;renderOverlay()">${I.x}</button></div><div class="drawer-b">
-   <div class="fl">Capabilities</div>
-   <div class="cap-row"><div class="tx"><div class="t">Enquiries</div><div class="s">Hours, location, menu questions, FAQ. Always on.</div></div><button class="tog on" disabled aria-label="Enquiries"></button></div>
-   <div class="cap-row"><div class="tx"><div class="t">Reservations</div><div class="s">Books, changes and cancels tables.</div></div><button class="tog ${DB.caps.res?'on':''}" aria-label="Reservations" onclick="DB.caps.res=!DB.caps.res;render()"></button></div>
-   <div class="cap-row"><div class="tx"><div class="t">Ordering</div><div class="s">${noMenu?'Add a menu first. Allie can’t sell without one.':'Takes pickup and delivery orders, and sends the payment link if the caller pays on the call.'}</div></div><button class="tog ${DB.caps.ord?'on':''}" ${noMenu?'disabled':''} aria-label="Ordering" onclick="DB.caps.ord=!DB.caps.ord;DB.orderingOn=DB.caps.ord;render();toast(DB.caps.ord?'Ordering on · Allie takes orders from her next call':'Ordering off')"></button></div>
-   ${noMenu?`<button class="btn btn-line btn-sm" style="align-self:flex-start" onclick="S.agentEdit=false;go('menu')">Add menu</button>`:''}
-   <div class="sep"></div><div class="field"><label class="fl" for="vc">Voice</label><select class="inp" id="vc"><option>Allie · warm, US</option><option>Marco</option><option>June</option></select></div>
-   <div class="field"><label class="fl" for="gr">Greeting</label><textarea class="inp" id="gr">Thanks for calling ROSSA {outlet}, this is Allie. How can I help?</textarea></div>
-   <div class="field"><span class="fl">Languages</span><div class="dchips"><button class="on">English</button><button class="on">Spanish</button><button>Mandarin</button></div></div>
-   ${DB.caps.ord?`<div class="sep"></div><div class="fl">When taking orders</div>${[['Read the whole order back','Items, choices and total. Always on.',true,true],['Confirm the mobile number','Needed for the payment link.',true],['Offer one suggestion','From “Suggest with” in Menu.',true],['Explain that accepted orders are final','So callers know changes must happen before acceptance.',true,true]].map(r=>`<div class="tg"><div class="tx"><div class="small" style="font-weight:600">${r[0]}</div><div class="xs muted">${r[1]}</div></div><button class="tog ${r[2]?'on':''}" ${r[3]?'disabled':''} aria-label="${r[0]}" onclick="this.classList.toggle('on')"></button></div>`).join('')}`:''}
-   </div><div class="drawer-f"><button class="btn btn-ghost" onclick="S.agentEdit=false;renderOverlay()">Cancel</button><button class="btn btn-dark" onclick="S.agentEdit=false;render();toast('Agent saved')">Save</button></div></aside>`;}
   h+=menuOverlay();
   if(S.modal){const m=S.modal;
    if(m.t==='decline'){const o=DB.orders.find(x=>x.id===m.id);h+=`<div class="modal-ov" onclick="if(event.target===this){S.modal=null;renderOverlay()}"><div class="modal" role="dialog" aria-modal="true"><div class="t">Decline ${o.id}?</div><div class="b">It’s a pay-at-pickup order, so nothing was paid and there’s nothing to refund. Allie tells the caller if they call back.</div>
@@ -1643,6 +1624,108 @@ function doRefund(){const m=S.modal,o=DB.orders.find(x=>x.id===m.id);
   if(m.mode==='full'){const a=totT(o)-(o.refd||0);o.state='CANCELLED';o.reason=m.r;o.payState='refunded';logEv(o,'CANCELLED','Staff · '+m.r.toLowerCase()+' · refunded');o.pevt.push(['Refunded '+money(a)+' in full','Staff · '+m.r.toLowerCase()+' · '+realClock()]);toast(o.id+' cancelled · '+money(a)+' refunded');}
   else{const a=m.sel.reduce((t,k)=>t+o.items[k].p*o.items[k].q*1.0875,0),names=m.sel.map(k=>o.items[k].q+'× '+o.items[k].n).join(', ');m.sel.forEach(k=>o.items[k].ref=true);o.refd=(o.refd||0)+a;o.pevt.push(['Refunded '+money(a)+' · '+names,'Staff · '+m.r.toLowerCase()+' · '+realClock()]);toast(money(a)+' refunded on '+o.id);}
   S.modal=null;renderOverlay();renderOrders();}
+
+/* ════════ AGENTS · list + detail, Advanced settings tabs (Guardrails & Transfers) ════════ */
+const ACT={now:'Transfer now',tmsg:'Transfer; message if unanswered',msg:'Take a message only',cont:'Answer and continue'};
+const AG_TABS=[['tools','Tools'],['behav','Behaviour'],['gt','Guardrails & Transfers'],['nums','Numbers']];
+const AG_SUB=[['ag-dest','Destinations'],['ag-rules','Rules'],['ag-guard','Guardrails'],['ag-test','Test it']];
+const SVC=[['res','Reservations'],['ord','Ordering'],['ev','Events']];
+const svcOn=k=>k==='gen'||k==='cus'||!!DB.caps[k];
+const GRP=[['gen','General'],['res','Reservations'],['ord','Ordering'],['ev','Events'],['cus','Custom']];
+const LOCKED=[{id:'l-human',name:'Caller asks for a person or manager'},{id:'l-emerg',name:'Emergency or safety issue'}];
+const GLOCK=['Never claims to be human; answers honestly if asked','Never takes card numbers or payment details by voice','Never guarantees a dish is allergen-free or free from cross-contact','Never gives medical or legal advice','Never shares other guests’ or staff members’ personal details','Never invents prices, menu items, availability or policies'];
+const GT={
+ nums:{wp:'(312) 555-0101',rn:'(312) 555-0153',lp:'(312) 555-0164',lk:'(312) 555-0172',wl:'(312) 555-0179',ls:'(773) 555-0183',hp:'(773) 555-0191',ev:'(847) 555-0113',op:'(708) 555-0125',nv:'(630) 555-0132',sb:'(847) 555-0146',oh:'(773) 555-0159',wh:''},
+ rings:4,then:'msg',num2:'',ah:'msg',cb:'9:00 AM',say:'One moment, I’ll connect you with someone from the team.',noans:'Sorry, no one is free right now. I can take a message and the team will call you back.',sms:true,
+ rules:[
+  {id:'g-conf',g:'gen',t:'Agent can’t understand after {n} tries',n:3,on:true,act:'tmsg'},
+  {id:'g-comp',g:'gen',t:'Complaint or upset caller',on:true,act:'now'},
+  {id:'g-press',g:'gen',t:'Press, legal or health inspector',on:true,act:'now'},
+  {id:'g-vend',g:'gen',t:'Vendor, sales or job applicant',on:true,act:'msg'},
+  {id:'g-unk',g:'gen',t:'Caller asks something the agent can’t answer from Knowledge',on:true,act:'tmsg'},
+  {id:'r-chg',g:'res',t:'Change or cancel an existing booking',on:true,act:'tmsg'},
+  {id:'r-big',g:'res',t:'Party larger than {n}',n:8,on:true,act:'tmsg'},
+  {id:'r-vip',g:'res',t:'VIP or regular guest requests a person',on:true,act:'now'},
+  {id:'o-wrong',g:'ord',t:'Missing, wrong or late order',on:true,act:'tmsg'},
+  {id:'o-ref',g:'ord',t:'Refund or payment problem',on:true,act:'now'},
+  {id:'o-big',g:'ord',t:'Order above ${n}',n:150,on:true,act:'tmsg'},
+  {id:'e-chg',g:'ev',t:'Change, reschedule or cancel a booked event',on:true,act:'tmsg'},
+  {id:'e-dep',g:'ev',t:'Deposit or refund question or dispute',on:true,act:'now'},
+  {id:'e-disc',g:'ev',t:'Asks for a discount or to waive the minimum spend',on:true,act:'tmsg'},
+  {id:'e-cap',g:'ev',t:'Group outside every event space’s capacity',on:true,act:'tmsg'},
+  {id:'e-now',g:'ev',t:'Caller insists on paying or confirming now',on:true,act:'now'}],
+ gl:[{never:'Offer discounts or free items',say:'Our manager can help with that.'},{never:'Give out the owner’s personal number',say:'I can take a message for them.'},{never:'Promise a specific table or seat',say:'I’ll add your request to the booking.'}]};
+const PHR=[['Can I speak to the manager?',['l-human']],['My order never arrived.',['o-wrong']],['I want to cancel my party on the 13th.',['e-chg','r-chg']],['I think I’m having a reaction to the food.',['l-emerg']]];
+const rname=r=>r.t.replace('{n}',r.n);
+const gtRule=id=>GT.rules.find(r=>r.id===id);
+const gtOutlets=()=>S.outlet==='all'?OUTLETS:[ON(S.outlet)];
+function openAgent(tab){S.agent.tab=tab||'gt';S.agent.st=null;S.nav=false;S.acct=false;S.route='agents';try{history.replaceState(null,'','#agents');}catch(e){}render();}
+function agRefresh(){const sc=$('ag-scroll');S.agent.st=sc?sc.scrollTop:null;render();$('ag-save')&&($('ag-save').disabled=false);}
+function agScrollTo(id){const sc=$('ag-scroll'),e=$(id);if(sc&&e)sc.scrollTo({top:e.getBoundingClientRect().top-sc.getBoundingClientRect().top+sc.scrollTop-70,behavior:'smooth'});}
+function initScrollSpy(sc,ids,cb){const f=()=>{let cur=ids[0];const top=sc.getBoundingClientRect().top;ids.forEach(id=>{const e=$(id);if(e&&e.getBoundingClientRect().top-top<=140)cur=id;});if(sc.scrollTop+sc.clientHeight>=sc.scrollHeight-4)cur=ids[ids.length-1];cb(cur);};sc.onscroll=f;f();}
+function agBind(){const sc=$('ag-scroll');if(!sc)return;
+  if(S.agent.st!=null)sc.scrollTop=S.agent.st;
+  const d=$('ag-detail');d.oninput=d.onchange=()=>{$('ag-save').disabled=false;};
+  if(S.agent.tab==='gt')initScrollSpy(sc,AG_SUB.map(x=>x[0]),cur=>document.querySelectorAll('[data-sec]').forEach(b=>b.classList.toggle('on',b.dataset.sec===cur)));
+  agTest();}
+function agNum(id,v){gtRule(id).n=Math.max(1,+v||1);agTest();}
+function agTog(id){const r=gtRule(id);r.on=!r.on;agRefresh();}
+function agAct(id,v){gtRule(id).act=v;agRefresh();}
+function agDel(id){GT.rules=GT.rules.filter(r=>r.id!==id);agRefresh();}
+function agNumber(id,v){GT.nums[id]=v;const d=s=>s.replace(/\D/g,''),el=$('nerr-'+id);if(el)el.textContent=d(v)&&d(v)===d(ON(id).num)?'That’s the Tringg number':'';agTest();}
+function agAddRule(){const n=S.agent.nr;if(!n.d.trim()){toast('Describe the caller');return;}GT.rules.push({id:'c-'+Date.now(),g:'cus',t:'When the caller '+n.d.trim().replace(/^(when )?(the )?caller\s*/i,''),on:true,act:n.act,svc:SVC.filter(s=>n.svc[s[0]]).map(s=>s[1])});S.agent.nr=null;agRefresh();}
+const actSel=(val,fn)=>`<select class="inp" style="max-width:270px;height:38px;font-size:13px" aria-label="Action" onchange="${fn}(this.value)">${Object.keys(ACT).map(k=>`<option value="${k}" ${val===k?'selected':''}>${ACT[k]}</option>`).join('')}</select>`;
+function ruleRow(r){const p=r.t.split('{n}'),num=r.n!=null?`<input class="inp sm" type="number" min="1" value="${r.n}" aria-label="Number" style="width:76px;height:32px;display:inline-block;margin:0 6px;padding:0 8px" oninput="agNum('${r.id}',this.value)">`:'';
+  return `<div class="cap-row" style="flex-wrap:wrap"><button class="tog ${r.on?'on':''}" aria-label="${esc(rname(r))}" aria-pressed="${r.on}" onclick="agTog('${r.id}')"></button><div class="tx" style="min-width:220px"><div class="t" style="font-size:14px;font-weight:500;${r.on?'':'color:var(--ink-50)'}">${r.n!=null?esc(p[0])+num+esc(p[1]):esc(r.t)}</div>${r.svc?`<div class="dchips" style="margin-top:6px">${r.svc.map(s=>`<span class="tag">${s}</span>`).join('')}</div>`:''}</div>${actSel(r.act,`agAct.bind(null,'${r.id}')`)}${r.g==='cus'?`<button class="btn btn-soft btn-sm" aria-label="Delete rule" onclick="agDel('${r.id}')">${I.x}</button>`:''}</div>`;}
+function agRules(){
+  let h=`<div class="eyebrow">Always on · ${LOCKED.length} rules</div>`+LOCKED.map(l=>`<div class="cap-row"><span style="color:var(--ink-50);display:flex">${I.lock}</span><div class="tx"><div class="t" style="font-size:14px;font-weight:500">${l.name}</div></div>${pill('p-dust','Transfer now')}${pill('p-grey','Set by Tringg')}</div>`).join('');
+  GRP.forEach(([k,n])=>{const rs=GT.rules.filter(r=>r.g===k);if(k==='cus'&&!rs.length)return;
+    h+=`<div class="eyebrow" style="margin-top:8px">${n} · ${rs.length} rule${rs.length===1?'':'s'}</div>`+(svcOn(k)?rs.map(ruleRow).join(''):`<div class="fh">Turn on ${n} to see its rules.</div>`);});
+  const nr=S.agent.nr;
+  return h+(nr?`<div class="pgcard"><div class="field"><label class="fl" for="nr-d">When the caller…</label><input class="inp" id="nr-d" style="max-width:none" value="${esc(nr.d)}" oninput="S.agent.nr.d=this.value"></div>
+   <div class="frow"><div class="field"><span class="fl">Action</span>${actSel(nr.act,'agNewAct')}</div><div class="field"><span class="fl">Applies to</span><div class="dchips">${SVC.map(s=>`<button class="${nr.svc[s[0]]?'on':''}" onclick="S.agent.nr.svc['${s[0]}']=!S.agent.nr.svc['${s[0]}'];agRefresh()">${s[1]}</button>`).join('')}</div></div></div>
+   <div style="display:flex;gap:10px;justify-content:flex-end"><button class="btn btn-ghost" onclick="S.agent.nr=null;agRefresh()">Cancel</button><button class="btn btn-dark" onclick="agAddRule()">Add rule</button></div></div>`
+   :`<button class="btn btn-soft" style="align-self:flex-start" onclick="S.agent.nr={d:'',act:'tmsg',svc:{res:true,ord:true,ev:true}};agRefresh()">${I.plus} Add custom rule</button>`);}
+function agNewAct(v){S.agent.nr.act=v;}
+function agFind(ids){for(const id of ids){const l=LOCKED.find(x=>x.id===id);if(l)return{name:l.name,act:'now'};const r=gtRule(id);if(r&&r.on&&svcOn(r.g))return{name:rname(r),act:r.act};}
+  const u=gtRule('g-unk');return u&&u.on?{name:rname(u),act:u.act}:null;}
+function agDo(res){if(!res)return 'No rule fires. Allie keeps helping.';
+  if(res.act==='cont')return 'Keeps helping. No transfer.';if(res.act==='msg')return 'Takes a message and texts the manager.';
+  const o=gtOutlets()[0],num=GT.nums[o.id]||'no number set',thn=GT.then==='vm'?'voicemail':GT.then==='second'?'tries '+(GT.num2||'second number'):'takes a message';
+  return `Rings ${num} (${o.short}). No answer after ${GT.rings} rings: ${res.act==='tmsg'?'takes a message':thn}.`;}
+function agTest(){const el=$('ag-test-body');if(!el)return;
+  el.innerHTML=PHR.map(p=>{const r=agFind(p[1]);return `<div class="cap-row" style="align-items:flex-start"><div class="tx"><div class="t" style="font-size:14px">“${esc(p[0])}”</div><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:6px">${r?`<span class="tag">${esc(r.name)}</span>`+pill(r.act==='cont'?'p-green':r.act==='msg'?'p-amber':'p-dust',ACT[r.act]):'<span class="tag">No rule fires</span>'}</div><div class="s small" style="margin-top:4px">${esc(agDo(r))}</div></div></div>`;}).join('');}
+function tGT(){
+  const rows=gtOutlets().map(o=>`<tr><td style="font-weight:600">${esc(o.name)}</td><td><input class="inp" style="height:40px;max-width:220px" aria-label="Transfer number ${esc(o.name)}" value="${esc(GT.nums[o.id]||'')}" oninput="agNumber('${o.id}',this.value)"><div class="xs" id="nerr-${o.id}" style="color:var(--coral-700)"></div></td></tr>`).join('');
+  const sc=(id,t,inner)=>`<div id="${id}" style="display:flex;flex-direction:column;gap:12px;scroll-margin-top:70px"><div class="h3">${t}</div>${inner}</div>`;
+  return `<div class="ptabs" style="position:sticky;top:0;background:var(--panel);padding:12px 0;z-index:2">${AG_SUB.map(s=>`<button class="ptab" data-sec="${s[0]}" onclick="agScrollTo('${s[0]}')">${s[1]}</button>`).join('')}</div><div style="display:flex;flex-direction:column;gap:28px;padding-bottom:12px">
+  ${sc('ag-dest','Transfer destinations',`<div class="tblw"><table class="tbl"><thead><tr><th>Outlet</th><th>Transfer number</th></tr></thead><tbody>${rows}</tbody></table></div>
+   <div class="frow"><div class="field"><label class="fl" for="gt-r">If no answer after</label><select class="inp" id="gt-r" style="max-width:200px" onchange="GT.rings=+this.value;agTest()">${[2,3,4,5,6,8].map(n=>`<option ${GT.rings===n?'selected':''} value="${n}">${n} rings</option>`).join('')}</select></div>
+   <div class="field"><label class="fl" for="gt-t">Then</label><select class="inp" id="gt-t" onchange="GT.then=this.value;agRefresh()"><option value="msg" ${GT.then==='msg'?'selected':''}>Take a message + text the manager</option><option value="vm" ${GT.then==='vm'?'selected':''}>Voicemail</option><option value="second" ${GT.then==='second'?'selected':''}>Try a second number</option></select></div></div>
+   ${GT.then==='second'?`<div class="field"><label class="fl" for="gt-2">Second number</label><input class="inp" id="gt-2" value="${esc(GT.num2)}" oninput="GT.num2=this.value;agTest()"></div>`:''}
+   <div class="field"><span class="fl">After hours</span><div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap"><div class="segp sm"><button class="${GT.ah==='msg'?'on':''}" onclick="GT.ah='msg';agRefresh()">Take a message, call back by</button><button class="${GT.ah==='now'?'on':''}" onclick="GT.ah='now';agRefresh()">Transfer anyway</button></div>${GT.ah==='msg'?`<input class="inp" aria-label="Callback time" style="height:36px;max-width:120px" value="${esc(GT.cb)}" oninput="GT.cb=this.value">`:''}</div></div>
+   <div class="field"><label class="fl" for="gt-s">Says before transferring</label><input class="inp" id="gt-s" style="max-width:none" value="${esc(GT.say)}" oninput="GT.say=this.value"></div>
+   <div class="field"><label class="fl" for="gt-n">Says if no one answers</label><input class="inp" id="gt-n" style="max-width:none" value="${esc(GT.noans)}" oninput="GT.noans=this.value"></div>
+   <div class="tg"><div class="tx fl">Text a call summary to staff when transferring</div><button class="tog ${GT.sms?'on':''}" aria-label="Text a call summary" onclick="GT.sms=!GT.sms;agRefresh()"></button></div>`)}
+  ${sc('ag-rules','Transfer rules',`<div style="display:flex;flex-direction:column;gap:10px">${agRules()}</div>`)}
+  ${sc('ag-guard','Guardrails',`<div class="eyebrow">Always on · ${GLOCK.length}</div>${GLOCK.map(g=>`<div class="cap-row"><span style="color:var(--ink-50);display:flex">${I.lock}</span><div class="tx"><div class="t" style="font-size:14px;font-weight:500">${g}</div></div>${pill('p-grey','Set by Tringg')}</div>`).join('')}
+   <div class="eyebrow" style="margin-top:8px">Your guardrails · ${GT.gl.length}</div>
+   ${GT.gl.map((g,i)=>`<div class="cap-row" style="align-items:flex-end"><div class="tx"><div class="frow"><div class="field"><label class="xs muted" for="gn${i}">Never</label><input class="inp" id="gn${i}" style="max-width:none;height:40px" value="${esc(g.never)}" oninput="GT.gl[${i}].never=this.value"></div><div class="field"><label class="xs muted" for="gs${i}">Say instead</label><input class="inp" id="gs${i}" style="max-width:none;height:40px" value="${esc(g.say)}" oninput="GT.gl[${i}].say=this.value"></div></div></div><button class="btn btn-soft btn-sm" style="margin-bottom:3px" aria-label="Delete guardrail" onclick="GT.gl.splice(${i},1);agRefresh()">${I.x}</button></div>`).join('')}
+   <button class="btn btn-soft" style="align-self:flex-start" onclick="GT.gl.push({never:'',say:''});agRefresh()">${I.plus} Add guardrail</button>`)}
+  ${sc('ag-test','Test it',`<div id="ag-test-body" style="display:flex;flex-direction:column;gap:10px"></div>`)}</div>`;}
+function tTools(){const noMenu=DB.menuState!=='live';
+  const row=(t,s,on,fn,dis)=>`<div class="cap-row"><div class="tx"><div class="t">${t}</div><div class="s">${s}</div></div><button class="tog ${on?'on':''}" ${dis?'disabled':''} aria-label="${t}" onclick="${fn||''}"></button></div>`;
+  return `<div style="display:flex;flex-direction:column;gap:10px;padding-top:16px">${row('Enquiries','Hours, location, menu, FAQ',true,'',true)}${row('Reservations','Book, change, cancel',DB.caps.res,'DB.caps.res=!DB.caps.res;agRefresh()')}${row('Ordering',noMenu?'Add a menu first':'Pickup and delivery',DB.caps.ord,"DB.caps.ord=!DB.caps.ord;DB.orderingOn=DB.caps.ord;agRefresh()",noMenu)}${row('Events','Private event enquiries',DB.caps.ev,'DB.caps.ev=!DB.caps.ev;agRefresh()')}</div>`;}
+const tBehav=()=>`<div style="display:flex;flex-direction:column;gap:16px;padding-top:16px"><div class="field"><label class="fl" for="gr">Greeting</label><textarea class="inp" id="gr">Thanks for calling ROSSA {outlet}, this is Allie. How can I help?</textarea></div><div class="field"><span class="fl">Languages</span><div class="dchips"><button class="on" onclick="this.classList.toggle('on')">English</button><button class="on" onclick="this.classList.toggle('on')">Spanish</button></div></div></div>`;
+const tNums=()=>`<div class="tblw" style="padding-top:12px"><table class="tbl"><thead><tr><th>Outlet</th><th>Tringg number</th></tr></thead><tbody>${OUTLETS.map(o=>`<tr><td style="font-weight:600">${o.name}</td><td class="num mono">${o.num}</td></tr>`).join('')}</tbody></table></div>`;
+function vAgents(){const caps=[['Enquiries',true],['Reservations',DB.caps.res],['Ordering',DB.caps.ord],['Events',DB.caps.ev]].filter(c=>c[1]).map(c=>c[0]==='Reservations'?'Reservation':c[0]).join(' · ');
+  const body={tools:tTools,behav:tBehav,gt:tGT,nums:tNums}[S.agent.tab]();
+  return `<div class="work" style="flex-direction:row;align-items:stretch"><div class="card" style="width:380px;flex-shrink:0;padding:20px;display:flex;flex-direction:column;gap:14px"><div class="lhead" style="margin:0"><div class="h3">Agents <span class="muted">1</span></div></div>
+   <button class="it" style="border:1.5px solid var(--ink);background:var(--panel)"><span class="av">A</span><span class="it-m" style="flex:1"><span class="it-n">${BRAND.agent} ${pill('p-green','Live')}</span><span class="small muted" style="display:block">${caps} · ${OUTLETS.length} outlets</span></span></button></div>
+   <div class="scroll" id="ag-scroll" style="display:flex;flex-direction:column;gap:20px" ><div id="ag-detail" style="display:flex;flex-direction:column;gap:20px">
+   <div class="card card-p" style="display:flex;flex-direction:column;gap:16px"><div class="agent-h"><div class="agent-av dust">A</div><div><div class="agent-n" style="display:flex;gap:10px;align-items:center">${BRAND.agent} ${pill('p-green','Live — taking calls')}</div><div class="agent-s">${OUTLETS.length} outlets · ${DB.k==='live'?142:DB.calls.length} calls today</div></div></div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn btn-line" onclick="toast('Playing a sample call')">${I.play} Listen</button><button class="btn btn-line" onclick="toast('Manage outlets')">Manage outlets</button><button class="btn btn-red" onclick="toast('Agent paused')">Pause</button><button class="btn btn-dark" id="ag-save" disabled onclick="this.disabled=true;toast('Agent saved')">Save changes</button></div></div>
+   <div class="card card-p"><div class="eyebrow">Advanced settings</div><div class="utabs" style="margin-top:12px">${AG_TABS.map(t=>`<button class="utab ${S.agent.tab===t[0]?'on':''}" onclick="S.agent.tab='${t[0]}';S.agent.st=0;render()">${t[1]}</button>`).join('')}</div>${body}</div></div></div></div>`;}
 
 const VIEWS={overview:vOverview,reservations:vReservations,orders:vOrders,calls:vCalls,menu:vMenu,agents:vAgents,settings:vSettings};
 /* ── module slice: Menu only ── */
