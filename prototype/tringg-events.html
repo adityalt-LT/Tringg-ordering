@@ -529,7 +529,7 @@ body:has(.pubbar) .toast-w{bottom:calc(92px + env(safe-area-inset-bottom,0px))}
 .evbar{position:sticky;bottom:16px;z-index:5;display:flex;align-items:center;gap:12px;background:var(--panel);border:1.5px solid var(--border);border-radius:16px;padding:10px 12px 10px 18px;box-shadow:var(--e2)}
 .bands{display:flex;gap:4px;margin-top:2px}.bands>div{border-radius:10px;padding:8px 10px;font-size:12px;display:flex;flex-direction:column;min-width:78px}.bands b{font-weight:600;font-size:13px}
 .bands .b1{background:var(--sunken)}.bands .b2{background:var(--cream-50);color:var(--cream-700)}.bands .b3{background:var(--mint-50);color:var(--mint-700)}.bands .b4{background:var(--coral-50);color:var(--coral-700)}
-.tbl .segp{flex-wrap:nowrap;gap:6px}.tbl .segp button{white-space:nowrap}.evp{display:flex;flex-direction:column;gap:16px}
+.tbl .segp{flex-wrap:nowrap;gap:6px}.tbl .segp button{white-space:nowrap}.tbl .inp.nm{min-width:180px}.evp{display:flex;flex-direction:column;gap:16px}
 .tour-block{position:fixed;inset:0;z-index:280}
 .tour-hole{position:fixed;z-index:281;border-radius:16px;box-shadow:0 0 0 9999px rgba(17,17,17,.55);pointer-events:none;transition:all .25s var(--ease)}
 .tour-card{position:fixed;z-index:282;background:var(--panel);border-radius:18px;padding:20px;box-shadow:var(--e3);top:-999px;left:16px}
@@ -754,53 +754,40 @@ const EV_TYPES=['Private room','Semi-private','Full buyout','Patio','Other'];
 const EV_PRICING=[['none','None','Quote on request'],['day','Minimum spend by day','Different minimum Mon–Sun'],['tier','Minimum spend by guest count','Tiers by party size'],['pp','Per-person package','Priced per guest'],['fee','Room fee + F&B','Fee plus a food & beverage minimum']];
 const EV_LABELS=['Private event','Large party','Tour request','Catering'];
 const EV_LCLS={'Private event':'p-mint','Large party':'p-amber','Tour request':'p-dust','Catering':'p-grey'};
-const EV_FU=['Not contacted','Contacted','Closed'];
-const EV_FUCLS={'Not contacted':'p-amber','Contacted':'p-mint','Closed':'p-grey'};
+const EV_FU=['New','Contacted','Closed'];
+const EV_FUCLS={'New':'p-amber','Contacted':'p-mint','Closed':'p-grey'};
 const evAvail=(on,from,to,x)=>Object.fromEntries(DAYS.map(d=>[d,Object.assign({on:on.includes(d),from,to},(x||{})[d]||{})]));
 const evPr0=()=>({model:'none',day:DAYS.map(d=>({d,amt:''})),tier:[],pp:[],fee:{room:'',fb:''}});
 function mkEvSpaces(first){
-  const K={wp:1,rn:1.2,lp:.9},r50=n=>Math.round(n/50)*50,out=[];
-  ['wp','rn','lp'].forEach(o=>{const k=K[o],sh=ON(o).short;
-    const room=evPr0();room.model='day';room.day=DAYS.map(d=>({d,amt:r50(({Mon:1200,Tue:1200,Wed:1200,Thu:1200,Fri:2500,Sat:3200,Sun:1800})[d]*k)}));
-    const semi=evPr0();
-    if(o==='rn'){semi.model='pp';semi.pp=[{n:'Family-style dinner',pp:55,min:12,d:'Three shared starters, two mains, dessert'},{n:'Chef’s tasting',pp:85,min:12,d:'Five courses, paired with house wine'}];}
-    else{semi.model='tier';semi.tier=[{from:12,to:19,amt:r50(900*k)},{from:20,to:30,amt:r50(1600*k)}];}
-    const buy=evPr0();
-    if(o==='lp'){buy.model='none';}else{buy.model='fee';buy.fee={room:r50(2000*k),fb:r50(9000*k)};}
-    const rules=(cake,fee)=>({deco:'Table decorations and balloons are welcome. No confetti, glitter or open flames. Setup is allowed from 1 hour before start.',ent:'Acoustic music or a DJ is fine with prior approval. We cap volume so neighbouring tables can still talk.',cake,cakeFee:fee,grat:20});
-    out.push({id:'sp-'+o+'-1',outlet:o,active:true,name:'The Private Room',type:'Private room',photos:['room-front.jpg','room-long-table.jpg'],desc:'A closed-door room with a long communal table, a built-in screen and its own bar. Great for corporate dinners, rehearsal dinners and milestone birthdays.',
-      minG:20,maxG:50,stand:60,avail:evAvail(['Tue','Wed','Thu','Fri','Sat','Sun'],'11:00 AM','11:00 PM'),durMin:2,durMax:4,pricing:room,
-      dep:{type:'fixed',val:500,refund:true},menu:{from:15,entree:2,app:2,dessert:1,drink:2},rules:rules('Outside cakes are welcome with a $2.50 per person cake fee. Desserts from our menu carry no fee.','$2.50 per person')});
-    out.push({id:'sp-'+o+'-2',outlet:o,active:true,name:'Garden Alcove',type:'Semi-private',photos:['alcove.jpg'],desc:'A semi-private corner by the windows, separated by a glass partition. Relaxed and lively; you can hear the main dining room.',
-      minG:12,maxG:30,stand:40,avail:evAvail(DAYS,'11:30 AM','10:00 PM'),durMin:2,durMax:3,pricing:semi,
-      dep:{type:'pct',val:25,refund:false},menu:{from:12,entree:2,app:1,dessert:1,drink:1},rules:rules('Outside cakes are fine, with a $30 flat cake fee.','$30 flat')});
-    out.push({id:'sp-'+o+'-3',outlet:o,active:true,name:sh+' Full Buyout',type:'Full buyout',photos:['dining-room.jpg','bar.jpg','patio.jpg'],desc:'The whole restaurant is yours: main dining room, bar and patio. Ideal for wedding receptions, large corporate events and launch parties.',
-      minG:60,maxG:140,stand:180,avail:evAvail(['Sun','Mon','Tue'],'4:00 PM','11:00 PM'),durMin:3,durMax:5,pricing:buy,
-      dep:{type:'pct',val:50,refund:false},menu:{from:40,entree:2,app:3,dessert:1,drink:3},rules:rules('Outside cakes are welcome at no fee for buyouts.','No fee')});
-  });
-  return out.filter(s=>first?s.id==='sp-wp-1':['sp-wp-1','sp-wp-2','sp-wp-3','sp-rn-2'].includes(s.id));}
-const EV_SET0=()=>({large:9,event:30,maxParty:150,
-  say:{minSpend:true,deposit:false,capacity:true,tours:true},
+  const sp=(id,outlet,name,minG,maxG,minSpend,deposit,note)=>({id,outlet,name,minG,maxG,minSpend,deposit,note});
+  const all=[sp('sp-wp-1','wp','The Private Room',20,50,2500,'$500, refundable','Closed room with its own bar and a screen.'),
+   sp('sp-wp-2','wp','Garden Alcove',12,30,900,'25% of minimum','Semi-private, by the windows.'),
+   sp('sp-wp-3','wp','Full Buyout',60,140,11000,'50% of minimum, non-refundable','Whole restaurant, bar and patio.'),
+   sp('sp-rn-2','rn','Garden Alcove',12,30,1080,'25% of minimum','Semi-private, by the windows.')];
+  return first?all.slice(0,1):all;}
+const evDemoNotes=()=>({wp:'We host groups of 12 to 140 guests. Minimum spend applies and our event manager confirms everything.'});
+const EV_SET0=()=>({large:9,event:30,maxParty:150,spaces:[],notes:{},
+  say:{minSpend:true,deposit:false,capacity:true,offer:true,tours:true},
   q:[{k:'name',l:'Name',req:true,lock:true},{k:'phone',l:'Phone number',req:true,lock:true},{k:'email',l:'Email',req:true},{k:'type',l:'Event type',req:true},{k:'date',l:'Preferred date',req:true},{k:'time',l:'Start time',req:true},{k:'guests',l:'Number of guests',req:true},{k:'space',l:'Preferred space',req:false},{k:'budget',l:'Budget',req:false},{k:'notes',l:'Notes',req:false}],
   cq:[{t:'Does anyone in your group have dietary or accessibility needs?',req:false}],
   notify:{wp:{name:'Maria Santos',phone:'+1 (312) 555-0141',email:'maria@rossapizza.com',via:'sms'},rn:{name:'Daniel Okafor',phone:'+1 (312) 555-0155',email:'daniel@rossapizza.com',via:'both'},lp:{name:'Priya Shah',phone:'+1 (312) 555-0166',email:'priya@rossapizza.com',via:'email'}},
   after:{day:'Next business day',time:'10:00 AM'}});
-const EV={demo:false,state:'day1',mode:null,view:'spaces',sel:null,w:null,delArm:false,tour:null,paused:false,spaces:[],set:EV_SET0(),sw:null};
+const EV={tab:'new',selId:null,kind:'all',offerO:null,demo:false,state:'day1',mode:null,view:'spaces',sel:null,w:null,delArm:false,tour:null,paused:false,spaces:[],set:EV_SET0(),sw:null};
 const EVFIRST={wp:'Maria',rn:'Daniel',lp:'Priya'};
 function mkEvCalls(){
-  const c=(id,name,outlet,min,label,o)=>Object.assign({id,name,ini:name.split(' ').map(x=>x[0]).join('').slice(0,2),av:['','mint','cream','coral'][id.length%4],outlet,phone:'+1 (312) 555-0'+String(100+(id.charCodeAt(5)*37+id.charCodeAt(4)*11)%800),kind:'event',st:'done',min,dur:'3:'+String(10+(id.charCodeAt(5)*3)%49).padStart(2,'0'),topic:label+' · Lead captured',tags:[label,'Lead captured'],
-    ev:Object.assign({label,fu:'Not contacted',spaceId:null,email:name.toLowerCase().replace(/[^a-z ]/g,'').replace(' ','.')+'@gmail.com'},o)},{});
+  const c=(id,name,outlet,min,label,o)=>Object.assign({id,name,ini:name.split(' ').map(x=>x[0]).join('').slice(0,2),av:['','mint','cream','coral'][id.length%4],outlet,phone:'+1 (312) 555-0'+String(100+(id.charCodeAt(5)*37+id.charCodeAt(4)*11)%800),kind:'event',st:'done',min,dur:'3:'+String(10+(id.charCodeAt(5)*3)%49).padStart(2,'0'),topic:'Private event',tags:['Private event'],
+    ev:Object.assign({label,fu:'New',email:name.toLowerCase().replace(/[^a-z ]/g,'').replace(' ','.')+'@gmail.com'},o)},{});
   const L=[
-   c('C-5541','Sarah Lee','wp',48,'Private event',{etype:'corporate holiday dinner',dt:'2026-12-11',time:'7:00 PM',guests:40,spaceId:'sp-wp-1',budget:'$4,000–$5,000',notes:'Wants a short toast with the screen.',asked:'asked about minimum spend',pref:'prefers private room',fu:'Not contacted',email:'sarah.lee@northwind.co'}),
-   c('C-5542','James Whitfield','rn',85,'Private event',{etype:'rehearsal dinner',dt:'2026-11-20',time:'6:30 PM',guests:28,spaceId:'sp-rn-2',budget:'About $2,000',notes:'Two vegetarian guests.',asked:'asked about the set menu',pref:'prefers the semi-private area',fu:'Contacted'}),
-   c('C-5543','Aisha Rahman','lp',150,'Large party',{etype:'birthday dinner',dt:'2026-11-21',time:'7:30 PM',guests:14,budget:'',notes:'Needs a high chair for a toddler.',asked:'asked if a deposit is needed',pref:'would like one long table',fu:'Not contacted'}),
-   c('C-5544','Tom Brennan','wp',260,'Tour request',{etype:'30th anniversary party',dt:'2026-12-05',time:'6:00 PM',guests:35,spaceId:'sp-wp-1',budget:'$3,000–$4,000',notes:'Can visit Thursday after 2 PM.',asked:'asked to see the private room first',pref:'prefers the private room',tour:'Thu 11/19, after 2:00 PM',fu:'Contacted'}),
-   c('C-5545','Elena Petrova','rn',340,'Private event',{etype:'baby shower',dt:'2026-12-06',time:'1:00 PM',guests:24,spaceId:'sp-rn-2',budget:'Under $1,500',notes:'Would bring her own decorations.',asked:'asked about decorations and an outside cake',pref:'prefers the semi-private area',fu:'Not contacted'}),
+   c('C-5541','Sarah Lee','wp',48,'Private event',{etype:'corporate holiday dinner',dt:'2026-12-11',time:'7:00 PM',guests:40,budget:'$4,000–$5,000',notes:'Wants a short toast with the screen.',asked:'asked about minimum spend',pref:'prefers private room',fu:'New',email:'sarah.lee@northwind.co'}),
+   c('C-5542','James Whitfield','rn',85,'Private event',{etype:'rehearsal dinner',dt:'2026-11-20',time:'6:30 PM',guests:28,budget:'About $2,000',notes:'Two vegetarian guests.',asked:'asked about the set menu',pref:'prefers the semi-private area',fu:'Contacted'}),
+   c('C-5543','Aisha Rahman','lp',150,'Large party',{etype:'birthday dinner',dt:'2026-11-21',time:'7:30 PM',guests:14,budget:'',notes:'Needs a high chair for a toddler.',asked:'asked if a deposit is needed',pref:'would like one long table',fu:'New'}),
+   c('C-5544','Tom Brennan','wp',260,'Tour request',{etype:'30th anniversary party',dt:'2026-12-05',time:'6:00 PM',guests:35,budget:'$3,000–$4,000',notes:'Can visit Thursday after 2 PM.',asked:'asked to see the private room first',pref:'prefers the private room',tour:'Thu 11/19, after 2:00 PM',fu:'Contacted'}),
+   c('C-5545','Elena Petrova','rn',340,'Private event',{etype:'baby shower',dt:'2026-12-06',time:'1:00 PM',guests:24,budget:'Under $1,500',notes:'Would bring her own decorations.',asked:'asked about decorations and an outside cake',pref:'prefers the semi-private area',fu:'New'}),
    c('C-5546','Marcus Bell','lp',520,'Catering',{etype:'office holiday lunch',dt:'2026-12-17',time:'12:00 PM',guests:45,budget:'$25 per person',notes:'Drop-off at 233 S Wacker Dr.',asked:'asked about catering trays for the office',pref:'no space needed',fu:'Closed'}),
-   c('C-5547','Olivia Chen','wp',1310,'Private event',{etype:'engagement party',dt:'2026-12-19',time:'6:00 PM',guests:62,spaceId:'sp-wp-3',budget:'$10,000+',notes:'Wants the patio included.',asked:'asked if the whole restaurant can be booked',pref:'prefers a full buyout',fu:'Contacted',ah:true}),
-   c('C-5548','Daniel Park','rn',1700,'Private event',{etype:'team offsite dinner',dt:'2026-11-24',time:'7:00 PM',guests:18,spaceId:'sp-rn-2',budget:'About $1,200',notes:'',asked:'asked about capacity and set menus',pref:'flexible on space',fu:'Closed'}),
+   c('C-5547','Olivia Chen','wp',1310,'Private event',{etype:'engagement party',dt:'2026-12-19',time:'6:00 PM',guests:62,budget:'$10,000+',notes:'Wants the patio included.',asked:'asked if the whole restaurant can be booked',pref:'prefers a full buyout',fu:'Contacted',ah:true}),
+   c('C-5548','Daniel Park','rn',1700,'Private event',{etype:'team offsite dinner',dt:'2026-11-24',time:'7:00 PM',guests:18,budget:'About $1,200',notes:'',asked:'asked about capacity and set menus',pref:'flexible on space',fu:'Closed'}),
    c('C-5549','Rachel Gomez','lp',2900,'Large party',{etype:'team dinner',dt:'2026-11-19',time:'8:00 PM',guests:12,budget:'',notes:'Separate checks if possible.',asked:'asked about separate checks',pref:'one table',fu:'Contacted'}),
-   c('C-5550','Kevin O’Neil','wp',3100,'Tour request',{etype:'wedding reception',dt:'2026-12-12',time:'5:00 PM',guests:80,spaceId:'sp-wp-3',budget:'$15,000',notes:'Weekend visit preferred.',asked:'asked to tour before deciding',pref:'prefers a full buyout',tour:'Sat 11/21, morning',fu:'Not contacted'})];
+   c('C-5550','Kevin O’Neil','wp',3100,'Tour request',{etype:'wedding reception',dt:'2026-12-12',time:'5:00 PM',guests:80,budget:'$15,000',notes:'Weekend visit preferred.',asked:'asked to tour before deciding',pref:'prefers a full buyout',tour:'Sat 11/21, morning',fu:'New'})];
   L.forEach(x=>{const e=x.ev;e.date=evDate(e.dt);
     x.sum=x.name+', '+e.guests+'-guest '+e.etype+', '+e.date+', '+e.time+(e.asked?', '+e.asked:'')+(e.pref?', '+e.pref:'');
     const mgr=EVFIRST[x.outlet],via=EV.set.notify[x.outlet].via,vt=via==='both'?'SMS + email':via==='sms'?'SMS':'email';
@@ -819,7 +806,7 @@ let DB;
 function loadScenario(k){
   DB={k,orderingOn:k!=='off',menuState:k==='off'?'none':'live',menuSource:k==='off'?null:'LimeTray menu',
    stripe:k==='off'?'none':'active',payPick:{call:true,store:true},serviceSet:k!=='off',posSync:k!=='off',
-   autoAccept:Object.fromEntries(OUTLETS.map(o=>[o.id,!['lp','ls'].includes(o.id)])),orders:k==='live'?mkOrders():[],calls:evMerge([]),res:clone(RES),
+   autoAccept:Object.fromEntries(OUTLETS.map(o=>[o.id,!['lp','ls'].includes(o.id)])),orders:k==='live'?mkOrders():[],calls:evMerge(mkCalls(k).filter(c=>c.kind!=='order')),res:clone(RES),
    items:clone(MENU.items),cats:clone(MENU.cats),groups:clone(MENU.groups),wins:clone(MENU.wins),taxes:clone(MENU.taxes),pending:0,snap:null,zones:Object.fromEntries(OUTLETS.map(o=>[o.id,o.isNew?[]:ZONES[o.id]?clone(ZONES[o.id]):[]])),deliveryMode:Object.fromEntries(OUTLETS.map(o=>[o.id,o.isNew?null:['wp','lp'].includes(o.id)?'zones':'radius'])),
    svc:Object.fromEntries(OUTLETS.map(o=>[o.id,o.isNew?{set:false,del:false,pick:false,prep:null,rad:null}:{set:true,del:o.id!=='oh',pick:true,prep:o.id==='oh'?12:20,rad:{mi:3,fee:3,min:15}}])),
       caps:{enq:true,res:true,ord:k!=='off'}};
@@ -838,7 +825,7 @@ const S={role:'Owner',route:'events',outlet:'all',dd:false,nav:false,acct:false,
  set:'services',zoneOutlet:'wp',zoneSel:'A',test:null,agentEdit:false};
 let scen='live';try{const k=localStorage.getItem('tringg-proto-v2');if(k&&SCEN[k])scen=k;}catch(e){}
 loadScenario(scen);
-const hash=location.hash.slice(1);if(['events','calls','settings'].includes(hash))S.route=hash;
+const hash=location.hash.slice(1);if(['overview','events','calls','settings'].includes(hash))S.route=hash;
 
 const inScope=o=>S.outlet==='all'||o.outlet===S.outlet;
 const subT=o=>o.items.reduce((a,i)=>a+i.p*i.q,0);
@@ -855,7 +842,7 @@ const setupSteps=()=>[
  {k:'cap',t:'Turn on Ordering for Allie',s:'Agents → Edit → Capabilities. Allie starts taking orders on her next call.',done:DB.orderingOn,go:()=>{S.agentEdit=true;go('agents');}}];
 
 /* ── shell ── */
-const NAV=[['events','Events','cal'],['calls','Calls','phone']];
+const NAV=[['overview','Overview','grid'],['events','Events','cal'],['calls','Calls','phone']];
 function renderRail(){
   const o=S.outlet==='all'?'All Outlets':ON(S.outlet).name;
   const pend=DB.orders.filter(x=>inScope(x)&&x.state==='PENDING').length;
@@ -914,32 +901,17 @@ document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;if(S.op){S.op
 const SC={all:1,wp:.41,rn:.34,lp:.25};
 function stat(ic,cls,v,l){return `<div class="stat"><div class="stat-ic ${cls}">${I[ic]}</div><div style="min-width:0"><div class="stat-v">${v}</div><div class="stat-l">${l}</div></div></div>`;}
 function vOverview(){
-  const f=(SC[S.outlet]??0.06),n=v=>Math.round(v*f);
-  const pendO=DB.orders.filter(o=>inScope(o)&&o.state==='PENDING');
-  const pendR=DB.res.filter(r=>inScope(r)&&r.st==='pending');
-  const live=DB.k==='live';
-  let h=`<div class="scroll"><div class="page"><div class="lbl">${S.outlet==='all'?'All outlets':esc(ON(S.outlet).name)}</div><div class="stats">`;
-  if(!DB.orderingOn)h+=stat('cal','ic-mint',n(6),'Today’s bookings')+stat('clock','ic-coral',pendR.length,'Pending now')+stat('phoneL','ic-cream',DB.calls.filter(inScope).length,'Calls today')+stat('trend','ic-grey','0%','No-show rate');
-  else h+=stat('bagL','ic-mint',live?n(38):0,'Orders today')+stat('dollar','ic-cream',live?'$'+n(1486).toLocaleString():'$0','Order revenue')+stat('clock','ic-coral',pendO.length+pendR.length,'Pending now')+stat('phoneL','ic-grey',live?n(142):DB.calls.filter(inScope).length,'Calls today');
-  h+='</div>';
-  if(!DB.orderingOn){const st=setupSteps();const d=st.filter(s=>s.done).length;
-    h+=`<div class="nudge"><div><div class="eyebrow" style="color:var(--mint-500)">Included in your plan</div><div class="h2" style="margin-top:6px">Let Allie take phone orders too</div><p>Callers who want pizza, not a table, get their order taken, read back and paid for on the call. Four steps, and none of them change your reservations.</p></div><button class="btn btn-line" onclick="go('orders')">Set up ordering · ${d}/4</button></div>`;}
-  h+=`<div class="ov-grid"><div class="col"><div class="card"><div class="card-h"><div class="h2">Pending requests</div><button class="linkbtn r" onclick="go('${pendO.length?'orders':'reservations'}')">View all ${I.arrow}</button></div><div class="card-b" style="display:flex;flex-direction:column;gap:10px">`;
-  if(!pendO.length&&!pendR.length)h+='<div class="soft-empty">No pending requests</div>';
-  pendO.forEach(o=>{const r=o.exp-Date.now();h+=`<div class="req"><span class="av ${o.av}">${o.ini}</span><div class="m"><div class="t">${esc(o.name)} ${pill('p-amber','Order')}</div><div class="s">${o.id} · ${o.ful==='delivery'?'Delivery':'Pickup'} · ${money(totT(o))}${S.outlet==='all'?' · '+ON(o.outlet).short:''}</div></div><span class="cd ${r<180000?'urgent':''}" data-exp="${o.exp}">${countdown(r)}</span><button class="btn btn-line btn-sm" onclick="S.orders.sel='${o.id}';S.orders.tab='pending';go('orders')">Review</button></div>`;});
-  pendR.forEach(r=>{h+=`<div class="req"><span class="av">${r.ini}</span><div class="m"><div class="t">${esc(r.name)} ${pill('p-dust','Reservation')}</div><div class="s">${r.day} ${r.when} · ${r.party} guests${S.outlet==='all'?' · '+ON(r.outlet).short:''}</div></div><button class="btn btn-line btn-sm" onclick="S.res.sel='${r.id}';S.res.tab='inbox';go('reservations')">Review</button></div>`;});
-  h+='</div></div>';
-  if(live){h+=`<div class="card"><div class="card-h"><div class="h2">Ordering today</div></div><div class="card-b"><div class="kv" style="grid-template-columns:repeat(3,minmax(0,1fr))"><div><div class="k">Avg order value</div><div class="v" style="font-size:20px;font-weight:600">$39.10</div></div><div><div class="k">Upsell attach</div><div class="v" style="font-size:20px;font-weight:600">31%</div></div><div><div class="k">Order calls finished by Allie</div><div class="v" style="font-size:20px;font-weight:600">88%</div></div></div></div>
-    <div class="card-b" style="padding-top:0;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:28px" class="ov2"><div><div class="fl" style="margin-bottom:12px">Top items</div><div class="bars">${[['Pepperoni',14],['Margherita',11],['Garlic Knots',10],['Half & Half',7],['Rigatoni alla Vodka',6]].map(r=>`<div class="bar"><span>${r[0]}</span><span class="tr"><i style="width:${r[1]/14*100}%"></i></span><span class="n">${n(r[1])}</span></div>`).join('')}</div></div>
-    <div><div class="fl" style="margin-bottom:12px">Pickup vs delivery</div><div class="bars">${[['Pickup',22,'$748'],['Delivery',16,'$738']].map(r=>`<div class="bar" style="grid-template-columns:70px minmax(0,1fr) 90px"><span>${r[0]}</span><span class="tr"><i style="width:${r[1]/38*100}%;background:${r[0]==='Pickup'?'var(--mint-500)':'var(--dust-500)'}"></i></span><span class="n">${n(r[1])} · ${r[2]}</span></div>`).join('')}</div>
-</div></div></div>`;}
-  h+=`</div><div class="col"><div class="card agent"><div class="agent-h"><div class="agent-av">A</div><div><div class="agent-n">${BRAND.agent}</div><div class="agent-s">${['Enquiries',DB.caps.res?'Reservation':null,DB.caps.ord?'Ordering':null].filter(Boolean).join(' · ')} · ${S.outlet==='all'?OUTLETS.length+' outlets':'1 outlet'}</div></div><span class="lvp">${pill('p-green','Live')}</span></div>
-   <div class="agent-stats"><div><div class="v">${live?n(142):DB.calls.filter(inScope).length}</div><div class="l">Calls today</div></div><div><div class="v">${live?'2:34':'1:04'}</div><div class="l">Avg duration</div></div><div><div class="v">${live?'81%':'67%'}</div><div class="l">Success rate</div></div></div></div>
+  const ev=DB.calls.filter(c=>c.ev&&inScope(c)),n=s=>ev.filter(c=>c.ev.fu===s).length,live=EV.state==='live';
+  let h=`<div class="scroll"><div class="page"><div class="lbl">${S.outlet==='all'?'All outlets':esc(ON(S.outlet).name)}</div><div class="stats">`+stat('cal','ic-coral',n('New'),'New inquiries')+stat('phoneL','ic-mint',n('Contacted'),'Contacted')+stat('check','ic-grey',n('Closed'),'Closed')+stat('trend','ic-cream',live?Math.round(142*SC[S.outlet]||142):DB.calls.filter(inScope).length,'Calls today')+'</div>';
+  if(!live)h+=`<div class="nudge"><div><div class="eyebrow" style="color:var(--mint-500)">Included in your plan</div><div class="h2" style="margin-top:6px">Let Allie take event inquiries</div><p>Private events and large groups, captured and sent to your event manager.</p></div><button class="btn btn-line" onclick="go('events')">Set up Events</button></div>`;
+  h+=`<div class="ov-grid"><div class="col"><div class="card"><div class="card-h"><div class="h2">Recent event inquiries</div><button class="linkbtn r" onclick="go('events')">View all ${I.arrow}</button></div><div class="card-b" style="display:flex;flex-direction:column;gap:10px">`;
+  if(!ev.length)h+='<div class="soft-empty">No event inquiries yet</div>';
+  ev.slice(0,5).forEach(c=>{const e=c.ev;h+=`<div class="req"><span class="av ${c.av}">${c.ini}</span><div class="m"><div class="t">${esc(c.name)} ${evKPill(c)} ${evSPill(c)}</div><div class="s">${esc(e.etype)} · ${e.guests} guests · ${e.date} ${e.time}${S.outlet==='all'?' · '+ON(c.outlet).short:''}</div></div><button class="btn btn-line btn-sm" onclick="EV.selId='${c.id}';EV.tab='all';EV.kind='all';go('events')">Review</button></div>`;});
+  h+=`</div></div></div><div class="col"><div class="card agent"><div class="agent-h"><div class="agent-av">A</div><div><div class="agent-n">${BRAND.agent}</div><div class="agent-s">Enquiries · Events · ${S.outlet==='all'?OUTLETS.length+' outlets':'1 outlet'}</div></div><span class="lvp">${pill('p-green','Live')}</span></div></div>
    <div class="card"><div class="card-h"><div class="h3">Recent calls</div><button class="linkbtn r" onclick="go('calls')">View all ${I.arrow}</button></div><div class="card-b" style="padding-top:8px">`;
   const rc=DB.calls.filter(inScope).slice(0,5);
   h+=rc.length?rc.map(c=>`<button class="mini" onclick="S.calls.sel='${c.id}';go('calls')"><span class="av ${c.av}" style="width:34px;height:34px;font-size:12px">${c.ini}</span><span class="m"><span class="t" style="display:block">${esc(c.name)}</span><span class="s" style="display:block">${esc(c.topic)}</span></span><span class="xs muted">${clock(c.min)}</span></button>`).join(''):'<div class="muted small">No calls yet today</div>';
-  h+='</div></div></div></div></div></div>';
-  return h;
+  return h+'</div></div></div></div></div></div>';
 }
 
 /* ════════ RESERVATIONS (existing module, shown for consistency) ════════ */
@@ -1064,15 +1036,15 @@ setInterval(()=>{document.querySelectorAll('[data-exp]').forEach(el=>{const r=+e
   if(ch){if(S.route==='orders')renderOrders();else render();}},1000);
 
 /* ════════ CALLS ════════ */
-const CTABS=[['all','All',()=>true],['order','Orders',c=>c.kind==='order'],['res','Reservations',c=>c.kind==='res'],['transfer','Transferred',c=>c.kind==='transfer'],['faq','FAQ',c=>c.kind==='faq'],['failed','Failed',c=>c.st==='failed'],['e-pe','Private event',c=>c.ev&&c.ev.label==='Private event',1],['e-lp','Large party',c=>c.ev&&c.ev.label==='Large party',1],['e-tr','Tour request',c=>c.ev&&c.ev.label==='Tour request',1],['e-ct','Catering',c=>c.ev&&c.ev.label==='Catering',1]];
+const CTABS=[['all','All',()=>true],['order','Orders',c=>c.kind==='order'],['res','Reservations',c=>c.kind==='res'],['transfer','Transferred',c=>c.kind==='transfer'],['faq','FAQ',c=>c.kind==='faq'],['failed','Failed',c=>c.st==='failed']];
 const CST=c=>c.st==='failed'?pill('p-red','Failed'):c.kind==='transfer'?pill('p-dust','Transferred'):pill('p-green','Completed');
 function vCalls(){
   const sc=DB.calls.filter(inScope),live=DB.k==='live',f=SC[S.outlet],n=v=>Math.round(v*f);
   return `<div class="work"><div class="lbl" style="margin-bottom:-4px">${S.outlet==='all'?'All outlets':esc(ON(S.outlet).name)}</div><div class="tiles">
-   <div class="tile t-white"><div class="v">${sc.filter(c=>c.ev).length}</div><div class="l">Event inquiries</div></div>
-   <div class="tile t-coral"><div class="v">${sc.filter(c=>c.ev&&c.ev.fu==='Not contacted').length}</div><div class="l">Not contacted</div></div>
-   <div class="tile t-mint"><div class="v">${sc.filter(c=>c.ev&&c.ev.fu==='Contacted').length}</div><div class="l">Contacted</div></div>
-   <div class="tile t-cream"><div class="v">${sc.filter(c=>c.ev&&c.ev.fu==='Closed').length}</div><div class="l">Closed</div></div></div>
+   <div class="tile t-mint"><div class="v">${live?'81%':'67%'}</div><div class="l">Success rate</div></div>
+   <div class="tile t-white"><div class="v">${live?n(142):sc.length}</div><div class="l">Calls</div></div>
+   <div class="tile t-coral"><div class="v">${live?'6%':'0%'}</div><div class="l">Transfer rate</div></div>
+   <div class="tile t-cream"><div class="v">${live?'2:34':'1:04'}</div><div class="l">Avg duration</div></div></div>
    <div class="split ${S.calls.sel?'detail':''}" id="csplit"><div class="card lcard"><div class="lhead"><div class="h2">Recent calls</div><span class="xs muted" style="margin-left:auto;letter-spacing:.05em" id="c-meta"></span></div>
     <div class="utabs" id="c-tabs" style="margin-bottom:14px"></div>
     <div style="display:flex;gap:10px"><label class="lsearch" style="flex:1">${I.search}<input type="search" placeholder="Search caller or phone number…" value="${esc(S.calls.q)}" oninput="S.calls.q=this.value;renderCalls()"></label><button class="btn btn-soft" style="height:48px" onclick="toast('Filter by outlet or date')">${I.filter} Filter</button></div>
@@ -1082,7 +1054,7 @@ function renderCalls(){
   const sc=DB.calls.filter(inScope),q=S.calls.q.trim().toLowerCase();
   if(!DB.orderingOn&&S.calls.tab==='order')S.calls.tab='all';
   if(EV.state!=='live'&&S.calls.tab.startsWith('e-'))S.calls.tab='all';
-  $('c-tabs').innerHTML=CTABS.filter(t=>(t[0]==='all'||(t[3]&&EV.state==='live'))).map(t=>`<button class="utab ${S.calls.tab===t[0]?'on':''}" onclick="S.calls.tab='${t[0]}';renderCalls()">${t[1]} <span class="n">${sc.filter(t[2]).length}</span></button>`).join('');
+  $('c-tabs').innerHTML=CTABS.filter(t=>t[0]!=='order').map(t=>`<button class="utab ${S.calls.tab===t[0]?'on':''}" onclick="S.calls.tab='${t[0]}';renderCalls()">${t[1]} <span class="n">${sc.filter(t[2]).length}</span></button>`).join('');
   const rows=sc.filter(c=>CTABS.find(t=>t[0]===S.calls.tab)[2](c)&&(!q||c.name.toLowerCase().includes(q)||c.phone.includes(q)));
   $('c-meta').textContent=rows.length+' calls · '+(S.outlet==='all'?'All outlets':ON(S.outlet).short);
   $('c-list').innerHTML=rows.length?rows.map(c=>`<button class="it ${c.id===S.calls.sel?'on':''}" onclick="S.calls.sel='${c.id}';$('csplit').classList.add('detail');renderCalls()"><span class="av ${c.av}">${c.ini}</span><span class="it-m"><span class="it-n">${esc(c.name)} ${CST(c)}${evPill(c)}</span><span class="it-topic">${esc(c.topic)}</span><span class="it-sum">${esc(c.sum)}</span></span><span class="it-r"><span class="t">${clock(c.min)}</span><span class="s">${c.dur}</span></span></button>`).join(''):'<div class="soft-empty">No calls here yet</div>';
@@ -1091,7 +1063,7 @@ function renderCalls(){
   const o=c.order?DB.orders.find(x=>x.id===c.order):null;
   let h=`<div class="dbody"><div class="dsec"><div style="display:flex;gap:16px;align-items:center"><span class="av ${c.av||'cream'}" style="width:60px;height:60px;font-size:19px">${c.ini}</span><div style="flex:1;min-width:0"><div class="d-name" style="font-size:24px">${esc(c.name)} ${CST(c)}${evPill(c)}</div><div class="d-sub">${c.phone}${c.lang==='ES'?' · Spanish':''}</div></div><button class="x dclose" aria-label="Close" onclick="S.calls.sel=null;$('csplit').classList.remove('detail');renderCalls()">${I.x}</button></div>
    <div class="kv" style="grid-template-columns:repeat(3,minmax(0,1fr))"><div><div class="k eyebrow" style="font-size:12px">Date</div><div class="v">${callDate(c)}</div></div><div><div class="k eyebrow" style="font-size:12px">Time</div><div class="v">${clock(c.min)}</div></div><div><div class="k eyebrow" style="font-size:12px">Duration</div><div class="v">${c.dur}</div></div></div></div>
-   <div class="dsec">${c.ev?evPanel(c):`<div class="aisum"><div class="k">${I.bulb} AI SUMMARY</div><p>${esc(c.sum)}</p><div class="tags">${c.tags.map(t=>`<span>${esc(t)}</span>`).join('')}</div></div>`}`;
+   <div class="dsec"><div class="aisum"><div class="k">${I.bulb} AI SUMMARY</div><p>${esc(c.sum)}</p><div class="tags">${c.tags.map(t=>`<span>${esc(t)}</span>`).join('')}</div></div>`;
   if(o)h+=`<button class="req" style="border:0;cursor:pointer;text-align:left;width:100%" onclick="S.orders.sel='${o.id}';S.orders.tab='all';go('orders')"><span class="av mint">${I.bag}</span><span class="m"><span class="t" style="display:flex">Order ${o.id} ${spill(o.state)}</span><span class="s" style="display:block">${o.items.map(i=>(i.q>1?i.q+'× ':'')+i.n).join(', ')} · ${money(totT(o))}</span></span>${I.arrow}</button>`;
   if(c.kind==='res')h+=`<button class="req" style="border:0;cursor:pointer;text-align:left;width:100%" onclick="S.res.sel='R-309';go('reservations')"><span class="av">${I.res}</span><span class="m"><span class="t">Reservation · Hannah Brooks</span><span class="s" style="display:block">Today 7:30 PM · 4 guests</span></span>${I.arrow}</button>`;
   h+=`</div><div class="dsec"><div class="dsec-l">Transcript <span class="r xs muted">${(c.tr||[]).length||3} turns</span></div><div class="player"><button class="play" aria-label="Play recording" onclick="toast('Playing recording')">${I.play}</button><div class="wave">${Array.from({length:40},(_,i)=>`<i style="height:${25+Math.round(Math.abs(Math.sin(i*1.9))*70)}%"></i>`).join('')}</div><span class="mono xs muted">${c.dur}</span></div>
@@ -1537,9 +1509,9 @@ function vAgents(){const caps=[['Enquiries',true],['Reservations',DB.caps.res],[
 /* ════════ SETTINGS ════════
    All-outlets view holds the ordering settings (with per-outlet rows) so owners don't hop between outlets.
    Single-outlet view keeps what is truly per location: phone, basic info, hours, FAQ. */
-const SETNAV_ALL=[['SERVICES',[['services','Services']]],['EVENTS',[['ev-thr','Thresholds'],['ev-ai','What the AI may say'],['ev-qs','Questions to collect'],['ev-notify','Notifications'],['ev-xfer','Always transfer']]]];
+const SETNAV_ALL=[['SERVICES',[['services','Services']]],['EVENTS',[['ev-spaces','Spaces'],['ev-thr','Thresholds'],['ev-ai','What the AI may say'],['ev-qs','Questions to collect'],['ev-notify','Notifications'],['ev-xfer','Always transfer']]]];
 const SETNAV_ONE=SETNAV_ALL;
-const SETIC={'phone-all':'phone',phone:'phone',info:'doc',hours:'clock',faq:'menu','ord-controls':'bag','ord-pay':'card','ord-delivery':'scooter','ord-pos':'pos','ord-outlet':'bag',services:'cal','ev-thr':'bag','ev-ai':'agent','ev-qs':'menu','ev-notify':'phone','ev-xfer':'back',msg:'phone',team:'agent',billing:'card'};
+const SETIC={'phone-all':'phone',phone:'phone',info:'doc',hours:'clock',faq:'menu','ord-controls':'bag','ord-pay':'card','ord-delivery':'scooter','ord-pos':'pos','ord-outlet':'bag',services:'cal','ev-spaces':'store','ev-thr':'bag','ev-ai':'agent','ev-qs':'menu','ev-notify':'phone','ev-xfer':'back',msg:'phone',team:'agent',billing:'card'};
 function vSettings(){
   const nav=S.outlet==='all'?SETNAV_ALL:SETNAV_ONE;
   if(!nav.flatMap(g=>g[1]).some(i=>i[0]===S.set))S.set=nav[0][1][0][0];
@@ -1552,6 +1524,7 @@ function vSettings(){
 const sH=(t,d,scope)=>`<div class="spage-h"><div><div class="h1-lg">${t}</div>${d?`<p class="desc" style="margin-top:6px">${d}</p>`:''}</div><div class="scope">${scope==='all'?'All outlets':'Outlet · '+esc(ON(S.outlet).name)}</div></div>`;
 const CARRIERS={'AT&T':['*21*13125550147#','#21#'],'Verizon':['*72 3125550147','*73'],'T-Mobile':['**21*13125550147#','##21#']};
 const SET={
+ 'ev-spaces':()=>evPage('spaces,offer','Spaces','Optional. Skip it if you have no dedicated space.'),
  'ev-thr':()=>evPage('thr','Thresholds',''),
  'ev-ai':()=>evPage('ai','What the AI may say',''),
  'ev-qs':()=>evPage('qs','Questions to collect',''),
@@ -1683,10 +1656,10 @@ const SPEC={
  overview:['Today at a glance for reservations and ordering together. The ordering card only appears once ordering is on; before that, a single nudge points to setup.',[
   ['decision','One subscription, capabilities per agent','Enquiry, reservation and ordering are all included. No module is sold or locked; a merchant turns a capability off per agent.'],
   ['decision','No ordering onboarding yet','Onboarding stays enquiry + reservation. Ordering setup is a 4-step guide inside Orders until onboarding is redesigned.']]],
- events:['Events turns private-event and large-group calls into sales leads. Configuration only: spaces and settings. Inquiries show up in Calls with labels.',[
-  ['decision','A lead, not a booking','Allie qualifies, explains the merchant’s rules, captures the details and notifies the event manager. She never confirms an event, quotes a final price, takes a deposit or discusses refunds.'],
-  ['decision','No leads workspace, no integration','Event calls live in Calls (Private event, Large party, Tour request, Catering) with an Event inquiry panel and a simple follow-up status.'],
-  ['open','Large-party threshold is a setting','Merchants split large party from event by party size, so both lines are configurable.']]],
+ events:['Events captures private-event and large-group inquiries from callers and relays them to the merchant. Not merchant-hosted events.',[
+  ['decision','A lead, not a booking','Allie qualifies, captures the details and notifies the event manager. She never confirms an event, quotes a final price, takes a deposit or discusses refunds.'],
+  ['decision','Dashboard in Events, config in Settings','Inquiries and their status live in the Events dashboard. Calls stay plain call logs with a Private event label.'],
+  ['open','Spaces are optional','Merchants with rooms add name and capacity. Others just capture inquiries.']]],
  orders:['Every phone order. States follow LimeTray. The POS sync switch sits top right because it decides where orders are accepted and moved: on the POS, or here.',[
   ['decision','Two ways an order is handled','POS connected (sync on): the order goes straight to the POS; accept, decline and statuses happen there and show here read-only. No POS: accept or decline here (or auto-accept), then move it Preparing → Ready → Picked up / Out for delivery → Delivered here.'],
   ['parity','Paid orders go straight to the kitchen','Same as Maple’s pay-by-link: the card is charged when the caller pays, and the order skips approval. No card holds. Only pay-at-pickup orders wait for Accept, and those cost nothing to decline.'],
@@ -1785,120 +1758,79 @@ function evOnboard(){const dis=canEd()?'':'disabled';
     <button class="src" ${dis} onclick="evStart('spaces')"><span class="ic ic-mint">${I.store}</span><span><span class="t" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">Add your event spaces ${pill('p-green','Recommended')}</span><span class="s" style="display:block">Guided setup for rooms, pricing and rules.</span></span></button>
     <button class="src" ${dis} onclick="evStart('inquiry')"><span class="ic ic-dust">${I.phone}</span><span><span class="t" style="display:block">Capture inquiries only (no dedicated spaces)</span><span class="s" style="display:block">Skip spaces. Go straight to settings.</span></span></button></div>
    </div>`;}
-function evSeed(){EV.spaces=mkEvSpaces();EV.set=EV_SET0();EV.sw=clone(EV.set);}
+function evSeed(){EV.set.spaces=mkEvSpaces();EV.set=EV_SET0();EV.sw=clone(EV.set);}
 function evRebuildCalls(){DB.calls=evMerge(DB.calls.filter(c=>!c.ev));S.calls.sel=null;if(EV.state!=='live'&&S.calls.tab.startsWith('e-'))S.calls.tab='all';}
 const EV_TABIDS=()=>CTABS.filter(t=>t[3]).map(t=>t[0]);
-function evStart(m){if(!canEd())return;EV.state='live';EV.mode=m;EV.paused=false;EV.sel=null;EV.w=null;EV.set=EV_SET0();EV.sw=clone(EV.set);
-  EV.demo=false;
-  if(m==='spaces'){EV.spaces=mkEvSpaces(true);EV.view='spaces';EV.tour={s:0};}else{EV.spaces=[];EV.view='spaces';EV.tour={s:1};S.route='settings';S.set='ev-notify';}
-  evRebuildCalls();render();toast(m==='spaces'?'Events is on · add your first space':'Events is on · capturing inquiries only');}
+function evStart(m){if(!canEd())return;EV.state='live';EV.mode=m;EV.demo=false;EV.paused=false;EV.set=EV_SET0();EV.set.spaces=m==='spaces'?mkEvSpaces(true):[];EV.sw=clone(EV.set);EV.tab='new';EV.selId=null;EV.kind='all';
+  EV.tour={s:m==='spaces'?0:1};S.route='settings';S.set=EVTOUR[EV.tour.s].set;evRebuildCalls();render();toast(m==='spaces'?'Events is on · add your first space':'Events is on · capturing inquiries only');}
 function setEvState(k){if(k===EV.state)return;
-  if(k==='live'){EV.state='live';EV.demo=true;EV.mode='spaces';EV.spaces=mkEvSpaces(false);EV.set=EV_SET0();EV.sw=clone(EV.set);EV.view='spaces';}
-  else{EV.state='day1';EV.demo=false;EV.mode=null;EV.spaces=[];EV.set=EV_SET0();EV.sw=null;EV.view='spaces';EV.paused=false;}
-  EV.sel=null;EV.w=null;EV.tour=null;evRebuildCalls();go('events');toast('Events: '+(k==='live'?'Live · 4 spaces, 10 inquiry calls':'Day 1 · onboarding'));}
+  EV.set=EV_SET0();EV.tab='new';EV.selId=null;EV.kind='all';EV.tour=null;EV.paused=false;
+  if(k==='live'){EV.state='live';EV.demo=true;EV.mode='spaces';EV.set.spaces=mkEvSpaces(false);EV.set.notes=evDemoNotes();}
+  else{EV.state='day1';EV.demo=false;EV.mode=null;}
+  EV.sw=clone(EV.set);evRebuildCalls();go('events');toast('Events: '+(k==='live'?'Live · 4 spaces, 10 inquiries':'Day 1 · onboarding'));}
 function setRole(r){S.role=r;EV.delArm=false;render();toast('Viewing as '+r+(r==='Staff'?' · read-only for Events':''));}
 
-/* ── shell: secondary sidebar + scroll-spy ── */
-const EVSEC={form:[['basics','Basics'],['capacity','Capacity'],['avail','Availability'],['pricing','Pricing'],['deposit','Deposit'],['menus','Menus'],['rules','House rules']],set:[['thr','Thresholds'],['ai','What the AI may say'],['qs','Questions to collect'],['notify','Notifications'],['xfer','Always transfer']]};
-const evSpy=k=>`<nav class="spy" aria-label="Sections"><div class="eyebrow" style="font-size:11px;padding:0 0 8px 14px">On this page</div>${EVSEC[k].map((s,i)=>`<button type="button" class="${i?'':'on'}" data-sec="${s[0]}" onclick="goSection('${s[0]}')">${s[1]}</button>`).join('')}</nav>`;
-function goSection(id){const sc=$('ev-scroll'),el=$('ev-sec-'+id);if(!sc||!el)return;sc.scrollTo({top:el.getBoundingClientRect().top-sc.getBoundingClientRect().top+sc.scrollTop-18,behavior:'smooth'});document.querySelectorAll('.spy button').forEach(b=>b.classList.toggle('on',b.dataset.sec===id));}
-function evSpyUpd(){const sc=$('ev-scroll');if(!sc)return;const bs=[...document.querySelectorAll('.spy button')];if(!bs.length)return;let cur=bs[0].dataset.sec;
-  bs.forEach(b=>{const el=$('ev-sec-'+b.dataset.sec);if(el&&el.getBoundingClientRect().top-sc.getBoundingClientRect().top<=140)cur=b.dataset.sec;});
-  if(sc.scrollTop+sc.clientHeight>=sc.scrollHeight-4)cur=bs[bs.length-1].dataset.sec;
-  bs.forEach(b=>b.classList.toggle('on',b.dataset.sec===cur));}
-function evAfter(){const sc=$('ev-scroll');if(sc){sc.addEventListener('scroll',evSpyUpd,{passive:true});evSpyUpd();}}
-function evNav(v){EV.view=v;EV.sel=null;EV.w=null;EV.delArm=false;if(v==='settings'&&!EV.sw)EV.sw=clone(EV.set);render();}
-const evScoped=()=>EV.spaces.filter(s=>S.outlet==='all'||s.outlet===S.outlet);
+/* ── Events dashboard (like Reservations): inquiries list + detail. Configuration lives in Settings > EVENTS. ── */
+const evSec=(id,t,d,body)=>`<section class="scard" id="ev-sec-${id}"><div class="scard-h"><div><div class="h3">${t}</div>${d?`<div class="fh">${d}</div>`:''}</div></div>${body}</section>`;
+const EVSEC={};const evSpy=()=>'';
+function goSection(){}function evSpyUpd(){}function evAfter(){}
+const ETABS=[['new','New',c=>c.ev.fu==='New'],['contacted','Contacted',c=>c.ev.fu==='Contacted'],['closed','Closed',c=>c.ev.fu==='Closed'],['all','All',()=>true]];
+const EVK=['all','Private event','Large party','Tour request','Catering'];
+const evFit=(o,g)=>EV.set.spaces.find(s=>s.outlet===o&&g>=+s.minG&&g<=+s.maxG)||null;
+const evKPill=c=>pill(EV_LCLS[c.ev.label],c.ev.label),evSPill=c=>pill(EV_FUCLS[c.ev.fu],c.ev.fu);
+function evSt(id,s){if(!canEd())return;DB.calls.find(x=>x.id===id).ev.fu=s;toast('Marked '+s.toLowerCase());render();}
+function evTab(t){EV.tab=t;EV.selId=null;render();}
 function vEvents(){
   if(EV.state==='day1')return evOnboard();
-  const n=evScoped().length,cn=DB.calls.filter(c=>c.ev&&inScope(c)).length;
-  return `<div class="sset"><nav class="snav" aria-label="Events">
-   <div class="sn-sec">EVENTS</div>
-   <button class="sn ${EV.view==='spaces'?'on':''}" id="ev-nav-spaces" onclick="evNav('spaces')">${icoS('store',18)}Spaces<span class="b">${n}</span></button>
-   <div class="scope-note">Inquiries appear in Calls.<button class="linkbtn" style="margin-top:8px;display:block" onclick="goSet('ev-thr')">Event settings →</button><button class="linkbtn" style="margin-top:8px;display:block" onclick="S.calls.tab='${EV_TABIDS()[0]}';go('calls')">View ${cn} event call${cn===1?'':'s'} →</button></div></nav>
-   <div class="scroll" id="ev-scroll"><div class="spage evpage">${EV.paused?`<div class="banner b-amber">${I.warn}<div>Events is paused. ${BRAND.agent} transfers private-event calls to a human instead of capturing them.</div>${canEd()?`<button class="btn btn-line btn-sm" onclick="EV.paused=false;render();toast('Events resumed')">Resume</button>`:''}</div>`:''}
-   ${EV.sel?evForm():evList()}</div></div></div>`;}
-
-/* ── Spaces list ── */
-function evAvailTxt(s){const on=DAYS.filter(d=>s.avail[d].on);if(!on.length)return 'No days set';const hs=new Set(on.map(d=>s.avail[d].from+'–'+s.avail[d].to));return (on.length===7?'Every day':on.join(', '))+' · '+(hs.size===1?[...hs][0]:'hours vary');}
-function evPriceTxt(s){const p=s.pricing;
-  if(p.model==='day'){const a=p.day.map(x=>+x.amt).filter(Boolean);return a.length?'Minimum spend '+m0(Math.min(...a))+'–'+m0(Math.max(...a))+' by day':'Minimum spend by day (not filled in)';}
-  if(p.model==='tier'){const a=p.tier.map(x=>+x.amt).filter(Boolean);return a.length?'Minimum spend '+m0(Math.min(...a))+'–'+m0(Math.max(...a))+' by party size':'Tiers not filled in';}
-  if(p.model==='pp'){const a=p.pp.map(x=>+x.pp).filter(Boolean);return a.length?'Packages from '+m0(Math.min(...a))+' per person':'Packages not filled in';}
-  if(p.model==='fee')return 'Room fee '+m0(p.fee.room||0)+' + '+m0(p.fee.fb||0)+' F&B minimum';
-  return 'Quote on request';}
-function evDepTxt(s){const d=s.dep;return d.type==='none'?'No deposit':(d.type==='fixed'?m0(d.val||0):(d.val||0)+'% of minimum')+' deposit · '+(d.refund?'refundable':'non-refundable');}
-function evList(){const sp=evScoped(),ed=canEd();
-  const head=`<div class="spage-h"><div><div class="eyebrow">Events</div><div class="h1-lg" style="margin-top:4px">Event spaces</div></div><div class="scope">${S.outlet==='all'?'All outlets':'Outlet · '+esc(ON(S.outlet).name)}</div></div>`;
-  const add=`<div class="row-h"><span class="small muted">${sp.length} space${sp.length===1?'':'s'}${S.outlet==='all'?' across '+new Set(sp.map(x=>x.outlet)).size+' outlets':''}</span><div class="r"><button class="btn btn-dark" id="ev-add" ${dA()} onclick="evOpen('new')">${I.plus} Add space</button></div></div>`;
-  let body='';
-  if(EV.mode==='inquiry'&&!EV.spaces.length)body+=`<div class="banner b-dust">${I.bulb}<div><b>Capturing inquiries only.</b> No spaces suggested.</div></div>`;
-  if(!sp.length)body+=`<div class="card"><div class="empty"><div class="empty-i">${I.store}</div><div class="empty-t">No event spaces${S.outlet==='all'?'':' at '+esc(ON(S.outlet).short)} yet</div>${ed?`<button class="btn btn-line" style="margin-top:8px" onclick="evOpen('new')">${I.plus} Add a space</button>`:''}</div></div>`;
-  else{const outs=[...new Set(sp.map(x=>x.outlet))];
-    body+=outs.map(o=>`${S.outlet==='all'?`<div class="lbl" style="margin:6px 0 -6px">${esc(ON(o).name)}</div>`:''}<div class="card" style="padding:6px 18px">${sp.filter(x=>x.outlet===o).map(s=>`<div class="spc"><div class="spc-m"><div class="spc-n"><span>${esc(s.name)}</span>${pill('p-grey',s.type)}${s.active?'':pill('p-amber','Hidden from Allie')}</div>
-      <div class="spc-l"><span>${icoS('agent',14)} ${s.minG}–${s.maxG} guests seated${s.stand?' · '+s.stand+' standing':''}</span><span>${icoS('clock',14)} ${esc(evAvailTxt(s))}</span><span>${icoS('dollar',14)} ${esc(evPriceTxt(s))}</span><span>${icoS('card',14)} ${esc(evDepTxt(s))}</span></div></div>
-      <div class="spc-r"><button class="tog ${s.active?'on':''}" ${dA()} aria-label="${esc(s.name)} active" aria-pressed="${s.active}" onclick="evActive('${s.id}')"></button><button class="btn btn-soft btn-sm" onclick="evOpen('${s.id}')">${ed?'Edit':'View'}</button></div></div>`).join('')}</div>`).join('');}
-  return head+evViewOnly()+add+body;}
-function evActive(id){const s=EV.spaces.find(x=>x.id===id);s.active=!s.active;render();toast(s.name+(s.active?' is visible to '+BRAND.agent:' is hidden from '+BRAND.agent));}
-function evOpen(id){EV.delArm=false;if(id==='new'){const o=S.outlet==='all'?'wp':S.outlet;EV.w={id:'sp-'+Date.now(),outlet:o,active:true,name:'',type:'Private room',photos:[],desc:'',minG:10,maxG:40,stand:'',avail:evAvail(['Fri','Sat'],'6:00 PM','11:00 PM'),durMin:2,durMax:4,pricing:evPr0(),dep:{type:'none',val:'',refund:true},menu:{from:'',entree:'',app:'',dessert:'',drink:''},rules:{deco:'',ent:'',cake:'',cakeFee:'',grat:20},_new:true};}
-  else EV.w=clone(EV.spaces.find(x=>x.id===id));EV.sel=id;render();const s=$('ev-scroll');if(s)s.scrollTop=0;}
-function evSave(){const w=EV.w;if(!w.name.trim()){toast('Give the space a name');return;}if(!(+w.minG>0)||!(+w.maxG>=+w.minG)){toast('Max guests must be at least the minimum');return;}
-  const isNew=w._new;delete w._new;const k=EV.spaces.findIndex(x=>x.id===w.id);if(k>=0)EV.spaces[k]=w;else EV.spaces.push(w);EV.sel=null;EV.w=null;render();toast(w.name+(isNew?' added':' saved')+' · '+BRAND.agent+' uses it from the next call');}
-function evDel(){if(!EV.delArm){EV.delArm=true;evR();return;}const n=EV.w.name||'Space';EV.spaces=EV.spaces.filter(x=>x.id!==EV.w.id);EV.sel=null;EV.w=null;EV.delArm=false;render();toast(n+' deleted');}
-
-/* ── Space form ── */
-const evSec=(id,t,d,body)=>`<section class="scard" id="ev-sec-${id}"><div class="scard-h"><div><div class="h3">${t}</div>${d?`<div class="fh">${d}</div>`:''}</div></div>${body}</section>`;
-function evForm(){const w=EV.w,ed=canEd(),pr=w.pricing;
-  const dayRows=DAYS.map((d,i)=>`<tr><td style="width:120px;font-weight:600">${d}</td><td>${evInp('w.pricing.day['+i+'].amt',pr.day[i].amt,{t:'number',min:0,num:1,pre:'$',cls:'sm',al:d+' minimum spend',ph:'0'})}</td></tr>`).join('');
-  const priceBody={
-   none:`<div class="banner b-grey">${I.bulb}<div>Quote on request. No price shared.</div></div>`,
-   day:`<div class="tblw"><table class="tbl sizes"><thead><tr><th>Day</th><th>Minimum spend</th></tr></thead><tbody>${dayRows}</tbody></table></div>`,
-   tier:`<div class="tblw"><table class="tbl sizes"><thead><tr><th>From guests</th><th>To guests</th><th>Minimum spend</th><th></th></tr></thead><tbody>${pr.tier.map((t,i)=>`<tr><td>${evInp('w.pricing.tier['+i+'].from',t.from,{t:'number',min:1,num:1,cls:'sm',al:'From guests'})}</td><td>${evInp('w.pricing.tier['+i+'].to',t.to,{t:'number',min:1,num:1,cls:'sm',al:'To guests'})}</td><td>${evInp('w.pricing.tier['+i+'].amt',t.amt,{t:'number',min:0,num:1,pre:'$',cls:'sm',al:'Minimum spend'})}</td><td>${ed?`<button class="ib" aria-label="Remove tier" onclick="evRm('w.pricing.tier',${i})">${I.x}</button>`:''}</td></tr>`).join('')||'<tr><td colspan="4" class="muted">No tiers yet</td></tr>'}</tbody></table></div>${ed?`<button class="btn btn-soft btn-sm" style="align-self:flex-start" onclick="evAdd('w.pricing.tier',{from:'',to:'',amt:''})">${I.plus} Add tier</button>`:''}`,
-   pp:`<div class="tblw"><table class="tbl sizes"><thead><tr><th>Package</th><th>Per person</th><th>Min guests</th><th>What’s included</th><th></th></tr></thead><tbody>${pr.pp.map((t,i)=>`<tr><td>${evInp('w.pricing.pp['+i+'].n',t.n,{al:'Package name',ph:'Package name'})}</td><td>${evInp('w.pricing.pp['+i+'].pp',t.pp,{t:'number',min:0,num:1,pre:'$',cls:'sm',al:'Price per person'})}</td><td>${evInp('w.pricing.pp['+i+'].min',t.min,{t:'number',min:1,num:1,cls:'sm',al:'Minimum guests'})}</td><td>${evInp('w.pricing.pp['+i+'].d',t.d,{al:'What is included',ph:'What’s included'})}</td><td>${ed?`<button class="ib" aria-label="Remove package" onclick="evRm('w.pricing.pp',${i})">${I.x}</button>`:''}</td></tr>`).join('')||'<tr><td colspan="5" class="muted">No packages yet</td></tr>'}</tbody></table></div>${ed?`<button class="btn btn-soft btn-sm" style="align-self:flex-start" onclick="evAdd('w.pricing.pp',{n:'',pp:'',min:'',d:''})">${I.plus} Add package</button>`:''}`,
-   fee:`<div class="frow">${evFld('Room fee','',evInp('w.pricing.fee.room',pr.fee.room,{t:'number',min:0,num:1,pre:'$',al:'Room fee'}))}${evFld('F&B minimum','',evInp('w.pricing.fee.fb',pr.fee.fb,{t:'number',min:0,num:1,pre:'$',al:'F&B minimum'}))}</div>`}[pr.model];
-  const note=['day','tier','fee'].includes(pr.model)?`<div class="banner b-amber">${I.warn}<div>Minimum spend is <b>before tax and gratuity</b>.</div></div>`:'';
-  const dep=w.dep;
-  const availRows=DAYS.map(d=>{const a=w.avail[d];return `<tr><td style="width:96px;font-weight:600">${d}</td><td style="width:70px">${evTog('w.avail.'+d+'.on',d+' bookable')}</td><td>${a.on?`<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">${evSelB('w.avail.'+d+'.from',a.from,EV_TIMES,'sm')}<span class="muted">to</span>${evSelB('w.avail.'+d+'.to',a.to,EV_TIMES,'sm')}</div>`:'<span class="muted small">Not bookable</span>'}</td></tr>`;}).join('');
-  return `<div class="spage-h"><div><button class="btn btn-ghost btn-sm" style="margin-left:-10px" onclick="evNav('spaces')">${I.back} All spaces</button><div class="h1-lg" style="margin-top:4px">${w._new?'New event space':esc(w.name||'Untitled space')}</div></div><div class="scope">${esc(ON(w.outlet).name)}</div></div>${evViewOnly()}
-  <div class="evcols"><div class="evmain">
-  ${evSec('basics','Basics','',`<div class="frow">${evFld('Outlet','',`<select class="inp" ${w._new?dA():'disabled'} onchange="evV('w.outlet',this.value);evR()" aria-label="Outlet">${OUTLETS.map(o=>`<option value="${o.id}" ${o.id===w.outlet?'selected':''}>${esc(o.name)}</option>`).join('')}</select>`)}${evFld('Space name','',evInp('w.name',w.name,{ph:'e.g. The Private Room',al:'Space name'}))}</div>
-   ${evFld('Type','',evSeg('w.type',w.type,EV_TYPES.map(t=>[t,t])))}
-   ${evFld('Photos','',`<div class="thumbs">${w.photos.map((n,i)=>`<div class="thumb"><div class="img"></div><div class="c">${esc(n)}</div>${ed?`<button class="ib" style="width:100%;border-radius:0" aria-label="Remove photo" onclick="evRm('w.photos',${i})">${I.x}</button>`:''}</div>`).join('')}${ed?`<button class="thumb" style="height:auto;min-height:140px;border:2px dashed var(--border-s);background:var(--panel);cursor:pointer;color:var(--ink-50);font-size:13px" onclick="evAdd('w.photos','photo-'+(EV.w.photos.length+1)+'.jpg')">${I.plus}<br>Add photo</button>`:''}</div>`)}
-   ${evFld('Description (read out by '+BRAND.agent+')',evTa('w.desc',w.desc,'Describe the room: look and feel, what it’s best for.'))}`)}
-  ${evSec('capacity','Capacity','',`<div class="frow3">${evFld('Minimum guests','',evInp('w.minG',w.minG,{t:'number',min:1,num:1,al:'Minimum guests'}))}${evFld('Maximum seated','',evInp('w.maxG',w.maxG,{t:'number',min:1,num:1,al:'Maximum seated'}))}${evFld('Maximum standing','',evInp('w.stand',w.stand,{t:'number',min:0,num:1,al:'Maximum standing'}))}</div>`)}
-  ${evSec('avail','Availability','',`<div class="tblw"><table class="tbl sizes"><thead><tr><th>Day</th><th>Bookable</th><th>Time window</th></tr></thead><tbody>${availRows}</tbody></table></div>
-   <div class="frow">${evFld('Shortest event (hours)','',evInp('w.durMin',w.durMin,{t:'number',min:1,num:1,suf:'hours',al:'Shortest event hours'}))}${evFld('Longest event (hours)','',evInp('w.durMax',w.durMax,{t:'number',min:1,num:1,suf:'hours',al:'Longest event hours'}))}</div>`)}
-  ${evSec('pricing','Pricing model','',`${evSeg('w.pricing.model',pr.model,EV_PRICING.map(p=>[p[0],p[1]]))}${priceBody}${note}`)}
-  ${evSec('deposit','Deposit','Display only. Never collected on the call.',`${evSeg('w.dep.type',dep.type,[['none','No deposit'],['fixed','Fixed $'],['pct','% of minimum']])}
-   ${dep.type!=='none'?`<div class="frow">${evFld(dep.type==='fixed'?'Deposit amount':'Deposit percentage','',evInp('w.dep.val',dep.val,{t:'number',min:0,num:1,pre:dep.type==='fixed'?'$':null,suf:dep.type==='pct'?'%':null,al:'Deposit'}))}${evFld('Refundable?','',evSeg('w.dep.refund',dep.refund,[[true,'Refundable'],[false,'Non-refundable']]))}</div>`:''}`)}
-  ${evSec('menus','Menus','',`${evFld('Set menu available from','',evInp('w.menu.from',w.menu.from,{t:'number',min:1,num:1,suf:'guests',al:'Set menu from guests'}),'max-width:260px')}
-   <div class="frow4">${[['entree','Entrées'],['app','Appetizers'],['dessert','Desserts'],['drink','Drinks']].map(x=>evFld(x[1]+' per guest','',evInp('w.menu.'+x[0],w.menu[x[0]],{t:'number',min:0,num:1,suf:'max',al:x[1]+' per guest'}))).join('')}</div>`)}
-  ${evSec('rules','House rules','',`${evFld('Decorations','',evTa('w.rules.deco',w.rules.deco,'What guests can and can’t bring or set up.'))}${evFld('Entertainment / DJ','',evTa('w.rules.ent',w.rules.ent,'Live music, DJs, speakers, volume.'))}
-   <div class="frow">${evFld('Outside cake policy','',evTa('w.rules.cake',w.rules.cake,'Allowed? Any conditions?'))}${evFld('Cake fee','',evInp('w.rules.cakeFee',w.rules.cakeFee,{ph:'e.g. $2.50 per person',al:'Cake fee'}))}</div>
-   ${evFld('Automatic gratuity','',evInp('w.rules.grat',w.rules.grat,{t:'number',min:0,num:1,suf:'%',al:'Automatic gratuity'}),'max-width:240px')}`)}
-  </div>${evSpy('form')}</div>
-  <div class="evbar"><span class="small muted">${w._new?'New space':'Editing'} · ${esc(ON(w.outlet).short)}</span><div style="margin-left:auto;display:flex;gap:10px">${ed?`${w._new?'':`<button class="btn ${EV.delArm?'btn-red':'btn-soft'}" onclick="evDel()">${EV.delArm?'Click again to delete':'Delete'}</button>`}`:''}<button class="btn btn-ghost" onclick="evNav('spaces')">${ed?'Cancel':'Back'}</button>${ed?`<button class="btn btn-dark" onclick="evSave()">Save space</button>`:''}</div></div>`;}
-
+  const all=DB.calls.filter(c=>c.ev&&inScope(c)),fn=ETABS.find(t=>t[0]===EV.tab)[2],rows=all.filter(c=>fn(c)&&(EV.kind==='all'||c.ev.label===EV.kind));
+  const c=all.find(x=>x.id===EV.selId)||rows[0];
+  let h=`<div class="work">${EV.paused?`<div class="banner b-amber">${I.warn}<div>Events is paused. ${BRAND.agent} transfers event calls to a human.</div>${canEd()?`<button class="btn btn-line btn-sm" onclick="EV.paused=false;render();toast('Events resumed')">Resume</button>`:''}</div>`:''}${evViewOnly()}
+   <div class="row-h"><div class="ptabs">${ETABS.map(t=>{const n=all.filter(t[2]).length;return `<button class="ptab ${EV.tab===t[0]?'on':''}" onclick="evTab('${t[0]}')">${t[1]}${n?` <span class="n">${n}</span>`:''}</button>`;}).join('')}</div>
+   <div class="r"><button class="btn btn-soft" onclick="goSet('ev-spaces')">${I.gear} Event settings</button></div></div>
+   <div class="fchips">${EVK.map(k=>`<button class="fchip ${EV.kind===k?'on':''}" onclick="EV.kind='${k}';EV.selId=null;render()">${k==='all'?'All types':k}</button>`).join('')}</div>
+   <div class="split"><div class="card lcard"><div class="lst">`;
+  if(!rows.length)h+=`<div class="soft-empty">${all.length?'Nothing here':'No inquiries yet. Event calls will show up here.'}</div>`;
+  rows.forEach(x=>{const e=x.ev;h+=`<button class="it ${c&&x.id===c.id?'on':''} ${e.fu==='New'?'pend':''}" onclick="EV.selId='${x.id}';render()"><span class="av ${x.av}">${x.ini}</span><span class="it-m"><span class="it-n">${esc(x.name)} ${evKPill(x)}</span><span>${evSPill(x)}</span><span class="it-s">${esc(e.etype)} · ${e.guests} guests<br>${e.date} · ${e.time}${S.outlet==='all'?' · '+ON(x.outlet).short:''}</span></span><span class="it-r"><span class="t">${clock(x.min)}</span><span class="s">${callDate(x)}</span></span></button>`;});
+  h+='</div></div><div class="card dcard">';
+  if(!c)h+='<div class="dempty">Select an inquiry</div>';
+  else{const e=c.ev,sp=evFit(c.outlet,e.guests),d=canEd()?'':'disabled',B=(s,cls,t)=>`<button class="btn ${cls}" ${d} onclick="evSt('${c.id}','${s}')">${t}</button>`;
+   const acts=e.fu==='New'?B('Contacted','btn-line','Mark contacted')+B('Closed','btn-soft','Close'):e.fu==='Contacted'?B('Closed','btn-line','Close')+B('New','btn-ghost','Back to new'):B('New','btn-line','Reopen');
+   const f=[['Name',c.name],['Phone',c.phone],['Email',e.email],['Event type',e.etype],['Budget',e.budget||'Not given']].concat(e.tour?[['Tour request',e.tour]]:[]);
+   h+=`<div class="dbody"><div class="dsec"><div class="d-name">${esc(c.name)} ${evSPill(c)}</div><div class="d-sub"><span>${e.label}</span>·<span>${c.phone}</span>·<span>${esc(ON(c.outlet).short)}</span></div><div class="d-acts">${acts}</div>${canEd()?'':`<div class="fh">${icoS('lock',13)} Only an Owner or Manager can change the status.</div>`}
+    <div class="meta3"><div class="meta"><div class="v">${e.date}</div><div class="l">${e.time}</div></div><div class="meta"><div class="v">${e.guests}</div><div class="l">guests</div></div><div class="meta"><div class="v">${esc(ON(c.outlet).short)}</div><div class="l">outlet</div></div></div>
+    <div class="aisum"><div class="k">${I.bulb} AI SUMMARY</div><p>${esc(c.sum)}.</p></div></div>
+   <div class="dsec"><div class="dsec-l">Details</div><div class="kv">${f.map(x=>`<div><div class="k">${x[0]}</div><div class="v">${esc(x[1])}</div></div>`).join('')}<div style="grid-column:1/-1"><div class="k">Notes</div><div class="v" style="font-weight:400">${esc(e.notes||'None')}</div></div></div></div>
+   <div class="dsec"><div class="dsec-l">Suggested space</div>${sp?`<div class="req" style="cursor:default"><span class="av mint">${I.store}</span><span class="m"><span class="t">${esc(sp.name)}</span><span class="s" style="display:block">Seats ${sp.minG}–${sp.maxG}${sp.minSpend?' · from '+m0(sp.minSpend)+' minimum spend, before tax and gratuity':''}${sp.deposit?'<br>Deposit: '+esc(sp.deposit):''}</span></span></div>`:`<div class="muted small">${EV.set.spaces.some(s=>s.outlet===c.outlet)?'No space fits this party size.':'No spaces set up at this outlet.'} ${BRAND.agent} passed the request to the manager.</div>`}<div class="fh">${BRAND.agent} did not confirm the date, quote a final price or take a deposit.</div></div>
+   <div class="dsec"><div class="dsec-l">Notification</div><div class="req" style="cursor:default"><span class="av">${I.bell}</span><span class="m"><span class="s" style="display:block;white-space:normal;overflow:visible;text-overflow:clip">${esc(e.notif)}</span></span>${pill('p-green','Sent')}</div><button class="btn btn-soft btn-sm" style="align-self:flex-start" onclick="S.calls.sel='${c.id}';go('calls')">View call ${I.arrow}</button></div></div>`;}
+  return h+'</div></div></div>';}
+function evOverview(){}
 /* ── Settings ── */
-function evPreview(){const sy=EV.sw.say,sp=EV.spaces.find(x=>x.outlet===(S.outlet==='all'?'wp':S.outlet)&&x.type==='Private room')||EV.spaces[0];
-  if(!sp)return `“Thanks for calling. I can take your event details and our event manager will get back to you. I can’t confirm dates or prices on the phone.”`;
-  const bits=[];if(sy.capacity)bits.push('it seats '+sp.minG+' to '+sp.maxG+' guests');
-  if(sy.minSpend&&sp.pricing.model!=='none')bits.push('the minimum spend is '+evPriceTxt(sp).replace('Minimum spend ','').replace(' by day',' depending on the day').replace(' by party size',' depending on party size')+', before tax and gratuity');
-  if(sy.deposit&&sp.dep.type!=='none')bits.push('there is a '+evDepTxt(sp).split(' · ')[0]+' that the team will explain');
-  return `“${sp.name}: ${bits.length?bits.join('; ')+'. ':''}${sy.tours?'I can note a tour request for you. ':''}I can’t confirm the date or give a final quote, so I’ll pass your details to our event manager.”`;}
+function evPreview(){const sy=EV.sw.say,o=S.outlet==='all'?'wp':S.outlet,sp=EV.sw.spaces.find(x=>x.outlet===o)||EV.sw.spaces[0],note=(EV.sw.notes[o]||'').trim(),bits=[];
+  if(sp&&sy.capacity)bits.push(sp.name+' seats '+sp.minG+' to '+sp.maxG+' guests');
+  if(sp&&sy.minSpend&&+sp.minSpend)bits.push('minimum spend starts at '+m0(sp.minSpend)+', before tax and gratuity');
+  if(sp&&sy.deposit&&sp.deposit)bits.push('there is a deposit: '+sp.deposit);
+  return '“'+(sy.offer&&note?note+' ':'')+(bits.length?bits.join('; ')+'. ':'')+(sy.tours?'I can note a tour request. ':'')+'I can’t confirm the date or give a final quote, so I’ll pass your details to our event manager.”';}
+function evSpacesCard(){const w=EV.sw,ed=canEd(),rows=w.spaces.map((s,i)=>[s,i]).filter(x=>S.outlet==='all'||x[0].outlet===S.outlet),p=i=>'sw.spaces['+i+']';
+  return (rows.length?`<div class="tblw"><table class="tbl sizes" style="min-width:900px"><thead><tr><th>Outlet</th><th>Name</th><th>Min guests</th><th>Max guests</th><th>Min spend</th><th>Deposit</th><th></th></tr></thead><tbody>${rows.map(([s,i])=>`<tr><td><select class="inp" style="min-width:150px" ${dA()} onchange="evV('${p(i)}.outlet',this.value)" aria-label="Outlet">${OUTLETS.map(o=>`<option value="${o.id}" ${o.id===s.outlet?'selected':''}>${esc(o.short)}</option>`).join('')}</select></td><td>${evInp(p(i)+'.name',s.name,{ph:'Space name',al:'Space name',cls:'nm'})}</td><td>${evInp(p(i)+'.minG',s.minG,{t:'number',min:1,num:1,cls:'sm',al:'Min guests'})}</td><td>${evInp(p(i)+'.maxG',s.maxG,{t:'number',min:1,num:1,cls:'sm',al:'Max guests'})}</td><td>${evInp(p(i)+'.minSpend',s.minSpend,{t:'number',min:0,num:1,pre:'$',cls:'sm',al:'Minimum spend',ph:'Optional'})}</td><td>${evInp(p(i)+'.deposit',s.deposit,{ph:'Optional',al:'Deposit'})}</td><td>${ed?`<button class="ib" aria-label="Remove space" onclick="evRm('sw.spaces',${i})">${I.x}</button>`:''}</td></tr>`).join('')}</tbody></table></div><div class="fh">Minimum spend is before tax and gratuity.</div>`:`<div class="soft-empty">No spaces${S.outlet==='all'?'':' at '+esc(ON(S.outlet).short)}. ${BRAND.agent} takes inquiries without suggesting a room.</div>`)
+   +(ed?`<button class="btn btn-soft btn-sm" id="ev-add-space" style="align-self:flex-start" onclick="evAdd('sw.spaces',{id:'sp-'+Date.now(),outlet:'${S.outlet==='all'?'wp':S.outlet}',name:'',minG:10,maxG:30,minSpend:'',deposit:'',note:''})">${I.plus} Add space</button>`:'');}
+function evOfferCard(){const o=S.outlet==='all'?(EV.offerO||'wp'):S.outlet;
+  return (S.outlet==='all'?`<select class="inp" style="max-width:260px" onchange="EV.offerO=this.value;evR()" aria-label="Outlet">${OUTLETS.map(x=>`<option value="${x.id}" ${x.id===o?'selected':''}>${esc(x.name)}</option>`).join('')}</select>`:'')
+   +evTa('sw.notes.'+o,EV.sw.notes[o]||'','e.g. We host groups of up to 30 in our main dining room. Minimum spend applies.');}
 function evSettings(){return evPage('thr','','');}
 function evPage(id,t,d){
   if(EV.state==='day1')return sH(t,d,'all')+`<div class="scard"><div class="empty"><div class="empty-i">${I.cal}</div><div class="empty-t">Set up Events first</div><div class="empty-s">These settings apply once Events is on.</div><button class="btn btn-line" style="margin-top:8px" onclick="go('events')">Go to Events</button></div></div>`;
   if(!EV.sw)EV.sw=clone(EV.set);
-  const full=evSettingsAll(),m=full.match(new RegExp('<section class="scard" id="ev-sec-'+id+'">[\\s\\S]*?</section>'));
+  const full=evSettingsAll(),m=id.split(',').map(i=>full.match(new RegExp('<section class="scard" id="ev-sec-'+i+'">[\\s\\S]*?</section>'))).filter(Boolean).map(x=>x[0]);
   const bar=full.match(/<div class="evbar">[\s\S]*$/);
-  return sH(t,d,'all')+evViewOnly()+`<div class="banner b-dust">${I.lock}<div><b>${BRAND.agent} never</b> confirms events, quotes final prices, takes deposits or discusses refunds.</div></div>`+(m?m[0].replace(/<div class="scard-h"><div><div class="h3">[^<]*<\/div><\/div><\/div>/,''):'')+(bar?bar[0]:'');}
+  return sH(t,d,'all')+evViewOnly()+`<div class="banner b-dust">${I.lock}<div><b>${BRAND.agent} never</b> confirms events, quotes final prices, takes deposits or discusses refunds.</div></div>`+(m.length?m[0].replace(/<div class="scard-h"><div><div class="h3">[^<]*<\/div><\/div><\/div>/,'')+m.slice(1).join(''):'')+(bar?bar[0]:'');}
 function evSettingsAll(){const w=EV.sw,ed=canEd(),notifyRows=OUTLETS.filter(inScope).map(o=>{const n=w.notify[o.id]||(w.notify[o.id]={name:'',phone:'',email:'',via:'email'}),p='sw.notify.'+o.id;
     return `<tr><td style="font-weight:600;white-space:nowrap">${esc(o.short)}</td><td>${evInp(p+'.name',n.name,{ph:'Not set',al:o.short+' event manager'})}</td><td>${evInp(p+'.phone',n.phone,{ph:'Mobile',al:o.short+' phone'})}</td><td>${evInp(p+'.email',n.email,{ph:'Email',al:o.short+' email'})}</td><td>${evSeg(p+'.via',n.via,[['sms','SMS'],['email','Email'],['both','Both']])}</td></tr>`;}).join('');
-  const sayRows=[['minSpend','Share minimum spend','Estimated, before tax and gratuity.'],['deposit','Share deposit amount','Amount and refundable or not. Never collected.'],['capacity','Share space capacity','How many guests each space seats.'],['tours','Offer tours','Notes a tour request for your manager.']];
+  const sayRows=[['capacity','Share space capacity','How many guests each space seats.'],['minSpend','Share minimum spend','Estimated, before tax and gratuity.'],['deposit','Share deposit','Amount and terms. Never collected.'],['offer','Read out “What we offer”','Your optional note.'],['tours','Offer tours','Notes a tour request for your manager.']];
   return `<div class="spage-h"><div><div class="eyebrow">Events</div><div class="h1-lg" style="margin-top:4px">Events settings</div><p class="desc" style="margin-top:6px">How ${BRAND.agent} handles event calls and who hears about them.</p></div><div class="scope">${S.outlet==='all'?'All outlets':'All outlets · notifications for '+esc(ON(S.outlet).short)}</div></div>${evViewOnly()}
   <div class="banner b-dust">${I.lock}<div><b>What ${BRAND.agent} never does.</b> Confirm an event, quote a final price, take a deposit, or discuss cancellation and refund terms. An event call is a sales lead.</div></div>
   <div class="evcols"><div class="evmain">
+  ${evSec('spaces','Spaces','',evSpacesCard())}
+  ${evSec('offer','What we offer','Optional. '+BRAND.agent+' reads it out as written.',evOfferCard())}
   ${evSec('thr','Thresholds','',`<div class="frow">${evFld('Large-party reservations start at','',evInp('sw.large',w.large,{t:'number',min:2,num:1,suf:'guests or more',al:'Large party threshold'}))}${evFld('Event inquiries start at','',evInp('sw.event',w.event,{t:'number',min:2,num:1,suf:'guests or more',al:'Event threshold'}))}</div>
    ${evFld('Transfer to a human above','',evInp('sw.maxParty',w.maxParty,{t:'number',min:1,num:1,suf:'guests',al:'Transfer above'}),'max-width:340px')}
    ${(+w.event<=+w.large)?`<div class="banner b-red">${I.warn}<div>Event inquiries must start at a larger party size than large-party reservations.</div></div>`:''}
@@ -1917,14 +1849,14 @@ function evSettingsAll(){const w=EV.sw,ed=canEd(),notifyRows=OUTLETS.filter(inSc
 function evSaveSet(){const w=EV.sw;if(+w.event<=+w.large){toast('Event threshold must be above the large-party threshold');return;}if(+w.maxParty<+w.event){toast('The transfer limit must be above the event threshold');return;}EV.set=clone(w);toast('Events settings saved · '+BRAND.agent+' uses them from the next call');}
 
 /* ── Spotlight tour: add a space → who gets notified → what the AI can share ── */
-const EVTOUR=[{v:'spaces',sel:'#ev-add',t:'Add a space',b:'Start with your most-requested room.'},
- {v:'settings',sel:'#ev-sec-notify .scard-h',t:'Set who gets notified',b:'Pick the event manager and how they’re told.'},
- {v:'settings',sel:'#ev-sec-ai',t:'Review what the AI can share',b:'Switch on what Allie may share.'}];
+const EVTOUR=[{set:'ev-spaces',sel:'#ev-add-space',t:'Add a space',b:'Optional. Rooms Allie can suggest.'},
+ {set:'ev-notify',sel:'#ev-sec-notify .scard-h',t:'Set who gets notified',b:'Pick the event manager and how they’re told.'},
+ {set:'ev-ai',sel:'#ev-sec-ai',t:'Review what the AI can share',b:'Switch on what Allie may share.'}];
 function evTourHTML(){const T=EV.tour;if(!T||!['events','settings'].includes(S.route)||EV.state!=='live')return '';const s=EVTOUR[T.s],first=EV.mode==='spaces'?0:1;
   return `<div class="tour-block" onclick="event.stopPropagation()"></div><div class="tour-hole" id="tour-hole"></div><div class="tour-card" id="tour-card" role="dialog" aria-label="Events tour"><div class="eyebrow">Step ${T.s+1-first} of ${3-first}</div><div class="h3" style="margin:4px 0 6px">${s.t}</div><p class="small" style="color:var(--ink-70)">${s.b}</p>
    <div class="tour-f"><button class="btn btn-ghost btn-sm" onclick="evTourEnd(true)">Skip tour</button><span style="flex:1"></span>${T.s>first?`<button class="btn btn-soft btn-sm" onclick="evTour(${T.s-1})">Back</button>`:''}<button class="btn btn-dark btn-sm" onclick="${T.s<2?`evTour(${T.s+1})`:'evTourEnd()'}">${T.s<2?'Next':'Done'}</button></div></div>`;}
-function evTour(n){EV.tour.s=n;EV.sel=null;EV.w=null;if(!EV.sw)EV.sw=clone(EV.set);if(n===0){EV.view='spaces';S.route='events';}else{S.route='settings';S.set=n===1?'ev-notify':'ev-ai';}try{history.replaceState(null,'','#'+S.route);}catch(e){}render();}
-function evTourEnd(skip){EV.tour=null;render();toast(skip?'Tour skipped':'You’re set. Event calls will appear in Calls.');}
+function evTour(n){EV.tour.s=n;S.route='settings';S.set=EVTOUR[n].set;try{history.replaceState(null,'','#settings');}catch(e){}render();}
+function evTourEnd(skip){EV.tour=null;go('events');toast(skip?'Tour skipped':'You’re set. Event calls will appear in Calls.');}
 function evTourPlace(){if(!EV.tour)return;const s=EVTOUR[EV.tour.s],t=document.querySelector(s.sel),h=$('tour-hole'),c=$('tour-card');if(!t||!h||!c)return;
   t.scrollIntoView({block:'center'});requestAnimationFrame(()=>{const r=t.getBoundingClientRect(),P=8;h.style.cssText=`left:${r.left-P}px;top:${r.top-P}px;width:${r.width+2*P}px;height:${r.height+2*P}px`;
    const W=Math.min(360,innerWidth-32);c.style.width=W+'px';let top=r.bottom+P+14;const big=r.height>innerHeight*.5;
@@ -1939,23 +1871,8 @@ function setServices(){const ev=EV.state==='live';
    ${svcRow(I.bag,'Ordering','Phone orders.',DB.orderingOn,`<span style="display:flex;gap:12px;align-items:center">${DB.orderingOn?pill('p-green','On'):pill('p-grey','Off')}<button class="tog ${DB.orderingOn?'on':''}" aria-label="Ordering" onclick="toast('Ordering is outside this Events mockup')"></button></span>`)}
    ${svcRow(I.cal,'Events '+pill('p-dust','New'),'Private events and large groups.',ev&&!EV.paused,`<span style="display:flex;gap:12px;align-items:center">${!ev?pill('p-grey','Not set up'):EV.paused?pill('p-amber','Paused'):pill('p-green','On')}${!ev?`<button class="btn btn-line btn-sm" onclick="go('events')">Set up</button>`:`<button class="tog ${EV.paused?'':'on'}" ${dA()} aria-label="Events" aria-pressed="${!EV.paused}" onclick="EV.paused=!EV.paused;render();toast(EV.paused?'Events paused · event calls transfer to a human':'Events resumed')"></button>`}</span>`)}</div>`;}
 
-/* ── Calls: labels + Event inquiry panel ── */
-const evPill=c=>c.ev?pill(EV_LCLS[c.ev.label],c.ev.label):'';
-function evEst(s,g,dow){const p=s.pricing;
-  if(p.model==='day'){const a=+(p.day.find(x=>x.d===dow)||{}).amt;return a?{t:m0(a)+' minimum spend ('+dow+')',n:'Before tax and gratuity'}:{t:'Quote on request',n:''};}
-  if(p.model==='tier'){const t=p.tier.find(x=>g>=+x.from&&g<=+x.to);return t?{t:m0(t.amt)+' minimum spend ('+t.from+'–'+t.to+' guests)',n:'Before tax and gratuity'}:{t:'Outside the price tiers',n:'Quote on request'};}
-  if(p.model==='pp'){const a=p.pp.filter(x=>+x.pp&&g>=(+x.min||0)).sort((a,b)=>a.pp-b.pp)[0];return a?{t:'From '+m0(a.pp)+' per person · about '+m0(a.pp*g),n:a.n+' · before tax and gratuity'}:{t:'Quote on request',n:''};}
-  if(p.model==='fee')return {t:'Room fee '+m0(p.fee.room||0)+' + '+m0(p.fee.fb||0)+' F&B minimum',n:'F&B minimum is before tax and gratuity'};
-  return {t:'Quote on request',n:'This space has no published pricing'};}
-function evPanel(c){const e=c.ev,ed=canEd(),sp=EV.mode==='inquiry'?null:EV.spaces.find(x=>x.id===e.spaceId),est=sp?evEst(sp,e.guests,evD(e.dt).dow):null;
-  const f=[['Name',c.name],['Phone',c.phone],['Email',e.email],['Event type',e.etype],['Date',e.date+'/2026'],['Time',e.time],['Guests',e.guests+' guests'],['Preferred space',sp?sp.name:'None'],['Budget',e.budget||'Not given']];
-  return `<div class="evp"><div class="dsec-l">Event inquiry</div>
-   <div class="aisum"><div class="k">${I.bulb} AI SUMMARY</div><p>${esc(c.sum)}.</p></div>
-   <div class="kv">${f.map(x=>`<div><div class="k">${x[0]}</div><div class="v">${esc(x[1])}</div></div>`).join('')}${e.tour?`<div><div class="k">Tour request</div><div class="v">${esc(e.tour)}</div></div>`:''}<div style="grid-column:1/-1"><div class="k">Notes</div><div class="v" style="font-weight:400">${esc(e.notes||'None')}</div></div></div>
-   <div class="req" style="cursor:default"><span class="av mint">${I.store}</span><span class="m"><span class="t">Suggested space</span><span class="s" style="display:block">${sp?`<b style="font-weight:600;color:var(--ink)">${esc(sp.name)}</b> · ${esc(ON(sp.outlet).short)} · ${sp.minG}–${sp.maxG} guests${e.guests>sp.maxG||e.guests<sp.minG?' <span style="color:var(--coral-700)">(party size outside range)</span>':''}<br>${esc(est.t)}${est.n?' · '+esc(est.n):''}`:(EV.mode==='inquiry'?'None. Capturing inquiries only, no spaces set up.':'None suggested. This isn’t a space booking.')}</span></span></div>
-   <div class="req" style="cursor:default"><span class="av">${I.bell}</span><span class="m"><span class="t">Notification</span><span class="s" style="display:block;white-space:normal;overflow:visible;text-overflow:clip">${esc(e.notif)}</span></span>${pill('p-green','Sent')}</div>
-   <div><div class="dsec-l" style="margin-bottom:8px">Follow-up status</div><div class="segp sm" role="group" aria-label="Follow-up status">${EV_FU.map(s=>`<button type="button" class="${e.fu===s?'on':''}" ${ed?'':'disabled'} onclick="evFu('${c.id}','${s}')">${s}</button>`).join('')}</div>${ed?'':`<div class="fh" style="margin-top:8px">${icoS('lock',13)} Only an Owner or Manager can change the follow-up status.</div>`}</div></div>`;}
-function evFu(id,s){if(!canEd())return;const c=DB.calls.find(x=>x.id===id);c.ev.fu=s;renderCalls();toast('Follow-up marked '+s.toLowerCase());}
+/* ── Calls: only the Private event label ── */
+const evPill=c=>c.ev?pill('p-mint','Private event'):'';
 
 const VIEWS={events:vEvents,overview:vOverview,reservations:vReservations,orders:vOrders,calls:vCalls,menu:vMenu,agents:vAgents,settings:vSettings};
 render();
