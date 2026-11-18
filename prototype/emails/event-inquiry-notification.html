@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>New private event inquiry · Wicker Park</title>
+<!--
+  Event inquiry notification (sent to the event manager when "Notify by" is Email or Both).
+  Subject:    New Private event inquiry: {caller}, {guests} guests, {weekday} {MM/DD}
+  Preheader:  {AI summary line}
+  Sent when:  Allie finishes an event call (labels: Private event, Large party, Tour request, Catering).
+  After hours: show the "callback promised" row. Outlets with no manager: sent to the account owner.
+  Placeholders in {braces}. Sample data below is for the Wicker Park demo call.
+-->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+</head>
+<body style="margin:0;padding:0;background:#EDEDEA;font-family:'Poppins',Arial,Helvetica,sans-serif;color:#111111">
+<div style="display:none;max-height:0;overflow:hidden">Sarah Lee, 40-guest corporate holiday dinner, Fri 12/11, 7:00 PM, asked about minimum spend, prefers private room</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#EDEDEA"><tr><td align="center" style="padding:24px 12px">
+<table role="presentation" width="600" cellpadding="0" cellspacing="0" style="width:600px;max-width:100%;background:#FFFFFF">
+
+  <!-- header -->
+  <tr><td style="background:#6DD3D3;padding:44px 48px 40px"><span style="font-size:44px;font-weight:700;letter-spacing:-2px;color:#000000;line-height:1">Tringg</span></td></tr>
+
+  <!-- title + intro -->
+  <tr><td style="padding:40px 48px 8px">
+    <h1 style="margin:0;font-size:26px;line-height:1.25;font-weight:700;letter-spacing:-.5px">New private event inquiry</h1>
+    <p style="margin:6px 0 0;font-size:14px;color:#6B6B6B">ROSSA Wicker Park · Today, 7:42 PM</p>
+  </td></tr>
+  <tr><td style="padding:16px 48px 0;font-size:15px;line-height:1.7">
+    <p style="margin:0 0 12px">Hi Maria,</p>
+    <p style="margin:0 0 12px">Allie just took a call about a private event. Here is what she captured:</p>
+  </td></tr>
+
+  <!-- summary -->
+  <tr><td style="padding:4px 48px 8px"><table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td style="background:#DDF2EE;border-radius:12px;padding:16px 20px;font-size:15px;line-height:1.6;color:#1F6E62"><strong style="font-size:12px;letter-spacing:.1em">AI SUMMARY</strong><br/>Sarah Lee, 40-guest corporate holiday dinner, Fri 12/11, 7:00 PM, asked about minimum spend, prefers private room.</td></tr></table></td></tr>
+
+  <!-- details -->
+  <tr><td style="padding:16px 48px 0;font-size:15px">You'll find:</td></tr>
+  <tr><td style="padding:8px 48px 0">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-size:15px">
+      <tr><td width="56" style="padding:16px 0 16px 12px"><span style="display:inline-block;width:30px;height:30px;line-height:30px;text-align:center;border-radius:50%;background:#F4A9A5;font-weight:700">&#10003;</span></td><td style="padding:16px 8px"><span style="color:#6B6B6B;font-size:13px">Event</span><br/><strong>Corporate holiday dinner · 40 guests</strong></td></tr>
+      <tr><td width="56" style="background:#FAFAFA;padding:16px 0 16px 12px"><span style="display:inline-block;width:30px;height:30px;line-height:30px;text-align:center;border-radius:50%;background:#F4A9A5;font-weight:700">&#10003;</span></td><td style="background:#FAFAFA;padding:16px 8px"><span style="color:#6B6B6B;font-size:13px">Date and time</span><br/><strong>Fri 12/11/2026 · 7:00 PM</strong></td></tr>
+      <tr><td width="56" style="padding:16px 0 16px 12px"><span style="display:inline-block;width:30px;height:30px;line-height:30px;text-align:center;border-radius:50%;background:#F4A9A5;font-weight:700">&#10003;</span></td><td style="padding:16px 8px"><span style="color:#6B6B6B;font-size:13px">Caller</span><br/><strong>Sarah Lee</strong> · +1 (312) 555-0885<br/>sarah.lee@northwind.co</td></tr>
+      <tr><td width="56" style="background:#FAFAFA;padding:16px 0 16px 12px"><span style="display:inline-block;width:30px;height:30px;line-height:30px;text-align:center;border-radius:50%;background:#F4A9A5;font-weight:700">&#10003;</span></td><td style="background:#FAFAFA;padding:16px 8px"><span style="color:#6B6B6B;font-size:13px">Suggested space</span><br/><strong>The Private Room</strong> · seats 20–50<br/>$2,500 minimum spend (Fri), before tax and gratuity</td></tr>
+      <tr><td width="56" style="padding:16px 0 16px 12px"><span style="display:inline-block;width:30px;height:30px;line-height:30px;text-align:center;border-radius:50%;background:#F4A9A5;font-weight:700">&#10003;</span></td><td style="padding:16px 8px"><span style="color:#6B6B6B;font-size:13px">Budget and notes</span><br/><strong>$4,000–$5,000</strong> · Wants a short toast with the screen.</td></tr>
+    </table>
+  </td></tr>
+
+  <!-- not promised -->
+  <tr><td style="padding:20px 48px 0;font-size:14px;line-height:1.6;color:#3F3F3F">Allie did <strong>not</strong> confirm the date, quote a final price or take a deposit. Please follow up with the caller.</td></tr>
+  <!-- after-hours row (only when the call came in after hours) -->
+  <!-- <tr><td style="padding:12px 48px 0;font-size:14px;color:#7A5213"><span style="background:#F8ECD7;border-radius:8px;padding:8px 12px;display:inline-block">After hours: Allie promised a callback by Mon 09/28, 10:00 AM.</span></td></tr> -->
+
+  <!-- CTA -->
+  <tr><td style="padding:28px 48px 44px"><a href="https://app.tringg.ai/calls/C-5541" style="display:inline-block;background:#000000;color:#FFFFFF;text-decoration:none;font-weight:600;font-size:15px;padding:14px 28px;border-radius:12px">View call details</a><p style="margin:14px 0 0;font-size:13px;color:#6B6B6B">Mark it Contacted or Closed in Calls once you've followed up.</p></td></tr>
+
+  <!-- footer -->
+  <tr><td style="background:#000000;padding:40px 48px"><table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>
+    <td style="font-size:30px;font-weight:700;letter-spacing:-1.5px;color:#FFFFFF">Tringg</td>
+    <td align="right" style="font-size:14px;font-weight:700;color:#FFFFFF"><a href="#" style="color:#FFFFFF;text-decoration:none;background:#fff;color:#000;border-radius:3px;padding:1px 4px;font-size:13px">in</a>&nbsp;&nbsp;<a href="#" style="color:#FFFFFF;text-decoration:none;font-size:18px">&#120143;</a></td>
+  </tr><tr><td colspan="2" style="padding-top:18px;font-size:12px;color:#A3A3A0;line-height:1.6">You get this email because you are the event manager for ROSSA Wicker Park. Change who is notified in Settings &gt; Notifications.</td></tr></table></td></tr>
+
+</table></td></tr></table>
+</body></html>
