@@ -1,0 +1,72 @@
+[
+ {
+  "id": "intro",
+  "text": "Hi, I’m Katie. Let me walk you through the Tringg dashboard, from your daily overview to your voice agent.",
+  "dur": 5.25
+ },
+ {
+  "id": "ov1",
+  "text": "This is your overview. At a glance you see today’s bookings, pending requests, how many calls came in, and your no-show rate.",
+  "dur": 6.77
+ },
+ {
+  "id": "ov2",
+  "text": "Up top, your agent Sofie is live. Share this number to try her out yourself.",
+  "dur": 4.78
+ },
+ {
+  "id": "ov3",
+  "text": "On the right, Sofie’s call stats and your most recent calls, each with a short AI summary.",
+  "dur": 5.02
+ },
+ {
+  "id": "rs1",
+  "text": "Reservations is your inbox. Bookings Sofie takes arrive here. Switch between today, declined, and expired, and filter by status, date, or party size.",
+  "dur": 9.61
+ },
+ {
+  "id": "rs2",
+  "text": "Missed a booking taken by phone or in person? Log it here so everything lives in one place.",
+  "dur": 5.38
+ },
+ {
+  "id": "ca1",
+  "text": "Calls shows every conversation Sofie has had, with totals for calls, reservations, average duration, and capture rate.",
+  "dur": 6.3
+ },
+ {
+  "id": "ca2",
+  "text": "Filter by completed, transferred, FAQ, or failed, and search by caller name or phone number.",
+  "dur": 5.28
+ },
+ {
+  "id": "ca3",
+  "text": "Open any call for an AI summary, tags for what the caller wanted, and the details Sofie captured, like the occasion, number of guests, date, and contact information.",
+  "dur": 9.93
+ },
+ {
+  "id": "ca4",
+  "text": "Scroll down to play the recording and read the full transcript, turn by turn.",
+  "dur": 3.89
+ },
+ {
+  "id": "ag1",
+  "text": "Agents is where you manage your voice agent. Sofie handles reservations for your outlet, and you can see her calls at a glance.",
+  "dur": 6.27
+ },
+ {
+  "id": "ag2",
+  "text": "Edit her settings, manage which outlets she answers for, or press Listen to hear her.",
+  "dur": 4.08
+ },
+ {
+  "id": "ag3",
+  "text": "Need another agent for a different outlet? Create one here. You can pause an agent any time, and calls still forward.",
+  "dur": 6.71
+ },
+ {
+  "id": "outro",
+  "text": "That’s the Tringg dashboard. Overview, reservations, calls, and agents, all in one place. Thanks for watching.",
+  "dur": 6.11
+ }
+]
