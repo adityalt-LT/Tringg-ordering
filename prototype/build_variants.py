@@ -315,7 +315,7 @@ OVERVIEW_FRESH = r'''function vOverviewFresh(){const mo=DB.mods,G=h=>`<div class
 
 BOOT = r'''/* setup prototypes: one location, empty to start, driven by the shared setup state */
 (function(){
- const PRIMARY='wl';const FRESH_OUT=window.TS_JOURNEY==='3'?['wl']:['wl','wp','nv'];ROLE_OUT.owner=FRESH_OUT;SC.wl=.4;let FULL=false;let CUR=PRIMARY;const SNAP={};
+ const PRIMARY='wl';const FRESH_OUT=/^[34]$/.test(window.TS_JOURNEY)?['wl']:['wl','wp','nv'];ROLE_OUT.owner=FRESH_OUT;SC.wl=.4;let FULL=false;let CUR=PRIMARY;const SNAP={};
  const hasSvc=st=>Object.keys(st.done||{}).some(k=>/^(res|ord)\\./.test(k)&&st.done[k]);
  TS.outletSet=id=>FULL||(id===CUR?hasSvc(TS.get()):!!SNAP[id]&&hasSvc(SNAP[id]));TS.isFull=()=>FULL;
  TS.beforeOutlet=to=>{if(FULL||to==='all'||to===CUR)return;SNAP[CUR]=JSON.parse(JSON.stringify(TS.get()));const cur=TS.get(),n=SNAP[to]||(()=>{const f=TS.blank();f.d.agent=JSON.parse(JSON.stringify(cur.d.agent));f.d.brand=cur.d.brand;f.d.faqs=JSON.parse(JSON.stringify(cur.d.faqs));f.d.outlet={name:cur.d.outlet?cur.d.outlet.name:cur.d.brand,area:ON(to).short};f.sub=cur.sub;f.trial=cur.trial;if(cur.sub)f.done['go.sub']=true;return f;})();CUR=to;S.setupCollapsed=false;TS.swap(n);};
@@ -444,9 +444,9 @@ def build_dashboard(v, w='1', su='', sd='', dash='', enq='', flow='', jr=''):
     t = cut(t, 'function vOverviewFresh(){', 'function vOverview0(){', OVERVIEW_FRESH + '''function vOverview(){
   const first=(me().n||'').split(' ')[0];TS.cfg.user=first||'there';
   const FULL=TS.isFull(),PRIMARY='wl';
-  const un=OUTLETS.filter(o=>!TS.outletSet(o.id)),other=!FULL&&S.outlet==='all'&&un.length>0&&(window.TS_JOURNEY!=='2'&&window.TS_JOURNEY!=='3');
+  const un=OUTLETS.filter(o=>!TS.outletSet(o.id)),other=!FULL&&S.outlet==='all'&&un.length>0&&!/^[234]$/.test(window.TS_JOURNEY);
   const stripe=other?`<div class="ts-stripe"><span><b>${OUTLETS.length-un.length} of ${OUTLETS.length} outlets set up</b><br><small>Choose an outlet to set up next so it can take calls.</small></span><button class="ts-btn sm" onclick="TS.chooseOutlet(OUTLETS.filter(o=>!TS.outletSet(o.id)),'pickOutlet')">Set up an outlet</button></div>`:'';
-  if(S.outlet==='all'&&!FULL&&(window.TS_JOURNEY!=='2'&&window.TS_JOURNEY!=='3')){const h=DB.subscribed?vOverview0():vOverviewFresh();return h.replace(/<div class="lbl">[^<]*<\\/div>/,()=>stripe);}
+  if(S.outlet==='all'&&!FULL&&!/^[234]$/.test(window.TS_JOURNEY)){const h=DB.subscribed?vOverview0():vOverviewFresh();return h.replace(/<div class="lbl">[^<]*<\\/div>/,()=>stripe);}
   if((window.TS_DASH?!TS.active():TS.totals().done===0)&&!TS.allDone())return `<div class="scroll"><div class="page">${stripe}${TS.overviewTop()}</div></div>`;
   const h=DB.subscribed?vOverview0():vOverviewFresh();return h.replace(/<div class="lbl">[^<]*<\\/div>/,()=>stripe+TS.overviewTop());}
 function ovEnhance(){document.querySelectorAll('#view .ov-grid .card:not(.agent)').forEach(c=>{const h=c.querySelector('.card-h');if(!h||h.querySelector('.ov-t'))return;const k=(h.textContent||'').trim().slice(0,24);if(S.ovC&&S.ovC[k])c.classList.add('ov-c');const b=document.createElement('button');b.className='ov-t';b.setAttribute('aria-label','Collapse');b.innerHTML='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 15 6-6 6 6"/></svg>';b.onclick=e=>{e.stopPropagation();const on=c.classList.toggle('ov-c');S.ovC=S.ovC||{};S.ovC[k]=on;};h.appendChild(b);});}
@@ -469,10 +469,13 @@ function ovEnhance(){document.querySelectorAll('#view .ov-grid .card:not(.agent)
         t = must(t, '</style>', JR_CSS + '</style>')
         t = must(t, "if(one&&v.set===false)return h+", "if(!window.TS_JOURNEY&&one&&v.set===false)return h+")
         t = must(t, "const more=['acc','pre','lg']", "window.ORD_P=P;const more=['acc','pre','lg']")
-        if jr == '3':
-            t = must(t, "${OUTLETS.length>1?`<button class=\"odi ${S.outlet==='all'?'on':''}\" onclick=\"pickOutlet('all')\">", "${(OUTLETS.length>1||window.TS_JOURNEY==='3')?`<button class=\"odi ${S.outlet==='all'?'on':''}\" onclick=\"pickOutlet('all')\">")
+        if jr in ('3', '4'):
+            t = must(t, "${OUTLETS.length>1?`<button class=\"odi ${S.outlet==='all'?'on':''}\" onclick=\"pickOutlet('all')\">", "${(OUTLETS.length>1||/^[34]$/.test(window.TS_JOURNEY))?`<button class=\"odi ${S.outlet==='all'?'on':''}\" onclick=\"pickOutlet('all')\">")
             t = must(t, "const isBrand=()=>S.outlet==='all';", "const isBrand=()=>S.outlet==='all'||OUTLETS.length===1;")
             t = must(t, "${TS.outletSet(x.id)?'':'<span class=\"odd-new\">Set up</span>'}</button>`).join('')).join('')}</div>`;", "${TS.outletSet(x.id)?'':'<span class=\"odd-new\">Set up</span>'}</button>`).join('')).join('')}${window.JR&&JR.canAdd()?'<button class=\"odi odi-add\" onclick=\"JR.addOutlet()\">+ Add new outlet</button>':''}</div>`;")
+        if jr == '4':
+            t = must(t, "const SETNAV_ONE=[['PHONE',[['phone','Phone number']]],['OUTLET',[['info','Basic info'],['hours','Outlet hours'],['faq','FAQ / Knowledge']]],", "const SETNAV_ONE=[['PHONE',[['phone','Phone number']]],['OUTLET',[['info','Basic info'],['hours','Outlet hours'],['faq','FAQ / Knowledge']]],['RESERVATIONS',[['res-set','Reservations']]],")
+            t = must(t, "function renderChk(){if(TS.variant==='C'", "function renderChk(){if(window.JR)return JR.railSetup();if(TS.variant==='C'")
         t = must(t, "function render(){\n  syncMods();", "function render(){\n  if(window.JR)JR.sync();syncMods();")
         t = must(t, "Usually under a minute. Everything lands as a draft you can edit.</div></div>", "This can take a few minutes, and sometimes a few hours. You do not have to wait here. We will tell you when it is ready.</div><div><button class=\"btn btn-dark\" onclick=\"JR.go()\">Continue setup</button></div></div>")
         t = must(t, "buildDraft(src);render();}else if(S.route==='menu')render();},150);}", "buildDraft(src);render();}else if(S.route==='menu')render();},2200);}")
@@ -537,6 +540,7 @@ VARIANTS = {'C1': ('C', '1', 'C1 · Welcome header', 'proto-c1-welcome-header.ht
             'H3': ('C', '1', 'H3 · Ordering setup journey', 'proto-h3-ordering-journey.html', '', '1', '2', 'Questions & answers', '1', '1'),
             'H4': ('C', '1', 'H4 · Ordering setup in All outlets', 'proto-h4-ordering-all-outlets.html', '', '1', '2', 'Questions & answers', '1', '2'),
             'H5': ('C', '1', 'H5 · One outlet first, new outlets inherit', 'proto-h5-one-outlet-inherit.html', '', '1', '2', 'Questions & answers', '1', '3'),
+            'H6': ('C', '1', 'H6 · Services set up in Settings', 'proto-h6-setup-in-settings.html', '', '1', '2', 'Questions & answers', '1', '4'),
             'E2B': ('C', '3', 'E2b · Settings dialogs: outlet grid', 'proto-e2b-settings-grid.html', 'golive', '2')}
 
 

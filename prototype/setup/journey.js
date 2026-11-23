@@ -72,7 +72,7 @@ function ordersPage(fn){if(anyLive()&&!(H4()&&S.outlet==='all'&&!SO()&&OUTLETS.s
 /* ───── Settings › Ordering ───── */
 const chip=(cls,t)=>'<span class="jr-st '+cls+'">'+t+'</span>';
 const done=d=>chip(d?'d':'',d?'Done':'To do');
-const H5=()=>window.TS_JOURNEY==='3';
+const H5=()=>/^[34]$/.test(window.TS_JOURNEY);
 const doneS=d=>(H4()||H5())&&S.outlet!=='all'&&!SO()&&d?chip('d','Same as all outlets'):done(d);
 const top=labels=>{const m=new Map();labels.forEach(l=>m.set(l,(m.get(l)||0)+1));const a=[...m.entries()];
  if(a.length===1)return labels.length===1||labels.length<OUTLETS.length?a[0][0]:a[0][0]+' at all outlets';return a.map(e=>e[0]+' at '+e[1]+' outlet'+(e[1]>1?'s':'')).join(' · ');};
@@ -104,6 +104,7 @@ function page(){const one=S.outlet!=='all'&&!SO(),I_=ids(),set=I_.filter(svcSet)
 
 /* sidebar */
 function badge(){if(S.menu&&S.menu.flow==='extracting')return '<span class="bdg imp" title="Menu import in progress"><i></i></span>';return DB.menuState==='draft'?'<span class="bdg new">Review</span>':'';}
+const chipX=0;
 const canAdd=()=>H5()&&typeof isOwner==='function'&&isOwner();
 function renderAdd(){let el=document.getElementById('jradd');if(!S.addO){if(el)el.remove();return;}
  if(!el){el=document.createElement('div');el.id='jradd';el.style.cssText='position:relative;z-index:150';document.body.appendChild(el);}
@@ -124,8 +125,62 @@ function addCreate(){const n=(document.getElementById('jra-n').value||'').trim()
  DB.autoAccept[id]=DB.autoAccept[src];if(DB.pre[src])DB.pre[id]=cl(DB.pre[src]);
  const inherited=svcSet(src)&&menuDone();
  S.addO=null;renderAdd();mut(j=>{const o=ensure(j,id);o.area=false;if(inherited)o.inherited=src;});
- S.outlet=id;S.dd=false;S.route='orders';render();toast(sp.short+' added.'+(inherited?' It inherits the setup from '+nm(src)+'.':''));}
+ S.outlet=id;S.dd=false;S.route=H6()?'overview':'orders';render();toast(sp.short+' added.'+(inherited?' It inherits the setup from '+nm(src)+'.':''));}
+
+/* ───── H6: reservations and answers are set up in Settings ───── */
+const H6=()=>window.TS_JOURNEY==='4';
+const CATS_=[['general','General'],['res','Reservation'],['ord','Ordering'],['catering','Catering'],['music','Music events']];
+const stF=()=>{const j=J();return j.st||(j.st={});};
+function outletNow(){return S.outlet!=='all'?S.outlet:(OUTLETS[0]||{}).id;}
+function openSet(page,cat){S.outlet=outletNow();S.set=page;if(cat)S.faqCat=cat;S.sdlg=true;S.ch=null;S.nav=false;S.dd=false;S.rsOpen=false;render();}
+function goSvc(k,step){mut(j=>{(j.st||(j.st={}))[k]=1;});
+ if(k==='enq'){openSet('faq','general');return;}
+ const st=step||(TS.get().done['res.rules']?'faq':'rules');if(st==='faq')openSet('faq','res');else openSet('res-set');}
+function faqOk(cat){const key=cat==='res'?'res.faq':'enq.faq';mut((j,x)=>{x.done[key]=true;});toast(cat==='res'?'Reservation answers confirmed.':'Answers confirmed.');render();}
+function faqPage(){const s=TS.get(),cat=S.faqCat||'general',d=s.d,list=d.faqs.map((f,i)=>[f,i]).filter(x=>(x[0][2]||'general')===cat);
+ const rk=cat==='res'?'res.faq':cat==='general'?'enq.faq':null,svc=cat==='res'?'res':'enq',pend=rk&&TS.sel(svc)&&!s.done[rk]&&stF()[svc];
+ const chips='<div class="jr-tabs">'+CATS_.map(c=>'<button class="'+(c[0]===cat?'on':'')+'" onclick="S.faqCat=\''+c[0]+'\';render()">'+c[1]+'<i>'+d.faqs.filter(f=>(f[2]||'general')===c[0]).length+'</i></button>').join('')+'</div>';
+ const banner=pend?'<div class="jr-rev"><div><b>'+(cat==='res'?'Review your reservation answers':'Review your answers')+'</b><span>Emma says these to callers. Fix anything that is wrong, then confirm.</span></div><button class="ts-btn ts-pulse" onclick="JR.faqOk(\''+cat+'\')">Looks good</button></div>':'';
+ const rows=list.length?list.map(x=>'<div class="sr"><div class="sr-t"><b>'+esc(x[0][0]||'New question')+'</b><span>'+esc(x[0][1]||'No answer yet')+'</span></div><button class="btn btn-soft sr-b" onclick="JR.faqEdit('+x[1]+')">Edit</button></div>').join(''):'<div class="sr"><div class="sr-t"><span>No answers in this category yet.</span></div></div>';
+ return sH('FAQ / Knowledge','Answers the agent can use on calls.')+chips+banner+'<div class="scard sr-c">'+rows+'</div><div style="margin-top:14px"><button class="btn btn-line" onclick="JR.faqEdit(-1)">+ Add an answer</button></div>';}
+function faqEdit(i){const f=i>=0?TS.get().d.faqs[i]:['','',S.faqCat||'general'];S.ch={k:'faqe',jr:1,i,vals:{q:f[0],a:f[1],c:f[2]||'general'}};render();}
+function resPage(){const s=TS.get(),r=s.d.res,rd=!!s.done['res.rules'],fd=!!s.done['res.faq'],n=s.d.faqs.filter(f=>f[2]==='res').length;
+ const row=(t,desc,d,btn,onc)=>'<div class="sr"><div class="sr-t"><b>'+t+' '+chip(d?'d':'',d?'Done':'To do')+'</b><span>'+desc+'</span></div><button class="'+(d?'btn btn-soft':'btn btn-soft')+' sr-b" onclick="'+onc+'">'+btn+'</button></div>';
+ return sH('Reservations','How the agent takes table bookings at '+esc(nm(outletNow()))+'.')+'<div class="jr-g">Needed to take bookings</div><div class="scard sr-c">'+
+  row('Booking rules','Up to '+r.perDay+' a day · '+r.minP+' to '+r.maxP+' guests · '+r.dur+' min tables · up to '+r.win+' days ahead.',rd,rd?'Change':'Set up',"JR.resEdit()")+
+  row('Reservation answers',n+' answer'+(n===1?'':'s')+' Emma can give about bookings, like walk-ins and large parties.',fd,fd?'Review again':'Review',"S.faqCat='res';S.set='faq';render()")+'</div>';}
+function resEdit(){const r=TS.get().d.res;S.ch={k:'resr',jr:1,vals:Object.assign({},r)};render();}
+function dlg(){const c=S.ch,V=c.vals,k=c.k,where=nm(outletNow());
+ const f=(l,ctl,n)=>'<div class="ch-f"><div><b>'+l+'</b>'+(n?'<span>'+n+'</span>':'')+'</div>'+ctl+'</div>';
+ const num=(id,u,mn,mx)=>'<div class="inp-suf" style="width:132px"><input id="chf-'+id+'" class="inp sm" type="number" min="'+mn+'" max="'+mx+'" value="'+(V[id]==null?'':V[id])+'">'+(u?'<span>'+u+'</span>':'')+'</div>';
+ const sel=(id,o)=>'<select id="chf-'+id+'" class="inp sm" style="width:190px">'+o.map(a=>'<option value="'+a[0]+'" '+(String(a[0])===String(V[id])?'selected':'')+'>'+a[1]+'</option>').join('')+'</select>';
+ let t,b,foot;
+ if(k==='resr'){t='Booking rules';b=f('Max reservations a day',num('perDay','',1,500))+f('Advance booking window',sel('win',[[7,'7 days'],[14,'14 days'],[30,'30 days'],[60,'60 days'],[90,'90 days']]))+f('Min party size',num('minP','guests',1,50))+f('Max party size',num('maxP','guests',1,100))+f('Booking length',sel('dur',[[60,'1 hour'],[90,'1.5 hours'],[120,'2 hours'],[150,'2.5 hours']]))+f('Notice needed',sel('notice',[[0,'No notice'],[30,'30 min'],[60,'1 hour'],[120,'2 hours'],[240,'4 hours'],[1440,'1 day']]));foot='<button class="btn btn-line" onclick="chClose()">Cancel</button><button class="btn btn-dark" onclick="JR.saveRes()">Save and continue</button>';}
+ else{t=c.i>=0?'Edit answer':'Add an answer';b=f('Question','<input id="chf-q" class="inp sm" style="width:300px;flex:0 0 300px" value="'+esc(V.q||'')+'">')+f('Answer','<textarea id="chf-a" class="inp" rows="3" style="width:300px;flex:0 0 300px">'+esc(V.a||'')+'</textarea>')+f('Category',sel('c',CATS_));foot=(c.i>=0?'<button class="btn btn-line" style="margin-right:auto" onclick="JR.faqDel()">Delete</button>':'')+'<button class="btn btn-line" onclick="chClose()">Cancel</button><button class="btn btn-dark" onclick="JR.saveFaq()">Save</button>';}
+ return '<div class="ch-bk" onmousedown="if(event.target===this)chClose()"><div class="ch jr" role="dialog" aria-modal="true" aria-label="'+t+'"><div class="ch-h"><div><small>'+(k==='resr'?'Reservations':'FAQ / Knowledge')+' · '+esc(where)+'</small><h3>'+t+'</h3></div><button class="sd-x2" aria-label="Close" onclick="chClose()">✕</button></div><div class="ch-b">'+b+'</div><div class="ch-ft">'+foot+'</div></div></div>';}
+const gv_=id=>{const e=document.getElementById('chf-'+id);return e?e.value:'';};
+function saveRes(){const v={perDay:+gv_('perDay')||1,win:+gv_('win'),minP:+gv_('minP')||1,maxP:+gv_('maxP')||1,dur:+gv_('dur'),notice:+gv_('notice')};
+ if(v.minP>v.maxP){toast('Min party size is above the max');return;}
+ mut((j,x)=>{Object.assign(x.d.res,v);x.done['res.rules']=true;});S.ch=null;S.faqCat='res';S.set='faq';render();toast('Booking rules saved. Now review your reservation answers.');}
+function saveFaq(){const q=gv_('q').trim(),a=gv_('a').trim(),c=gv_('c')||'general';if(!q||!a){toast('Add a question and an answer');return;}const i=S.ch.i;
+ mut((j,x)=>{if(i>=0){const f=x.d.faqs[i];f[0]=q;f[1]=a;f[2]=c;}else x.d.faqs.push([q,a,c]);});S.faqCat=c;S.ch=null;render();toast('Saved.');}
+function faqDel(){const i=S.ch.i;mut((j,x)=>{x.d.faqs.splice(i,1);});S.ch=null;render();toast('Removed.');}
+/* the sidebar: what is left, one card for every journey that was started and not finished */
+function ordLeft(){const l=[menuDone(),svcDone(),taxDone(),payDone()];if(hasDel())l.push(needArea().length===0);return {done:l.filter(Boolean).length,total:l.length};}
+function lefts(){const o=[],s=TS.get();
+ if(TS.sel('res')&&stF().res&&!TS.stat('res').complete){const x=TS.stat('res');o.push({k:'res',n:'Reservations',done:x.done,total:x.total});}
+ if(TS.sel('enq')&&stF().enq&&!TS.stat('enq').complete){const x=TS.stat('enq');o.push({k:'enq',n:'Review answers',done:x.done,total:x.total});}
+ if(TS.sel('ord')&&J().started&&!anyLive()){const x=ordLeft();if(x.done<x.total)o.push({k:'ord',n:'Ordering',done:x.done,total:x.total});}
+ return o;}
+function resume(k){S.rsOpen=false;if(k==='ord')go();else goSvc(k);}
+function railSetup(){const L=lefts();if(!L.length)return '';const left=L.reduce((a,x)=>a+x.total-x.done,0),dn=L.reduce((a,x)=>a+x.done,0),tt=L.reduce((a,x)=>a+x.total,0),pct=Math.round(dn/tt*100);
+ const ring='<span class="rs-ring" style="--p:'+pct+'"><i>'+left+'</i></span>';
+ if(L.length===1){const x=L[0];return '<div class="rs"><button class="rs-card" onclick="JR.resume(\''+x.k+'\')">'+ring+'<span class="rs-t"><b>'+x.n+'</b><small>'+(x.total-x.done)+' step'+(x.total-x.done>1?'s':'')+' left</small></span><span class="rs-go">Continue ›</span></button></div>';}
+ const pop=S.rsOpen?'<div class="rs-pop">'+L.map(x=>'<button class="rs-row" onclick="JR.resume(\''+x.k+'\')"><span class="rs-t"><b>'+x.n+'</b><small>'+x.done+' of '+x.total+' done</small><i class="rs-bar"><u style="width:'+Math.round(x.done/x.total*100)+'%"></u></i></span><span class="rs-go">›</span></button>').join('')+'</div>':'';
+ return '<div class="rs">'+pop+'<button class="rs-card" aria-expanded="'+!!S.rsOpen+'" onclick="S.rsOpen=!S.rsOpen;renderRail()">'+ring+'<span class="rs-t"><b>Finish setup</b><small>'+left+' steps left in '+L.length+' services</small></span><span class="rs-go">'+(S.rsOpen?'⌄':'⌃')+'</span></button></div>';}
+
 function init(){
+ if(H6()){SET['res-set']=()=>resPage();SET.faq=()=>faqPage();document.addEventListener('click',e=>{if(S.rsOpen&&!e.target.closest('.rs')){S.rsOpen=false;renderRail();}});}
  TS.beforeOutlet=()=>{};
  if(H4()&&!SO()||H5())S.outlet='all';
  Object.keys(DB.svc).forEach(k=>{DB.svc[k]={set:false,del:false,pick:false,prep:null,rad:null};DB.deliveryMode[k]=null;});DB.taxes=[];DB.taxOk=false;DB.payOk=false;
@@ -136,4 +191,4 @@ function init(){
  const st=window.saveTaxW;window.saveTaxW=function(){const was=S.menu.drawer;st();if(was==='tax'&&S.menu.drawer!=='tax'&&S.sdlg){S.set='ord';chOpen('tax');}};
  const zs=window.zedSave;window.zedSave=function(){const o=S.zed&&S.zed.o;zs();if(o&&!S.zed){mut(j=>{ensure(j,o).area=true;});S.set='ord';S.sdlg=true;render();toast('Delivery area saved for '+nm(o)+'.');}};
  const zc=window.zedCancel;window.zedCancel=function(){zc();S.set='ord';S.sdlg=true;render();};}
-return {init,sync,canAdd,addOutlet,addClose,addCreate,anyLiveAny:()=>OUTLETS.some(o=>O(o.id).live),ordersPage,page,go,start,area,open,badge,confirmTax,confirmPay,bar:()=>{const e=document.getElementById('jrbar');if(e)e.remove();}};})();
+return {init,sync,railSetup,resume,goSvc,faqOk,faqEdit,resEdit,dlg,saveRes,saveFaq,faqDel,canAdd,addOutlet,addClose,addCreate,anyLiveAny:()=>OUTLETS.some(o=>O(o.id).live),ordersPage,page,go,start,area,open,badge,confirmTax,confirmPay,bar:()=>{const e=document.getElementById('jrbar');if(e)e.remove();}};})();

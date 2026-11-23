@@ -879,5 +879,6 @@ TS.dashAnim=function(){_da();[].slice.call(document.querySelectorAll('.dh-art'))
 
 /* H3: ordering has four shared steps. Outlet steps live in the journey. */
 if(window.TS_JOURNEY){STEPS.ord=[['menu','Menu'],['svc','Pickup & delivery'],['tax','Taxes'],['pay','Payments']];TS.dhPage=dhPage;
- var _jo=TS.open;TS.open=function(k,id){if(k==='ord'&&window.JR){JR.go(id&&id!=='faq'?id:undefined);return;}return _jo.apply(this,arguments);};}
+ var _jo=TS.open;TS.open=function(k,id){if(k==='ord'&&window.JR){JR.go(id&&id!=='faq'?id:undefined);return;}
+ if(window.TS_JOURNEY==='4'&&window.JR&&(k==='enq'||k==='res')){JR.goSvc(k,id);return;}return _jo.apply(this,arguments);};}
 })();

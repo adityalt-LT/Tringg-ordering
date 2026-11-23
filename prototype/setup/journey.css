@@ -47,3 +47,12 @@
 .jr-back{text-align:right;margin-bottom:6px}
 
 .odi-add{color:#4FC2B4;font-weight:600;border-top:1px solid rgba(255,255,255,.12);margin-top:6px}.odi-add:hover{color:#fff}
+
+.jr-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 16px}.jr-tabs button{font:inherit;font-size:13.5px;border:1.5px solid var(--border);background:var(--panel);border-radius:999px;padding:6px 14px;cursor:pointer}.jr-tabs button.on{background:#111;border-color:#111;color:#fff}.jr-tabs i{font-style:normal;margin-left:7px;opacity:.55;font-size:12px}
+.jr-rev{display:flex;align-items:center;justify-content:space-between;gap:16px;background:#DDF2EE;border-radius:16px;padding:14px 18px;margin:0 0 14px;flex-wrap:wrap}.jr-rev b{display:block;font-weight:600}.jr-rev span{color:#1F6E62;font-size:14px}
+.rs{position:relative;padding:0 12px 10px;margin-top:auto;font-family:Poppins,system-ui,sans-serif}
+.rs-card{width:100%;display:flex;align-items:center;gap:12px;text-align:left;font:inherit;background:#1d1d1d;color:#fff;border:1px solid #333;border-radius:16px;padding:11px 12px;cursor:pointer;transition:border-color .15s}.rs-card:hover{border-color:#4FC2B4}
+.rs-ring{width:34px;height:34px;border-radius:50%;flex-shrink:0;display:grid;place-items:center;background:conic-gradient(#4FC2B4 calc(var(--p)*1%),#3a3a3a 0)}.rs-ring i{font-style:normal;width:26px;height:26px;border-radius:50%;background:#1d1d1d;display:grid;place-items:center;font-size:12px;font-weight:600}
+.rs-t{flex:1;min-width:0;display:flex;flex-direction:column}.rs-t b{font-size:13.5px;font-weight:600}.rs-t small{font-size:12px;color:#a9a9a5}.rs-go{font-size:12px;color:#4FC2B4;font-weight:600;white-space:nowrap}
+.rs-pop{position:absolute;left:12px;right:12px;bottom:calc(100% - 4px);background:#1d1d1d;border:1px solid #333;border-radius:16px;padding:6px;box-shadow:0 12px 30px rgba(0,0,0,.45);z-index:30}.rs-row{width:100%;display:flex;align-items:center;gap:10px;font:inherit;text-align:left;background:none;color:#fff;border:0;border-radius:11px;padding:10px;cursor:pointer}.rs-row:hover{background:#2a2a2a}
+.rs-bar{display:block;height:4px;border-radius:2px;background:#3a3a3a;margin-top:6px;overflow:hidden}.rs-bar u{display:block;height:100%;background:#4FC2B4}
