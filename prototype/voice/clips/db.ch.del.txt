@@ -1,0 +1,1 @@
+Turn delivery on if you deliver, then set the distance, the delivery fee and the minimum order.

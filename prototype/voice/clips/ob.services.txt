@@ -1,0 +1,1 @@
+What should your agent do? Choose enquiries, reservations, ordering, or any mix. You can turn the others on later.

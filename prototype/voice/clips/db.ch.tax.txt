@@ -1,0 +1,1 @@
+Add the tax your restaurant charges. If you charge none, press We charge no tax.

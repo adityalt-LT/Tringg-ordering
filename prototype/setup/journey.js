@@ -201,4 +201,4 @@ function init(){
  const st=window.saveTaxW;window.saveTaxW=function(){const was=S.menu.drawer;st();if(was==='tax'&&S.menu.drawer!=='tax'&&S.sdlg){S.set='ord';chOpen('tax');}};
  const zs=window.zedSave;window.zedSave=function(){const o=S.zed&&S.zed.o;zs();if(o&&!S.zed){mut(j=>{ensure(j,o).area=true;});S.set='ord';S.sdlg=true;render();toast('Delivery area saved for '+nm(o)+'.');}};
  const zc=window.zedCancel;window.zedCancel=function(){zc();S.set='ord';S.sdlg=true;render();};}
-return {init,sync,menuNote,menuAll,lens,catSel,railSetup,resume,goSvc,faqOk,faqEdit,resEdit,dlg,saveRes,saveFaq,faqDel,canAdd,addOutlet,addClose,addCreate,anyLiveAny:()=>OUTLETS.some(o=>O(o.id).live),ordersPage,page,go,start,area,open,badge,confirmTax,confirmPay,bar:()=>{const e=document.getElementById('jrbar');if(e)e.remove();}};})();
+return {init,sync,nextStep,menuNote,menuAll,lens,catSel,railSetup,resume,goSvc,faqOk,faqEdit,resEdit,dlg,saveRes,saveFaq,faqDel,canAdd,addOutlet,addClose,addCreate,anyLiveAny:()=>OUTLETS.some(o=>O(o.id).live),ordersPage,page,go,start,area,open,badge,confirmTax,confirmPay,bar:()=>{const e=document.getElementById('jrbar');if(e)e.remove();}};})();

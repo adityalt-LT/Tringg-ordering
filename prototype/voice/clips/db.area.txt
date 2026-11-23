@@ -1,0 +1,1 @@
+Draw how far this outlet delivers. Callers outside the area are offered pickup instead.

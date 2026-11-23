@@ -73,6 +73,7 @@ VOICES_JS = r'''const VOICES=[{id:'allie',n:'Ava',g:'Female',t:'Female · Englis
 '''
 
 import menu_extra
+CTX_JS = (here / 'setup' / 'voice-ctx.js').read_text(encoding='utf-8')
 
 # ───────────────────────── onboarding ─────────────────────────
 OB_CSS = r'''
@@ -234,7 +235,7 @@ TS.hello();
 '''
 
 
-def build_onboarding(v, w='1', su='', sd='', dash='', enq='', flow=''):
+def build_onboarding(v, w='1', su='', sd='', dash='', enq='', flow='', voice=''):
     t = OB
     t = must(t, '<div id="app"></div>\n<script>', '<div id="app"></div>\n' + engine_tag(v, w, su, sd, dash, enq, flow) + '<script>')
     t = must(t, '</style>', OB_CSS)
@@ -299,6 +300,8 @@ const chip=()=>''')
     t = t.replace('__LAST__', "['done']" if c1 else '[]').replace('__LASTID__', 'done' if c1 else 'services').replace('__SVCNEXT__', 'Continue' if c1 else 'Open dashboard')
     t = t.replace('__PHOTOS__', json.dumps(PHOTOS))
     t = t.replace('__HERO__', HERO).replace('__TICON__', TICON)
+    if voice:
+        t = t.replace('</body>', '<script>' + CTX_JS + '</script></body>') if '</body>' in t else t + '<script>' + CTX_JS + '</script>'
     return t
 
 
@@ -359,7 +362,7 @@ render();
 '''
 
 
-def build_dashboard(v, w='1', su='', sd='', dash='', enq='', flow='', jr=''):
+def build_dashboard(v, w='1', su='', sd='', dash='', enq='', flow='', jr='', voice=''):
     t = DB
     t = must(t, '<script>\n', engine_tag(v, w, su, sd, dash, enq, flow, jr) + '<script>\n')
     # one setup surface, no sidebar checklist
@@ -494,6 +497,8 @@ function ovEnhance(){document.querySelectorAll('#view .ov-grid .card:not(.agent)
     a = t.index('/* arriving from onboarding')
     b = t.index('</script>', a)
     t = t[:a] + BOOT.replace('\nrender();\n', '\n' + (SD_JS if sd in ('1', '2') else '') + (FLOW_JS if flow else '') + (JR_JS + '\nJR.init();\n' if jr else '') + '\nrender();\n') + t[b:]
+    if voice:
+        t = t + '<script>' + CTX_JS + '</script>'
     return t
 
 
@@ -552,6 +557,7 @@ VARIANTS = {'C1': ('C', '1', 'C1 · Welcome header', 'proto-c1-welcome-header.ht
             'H4': ('C', '1', 'H4 · Ordering setup in All outlets', 'proto-h4-ordering-all-outlets.html', '', '1', '2', 'Questions & answers', '1', '2'),
             'H5': ('C', '1', 'H5 · One outlet first, new outlets inherit', 'proto-h5-one-outlet-inherit.html', '', '1', '2', 'Questions & answers', '1', '3'),
             'H6': ('C', '1', 'H6 · Services set up in Settings', 'proto-h6-setup-in-settings.html', '', '1', '2', 'Questions & answers', '1', '4'),
+            'V1': ('C', '1', 'V1 · Katie voice guide', 'proto-v1-voice-guide.html', '', '1', '2', 'Questions & answers', '1', '4', '1'),
             'E2B': ('C', '3', 'E2b · Settings dialogs: outlet grid', 'proto-e2b-settings-grid.html', 'golive', '2')}
 
 
@@ -596,6 +602,14 @@ load();
 </script></body></html>'''
 
 
+def voice_block():
+    import sys
+    sys.path.insert(0, str(here / 'voice'))
+    from lines import LINES
+    clips = {k: 'data:audio/mpeg;base64,' + base64.b64encode((here / 'voice' / 'clips' / (k + '.mp3')).read_bytes()).decode('ascii') for k in LINES if (here / 'voice' / 'clips' / (k + '.mp3')).exists()}
+    return '<script>' + (here / 'setup' / 'voice-wrapper.js').read_text(encoding='utf-8').replace('__CLIPS__', json.dumps(clips)).replace('__LINES__', json.dumps(LINES)) + '</script>'
+
+
 if __name__ == '__main__':
     for key, (v, w, label, fn, *rest) in VARIANTS.items():
         su = rest[0] if rest else ''
@@ -604,6 +618,9 @@ if __name__ == '__main__':
         enq = rest[3] if len(rest) > 3 else ''
         flow = rest[4] if len(rest) > 4 else ''
         jr = rest[5] if len(rest) > 5 else ''
-        page = wrapper(label, build_onboarding(v, w, su, sd, dash, enq, flow), build_dashboard(v, w, su, sd, dash, enq, flow, jr), 'db' if (sd or dash) else '')
+        voice = rest[6] if len(rest) > 6 else ''
+        page = wrapper(label, build_onboarding(v, w, su, sd, dash, enq, flow, voice), build_dashboard(v, w, su, sd, dash, enq, flow, jr, voice), 'db' if ((sd or dash) and not voice) else '')
+        if voice:
+            page = page.replace('</body></html>', voice_block() + '</body></html>')
         (here / fn).write_text(page, encoding='utf-8')
         print('wrote', fn, len(page) // 1024, 'KB')

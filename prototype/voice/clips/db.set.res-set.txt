@@ -1,0 +1,1 @@
+Here you set how your agent takes bookings. Press Set up to choose party sizes, how far ahead guests can book, and how long a table is held.

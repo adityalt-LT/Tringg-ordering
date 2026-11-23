@@ -1,0 +1,1 @@
+Choose whether orders are accepted automatically, or whether your team accepts each one.

@@ -1,0 +1,1 @@
+To take orders, we need a few things: your menu, pickup and delivery, taxes, and payments. Press Set up ordering to begin with your menu.

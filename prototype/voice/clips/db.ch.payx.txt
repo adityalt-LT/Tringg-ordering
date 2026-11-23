@@ -1,0 +1,1 @@
+Choose how customers pay: a card payment link by text, cash, or both. Connect Stripe if you want to take cards.

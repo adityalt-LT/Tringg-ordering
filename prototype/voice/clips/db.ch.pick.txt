@@ -1,0 +1,1 @@
+Set how long pickup takes. Customers hear this time once their order is accepted.
