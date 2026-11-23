@@ -130,6 +130,7 @@ function addCreate(){const n=(document.getElementById('jra-n').value||'').trim()
 /* ───── H6: reservations and answers are set up in Settings ───── */
 const H6=()=>window.TS_JOURNEY==='4';
 const CATS_=[['general','General'],['res','Reservation'],['ord','Ordering'],['catering','Catering'],['music','Music events']];
+const cats=()=>CATS_.concat(TS.get().d.fcats||[]);
 const stF=()=>{const j=J();return j.st||(j.st={});};
 function outletNow(){return S.outlet!=='all'?S.outlet:(OUTLETS[0]||{}).id;}
 function openSet(page,cat){S.outlet=outletNow();S.set=page;if(cat)S.faqCat=cat;S.sdlg=true;S.ch=null;S.nav=false;S.dd=false;S.rsOpen=false;render();}
@@ -139,11 +140,12 @@ function goSvc(k,step){mut(j=>{(j.st||(j.st={}))[k]=1;});
 function faqOk(cat){const key=cat==='res'?'res.faq':'enq.faq';mut((j,x)=>{x.done[key]=true;});toast(cat==='res'?'Reservation answers confirmed.':'Answers confirmed.');render();}
 function faqPage(){const s=TS.get(),cat=S.faqCat||'general',d=s.d,list=d.faqs.map((f,i)=>[f,i]).filter(x=>(x[0][2]||'general')===cat);
  const rk=cat==='res'?'res.faq':cat==='general'?'enq.faq':null,svc=cat==='res'?'res':'enq',pend=rk&&TS.sel(svc)&&!s.done[rk]&&stF()[svc];
- const chips='<div class="jr-tabs">'+CATS_.map(c=>'<button class="'+(c[0]===cat?'on':'')+'" onclick="S.faqCat=\''+c[0]+'\';render()">'+c[1]+'<i>'+d.faqs.filter(f=>(f[2]||'general')===c[0]).length+'</i></button>').join('')+'</div>';
+ const chips='<div class="jr-tabs">'+cats().map(c=>'<button class="'+(c[0]===cat?'on':'')+'" onclick="S.faqCat=\''+c[0]+'\';render()">'+c[1]+'<i>'+d.faqs.filter(f=>(f[2]||'general')===c[0]).length+'</i></button>').join('')+'<button class="jr-newcat" onclick="JR.faqEdit(-1,true)">+ New category</button></div>';
  const banner=pend?'<div class="jr-rev"><div><b>'+(cat==='res'?'Review your reservation answers':'Review your answers')+'</b><span>Emma says these to callers. Fix anything that is wrong, then confirm.</span></div><button class="ts-btn ts-pulse" onclick="JR.faqOk(\''+cat+'\')">Looks good</button></div>':'';
  const rows=list.length?list.map(x=>'<div class="sr"><div class="sr-t"><b>'+esc(x[0][0]||'New question')+'</b><span>'+esc(x[0][1]||'No answer yet')+'</span></div><button class="btn btn-soft sr-b" onclick="JR.faqEdit('+x[1]+')">Edit</button></div>').join(''):'<div class="sr"><div class="sr-t"><span>No answers in this category yet.</span></div></div>';
  return sH('FAQ / Knowledge','Answers the agent can use on calls.')+chips+banner+'<div class="scard sr-c">'+rows+'</div><div style="margin-top:14px"><button class="btn btn-line" onclick="JR.faqEdit(-1)">+ Add an answer</button></div>';}
-function faqEdit(i){const f=i>=0?TS.get().d.faqs[i]:['','',S.faqCat||'general'];S.ch={k:'faqe',jr:1,i,vals:{q:f[0],a:f[1],c:f[2]||'general'}};render();}
+function faqEdit(i,nc){const f=i>=0?TS.get().d.faqs[i]:['','',S.faqCat||'general'];S.ch={k:'faqe',jr:1,i,vals:{q:f[0],a:f[1],c:nc?'__new':(f[2]||'general'),nc:''}};render();}
+function catSel(v){const e=document.getElementById('jr-ncr');if(e)e.style.display=v==='__new'?'flex':'none';}
 function resPage(){const s=TS.get(),r=s.d.res,rd=!!s.done['res.rules'],fd=!!s.done['res.faq'],n=s.d.faqs.filter(f=>f[2]==='res').length;
  const row=(t,desc,d,btn,onc)=>'<div class="sr"><div class="sr-t"><b>'+t+' '+chip(d?'d':'',d?'Done':'To do')+'</b><span>'+desc+'</span></div><button class="'+(d?'btn btn-soft':'btn btn-soft')+' sr-b" onclick="'+onc+'">'+btn+'</button></div>';
  return sH('Reservations','How the agent takes table bookings at '+esc(nm(outletNow()))+'.')+'<div class="jr-g">Needed to take bookings</div><div class="scard sr-c">'+
@@ -156,13 +158,14 @@ function dlg(){const c=S.ch,V=c.vals,k=c.k,where=nm(outletNow());
  const sel=(id,o)=>'<select id="chf-'+id+'" class="inp sm" style="width:190px">'+o.map(a=>'<option value="'+a[0]+'" '+(String(a[0])===String(V[id])?'selected':'')+'>'+a[1]+'</option>').join('')+'</select>';
  let t,b,foot;
  if(k==='resr'){t='Booking rules';b=f('Max reservations a day',num('perDay','',1,500))+f('Advance booking window',sel('win',[[7,'7 days'],[14,'14 days'],[30,'30 days'],[60,'60 days'],[90,'90 days']]))+f('Min party size',num('minP','guests',1,50))+f('Max party size',num('maxP','guests',1,100))+f('Booking length',sel('dur',[[60,'1 hour'],[90,'1.5 hours'],[120,'2 hours'],[150,'2.5 hours']]))+f('Notice needed',sel('notice',[[0,'No notice'],[30,'30 min'],[60,'1 hour'],[120,'2 hours'],[240,'4 hours'],[1440,'1 day']]));foot='<button class="btn btn-line" onclick="chClose()">Cancel</button><button class="btn btn-dark" onclick="JR.saveRes()">Save and continue</button>';}
- else{t=c.i>=0?'Edit answer':'Add an answer';b=f('Question','<input id="chf-q" class="inp sm" style="width:300px;flex:0 0 300px" value="'+esc(V.q||'')+'">')+f('Answer','<textarea id="chf-a" class="inp" rows="3" style="width:300px;flex:0 0 300px">'+esc(V.a||'')+'</textarea>')+f('Category',sel('c',CATS_));foot=(c.i>=0?'<button class="btn btn-line" style="margin-right:auto" onclick="JR.faqDel()">Delete</button>':'')+'<button class="btn btn-line" onclick="chClose()">Cancel</button><button class="btn btn-dark" onclick="JR.saveFaq()">Save</button>';}
+ else{t=c.i>=0?'Edit answer':'Add an answer';b=f('Question','<input id="chf-q" class="inp sm" style="width:300px;flex:0 0 300px" value="'+esc(V.q||'')+'">')+f('Answer','<textarea id="chf-a" class="inp" rows="3" style="width:300px;flex:0 0 300px">'+esc(V.a||'')+'</textarea>')+f('Category','<select id="chf-c" class="inp sm" style="width:190px" onchange="JR.catSel(this.value)">'+cats().map(a=>'<option value="'+a[0]+'" '+(a[0]===V.c?'selected':'')+'>'+esc(a[1])+'</option>').join('')+'<option value="__new" '+(V.c==='__new'?'selected':'')+'>+ New category…</option></select>')+'<div class="ch-f" id="jr-ncr" style="display:'+(V.c==='__new'?'flex':'none')+'"><div><b>New category name</b><span>For example Private events or Catering.</span></div><input id="chf-nc" class="inp sm" style="width:220px;flex:0 0 220px" placeholder="Private events"></div>';foot=(c.i>=0?'<button class="btn btn-line" style="margin-right:auto" onclick="JR.faqDel()">Delete</button>':'')+'<button class="btn btn-line" onclick="chClose()">Cancel</button><button class="btn btn-dark" onclick="JR.saveFaq()">Save</button>';}
  return '<div class="ch-bk" onmousedown="if(event.target===this)chClose()"><div class="ch jr" role="dialog" aria-modal="true" aria-label="'+t+'"><div class="ch-h"><div><small>'+(k==='resr'?'Reservations':'FAQ / Knowledge')+' · '+esc(where)+'</small><h3>'+t+'</h3></div><button class="sd-x2" aria-label="Close" onclick="chClose()">✕</button></div><div class="ch-b">'+b+'</div><div class="ch-ft">'+foot+'</div></div></div>';}
 const gv_=id=>{const e=document.getElementById('chf-'+id);return e?e.value:'';};
 function saveRes(){const v={perDay:+gv_('perDay')||1,win:+gv_('win'),minP:+gv_('minP')||1,maxP:+gv_('maxP')||1,dur:+gv_('dur'),notice:+gv_('notice')};
  if(v.minP>v.maxP){toast('Min party size is above the max');return;}
  mut((j,x)=>{Object.assign(x.d.res,v);x.done['res.rules']=true;});S.ch=null;S.faqCat='res';S.set='faq';render();toast('Booking rules saved. Now review your reservation answers.');}
-function saveFaq(){const q=gv_('q').trim(),a=gv_('a').trim(),c=gv_('c')||'general';if(!q||!a){toast('Add a question and an answer');return;}const i=S.ch.i;
+function saveFaq(){let c=gv_('c')||'general';const q=gv_('q').trim(),a=gv_('a').trim();if(!q||!a){toast('Add a question and an answer');return;}const i=S.ch.i;
+ if(c==='__new'){const n=gv_('nc').trim();if(!n){toast('Name the new category');return;}const id=n.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'cat'+Date.now();const ex=cats().find(x=>x[0]===id||x[1].toLowerCase()===n.toLowerCase());c=ex?ex[0]:id;if(!ex)mut((j,x)=>{(x.d.fcats||(x.d.fcats=[])).push([id,n]);});}
  mut((j,x)=>{if(i>=0){const f=x.d.faqs[i];f[0]=q;f[1]=a;f[2]=c;}else x.d.faqs.push([q,a,c]);});S.faqCat=c;S.ch=null;render();toast('Saved.');}
 function faqDel(){const i=S.ch.i;mut((j,x)=>{x.d.faqs.splice(i,1);});S.ch=null;render();toast('Removed.');}
 /* the sidebar: what is left, one card for every journey that was started and not finished */
@@ -179,6 +182,13 @@ function railSetup(){const L=lefts();if(!L.length)return '';const left=L.reduce(
  const pop=S.rsOpen?'<div class="rs-pop">'+L.map(x=>'<button class="rs-row" onclick="JR.resume(\''+x.k+'\')"><span class="rs-t"><b>'+x.n+'</b><small>'+x.done+' of '+x.total+' done</small><i class="rs-bar"><u style="width:'+Math.round(x.done/x.total*100)+'%"></u></i></span><span class="rs-go">›</span></button>').join('')+'</div>':'';
  return '<div class="rs">'+pop+'<button class="rs-card" aria-expanded="'+!!S.rsOpen+'" onclick="S.rsOpen=!S.rsOpen;renderRail()">'+ring+'<span class="rs-t"><b>Finish setup</b><small>'+left+' steps left in '+L.length+' services</small></span><span class="rs-go">'+(S.rsOpen?'⌄':'⌃')+'</span></button></div>';}
 
+function menuNote(kind){const o=nm(S.outlet);
+ if(kind==='import')return '<div class="jr-scope"><div><b>Import your menu here, then manage it in All outlets</b><span>Import from Google, a POS, your website, a delivery app or a file. After that, adding and editing items happens in All outlets.</span></div></div>';
+ return '<div class="jr-scope"><div><b>You are viewing the menu for '+esc(o)+'</b><span>Here you choose what '+esc(o)+' serves. To add, edit or organise items, switch to All outlets.</span></div><button class="ts-btn" onclick="JR.menuAll()">Switch to All outlets</button></div>';}
+function menuAll(){S.outlet='all';S.menu.tab='items';render();}
+function lens(total){const fo=S.menu.fo||'all';if(OUTLETS.length<2)return '';
+ const off=fo==='all'?0:DB.items.filter(i=>soldAt(i).includes(fo)&&i.oos[fo]).length;
+ return '<div class="jr-lens"><label for="jr-fo">Show items sold at</label><select id="jr-fo" class="inp sm" onchange="S.menu.fo=this.value;S.menu.sel=[];render()"><option value="all">All outlets</option>'+OUTLETS.map(o=>'<option value="'+o.id+'" '+(fo===o.id?'selected':'')+'>'+esc(o.short)+'</option>').join('')+'</select><span>'+(fo==='all'?total+' items on the menu':total+' of '+DB.items.length+' items are sold at '+esc(nm(fo))+(off?' · '+off+' out of stock there':''))+'</span></div>';}
 function init(){
  if(H6()){SET['res-set']=()=>resPage();SET.faq=()=>faqPage();document.addEventListener('click',e=>{if(S.rsOpen&&!e.target.closest('.rs')){S.rsOpen=false;renderRail();}});}
  TS.beforeOutlet=()=>{};
@@ -191,4 +201,4 @@ function init(){
  const st=window.saveTaxW;window.saveTaxW=function(){const was=S.menu.drawer;st();if(was==='tax'&&S.menu.drawer!=='tax'&&S.sdlg){S.set='ord';chOpen('tax');}};
  const zs=window.zedSave;window.zedSave=function(){const o=S.zed&&S.zed.o;zs();if(o&&!S.zed){mut(j=>{ensure(j,o).area=true;});S.set='ord';S.sdlg=true;render();toast('Delivery area saved for '+nm(o)+'.');}};
  const zc=window.zedCancel;window.zedCancel=function(){zc();S.set='ord';S.sdlg=true;render();};}
-return {init,sync,railSetup,resume,goSvc,faqOk,faqEdit,resEdit,dlg,saveRes,saveFaq,faqDel,canAdd,addOutlet,addClose,addCreate,anyLiveAny:()=>OUTLETS.some(o=>O(o.id).live),ordersPage,page,go,start,area,open,badge,confirmTax,confirmPay,bar:()=>{const e=document.getElementById('jrbar');if(e)e.remove();}};})();
+return {init,sync,menuNote,menuAll,lens,catSel,railSetup,resume,goSvc,faqOk,faqEdit,resEdit,dlg,saveRes,saveFaq,faqDel,canAdd,addOutlet,addClose,addCreate,anyLiveAny:()=>OUTLETS.some(o=>O(o.id).live),ordersPage,page,go,start,area,open,badge,confirmTax,confirmPay,bar:()=>{const e=document.getElementById('jrbar');if(e)e.remove();}};})();

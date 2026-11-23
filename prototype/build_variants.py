@@ -72,6 +72,8 @@ def engine_tag(v, w='1', su='', sd='', dash='', enq='', flow='', jr=''):
 VOICES_JS = r'''const VOICES=[{id:'allie',n:'Ava',g:'Female',t:'Female · English',d:'Warm American host, clear and friendly on the phone',pitch:1.15,rate:1},{id:'marcus',n:'Marcus',g:'Male',t:'Male · English',d:'Calm, confident American host with a steady pace',pitch:.7,rate:.95},{id:'leo',n:'Leo',g:'Male',t:'Male · English',d:'Upbeat, easygoing host for casual restaurants',pitch:.9,rate:1.1},{id:'priya',n:'Priya',g:'Female',t:'Female · Hindi',d:'Friendly bilingual host for Hindi and English callers',pitch:1.3,rate:1.08},{id:'shubh',n:'Shubh',g:'Male',t:'Male · Hindi',d:'Neutral Indian male host. Lowest pronunciation error rate',pitch:.8,rate:1}];
 '''
 
+import menu_extra
+
 # ───────────────────────── onboarding ─────────────────────────
 OB_CSS = r'''
 /* header stepper */
@@ -474,6 +476,15 @@ function ovEnhance(){document.querySelectorAll('#view .ov-grid .card:not(.agent)
             t = must(t, "const isBrand=()=>S.outlet==='all';", "const isBrand=()=>S.outlet==='all'||OUTLETS.length===1;")
             t = must(t, "${TS.outletSet(x.id)?'':'<span class=\"odd-new\">Set up</span>'}</button>`).join('')).join('')}</div>`;", "${TS.outletSet(x.id)?'':'<span class=\"odd-new\">Set up</span>'}</button>`).join('')).join('')}${window.JR&&JR.canAdd()?'<button class=\"odi odi-add\" onclick=\"JR.addOutlet()\">+ Add new outlet</button>':''}</div>`;")
         if jr == '4':
+            t = must(t, "{id:'dr',n:'Drinks',d:'',type:'veg',parent:''}],", "{id:'dr',n:'Drinks',d:'',type:'veg',parent:''}," + menu_extra.CATS + "],")
+            t = must(t, "pg:[{outs:OIDS().filter(x=>!['ev','hp'].includes(x)),ch:'p',p:[7]}]})],\n groups:[", "pg:[{outs:OIDS().filter(x=>!['ev','hp'].includes(x)),ch:'p',p:[7]}]})," + menu_extra.ITEMS + "],\n groups:[")
+            t = must(t, "opt('o63','Balsamic',0)]}],", "opt('o63','Balsamic',0)]}," + menu_extra.GROUPS + "],")
+            t = must(t, "const isBrand=()=>S.outlet==='all'||OUTLETS.length===1;", "const isBrand=()=>S.outlet==='all'||DB.menuState==='draft';")
+            t = must(t, "function vMenu(){\n  if(!isBrand()&&DB.menuState!=='live')return ", "function vMenu(){\n  if(false)return ")
+            t = must(t, "if(DB.menuState==='none'||S.menu.flow)return `<div class=\"scroll\"><div class=\"page\" style=\"max-width:980px\">${menuFlow()}</div></div>`;", "if(DB.menuState==='none'||S.menu.flow)return `<div class=\"scroll\"><div class=\"page\" style=\"max-width:980px\">${isBrand()||S.menu.flow?'':JR.menuNote('import')}${isBrand()||S.menu.flow?menuFlow():menuFlow().replace(/<button class=\"src\" onclick=\"startScratch\(\)\">[\\s\\S]*?<\\/button>/,'')}</div></div>`;")
+            t = must(t, "return `<div class=\"scroll\"><div class=\"page\" style=\"padding-bottom:110px\">${draft?draftBanner():''}", "return `<div class=\"scroll\"><div class=\"page\" style=\"padding-bottom:110px\">${isBrand()?'':JR.menuNote('live')}${draft?draftBanner():''}")
+            t = must(t, "const pool=DB.items.filter(i=>brand||soldAt(i).includes(o)||true);", "const fo=S.menu.fo||'all',pool=DB.items.filter(i=>brand?(fo==='all'||soldAt(i).includes(fo)):soldAt(i).includes(o));")
+            t = must(t, "h+=`${fbar}\n", "h+=`${fbar}${brand?JR.lens(pool.length):''}\n")
             t = must(t, "const SETNAV_ONE=[['PHONE',[['phone','Phone number']]],['OUTLET',[['info','Basic info'],['hours','Outlet hours'],['faq','FAQ / Knowledge']]],", "const SETNAV_ONE=[['PHONE',[['phone','Phone number']]],['OUTLET',[['info','Basic info'],['hours','Outlet hours'],['faq','FAQ / Knowledge']]],['RESERVATIONS',[['res-set','Reservations']]],")
             t = must(t, "function renderChk(){if(TS.variant==='C'", "function renderChk(){if(window.JR)return JR.railSetup();if(TS.variant==='C'")
         t = must(t, "function render(){\n  syncMods();", "function render(){\n  if(window.JR)JR.sync();syncMods();")
