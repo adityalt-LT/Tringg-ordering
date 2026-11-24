@@ -1,0 +1,110 @@
+[
+ {
+  "id": "intro",
+  "text": "Hi, I’m Katie. Here’s a quick tour of your Tringg dashboard.",
+  "dur": 3.06,
+  "at": null
+ },
+ {
+  "id": "ov1",
+  "text": "This is your overview: today’s bookings, pending requests, calls handled, and your no-show rate.",
+  "dur": 5.28,
+  "at": 0.571
+ },
+ {
+  "id": "ov2",
+  "text": "Your agent Sofie is live. Call this number any time to try her yourself.",
+  "dur": 3.89,
+  "at": 6.401
+ },
+ {
+  "id": "ov3",
+  "text": "Recent calls appear here with a short AI summary. Let’s open the full list.",
+  "dur": 3.89,
+  "at": 10.841
+ },
+ {
+  "id": "ca1",
+  "text": "Calls shows every conversation: total calls, reservations captured, and average duration.",
+  "dur": 5.43,
+  "at": 17.36
+ },
+ {
+  "id": "ca2",
+  "text": "Filter by outcome. Open Completed, Transferred for calls handed to your team, FAQ for general questions, or Failed for calls that didn’t go through.",
+  "dur": 7.29,
+  "at": 23.34
+ },
+ {
+  "id": "ca3",
+  "text": "Open any call for an AI summary, tags for what the caller wanted, and the details Sofie captured.",
+  "dur": 5.33,
+  "at": 33.534
+ },
+ {
+  "id": "ca4",
+  "text": "Scroll down to play the recording and read the full transcript.",
+  "dur": 2.93,
+  "at": 39.414
+ },
+ {
+  "id": "rs1",
+  "text": "Reservations is your inbox. Switch between today, declined, and expired bookings.",
+  "dur": 5.51,
+  "at": 42.896
+ },
+ {
+  "id": "rs2",
+  "text": "And filter by status, date, or party size.",
+  "dur": 2.53,
+  "at": 49.246
+ },
+ {
+  "id": "ag1",
+  "text": "Agents is where you manage your voice agent. Open Sofie to set her name, greeting, and voice. Right now, she speaks in my voice.",
+  "dur": 7.18,
+  "at": 52.327
+ },
+ {
+  "id": "st1",
+  "text": "Everything else lives in Settings, from your profile menu.",
+  "dur": 3.11,
+  "at": 60.057
+ },
+ {
+  "id": "st2",
+  "text": "Use the outlet switcher to move between all outlets and a single outlet. Settings apply per outlet.",
+  "dur": 5.33,
+  "at": 64.563
+ },
+ {
+  "id": "st3",
+  "text": "Basic info holds your address, map location, and timezone. This is what Sofie tells callers.",
+  "dur": 5.69,
+  "at": 70.506
+ },
+ {
+  "id": "st4",
+  "text": "Hours and booking rules set when Sofie takes reservations, including special dates and closures.",
+  "dur": 5.09,
+  "at": 76.747
+ },
+ {
+  "id": "st5",
+  "text": "FAQ and knowledge is what Sofie answers from. Open any question to review or edit its answer.",
+  "dur": 5.85,
+  "at": 82.389
+ },
+ {
+  "id": "st6",
+  "text": "And Billing shows your plan and what’s included.",
+  "dur": 2.46,
+  "at": 88.79
+ },
+ {
+  "id": "outro",
+  "text": "That’s your Tringg dashboard. Thanks for watching.",
+  "dur": 2.69,
+  "at": null
+ }
+]
