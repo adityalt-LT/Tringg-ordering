@@ -73,6 +73,7 @@ VOICES_JS = r'''const VOICES=[{id:'allie',n:'Ava',g:'Female',t:'Female · Englis
 '''
 
 import menu_extra
+MENU_CSS = (here / 'setup' / 'menu-polish.css').read_text(encoding='utf-8')
 CTX_JS = (here / 'setup' / 'voice-ctx.js').read_text(encoding='utf-8')
 
 # ───────────────────────── onboarding ─────────────────────────
@@ -486,9 +487,23 @@ function ovEnhance(){document.querySelectorAll('#view .ov-grid .card:not(.agent)
             t = must(t, "function vMenu(){\n  if(!isBrand()&&DB.menuState!=='live')return ", "function vMenu(){\n  if(false)return ")
             t = must(t, "if(DB.menuState==='none'||S.menu.flow)return `<div class=\"scroll\"><div class=\"page\" style=\"max-width:980px\">${menuFlow()}</div></div>`;", "if(DB.menuState==='none'||S.menu.flow)return `<div class=\"scroll\"><div class=\"page\" style=\"max-width:980px\">${isBrand()||S.menu.flow?'':JR.menuNote('import')}${isBrand()||S.menu.flow?menuFlow():menuFlow().replace(/<button class=\"src\" onclick=\"startScratch\(\)\">[\\s\\S]*?<\\/button>/,'')}</div></div>`;")
             t = must(t, "return `<div class=\"scroll\"><div class=\"page\" style=\"padding-bottom:110px\">${draft?draftBanner():''}", "return `<div class=\"scroll\"><div class=\"page\" style=\"padding-bottom:110px\">${isBrand()?'':JR.menuNote('live')}${draft?draftBanner():''}")
-            t = must(t, "const pool=DB.items.filter(i=>brand||soldAt(i).includes(o)||true);", "const fo=S.menu.fo||'all',pool=DB.items.filter(i=>brand?(fo==='all'||soldAt(i).includes(fo)):soldAt(i).includes(o));")
+            t = must(t, "const pool=DB.items.filter(i=>brand||soldAt(i).includes(o)||true);", "const lo=S.menu.lo||'all',pool=DB.items.filter(i=>brand?(lo==='all'||soldAt(i).includes(lo)):soldAt(i).includes(o));")
             t = must(t, "h+=`${fbar}\n", "h+=`${fbar}${brand?JR.lens(pool.length):''}\n")
             t = must(t, "const SETNAV_ONE=[['PHONE',[['phone','Phone number']]],['OUTLET',[['info','Basic info'],['hours','Outlet hours'],['faq','FAQ / Knowledge']]],", "const SETNAV_ONE=[['PHONE',[['phone','Phone number']]],['OUTLET',[['info','Basic info'],['hours','Outlet hours'],['faq','FAQ / Knowledge']]],['RESERVATIONS',[['res-set','Reservations']]],")
+            # Menu · Items polish
+            t = must(t, "function opLabel(ids){ids=ids||[];", "function opLabel(ids){ids=(ids||[]).filter(x=>OUTLETS.some(o=>o.id===x));")
+            t = must(t, "function stockTxt(x){const s=soldAt(x),out=s.filter(o=>x.oos[o]);return out.length?`<span style=\"color:var(--coral-700)\">Out at ${out.length===1?esc(ON(out[0]).short):out.length+' outlets'}</span>`:'<span class=\"muted\">Available</span>';}", "function stockTxt(x){const s=soldAt(x).filter(o=>OUTLETS.some(z=>z.id===o)),out=s.filter(o=>x.oos[o]);return out.length?`<span class=\"stk out\">Out at ${out.length===1?esc(ON(out[0]).short):out.length+' outlets'}</span>`:'<span class=\"stk ok\">Available</span>';}")
+            a = t.index("  if(!draft)h+=`<div class=\"card card-p\" style=\"display:flex;gap:24px;align-items:center;flex-wrap:wrap;padding:18px 22px\">")
+            z = t.index("  const fbar=`<div style=\"display:flex;gap:10px;position:relative\">", a)
+            t = t[:a] + "  const nTyp=pool.filter(i=>i.type==='none').length;h+=JR.menuStatus(pool,ready,draft,F);\n" + t[z:]
+            t = must(t, "notype:i=>i.type==='none'};", "notype:i=>i.type==='none',nodesc:i=>!i.desc,noprice:i=>!soldAt(i).length};")
+            t = must(t, "notype:'Veg / non-veg not set'};", "notype:'Veg / non-veg not set',nodesc:'Missing description',noprice:'No price'};")
+            t = must(t, "<div class=\"h3\">${searching?list.length+' matching item'+(list.length===1?'':'s'):esc(catName(S.menu.cat))}</div>", "<div class=\"h3\">${searching?list.length+' matching item'+(list.length===1?'':'s'):esc(catName(S.menu.cat))}${F!=='all'?`<button class=\"u-link mhead-clear\" onclick=\"S.menu.f='all';render()\">Clear filter</button>`:''}</div>")
+            t = must(t, "'Brand menu · '+OUTLETS.length+' outlets'", "'Brand menu · '+OUTLETS.length+(OUTLETS.length===1?' outlet':' outlets')+(DB.menuSource&&!/^Built/.test(DB.menuSource)&&DB.menuState!=='none'?' · Synced '+(DB.lastSync||'4 min ago'):'')")
+            t = must(t, "${isBrand()&&DB.menuSource&&!/^Built/.test(DB.menuSource)&&DB.menuState!=='none'?`<div class=\"xs muted\" style=\"text-align:right;margin:-10px 4px 0\">Last synced ${esc(DB.lastSync||'4 min ago')} from ${esc(DB.menuSource)}</div>`:''}", "")
+            t = must(t, "if(n===N)return 'All '+N+' outlets';", "if(n===N)return N===1?'1 outlet':'All '+N+' outlets';")
+            t = must(t, "grid-template-columns:230px minmax(0,1fr);gap:20px;align-items:start", "grid-template-columns:216px minmax(0,1fr);gap:16px;align-items:start")
+            t = must(t, '</style>', MENU_CSS + '</style>')
             t = must(t, "function renderChk(){if(TS.variant==='C'", "function renderChk(){if(window.JR)return JR.railSetup();if(TS.variant==='C'")
         t = must(t, "function render(){\n  syncMods();", "function render(){\n  if(window.JR)JR.sync();syncMods();")
         t = must(t, "Usually under a minute. Everything lands as a draft you can edit.</div></div>", "This can take a few minutes, and sometimes a few hours. You do not have to wait here. We will tell you when it is ready.</div><div><button class=\"btn btn-dark\" onclick=\"JR.go()\">Continue setup</button></div></div>")

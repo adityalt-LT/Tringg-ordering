@@ -1,0 +1,19 @@
+/* Menu · Items: one status bar, readable table, sticky header and category rail */
+.mst{display:flex;align-items:center;gap:14px 20px;flex-wrap:wrap;background:var(--panel);border:1.5px solid var(--border);border-radius:18px;padding:14px 18px;margin:0 0 14px}
+.mst-main{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.mst-pct{display:flex;align-items:baseline;gap:8px;white-space:nowrap}.mst-pct b{font-size:22px;font-weight:700;letter-spacing:-.4px;font-variant-numeric:tabular-nums}.mst-pct span{font-size:14px;color:var(--ink-70)}
+.mst-bar{width:112px;height:6px;border-radius:3px;background:var(--sunken);overflow:hidden}.mst-bar i{display:block;height:100%;background:#4FC2B4;border-radius:3px}
+.mst-n{font-size:13px;color:var(--ink-50);white-space:nowrap;font-variant-numeric:tabular-nums}
+.mst-chips{display:flex;gap:8px;flex-wrap:wrap;flex:1;min-width:240px}
+.mst-chip{font:inherit;font-size:13px;line-height:1.2;border:1.5px solid #F1DDB0;background:#FFF6E5;color:#6B5A2A;border-radius:999px;padding:6px 12px;cursor:pointer;transition:background .15s,border-color .15s}
+.mst-chip b{font-weight:700;font-variant-numeric:tabular-nums}.mst-chip:hover{border-color:#C99344}.mst-chip.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.mst-ok{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--mint-700);font-weight:600}
+.mtbl{font-variant-numeric:tabular-nums}
+.mtbl td .xs.muted{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:36ch}
+.stk{display:inline-flex;align-items:center;font-size:12.5px;font-weight:600;border-radius:999px;padding:3px 10px;white-space:nowrap}.stk.ok{background:#E6F3EC;color:#2F6F4F}.stk.out{background:#FCE9E6;color:#A8392B}
+.cat .n{margin-left:auto;padding-left:8px;font-variant-numeric:tabular-nums}.cat{align-items:center;gap:8px}
+@media(min-width:1180px){
+ .mgrid>.card:first-child{position:sticky;top:12px;max-height:calc(100vh - 100px);overflow:auto}}
+.mhead-clear{margin-left:12px;font-size:13px}
+.mgrid .cat{padding:9px 10px}.mgrid .catrow{gap:0}.mgrid .catrow .ib{width:28px}.mtbl td.small{white-space:nowrap}.mtbl th{line-height:1.25}.mtbl td:nth-child(2){min-width:200px}
+.mtbl td:nth-child(2){min-width:190px!important}.mtbl th:nth-child(6){white-space:normal;min-width:84px}.mtbl td:last-child{padding-left:4px;padding-right:8px}

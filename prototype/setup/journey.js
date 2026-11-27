@@ -186,9 +186,15 @@ function menuNote(kind){const o=nm(S.outlet);
  if(kind==='import')return '<div class="jr-scope"><div><b>Import your menu here, then manage it in All outlets</b><span>Import from Google, a POS, your website, a delivery app or a file. After that, adding and editing items happens in All outlets.</span></div></div>';
  return '<div class="jr-scope"><div><b>You are viewing the menu for '+esc(o)+'</b><span>Here you choose what '+esc(o)+' serves. To add, edit or organise items, switch to All outlets.</span></div><button class="ts-btn" onclick="JR.menuAll()">Switch to All outlets</button></div>';}
 function menuAll(){S.outlet='all';S.menu.tab='items';render();}
-function lens(total){const fo=S.menu.fo||'all';if(OUTLETS.length<2)return '';
+function lens(total){const fo=S.menu.lo||'all';if(OUTLETS.length<2)return '';
  const off=fo==='all'?0:DB.items.filter(i=>soldAt(i).includes(fo)&&i.oos[fo]).length;
- return '<div class="jr-lens"><label for="jr-fo">Show items sold at</label><select id="jr-fo" class="inp sm" onchange="S.menu.fo=this.value;S.menu.sel=[];render()"><option value="all">All outlets</option>'+OUTLETS.map(o=>'<option value="'+o.id+'" '+(fo===o.id?'selected':'')+'>'+esc(o.short)+'</option>').join('')+'</select><span>'+(fo==='all'?total+' items on the menu':total+' of '+DB.items.length+' items are sold at '+esc(nm(fo))+(off?' · '+off+' out of stock there':''))+'</span></div>';}
+ return '<div class="jr-lens"><label for="jr-fo">Show items sold at</label><select id="jr-fo" class="inp sm" onchange="S.menu.lo=this.value;S.menu.sel=[];render()"><option value="all">All outlets</option>'+OUTLETS.map(o=>'<option value="'+o.id+'" '+(fo===o.id?'selected':'')+'>'+esc(o.short)+'</option>').join('')+'</select><span>'+(fo==='all'?total+' items on the menu':total+' of '+DB.items.length+' items are sold at '+esc(nm(fo))+(off?' · '+off+' out of stock there':''))+'</span></div>';}
+function menuStatus(pool,ready,draft,F){if(draft)return '';
+ const c=f=>pool.filter(f).length,bad=pool.length-ready,pct=pool.length?Math.round(ready/pool.length*100):0;
+ const chips=[[c(i=>i.type==='none'),'need veg / non-veg','notype'],[c(i=>!i.desc),'have no description','nodesc'],[c(i=>!soldAt(i).length),'have no price','noprice'],[c(i=>!!i.chk),'need a check','check']].filter(x=>x[0]);
+ const main='<div class="mst-main"><div class="mst-pct"><b>'+pct+'%</b><span>ready for phone orders</span></div><div class="mst-bar" role="img" aria-label="'+ready+' of '+pool.length+' items ready"><i style="width:'+pct+'%"></i></div><span class="mst-n">'+ready+' of '+pool.length+' items</span></div>';
+ if(!bad)return '<section class="mst" aria-label="Phone readiness">'+main+'<div class="mst-ok">Every item has what the agent needs.</div></section>';
+ return '<section class="mst" aria-label="Phone readiness">'+main+'<div class="mst-chips">'+chips.map(x=>'<button class="mst-chip '+(F===x[2]?'on':'')+'" aria-pressed="'+(F===x[2])+'" onclick="S.menu.f=\''+(F===x[2]?'all':x[2])+'\';render()"><b>'+x[0]+'</b> '+x[1]+'</button>').join('')+'</div><button class="btn btn-line btn-sm" onclick="S.menu.f=\'info\';render()">Fix '+bad+'</button></section>';}
 function init(){
  if(H6()){SET['res-set']=()=>resPage();SET.faq=()=>faqPage();document.addEventListener('click',e=>{if(S.rsOpen&&!e.target.closest('.rs')){S.rsOpen=false;renderRail();}});}
  TS.beforeOutlet=()=>{};
@@ -201,4 +207,4 @@ function init(){
  const st=window.saveTaxW;window.saveTaxW=function(){const was=S.menu.drawer;st();if(was==='tax'&&S.menu.drawer!=='tax'&&S.sdlg){S.set='ord';chOpen('tax');}};
  const zs=window.zedSave;window.zedSave=function(){const o=S.zed&&S.zed.o;zs();if(o&&!S.zed){mut(j=>{ensure(j,o).area=true;});S.set='ord';S.sdlg=true;render();toast('Delivery area saved for '+nm(o)+'.');}};
  const zc=window.zedCancel;window.zedCancel=function(){zc();S.set='ord';S.sdlg=true;render();};}
-return {init,sync,nextStep,menuNote,menuAll,lens,catSel,railSetup,resume,goSvc,faqOk,faqEdit,resEdit,dlg,saveRes,saveFaq,faqDel,canAdd,addOutlet,addClose,addCreate,anyLiveAny:()=>OUTLETS.some(o=>O(o.id).live),ordersPage,page,go,start,area,open,badge,confirmTax,confirmPay,bar:()=>{const e=document.getElementById('jrbar');if(e)e.remove();}};})();
+return {init,sync,menuStatus,nextStep,menuNote,menuAll,lens,catSel,railSetup,resume,goSvc,faqOk,faqEdit,resEdit,dlg,saveRes,saveFaq,faqDel,canAdd,addOutlet,addClose,addCreate,anyLiveAny:()=>OUTLETS.some(o=>O(o.id).live),ordersPage,page,go,start,area,open,badge,confirmTax,confirmPay,bar:()=>{const e=document.getElementById('jrbar');if(e)e.remove();}};})();
