@@ -186,9 +186,22 @@ function menuNote(kind){const o=nm(S.outlet);
  if(kind==='import')return '<div class="jr-scope"><div><b>Import your menu here, then manage it in All outlets</b><span>Import from Google, a POS, your website, a delivery app or a file. After that, adding and editing items happens in All outlets.</span></div></div>';
  return '<div class="jr-scope"><div><b>You are viewing the menu for '+esc(o)+'</b><span>Here you choose what '+esc(o)+' serves. To add, edit or organise items, switch to All outlets.</span></div><button class="ts-btn" onclick="JR.menuAll()">Switch to All outlets</button></div>';}
 function menuAll(){S.outlet='all';S.menu.tab='items';render();}
-function lens(total){const fo=S.menu.lo||'all';if(OUTLETS.length<2)return '';
- const off=fo==='all'?0:DB.items.filter(i=>soldAt(i).includes(fo)&&i.oos[fo]).length;
- return '<div class="jr-lens"><label for="jr-fo">Show items sold at</label><select id="jr-fo" class="inp sm" onchange="S.menu.lo=this.value;S.menu.sel=[];render()"><option value="all">All outlets</option>'+OUTLETS.map(o=>'<option value="'+o.id+'" '+(fo===o.id?'selected':'')+'>'+esc(o.short)+'</option>').join('')+'</select><span>'+(fo==='all'?total+' items on the menu':total+' of '+DB.items.length+' items are sold at '+esc(nm(fo))+(off?' · '+off+' out of stock there':''))+'</span></div>';}
+function lensSel(){if(OUTLETS.length<2)return '';const lo=S.menu.lo||'all';
+ return '<label class="lens-w"><span>Sold at</span><select class="lens-sel" aria-label="Show items sold at" onchange="S.menu.lo=this.value;S.menu.sel=[];render()"><option value="all">All outlets</option>'+OUTLETS.map(o=>'<option value="'+o.id+'" '+(lo===o.id?'selected':'')+'>'+esc(o.short)+'</option>').join('')+'</select></label>';}
+function lens(total){const lo=S.menu.lo||'all';if(OUTLETS.length<2||lo==='all')return '';
+ const off=DB.items.filter(i=>soldAt(i).includes(lo)&&i.oos[lo]).length;
+ return '<div class="jr-lens"><span>Showing '+total+' of '+DB.items.length+' items sold at <b>'+esc(nm(lo))+'</b>'+(off?' · '+off+' out of stock there':'')+'</span><button class="u-link" onclick="S.menu.lo=\'all\';render()">Show all outlets</button></div>';}
+const vis=ids=>ids.filter(x=>OUTLETS.some(o=>o.id===x));
+function varPrice(i){const g=i.pg[0];if(!g||!g.p.some(has))return '<td class="c-var" colspan="2"><span class="muted">No price yet</span></td>';
+ const multi=i.v.length>1;
+ const vc=multi?i.v.map(v=>'<div class="vl" title="'+esc(v.n)+'">'+esc(v.n)+'</div>').join(''):'<div class="vl"><span class="muted">'+esc((i.v[0]||{}).n||'Regular')+'</span></div>';
+ const pc=g.p.map(p=>'<div class="vl">'+(has(p)?'$'+(+p).toFixed(2):'<span class="muted">—</span>')+'</div>').join('')+(i.pg.length>1?'<div class="xs muted pgn">'+i.pg.length+' price groups</div>':'');
+ return '<td class="c-var">'+vc+'</td><td class="c-prc">'+pc+'</td>';}
+function statusCell(i){const lo=S.menu.lo||'all',pill=(c,t)=>'<span class="stk '+c+'">'+t+'</span>',sold=vis(soldAt(i));
+ if(lo!=='all'){if(!soldAt(i).includes(lo))return pill('na','Not sold here');return i.oos[lo]?pill('out','Out of stock'):pill('ok','Available');}
+ const out=sold.filter(o=>i.oos[o]);if(out.length)return pill('out','Out at '+(out.length===1?esc(nm(out[0])):out.length+' outlets'));
+ if(sold.length&&sold.length<OUTLETS.length)return pill('part','At '+sold.length+' of '+OUTLETS.length+' outlets');
+ if(!sold.length)return pill('na','Not sold');return pill('ok','Available');}
 function menuStatus(pool,ready,draft,F){if(draft)return '';
  const c=f=>pool.filter(f).length,bad=pool.length-ready,pct=pool.length?Math.round(ready/pool.length*100):0;
  const chips=[[c(i=>i.type==='none'),'need veg / non-veg','notype'],[c(i=>!i.desc),'have no description','nodesc'],[c(i=>!soldAt(i).length),'have no price','noprice'],[c(i=>!!i.chk),'need a check','check']].filter(x=>x[0]);
@@ -207,4 +220,4 @@ function init(){
  const st=window.saveTaxW;window.saveTaxW=function(){const was=S.menu.drawer;st();if(was==='tax'&&S.menu.drawer!=='tax'&&S.sdlg){S.set='ord';chOpen('tax');}};
  const zs=window.zedSave;window.zedSave=function(){const o=S.zed&&S.zed.o;zs();if(o&&!S.zed){mut(j=>{ensure(j,o).area=true;});S.set='ord';S.sdlg=true;render();toast('Delivery area saved for '+nm(o)+'.');}};
  const zc=window.zedCancel;window.zedCancel=function(){zc();S.set='ord';S.sdlg=true;render();};}
-return {init,sync,menuStatus,nextStep,menuNote,menuAll,lens,catSel,railSetup,resume,goSvc,faqOk,faqEdit,resEdit,dlg,saveRes,saveFaq,faqDel,canAdd,addOutlet,addClose,addCreate,anyLiveAny:()=>OUTLETS.some(o=>O(o.id).live),ordersPage,page,go,start,area,open,badge,confirmTax,confirmPay,bar:()=>{const e=document.getElementById('jrbar');if(e)e.remove();}};})();
+return {init,sync,menuStatus,lensSel,varPrice,statusCell,nextStep,menuNote,menuAll,lens,catSel,railSetup,resume,goSvc,faqOk,faqEdit,resEdit,dlg,saveRes,saveFaq,faqDel,canAdd,addOutlet,addClose,addCreate,anyLiveAny:()=>OUTLETS.some(o=>O(o.id).live),ordersPage,page,go,start,area,open,badge,confirmTax,confirmPay,bar:()=>{const e=document.getElementById('jrbar');if(e)e.remove();}};})();
